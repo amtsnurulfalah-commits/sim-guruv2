@@ -1,0 +1,24 @@
+{
+  "environment": "local container; not Vercel",
+  "node": "v24.19.0",
+  "policy": {
+    "memoryCost": 19456,
+    "timeCost": 2,
+    "parallelism": 1,
+    "hashLength": 32,
+    "type": 2,
+    "version": 19
+  },
+  "hash": {
+    "samples": 12,
+    "p50ms": 23,
+    "p95ms": 63
+  },
+  "verify": {
+    "samples": 12,
+    "p50ms": 20,
+    "p95ms": 58
+  },
+  "fourConcurrentVerifyMs": 30,
+  "rssBytes": 152993792
+}

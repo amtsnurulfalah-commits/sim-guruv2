@@ -1,0 +1,2 @@
+-- Tahap1.2: tidak membuat akun, password, atau data transaksi.
+-- Seed setting aman ditambahkan setelah master tersedia; bukan tempat bootstrap kredensial.

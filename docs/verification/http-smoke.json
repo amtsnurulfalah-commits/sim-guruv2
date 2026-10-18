@@ -1,0 +1,15 @@
+{
+  "kind": "HTTP smoke on next start production build",
+  "result": "passed",
+  "checks": [
+    "Beranda200, bahasa Indonesia, status fitur jujur",
+    "Header keamanan dasar pada halaman",
+    "Halaman kesiapan200",
+    "Halaman404 berbahasa Indonesia",
+    "Health liveness200, UUID requestId, no-store",
+    "Health tidak mengekspos URL/secret/hasil database",
+    "Login belum dibuat tidak menampilkan form palsu"
+  ],
+  "browser_qa": false,
+  "database_integration": false
+}
