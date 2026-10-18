@@ -6,20 +6,22 @@ Proyek `sim-guruv2` berada di team `amtsnurulfalah-2546` dan mengambil source da
 
 APP_URL production: https://sim-guruv2-amtsnurulfalah-2546.vercel.app . APP_TIMEZONE: Asia/Jakarta. DB_POOL_MAX: 2. SESSION_SECRET, AUTH_CHALLENGE_HMAC_SECRET dan AUTH_OUTBOX_ENCRYPTION_KEY dihasilkan terpisah menggunakan CSPRNG dan disimpan sebagai secret production; nilainya tidak dicatat di repository. Preview tidak mendapat credential production. Perlindungan deployment Vercel tetap memakai pengaturan bawaan.
 
-## Supabase — provisioning tertunda
+## Supabase — schema siap, koneksi pooler menunggu host
 
-Organisasi yang dipilih pengguna: `amtsnurulfalah-2546's projects` (`vercel_icfg_Q7pX7gkrZeRAhpt6fRcJR9TE`). Target proyek baru: sim-guruv2, region ap-southeast-1. Pembuatan ditolak karena pemilik sudah menggunakan dua proyek gratis aktif: central-sso-db dan SiM-Asetku. Tidak ada proyek lama yang diubah, di-pause atau dihapus.
+Proyek `sim-guruv2` (`aeethjbvdaydzdmqhawt`) berhasil dibuat pada organisasi yang dipilih pengguna, region ap-southeast-1, PostgreSQL 17.11. API URL https://aeethjbvdaydzdmqhawt.supabase.co sudah disimpan sebagai SUPABASE_URL production di Vercel. Hambatan kuota pada percobaan sebelumnya sudah tidak menghalangi pembuatan ini.
 
-Setelah kuota tersedia atau organisasi di-upgrade, lanjutkan:
+Empat SQL sumber 001–004 diterapkan atomik melalui MCP apply_migration bernama sim_guru_foundation_through_stage_1_3. Ledger aplikasi sim_guru_migration.schema_migrations tetap berisi empat nama dan SHA-256 asli, agar runner aplikasi tidak mengulang SQL. Supabase memiliki history entry untuk batch tersebut; ini berbeda dari ledger aplikasi. Pemeriksaan remote: 11 tabel, seluruhnya ENABLE dan FORCE RLS, 0 akun aplikasi, advisor security tanpa temuan.
 
-1. Buat proyek terpisah dan periksa role/privilege PostgreSQL managed sebelum empat migrasi dijalankan.
-2. Terapkan migrasi dengan ledger/checksum sesuai prosedur database. Jangan menggunakan login runtime untuk migrasi.
-3. Buat LOGIN runtime bisnis dan auth dengan password acak berbeda, masing-masing hanya member sim_guru_business atau sim_guru_auth. Bootstrap operator memakai login terpisah.
-4. Simpan DATABASE_URL dan AUTH_DATABASE_URL sebagai secret production di Vercel. Gunakan koneksi pool yang sesuai dan SSL; verifikasi masing-masing identitas role dan transaksi. Jangan gunakan postgres administratif sebagai koneksi runtime.
-5. Simpan SUPABASE_URL dan secret Storage hanya saat integrasi Storage disiapkan; tidak mengekspos schema app/auth_private/finance/ops ke Data API.
-6. Uji migrasi native, RLS/GRANT, pool/TCP dan secret handling. Redeploy setelah environment disimpan.
+Provisioning tambahan sim_guru_runtime_login_roles membuat sim_guru_business_login dan sim_guru_auth_login. Masing-masing hanya mewarisi sim_guru_business atau sim_guru_auth, tanpa superuser/createdb/createrole/bypassrls/owner, connection limit 10, statement_timeout dan idle_in_transaction_session_timeout 15 detik. Password masih NULL sehingga autentikasi password belum bisa dipakai. Langkah provisioning ini bukan migrasi domain tambahan dan tidak mengubah empat file sumber.
 
-Belum ada database runtime, migrasi remote, admin aplikasi, pengiriman email atau login publik. Health endpoint adalah liveness aplikasi, bukan pemeriksaan koneksi database. Login HTTP dibuat pada Tahap 1.4.
+Koneksi production belum selesai. Host Shared Transaction pooler harus disalin dari Dashboard → Connect → Transaction pooler, karena indeks aws-N tidak dapat ditebak dari region. Tool Supabase yang tersedia tidak mengembalikan pooler host. Setelah host tersedia:
+
+1. Generate dua password acak terpisah, set pada masing-masing role LOGIN melalui kanal aman; jangan menaruh password di migration/repository/log.
+2. Simpan DATABASE_URL dan AUTH_DATABASE_URL sebagai secret production Vercel, port 6543, user `[role].aeethjbvdaydzdmqhawt`, database postgres, SSL aktif. Postgres.js sudah prepare:false.
+3. Uji koneksi TCP, identitas role, transaksi/pool dan larangan akses silang dari runtime Vercel; baru nyatakan database runtime siap. Preview tetap tidak memperoleh credential production.
+4. Provision operator bootstrap terpisah saat onboarding admin dijalankan; tidak ada password default. Storage/email disiapkan pada tahap terkait.
+
+Belum ada koneksi runtime teruji, admin aplikasi, email terkirim atau login publik. Health endpoint adalah liveness aplikasi, bukan pemeriksaan database. Login HTTP dibuat pada Tahap 1.4. Hak akses katalog diuji remote; uji HTTP PostgREST anon tetap perlu dilakukan.
 
 ## Bukti deployment
 
