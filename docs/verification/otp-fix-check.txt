@@ -1,0 +1,321 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 check
+> npm run lint && npm run typecheck && npm test && npm run test:crypto && npm run test:db && npm run build
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 lint
+> eslint . --max-warnings=0
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 test
+> node --import tsx --test tests/unit/*.test.ts
+
+✔ WIB operational date crosses midnight at17:00 UTC, independent of browser timezone (15.934064ms)
+✔ Calendar schema permits literal nonholiday, real leap date and inclusive366-day range only (3.530417ms)
+✔ Dated context requires explicit flags/period and rejects browser permission payloads (1.546813ms)
+✔ constructor decimal mempertahankan penjumlahan pecahan tanpa float (1.837541ms)
+✔ core development dapat dibangun tanpa secrets (3.003766ms)
+✔ core production wajib URL eksplisit HTTPS dan timezone Jakarta (1.067044ms)
+✔ database hilang ditolak dan output tidak memuat rahasia (1.279651ms)
+✔ database memerlukan role berbeda dan nama database sama (0.737867ms)
+✔ production database menolak sslmode disable (0.235486ms)
+✔ auth gagal tertutup tanpa secrets atau key enkripsi pendek (0.836968ms)
+✔ secret session dan HMAC tidak boleh sama (0.132355ms)
+✔ service yang belum disiapkan tidak lolos validasi (1.816333ms)
+✔ CA database bersifat opsional dan URL sertifikat bukan nilai PEM (1.630798ms)
+✔ worker requires its own LOGIN and mail supports the Resend integration key (1.744269ms)
+✔ Master class standards follow each source level and permit empty parallel classes (4.106718ms)
+✔ Master inputs reject impossible dates and money precision without throwing unsafe errors (1.471987ms)
+✔ navigation registry has unique slugs and enforces role visibility independently of the UI (1.618995ms)
+✔ Schedule preview end combines JTM and rest minutes without midnight modulo (2.126095ms)
+✔ Fractional JTM retains four decimal places down to fractional seconds (2.78781ms)
+✔ Schedule inputs reject hidden end-time/precision/negative and inverted validity (4.0491ms)
+✔ Bulk scheduling changes reject duplicate targets and actor-controlled keys (1.428548ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 372.436434
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 test:crypto
+> node --conditions=react-server --import tsx --test tests/crypto/*.test.ts
+
+✔ CR06 token32byte acak, digest dan cipher tidak memuat token plaintext (4.284999ms)
+✔ CR07 binding email/user/outbox/key dan ciphertext yang diubah ditolak (1.382256ms)
+✔ OTP cryptography: six digits including leading zeros; purpose/address binding and authenticated encryption (3.330214ms)
+✔ CR01 Argon2id nyata, salt unik, verify tepat dan password salah ditolak (187.465783ms)
+✔ CR02 password tidak di-trim atau dinormalisasi dan panjang memakai code point (70.394424ms)
+✔ CR03 kebijakan menolak unsur identitas, kompleksitas lemah dan panjang tidak sah (0.500419ms)
+✔ CR04 hash rusak atau parameter ekstrem menghasilkan kegagalan crypto terkendali (0.698926ms)
+✔ CR05 rehash hanya setelah verify, mempertahankan parameter lama yang lebih kuat (256.001005ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 668.640237
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 test:db
+> node --conditions=react-server --import tsx --test tests/integration/database.test.ts tests/integration/accounts.test.ts tests/integration/auth-http.test.ts tests/integration/lifecycle.test.ts tests/integration/dashboard.test.ts tests/integration/users.test.ts tests/integration/masters.test.ts tests/integration/calendar.test.ts tests/integration/schedules.test.ts tests/integration/password-transport.test.ts tests/integration/otp-dispatch.test.ts
+
+▶ Tahap1.3 — lifecycle awal dengan hash nyata + PostgreSQL WASM
+  ✔ AC01 bootstrap hash nyata, flag wajib ganti, TTL24jam dan idempotensi tanpa overwrite (178.360569ms)
+  ✔ AC02 invite atomik menulis pending profile+digest+encrypted outbox; bukan email sent (37.242472ms)
+  ✔ AC03 input gagal/encryption key salah rollback seluruh account+challenge+outbox (8.335974ms)
+  ✔ AC04 token salah/kedaluwarsa tidak membuat credential atau mengonsumsi token sah (20.871903ms)
+  ✔ AC05 aktivasi sekali pakai menyimpan hash asli/verifikasi email; masih perlu pertanyaan keamanan (137.018213ms)
+  ✔ AC06 reissue membatalkan token dan secret outbox lama (82.478351ms)
+  ✔ AC07 konflik email terverifikasi rollback aktivasi tanpa menghabiskan challenge (61.117053ms)
+  ✔ AC08 konsumsi ulang dua request memberi satu keberhasilan (antrean satu koneksi, bukan native race) (70.776713ms)
+  ✔ AC09 role bisnis tidak membaca secret outbox atau mengeksekusi activation/bootstrap (17.270706ms)
+  ✔ AC10 rehash CAS memakai hash nyata tanpa mencabut sesi/password_changed_at (79.894314ms)
+✔ Tahap1.3 — lifecycle awal dengan hash nyata + PostgreSQL WASM (5615.65681ms)
+▶ Tahap1.4 login/session/logout — HTTP handlers + Argon2 + PostgreSQL WASM
+  ✔ AU01 login nyata, normalisasi username, cookie aman, DTO tanpa token/hash (101.956815ms)
+  ✔ AU02 salah/tidak ada/pending/nonaktif/kedaluwarsa menghasilkan respons generik (245.342345ms)
+  ✔ AU03 prelogin CSRF terikat cookie/purpose/TTL; Origin dan body limit (7.581276ms)
+  ✔ AU04 lima gagal/account lintas instance persisten, cooldown, sukses hanya reset account (424.75258ms)
+  ✔ AU05 IP membatasi 30 usaha lintas akun; header palsu di dev diabaikan (1553.159223ms)
+  ✔ AU06 sesi onboarding boleh status/logout, tidak mendapat akses bisnis (93.264532ms)
+  ✔ AU07 session polling tidak memperpanjang idle; heartbeat CSRF memperpanjang dengan batas absolut (43.595891ms)
+  ✔ AU08 maintenance memblokir login/operasi guru termasuk sesi lama; admin dan logout tetap tersedia (213.661976ms)
+  ✔ AU09 login ulang merotasi token dan mencabut sesi browser sebelumnya (61.371531ms)
+  ✔ AU10 logout CSRF/origin, revoke server, idempotensi dan replay cookie tab lama ditolak (25.767208ms)
+  ✔ AU11 expiry idle/absolut, auth_version dan status nonaktif mencabut akses (392.530558ms)
+  ✔ AU12 gagal konfigurasi menghasilkan 503 tanpa stack/secret/URL (2.217219ms)
+  ✔ AU13 sesi anonim tidak membuka database, dan error internal tidak bocor (1.328507ms)
+✔ Tahap1.4 login/session/logout — HTTP handlers + Argon2 + PostgreSQL WASM (8529.600483ms)
+▶ Tahap 2.3 — calendar and one operational DayContext
+  ✔ CA01 incremental upgrade leaves identities intact, repeat no-op, all25 tables FORCE RLS (24.345387ms)
+  ✔ CA02 admin list denied for anonymous/guru/onboard; shared context only business sessions (65.971608ms)
+  ✔ CA03 origin/CSRF/method/actor spoof rejected before mutation (6.995894ms)
+  ✔ CA04 default weekday has KBM, no invented exams, no period outside configured range (83.74687ms)
+  ✔ CA05 nonholiday preview is read-only and keeps KBM active (T41/B25) (50.492887ms)
+  ✔ CA06 one-use actor-bound/action-bound previews prevent replay and ID substitution (42.384668ms)
+  ✔ CA07 stale preview detects calendar changes without partial writes (24.970365ms)
+  ✔ CA08 academic period change invalidates preview even if calendar row unchanged (13.984977ms)
+  ✔ CA09 expired preview is denied without consuming or modifying source (9.057065ms)
+  ✔ CA10 holiday disables regular KBM/exam; description alone does not (14.391524ms)
+  ✔ CA11 CAS rejects old row version before preview (5.02191ms)
+  ✔ CA12 delete is audited tombstone; restores default and re-add requires tombstone version (46.861482ms)
+  ✔ CA13 range preview and commit cover inclusive dates and create one audited entry per date (27.409532ms)
+  ✔ CA14 range collision aborts all dates; no partial overwrite or lost reason (20.809397ms)
+  ✔ CA15 impossible/inverted/oversized ranges and historical writes rejected (8.497274ms)
+  ✔ CA16 Sunday does not create activity or credit; explicit dated override only changes requested mode (20.857466ms)
+  ✔ CA17 holiday takes precedence over requested mode; clearing override reverts Sunday policy (55.470015ms)
+  ✔ CA18 explicit context requires existing nonarchived semester containing the exact date (7.729787ms)
+  ✔ CA19 parent range/archival cannot invalidate live dated override (21.456299ms)
+  ✔ CA20 dataset search/filter and stable paging; nonholiday does not match holiday filter (14.062016ms)
+  ✔ CA21 context version changes with relevant calendar or semester revisions, no stale cache (18.041833ms)
+  ✔ CA22 unintegrated installed scheduling module fails closed for resolver and mutation (7.906144ms)
+  ✔ CA23 least privilege and full audits exclude hashes or session proof (10.625625ms)
+  ✔ CA24 HTTP preview/commit returns no-store and maps expired/stale safely (41.838161ms)
+  ✔ CA25 revoked session cannot read context or commit despite owning prior preview (9.515894ms)
+✔ Tahap 2.3 — calendar and one operational DayContext (5650.7491ms)
+▶ Tahap1.6 dashboard boundaries with real local sessions
+  ✔ SH01 anonymous/forged cookie denied; browser role and actor query cannot elevate (34.754416ms)
+  ✔ SH02 admin/guru filtered DTO without credentials or invented financial metrics (4.22791ms)
+  ✔ SH03 onboarding session cannot read dashboard (3.154832ms)
+  ✔ SH04 maintenance affects existing guru session; admin remains allowed (10.378834ms)
+  ✔ SH05 cross-origin and revoked sessions rejected; backend error sanitized (10.893305ms)
+✔ Tahap1.6 dashboard boundaries with real local sessions (5318.579226ms)
+▶ Tahap 1.2 — engine PostgreSQL WASM / PGlite (bukan native/pooling)
+  ✔ DB01 migrasi clean install dan rerun checksum idempotent (330.920363ms)
+  ✔ DB02 role runtime nonowner, NOLOGIN, non-superuser, non-BYPASSRLS dan tanpa membership owner (2.742924ms)
+  ✔ DB03 seluruh tabel domain mempunyai ENABLE+FORCE RLS (2.66506ms)
+  ✔ DB04 tanpa context atau UUID actor palsu menghasilkan nol profil (19.1069ms)
+  ✔ DB05 guru hanya membaca profil sendiri; NIP tetap teks (7.723796ms)
+  ✔ DB06 admin membaca semua profil/settings/audit; guru tidak membaca settings/audit (15.645738ms)
+  ✔ DB07 business/auth/anon tidak mendapat SELECT langsung ke kredensial/sesi/challenge (25.830664ms)
+  ✔ DB08 business/anon tidak bisa menjalankan lookup hash; auth hanya melalui routine (6.694119ms)
+  ✔ DB09 direct INSERT/UPDATE/TRUNCATE dan DELETE audit ditolak termasuk actor admin (13.882873ms)
+  ✔ DB10 runtime tidak dapat SET ROLE owner atau mengeksekusi bootstrap (7.678519ms)
+  ✔ DB11 create account atomik, username case-insensitive, rollback hash invalid (15.979251ms)
+  ✔ DB12 create account melalui routine tetap memerlukan admin dan sesi sah (21.301325ms)
+  ✔ DB13 onboarding tidak dapat mendapat business session atau membaca data bisnis (7.229582ms)
+  ✔ DB14 context tidak bocor setelah COMMIT atau ROLLBACK dalam koneksi yang sama (12.265785ms)
+  ✔ DB15 search_path caller dan temp table tidak mengubah helper definer (16.098944ms)
+  ✔ DB16 session absolut24jam/idle2jam; touch dibatasi absolute; revoke efektif (27.697052ms)
+  ✔ DB17 checksum mismatch dan batch gagal tidak menambah ledger migrasi (12.760749ms)
+  ✔ DB18 bootstrap idempotent tanpa mengganti hash; target kedua ditolak (5.832094ms)
+  ✔ DB19 constraint FK, nominal dan hash menolak data tidak sah (7.017062ms)
+  ✔ DB20 password replacement CAS, revoke semua sesi/challenge dan audit teredaksi (27.269002ms)
+  ✔ DB21 disable akun segera mencabut sesi dan menolak issuance baru (27.906716ms)
+  ✔ DB22 admin aktif terakhir tidak bisa dinonaktifkan (5.118331ms)
+  ✔ DB23 auth_version berubah menolak sesi lama meski belum ditandai revoked (14.626169ms)
+  ✔ DB24 default privileges tidak membuka objek/routine baru ke PUBLIC (6.541743ms)
+✔ Tahap 1.2 — engine PostgreSQL WASM / PGlite (bukan native/pooling) (5435.997931ms)
+ℹ Engine SQL: PostgreSQL 18.6 (PGlite 0.5.10) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.5 (1db513782be24469589d7cb8a1f1834e9a33f271), 32-bit
+▶ Tahap1.5 — lifecycle akun, capability reset, least privilege dan delivery
+  ✔ LC01 new routines isolated; worker cannot read credentials or run lifecycle (32.681054ms)
+  ✔ LC02 temporary password to permanent: proof, reuse rejection, atomic revoke and relogin (387.334357ms)
+  ✔ LC03 profile DTO excludes private data; strict fields, version CAS, text NIP, phone normalization (128.367879ms)
+  ✔ LC04 question uses normalized Argon2 answer; onboarding cannot skip email (155.532472ms)
+  ✔ LC05 email request requires password; OTP HMAC + encrypted outbox, no premature verified flag (112.5532ms)
+  ✔ LC06 resend cooldown preserves existing challenge and secret (41.036762ms)
+  ✔ LC07 five wrong attempts commit across requests, then even correct OTP rejected (36.352114ms)
+  ✔ LC08 reissue supersedes; purpose mismatch denied; valid email consumes and revokes session (62.075507ms)
+  ✔ LC09 complete onboarding rotates opaque cookie scope, never upgrades old token (68.523188ms)
+  ✔ LC10 forgot responses structurally equal for existing/missing users, no OTP/token disclosure (95.545723ms)
+  ✔ LC11 reset OTP consumed once yields only five minute capability, no session (27.443047ms)
+  ✔ LC12 reset rejects reuse/tamper/policy failure; success revokes every session and capability (252.670823ms)
+  ✔ LC13 expired OTP fails without changing password; email change does not preempt old verified address (48.004826ms)
+  ✔ LC14 security answer alone creates at most admin request, never reset capability (106.137815ms)
+  ✔ LC15 admin recovery needs business admin, target-bound request, identity evidence and own password (98.668081ms)
+  ✔ LC16 approval generates one-time handover, clears factors, revokes sessions, no plaintext stored (243.68759ms)
+  ✔ LC17 worker only claims leased security message, acknowledges once, purges secret (77.331244ms)
+  ✔ LC18 provider retry uses stable idempotency, classifies failures, no false delivery success (6.270742ms)
+  ✔ LC19 worker rejects tampered cipher without calling provider (49.659924ms)
+  ✔ LC20 HTTP csrf/origin, private DTO, no-store and generic public recovery (79.511265ms)
+  ✔ LC22 expired lease loses acknowledgement, expired reset capability rejected (84.141846ms)
+  ✔ LC23 wrong-session email OTP cannot modify another user's address (140.35217ms)
+  ✔ LC21 persistent rate limits apply to unknown identities too (194.619772ms)
+✔ Tahap1.5 — lifecycle akun, capability reset, least privilege dan delivery (7964.344017ms)
+▶ Tahap 2.2 — master school, academic integrity and effective financial versions
+  ✔ MA01 upgrade preserves existing identity and checksums; repeat is no-op (30.657928ms)
+  ✔ MA02 anonymous/guru/onboarding denied at HTTP and business SQL entry points (58.698308ms)
+  ✔ MA03 origin, CSRF, method and spoofed filter cannot elevate (12.264143ms)
+  ✔ MA04 school starts empty; typed singleton create and NPSN leading zeros (57.482671ms)
+  ✔ MA05 school validation: grade parallel maxima, unknown keys and headmaster relation (13.393152ms)
+  ✔ MA06 year dates, consecutive label and overlapping years rejected atomically (21.403539ms)
+  ✔ MA07 period contained in year; unique semester and no overlapping dates (36.622244ms)
+  ✔ MA08 active-period switch is atomic and increments previous version with audit (16.173764ms)
+  ✔ MA09 class preserves relation, normalized names and exact integer standards (16.056616ms)
+  ✔ MA10 class min15 or zero parallel, max per level, grade and configured parallel checked (17.811621ms)
+  ✔ MA11 subject case-insensitive uniqueness and server filtering across all pages (46.18885ms)
+  ✔ MA12 CAS conflict does not append revision; unknown/server-owned payload rejected (16.793557ms)
+  ✔ MA13 archive blocks referenced year/period; preserves subjects and terminal state (25.22715ms)
+  ✔ MA14 tariff is integer rupiah string with finite effective window and transport guard (8.148932ms)
+  ✔ MA15 financial ranges inclusive and non-overlapping; different tariff kind allowed (12.082359ms)
+  ✔ MA16 financial versions cannot be edited or backdated; future cancellation retains history (55.722715ms)
+  ✔ MA17 allowances bind active user, normalize task and prevent overlapping same duty (29.623936ms)
+  ✔ MA18 cancellation requires future effective date; today is immutable (11.968323ms)
+  ✔ MA19 RLS/default deny blocks business direct DML, helpers, auth, worker and public (9.340761ms)
+  ✔ MA20 history keeps original values and actor without credentials; guarded and bounded (5.904274ms)
+  ✔ MA21 SQL validates stale writes and invalid child parent even without application schema (10.40523ms)
+  ✔ MA22 HTTP create/read/history correct no-store and sanitized domain conflict (69.400112ms)
+  ✔ MA23 no implicit active-period fallback and archived parent hidden from choices (30.800067ms)
+  ✔ MA24 revoked admin session cannot write master despite valid-shaped context (9.436863ms)
+✔ Tahap 2.2 — master school, academic integrity and effective financial versions (6011.971278ms)
+▶ OTP request commits then dispatches its own message with worker-only privileges
+  ✔ OD01 missing delivery configuration returns503 before creating a challenge (95.781736ms)
+  ✔ OD02 dispatch targets newly requested OTP instead of an older user's message (251.417053ms)
+  ✔ OD03 sent/consumed challenge is not sent twice and cooldown does not redispatch (132.334753ms)
+  ✔ OD04 provider retry keeps encrypted message and honors next_attempt_at (100.104035ms)
+  ✔ OD05 permanent provider failure is reported and encrypted secret removed (93.873107ms)
+  ✔ OD06 ambiguous provider outcome stays unknown, never claimed as delivered (87.796087ms)
+  ✔ OD07 expired or superseded challenge is never dispatched (156.077085ms)
+  ✔ OD08 auth/public cannot claim encrypted OTPs; worker cannot read credentials (7.514858ms)
+{"event":"security_otp_dispatch_failed","requestId":"e8ecd116-7966-4cfb-98bb-9116fda99ef3","code":"WORKER_UNAVAILABLE"}
+  ✔ OD09 provider connection errors keep queued result pending without leaking errors (72.861639ms)
+✔ OTP request commits then dispatches its own message with worker-only privileges (4681.728091ms)
+▶ Password change through production Postgres.js TCP transport
+  ✔ legacy double-encoded payload reproduces VERSION_CONFLICT and rolls back (114.818525ms)
+  ✔ JSON payload preserves objects, arrays, scalar strings, null and exact decimals (9.853765ms)
+  ✔ wrong current password and mismatched confirmation do not change credentials (68.312376ms)
+  ✔ onboarding password saves, clears cookie, revokes sessions and permits only the new password (320.596192ms)
+✔ Password change through production Postgres.js TCP transport (3875.693569ms)
+▶ Tahap 2.4 — weekly teaching schedules and atomic resource conflicts
+  ✔ SC01 incremental upgrade preserves identity and all25 RLS tables (15.587553ms)
+  ✔ SC02 anonymous/guru/onboarding cannot manage; SQL rechecks admin and business scope (33.148265ms)
+  ✔ SC03 method/origin/CSRF and browser actor/role rejected (9.396342ms)
+  ✔ SC04 end time calculated server-side from school minutes, JTM stored exact4dp (14.164731ms)
+  ✔ SC05 relation/period/date and inactive teacher invalid; no client timeEnd or tariff (14.96384ms)
+  ✔ SC06 teacher OR class overlap rejected across subjects and resources (11.895653ms)
+  ✔ SC07 half-open adjacent intervals are accepted without travel buffer (4.895293ms)
+  ✔ SC08 different day, period or disjoint validity do not collide (16.684514ms)
+  ✔ SC09 conflict inspection is read-only and does not authorize mutation (15.868062ms)
+  ✔ SC10 save rechecks after an earlier clear preview, without lost update (16.641276ms)
+  ✔ SC11 fractional JTM seconds remain exact and do not use binary floating honor math (7.131857ms)
+  ✔ SC12 midnight overflow and invalid/overprecise JTM rejected (4.24917ms)
+  ✔ SC13 date windows must include chosen weekday and be bounded (3.253527ms)
+  ✔ SC14 filters cover full data; guru mine cannot expose other users (45.331627ms)
+  ✔ SC15 recap sums exact JTM on all filtered rows, never claims attendance/honor (2.843181ms)
+  ✔ SC16 future edit CAS, server-derived duration and stale write rollback (8.241387ms)
+  ✔ SC17 school-minute changes do not rewrite old snapshots; new schedules use new value (23.668239ms)
+  ✔ SC18 referenced masters cannot be archived or trimmed under live schedules (11.261185ms)
+  ✔ SC19 today is own-user scoped and reads the same holiday DayContext (46.962703ms)
+  ✔ SC20 schedule mutation invalidates calendar previews and context fingerprints (10.98384ms)
+  ✔ SC21 running schedule edit creates forward successor and closes old validity (27.901157ms)
+  ✔ SC22 closed history is read-only and snapshot labels survive master edits (12.046212ms)
+  ✔ SC23 stopping unstarted schedule archives logically and never deletes row (7.408656ms)
+  ✔ SC24 bulk preview binds actor and is read-only; no cross-account commit (24.347567ms)
+  ✔ SC25 bulk preview stales on schedule/calendar changes with no partial writes (8.6636ms)
+  ✔ SC26 injected failure after first bulk item rolls back whole batch and consumption (12.626782ms)
+  ✔ SC27 bulk expiry/duplicate validation, atomic success and one-use replay (18.090174ms)
+  ✔ SC28 least privilege blocks raw tables, helpers, private previews and worker/auth entry points (9.689718ms)
+  ✔ SC29 HTTP create/list/recaps and collision envelopes do not leak SQL or hash (32.732615ms)
+  ✔ SC30 new unsupported exam/occurrence/finance modules fail closed until adapter integrated (8.05478ms)
+✔ Tahap 2.4 — weekly teaching schedules and atomic resource conflicts (4135.621851ms)
+▶ Tahap 2.1 — user management, real hashes and role-scoped SQL
+  ✔ US01 HTTP anonymous/guru/onboarding sessions cannot access admin users (56.493272ms)
+  ✔ US02 origin/CSRF/method and strict filters prevent bypass (16.220047ms)
+  ✔ US03 activation create is atomic, pending and secret-free DTO (58.294819ms)
+  ✔ US04 invalid encryption configuration rolls back user and queue (44.341175ms)
+  ✔ US05 duplicate username is case-insensitive and rejects password/role payload extras (62.429232ms)
+  ✔ US06 full-dataset filters and bounded stable pagination; wildcard treated literally (19.929565ms)
+  ✔ US07 edit metadata, normalization, CAS conflict and reissued pending challenge (74.104125ms)
+  ✔ US08 activation cannot bypass onboarding and replay version; reissue revokes prior secret (120.870344ms)
+  ✔ US09 handover uses random hash, 24h expiry, unverified email and mandatory onboarding (103.805365ms)
+  ✔ US10 verified email immutable; profile edit revokes target session (67.316863ms)
+  ✔ US11 last ready admin cannot be demoted/disabled/archived; incomplete admin does not count (94.784856ms)
+  ✔ US12 archive is logical, cancels security material, preserves audit and is terminal (90.938774ms)
+  ✔ US13 disabled user cannot log in; admin may reactivate non-archived account (89.032719ms)
+  ✔ US14 pending recovery list binds request to target and version (61.522123ms)
+  ✔ US15 rejection is audited, one-use and cannot approve afterward (84.37517ms)
+  ✔ US16 recovery approval returns temporary secret once and resets factors (58.056998ms)
+  ✔ US17 least privilege: helpers and new functions unavailable to worker/business/public (3.743322ms)
+  ✔ US18 strict decimal/profile validation and sanitized HTTP conflicts (39.802515ms)
+  ✔ US19 self edit clears cookie and revokes session when a second ready admin exists (73.232234ms)
+✔ Tahap 2.1 — user management, real hashes and role-scoped SQL (4749.254214ms)
+ℹ tests 197
+ℹ suites 0
+ℹ pass 197
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12155.024363
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 build
+> next build
+
+▲ Next.js 16.4.2 (Turbopack)
+✓ Running next.config.ts took 21ms
+
+  Creating an optimized production build ...
+
+thread 'tokio-rt-worker' (482) panicked at turbopack/crates/turbo-persistence/src/static_sorted_file.rs:951:22:
+range end index 2426029993 out of range for slice of length 3648144
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+-----
+[1m[31mFATAL[39m[0m: An unexpected Turbopack error occurred. A panic log has been written to /tmp/next-panic-709c08fe57543d35e02db11352a7410c.log.
+
+To help make Turbopack better, report this error by clicking here: https://bugs.nextjs.org/search?category=turbopack-error-report&title=Turbopack%20Error%3A%20range%20end%20index%202426029993%20out%20of%20range%20for%20slice%20of%20length%203648144&body=Turbopack%20version%3A%20%602864b177%60%0ANext.js%20version%3A%20%600.0.0%60%0A%0AError%20message%3A%0A%60%60%60%0Arange%20end%20index%202426029993%20out%20of%20range%20for%20slice%20of%20length%203648144%0A%60%60%60&labels=Turbopack,Turbopack%20Panic%20Backtrace
+-----
+
+
+> Build error occurred
+Error [TurbopackInternalError]: range end index 2426029993 out of range for slice of length 3648144
+    at <unknown> (TurbopackInternalError: range end index 2426029993 out of range for slice of length 3648144) {
+  location: 'turbopack/crates/turbo-persistence/src/static_sorted_file.rs:951:22'
+}

@@ -33,7 +33,13 @@ const publicActions = new Set<LifecycleAction>([
   "reset-password",
   "activation",
 ]);
+export type OtpDeliveryStatus = "accepted" | "pending" | "failed" | "unknown";
+export interface SecurityOtpDelivery {
+  ready(): void;
+  deliver(challengeId: string): Promise<OtpDeliveryStatus>;
+}
 export function createLifecycleHandler(deps: {
+  mail?: SecurityOtpDelivery;
   config: () => HttpAuthConfig;
   service: () => Promise<AccountLifecycleService>;
 }) {
@@ -87,9 +93,31 @@ export function createLifecycleHandler(deps: {
         case "security-question":
           data = await service.setQuestion(token, input);
           break;
-        case "email-request":
-          data = await service.requestEmail(token, input);
+        case "email-request": {
+          if (!deps.mail)
+            throw new AuthError("EMAIL_DELIVERY_UNAVAILABLE", 503);
+          deps.mail.ready();
+          const queued = await service.requestEmail(token, input);
+          if (!queued.queued || !queued.challengeId) {
+            data = queued;
+            break;
+          }
+          // Queue transaction has committed; never hold database locks while calling the provider.
+          let delivery: OtpDeliveryStatus = "pending";
+          try {
+            delivery = await deps.mail.deliver(queued.challengeId);
+          } catch {
+            console.error(
+              JSON.stringify({
+                event: "security_otp_dispatch_failed",
+                requestId,
+                code: "WORKER_UNAVAILABLE",
+              }),
+            );
+          }
+          data = { ...queued, delivery };
           break;
+        }
         case "email-verify":
           data = await service.verifyOtp("email_verify", token, input);
           break;

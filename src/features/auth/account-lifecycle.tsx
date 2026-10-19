@@ -27,7 +27,7 @@ export async function accountRequest<T>(
       headers,
       ...(data === undefined ? {} : { body: JSON.stringify(data) }),
       cache: "no-store",
-      signal: AbortSignal.timeout(20000),
+      signal: AbortSignal.timeout(action === "email-request" ? 40000 : 20000),
     }),
     body: ApiResult<T> = await res.json();
   if (!body.ok) throw new Error(body.error.message);
@@ -203,19 +203,24 @@ export function AccountLifecycle({
       </ActionForm>
       <ActionForm
         title="Verifikasi email"
-        submitLabel="Antrekan kode OTP"
+        submitLabel="Kirim kode OTP"
         onSubmit={async (data, form) => {
           const result = await accountRequest<{
             queued: boolean;
             challengeId?: string;
+            delivery?: "accepted" | "pending" | "failed" | "unknown";
           }>("email-request", data);
           (
             form.elements.namedItem("currentPassword") as HTMLInputElement
           ).value = "";
           if (result.challengeId) setChallenge(result.challengeId);
-          return result.queued
-            ? "Permintaan kode masuk antrean pengiriman. Kode berlaku 10 menit. Pengiriman memerlukan layanan email aktif."
-            : "Tunggu setidaknya 60 detik sebelum meminta kode lagi.";
+          if (!result.queued)
+            return "Tunggu setidaknya 60 detik sebelum meminta kode lagi.";
+          if (result.delivery === "accepted")
+            return "Permintaan pengiriman kode diterima layanan email. Periksa kotak masuk dan folder Spam. Kode berlaku 10 menit.";
+          if (result.delivery === "failed")
+            return "Kode belum berhasil dikirim. Hubungi administrator, lalu minta kode baru.";
+          return "Kode tersimpan, tetapi pengiriman belum terkonfirmasi. Tunggu 60 detik lalu minta kode baru; gunakan kode dari permintaan terbaru.";
         }}
       >
         <p className="text-sm leading-7">

@@ -1,0 +1,20 @@
+▶ OTP request commits then dispatches its own message with worker-only privileges
+  ✔ OD01 missing delivery configuration returns503 before creating a challenge (81.756462ms)
+  ✔ OD02 dispatch targets newly requested OTP instead of an older user's message (173.052227ms)
+  ✔ OD03 sent/consumed challenge is not sent twice and cooldown does not redispatch (102.975179ms)
+  ✔ OD04 provider retry keeps encrypted message and honors next_attempt_at (82.212455ms)
+  ✔ OD05 permanent provider failure is reported and encrypted secret removed (73.600496ms)
+  ✔ OD06 ambiguous provider outcome stays unknown, never claimed as delivered (67.531563ms)
+  ✔ OD07 expired or superseded challenge is never dispatched (119.214277ms)
+  ✔ OD08 auth/public cannot claim encrypted OTPs; worker cannot read credentials (5.399207ms)
+{"event":"security_otp_dispatch_failed","requestId":"b4c2652f-fbf7-4b73-b97e-725a2104afc3","code":"WORKER_UNAVAILABLE"}
+  ✔ OD09 provider connection errors keep queued result pending without leaking errors (62.558353ms)
+✔ OTP request commits then dispatches its own message with worker-only privileges (2979.806501ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3609.756083

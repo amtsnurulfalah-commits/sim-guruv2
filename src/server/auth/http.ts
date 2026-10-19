@@ -23,6 +23,8 @@ type Dependencies = {
   service: () => Promise<LocalAuthService>;
 };
 const messages: Record<string, string> = {
+  EMAIL_DELIVERY_UNAVAILABLE:
+    "Layanan pengiriman email belum siap. Hubungi administrator untuk mengaktifkannya, lalu minta kode kembali.",
   SCHEDULE_INVALID:
     "Jadwal, relasi, tanggal atau durasi tidak sesuai aturan. Jadwal tidak boleh melewati tengah malam.",
   SCHEDULE_COLLISION:
@@ -170,7 +172,7 @@ export async function handleAuthRequest(
           ? new AuthError(
               masterCode,
               masterCode === "MASTER_OVERLAP" ||
-                masterCode === "MASTER_REFERENCED"
+              masterCode === "MASTER_REFERENCED"
                 ? 409
                 : 422,
             )

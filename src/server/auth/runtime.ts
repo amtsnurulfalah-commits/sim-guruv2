@@ -5,7 +5,11 @@ import type {
   SqlDatabase,
   SqlExecutor,
 } from "../../../scripts/lib/sql-database";
-import { getAuthClient, getBusinessClient } from "../db/client";
+import {
+  getAuthClient,
+  getBusinessClient,
+  getWorkerClient,
+} from "../db/client";
 import { requireEnvironment } from "../env";
 import { getPasswordService } from "./passwords";
 import { LocalAuthService } from "./service";
@@ -29,6 +33,9 @@ export function getAuthDatabase() {
 }
 export function getBusinessDatabase() {
   return databaseFromClient(getBusinessClient());
+}
+export function getWorkerDatabase() {
+  return databaseFromClient(getWorkerClient());
 }
 export async function getAuthService() {
   return new LocalAuthService(

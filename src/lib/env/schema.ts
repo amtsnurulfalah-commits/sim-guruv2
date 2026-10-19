@@ -3,7 +3,13 @@ import { z } from "zod";
 // Modul murni agar validasi dapat diuji tanpa memuat server-only atau rahasia.
 export type EnvironmentSource = Readonly<Record<string, string | undefined>>;
 export type EnvironmentScope =
-  "core" | "database" | "auth" | "storage" | "mail" | "jobs";
+  | "core"
+  | "database"
+  | "auth"
+  | "storage"
+  | "mail"
+  | "jobs"
+  | "worker";
 const nonempty = z.string().min(1);
 const secret = z.string().min(32);
 const databaseUrl = z.url().refine((value) => {
@@ -39,9 +45,20 @@ const schemas = {
     AUTH_OUTBOX_ENCRYPTION_KEY: z.string().regex(/^[a-fA-F0-9]{64}$/),
   }),
   storage: z.object({ SUPABASE_URL: httpUrl, SUPABASE_SECRET_KEY: nonempty }),
+  worker: z.object({
+    WORKER_DATABASE_URL: databaseUrl.refine((value) => {
+      try {
+        return /^sim_guru_worker_login(?:\.[a-z0-9]+)?$/.test(
+          decodeURIComponent(new URL(value).username),
+        );
+      } catch {
+        return false;
+      }
+    }),
+  }),
   mail: z.object({
     MAIL_PROVIDER: z.literal("resend"),
-    MAIL_API_KEY: nonempty,
+    MAIL_API_KEY: z.string().trim().min(1),
     MAIL_FROM: z.email(),
   }),
   jobs: z.object({ CRON_SECRET: secret }),
@@ -53,6 +70,7 @@ export const environmentScopes = [
   "storage",
   "mail",
   "jobs",
+  "worker",
 ] as const;
 export type ScopeEnvironment<S extends EnvironmentScope> = z.output<
   (typeof schemas)[S]
@@ -73,6 +91,9 @@ export function parseEnvironment<S extends EnvironmentScope>(
       source.APP_URL || (production ? undefined : "http://localhost:3000"),
     APP_TIMEZONE: source.APP_TIMEZONE || "Asia/Jakarta",
     DB_POOL_MAX: source.DB_POOL_MAX || "2",
+    MAIL_PROVIDER:
+      source.MAIL_PROVIDER || (source.RESEND_API_KEY ? "resend" : undefined),
+    MAIL_API_KEY: source.MAIL_API_KEY || source.RESEND_API_KEY,
   };
   const result = schemas[scope].safeParse(values);
   if (!result.success) {

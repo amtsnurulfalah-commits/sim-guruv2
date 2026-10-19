@@ -82,10 +82,14 @@ export class SecurityOutboxWorker {
     private readonly key: string,
     private readonly appUrl: string,
   ) {}
-  async deliverOne() {
+  async deliverOne(challengeId?: string) {
+    if (challengeId) z.uuid().parse(challengeId);
     const raw = (
       await this.db.query<{ value: unknown }>(
-        "select auth_private.claim_security_outbox() as value",
+        challengeId
+          ? "select auth_private.claim_security_otp($1) as value"
+          : "select auth_private.claim_security_outbox() as value",
+        challengeId ? [challengeId] : [],
       )
     ).rows[0]?.value;
     if (!raw) return { processed: 0 };
