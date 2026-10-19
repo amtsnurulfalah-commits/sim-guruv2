@@ -12,7 +12,7 @@ const databaseUrl = z.url().refine((value) => {
 const httpUrl = z.url().refine((value) => ["http:", "https:"].includes(new URL(value).protocol));
 const schemas = {
   core: z.object({ APP_URL: httpUrl, APP_TIMEZONE: z.literal("Asia/Jakarta") }),
-  database: z.object({ DATABASE_URL: databaseUrl, AUTH_DATABASE_URL: databaseUrl, DB_POOL_MAX: z.coerce.number().int().min(1).max(10) }),
+  database: z.object({ DATABASE_URL: databaseUrl, AUTH_DATABASE_URL: databaseUrl, DB_POOL_MAX: z.coerce.number().int().min(1).max(10), DB_SSL_CA: z.string().refine(value => !value.trim() || (value.includes("-----BEGIN CERTIFICATE-----") && value.includes("-----END CERTIFICATE-----"))).optional() }),
   auth: z.object({ SESSION_SECRET: secret, AUTH_CHALLENGE_HMAC_SECRET: secret, AUTH_OUTBOX_ENCRYPTION_KEY: z.string().regex(/^[a-fA-F0-9]{64}$/) }),
   storage: z.object({ SUPABASE_URL: httpUrl, SUPABASE_SECRET_KEY: nonempty }),
   mail: z.object({ MAIL_PROVIDER: nonempty, MAIL_API_KEY: nonempty, MAIL_FROM: z.email() }),

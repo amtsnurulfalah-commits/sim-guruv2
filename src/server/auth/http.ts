@@ -22,7 +22,7 @@ export function createAuthHandlers(deps: Dependencies) {
         }
         catch (error) {
             const code = typeof error === "object" && error !== null && "code" in error ? String(error.code) : "";
-            const unavailable = error instanceof EnvironmentConfigurationError || error instanceof PasswordCryptoError || ["ECONNREFUSED", "ECONNRESET", "ENOTFOUND", "EAI_AGAIN", "ETIMEDOUT", "CONNECT_TIMEOUT", "CONNECTION_CLOSED", "53300", "57P03", "55P03", "57014", "40001", "42501"].includes(code) || code.startsWith("08");
+            const unavailable = error instanceof EnvironmentConfigurationError || error instanceof PasswordCryptoError || ["ECONNREFUSED", "ECONNRESET", "ENOTFOUND", "EAI_AGAIN", "ETIMEDOUT", "CONNECT_TIMEOUT", "CONNECTION_CLOSED", "53300", "57P03", "55P03", "57014", "40001", "42501", "SELF_SIGNED_CERT_IN_CHAIN", "DEPTH_ZERO_SELF_SIGNED_CERT", "UNABLE_TO_VERIFY_LEAF_SIGNATURE", "CERT_HAS_EXPIRED", "ERR_TLS_CERT_ALTNAME_INVALID"].includes(code) || code.startsWith("08");
             const auth = error instanceof AuthError ? error : error instanceof ZodError ? new AuthError("VALIDATION_ERROR", 422) : unavailable ? new AuthError("UNAVAILABLE", 503) : new AuthError("INTERNAL_ERROR", 500);
             return NextResponse.json({ ok: false, error: { code: auth.code, message: messages[auth.code] ?? messages.UNAVAILABLE }, requestId }, { status: auth.status, headers: { "Cache-Control": "no-store", "Vary": "Cookie, Origin", ...(auth.retryAfter ? { "Retry-After": String(auth.retryAfter) } : {}) } });
         }

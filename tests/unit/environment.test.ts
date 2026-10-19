@@ -38,3 +38,8 @@ test("secret session dan HMAC tidak boleh sama", () => {
 test("service yang belum disiapkan tidak lolos validasi", () => {
   for (const scope of ["storage", "mail", "jobs"] as const) assert.equal(parseEnvironment(scope, {}).ok, false);
 });
+test("CA database bersifat opsional dan URL sertifikat bukan nilai PEM", () => {
+  const source={DATABASE_URL:"postgresql://business:secret@local/simguru",AUTH_DATABASE_URL:"postgresql://auth:secret@pool/simguru"};
+  assert.equal(parseEnvironment("database",{...source,DB_SSL_CA:""}).ok,true);
+  assert.equal(parseEnvironment("database",{...source,DB_SSL_CA:"https://untrusted.example/ca.crt"}).ok,false);
+});

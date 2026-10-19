@@ -185,6 +185,12 @@ test("Tahap1.4 login/session/logout — HTTP handlers + Argon2 + PostgreSQL WASM
         const unavailable = createAuthHandlers({ config: () => { throw new EnvironmentConfigurationError("database", ["DATABASE_URL"]); }, service: async () => service }), res = await unavailable.csrf(new Request(config.appUrl + '/api/auth/csrf'));
         assert.equal(res.status, 503);
         assert.ok(!(await res.text()).includes('postgresql'));
+        const tlsError = Object.assign(new Error("private-certificate-details"), {code:"SELF_SIGNED_CERT_IN_CHAIN"});
+        const tls = createAuthHandlers({config:()=>config,service:async()=>{throw tlsError;}});
+        const tlsResponse = await tls.session(new Request(config.appUrl+"/api/auth/session",{headers:{cookie:"__Host-sim_guru_session="+randomBytes(32).toString("base64url")}}));
+        assert.equal(tlsResponse.status,503);
+        assert.ok(!(await tlsResponse.text()).includes("private-certificate-details"));
+
     });
     await t.test("AU13 sesi anonim tidak membuka database, dan error internal tidak bocor", async () => {
         const offline = createAuthHandlers({config:()=>config, service:async()=>{throw new Error("private-stack-secret");}});
