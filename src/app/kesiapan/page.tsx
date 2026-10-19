@@ -11,7 +11,7 @@ export default function ReadinessPage() {
     <Workspace>
       <header className="mb-8 space-y-3">
         <p className="text-xs font-semibold tracking-widest uppercase text-primary">
-          Catatan rilis · Tahap 2.1
+          Catatan rilis · Tahap 2.2
         </p>
         <h1 className="text-3xl font-bold tracking-tight">
           Status pengembangan

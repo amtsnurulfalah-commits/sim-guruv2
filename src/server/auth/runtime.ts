@@ -5,7 +5,7 @@ import type {
   SqlExecutor,
   SqlParameter,
 } from "../../../scripts/lib/sql-database";
-import { getAuthClient } from "../db/client";
+import { getAuthClient, getBusinessClient } from "../db/client";
 import { requireEnvironment } from "../env";
 import { getPasswordService } from "./passwords";
 import { LocalAuthService } from "./service";
@@ -23,8 +23,7 @@ function executor(sql: postgres.Sql | postgres.TransactionSql): SqlExecutor {
     },
   };
 }
-export function getAuthDatabase(): SqlDatabase {
-  const client = getAuthClient();
+function databaseFromClient(client: postgres.Sql): SqlDatabase {
   const database: SqlDatabase = {
     ...executor(client),
     transaction: async <T>(work: (tx: SqlExecutor) => Promise<T>) => {
@@ -38,6 +37,12 @@ export function getAuthDatabase(): SqlDatabase {
     close: async () => {},
   };
   return database;
+}
+export function getAuthDatabase() {
+  return databaseFromClient(getAuthClient());
+}
+export function getBusinessDatabase() {
+  return databaseFromClient(getBusinessClient());
 }
 export async function getAuthService() {
   return new LocalAuthService(

@@ -39,3 +39,7 @@ Migrasi account_lifecycle sudah diterapkan; ledger6 migrasi dan security advisor
 ## Pembaruan Tahap 2.1
 
 Migrasi user_management telah diterapkan dan ledger berisi7 migrasi. Entry point manajemen pengguna hanya diberikan kepada role auth, helper tetap privat. Probe native rollback dan security advisor lolos, akun aplikasi tetap0. API/UI admin tersedia setelah deployment source tahap2.1; lihat Pengguna_Tahap_2_1.md dan ../verification/Tahap_2_1.md. Email provider/sender/worker dan admin bootstrap tetap belum diprovision.
+
+## Pembaruan Tahap 2.2
+
+Migrasi academic_masters telah diterapkan, ledger8 migrasi dan19 tabel domain memakai ENABLE/FORCE RLS. Role business hanya memperoleh entry point master, tanpa DML tabel/helper/hash. Security advisor tanpa temuan; native probe di-rollback tanpa menyisakan data sekolah/tarif contoh. Admin bootstrap telah dibuat sebelumnya; migrasi tidak mengubahnya. Onboarding dan email nyata tetap menunggu konfigurasi layanan email. Cakupan dan batas: Master_Tahap_2_2.md serta ../verification/Tahap_2_2.md.

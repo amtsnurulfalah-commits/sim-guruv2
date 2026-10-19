@@ -74,6 +74,8 @@ export const modules: readonly AppModule[] = [
   },
   {
     slug: "master",
+    href: "/admin/master",
+    available: true,
     title: "Data master",
     description: "Tahun pelajaran, semester, mata pelajaran dan kelas.",
     group: "Administrasi",

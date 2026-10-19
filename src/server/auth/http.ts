@@ -23,6 +23,14 @@ type Dependencies = {
   service: () => Promise<LocalAuthService>;
 };
 const messages: Record<string, string> = {
+  MASTER_INVALID: "Data master tidak sesuai aturan atau relasi yang dipilih.",
+  MASTER_OVERLAP:
+    "Rentang tanggal bertumpang tindih dengan data yang sudah ada.",
+  MASTER_REFERENCED:
+    "Data masih dirujuk. Periksa relasi sebelum mengubah atau mengarsipkan.",
+  MASTER_IMMUTABLE:
+    "Tarif dan tunjangan disimpan sebagai versi tetap. Buat rentang baru; pembatalan hanya untuk rentang mendatang.",
+  MASTER_PAST: "Tarif dan tunjangan baru tidak boleh berlaku surut.",
   LAST_ACTIVE_ADMIN:
     "Harus tetap ada administrator aktif yang sudah menyelesaikan pengamanan akun.",
   VERIFIED_EMAIL_IMMUTABLE:
@@ -94,34 +102,52 @@ export async function handleAuthRequest(
       ].includes(code) ||
       code.startsWith("08");
     const dbMessage = error instanceof Error ? error.message : "";
-    const mapped = [
-      "UNAUTHENTICATED",
-      "ONBOARDING_REQUIRED",
-      "FORBIDDEN",
-      "MAINTENANCE",
-      "LAST_ACTIVE_ADMIN",
-      "VERIFIED_EMAIL_IMMUTABLE",
-      "ARCHIVED_READ_ONLY",
-      "INVALID_STATUS_TRANSITION",
-      "RECOVERY_REQUEST_INVALID",
-      "ACTIVATION_NOT_ALLOWED",
-      "NOT_FOUND",
+    const masterCode = [
+      "MASTER_INVALID",
+      "MASTER_OVERLAP",
+      "MASTER_REFERENCED",
+      "MASTER_IMMUTABLE",
+      "MASTER_PAST",
     ].includes(dbMessage)
-      ? new AuthError(
-          dbMessage,
-          dbMessage === "NOT_FOUND"
-            ? 404
-            : dbMessage === "INVALID_STATUS_TRANSITION"
-              ? 422
-              : dbMessage === "UNAUTHENTICATED"
-                ? 401
-                : dbMessage === "MAINTENANCE"
-                  ? 503
-                  : 403,
-        )
-      : code === "23505" || dbMessage === "VERSION_CONFLICT"
-        ? new AuthError("CONFLICT", 409)
+      ? dbMessage
+      : ["23503", "23514", "23502", "22007", "22008", "22P02"].includes(code)
+        ? "MASTER_INVALID"
         : null;
+    const mapped = masterCode
+      ? new AuthError(
+          masterCode,
+          masterCode === "MASTER_OVERLAP" || masterCode === "MASTER_REFERENCED"
+            ? 409
+            : 422,
+        )
+      : [
+            "UNAUTHENTICATED",
+            "ONBOARDING_REQUIRED",
+            "FORBIDDEN",
+            "MAINTENANCE",
+            "LAST_ACTIVE_ADMIN",
+            "VERIFIED_EMAIL_IMMUTABLE",
+            "ARCHIVED_READ_ONLY",
+            "INVALID_STATUS_TRANSITION",
+            "RECOVERY_REQUEST_INVALID",
+            "ACTIVATION_NOT_ALLOWED",
+            "NOT_FOUND",
+          ].includes(dbMessage)
+        ? new AuthError(
+            dbMessage,
+            dbMessage === "NOT_FOUND"
+              ? 404
+              : dbMessage === "INVALID_STATUS_TRANSITION"
+                ? 422
+                : dbMessage === "UNAUTHENTICATED"
+                  ? 401
+                  : dbMessage === "MAINTENANCE"
+                    ? 503
+                    : 403,
+          )
+        : code === "23505" || dbMessage === "VERSION_CONFLICT"
+          ? new AuthError("CONFLICT", 409)
+          : null;
     const auth =
       error instanceof AuthError
         ? error

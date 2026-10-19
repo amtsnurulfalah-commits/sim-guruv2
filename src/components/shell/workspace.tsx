@@ -225,7 +225,7 @@ export function Workspace({
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden rounded-full border bg-muted px-3 py-1 text-xs sm:inline">
-              Tahap 2.1
+              Tahap 2.2
             </span>
             {onLogout ? (
               <Button variant="outline" onClick={onLogout}>

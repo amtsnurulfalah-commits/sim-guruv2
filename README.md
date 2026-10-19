@@ -1,6 +1,6 @@
 # SiM-Guru — Pembangunan Ulang
 
-Tahap saat ini **2.1: manajemen pengguna**. Stack: Next.js App Router, TypeScript strict, Tailwind CSS, shadcn/ui source components, Zod, Postgres.js dan Argon2id. Vercel untuk hosting; Supabase PostgreSQL/Storage untuk data. Autentikasi dikelola SiM-Guru sendiri, tanpa Central SSO dan tanpa Supabase Auth.
+Tahap saat ini **2.2: master sekolah dan akademik**. Stack: Next.js App Router, TypeScript strict, Tailwind CSS, shadcn/ui source components, Zod, Postgres.js dan Argon2id. Vercel untuk hosting; Supabase PostgreSQL/Storage untuk data. Autentikasi dikelola SiM-Guru sendiri, tanpa Central SSO dan tanpa Supabase Auth.
 
 ## Menjalankan
 
@@ -24,7 +24,7 @@ npm run env:check -- core
 npm run env:check -- all
 ```
 
-`check` mencakup lint, typecheck, unit, crypto, integrasi SQL/HTTP handler dan build. `db:migrate` tanpa --apply hanya menampilkan rencana. `env:check -- all` sengaja gagal sampai layanan opsional yang terkait tahap berikutnya juga diisi. Detail hasil dan batas pengujian: [Tahap 2.1](docs/verification/Tahap_2_1.md).
+`check` mencakup lint, typecheck, unit, crypto, integrasi SQL/HTTP handler dan build. `db:migrate` tanpa --apply hanya menampilkan rencana. `env:check -- all` sengaja gagal sampai layanan opsional yang terkait tahap berikutnya juga diisi. Detail hasil dan batas pengujian: [Tahap 2.2](docs/verification/Tahap_2_2.md).
 
 ## Konfigurasi
 
@@ -36,13 +36,14 @@ Cookie sesi HttpOnly, Secure production, SameSite=Lax; tidak ada token/role pada
 
 ## Database dan deployment
 
-Tujuh migrasi domain tercatat dengan checksum pada ledger aplikasi. CLI apply memakai MIGRATION_DATABASE_URL terpisah, flag --apply dan --allow-remote untuk target remote. Bootstrap admin memakai koneksi operator tersendiri dan input password tersembunyi; tidak ada akun/password default atau seed finansial dummy.
+Delapan migrasi domain tercatat dengan checksum pada ledger aplikasi. CLI apply memakai MIGRATION_DATABASE_URL terpisah, flag --apply dan --allow-remote untuk target remote. Bootstrap admin memakai koneksi operator tersendiri dan input password tersembunyi; tidak ada akun/password default atau seed finansial dummy.
 
-Proyek Supabase dan Vercel telah dibuat. Tujuh migrasi SQL remote sudah diterapkan. Koneksi Vercel→Transaction pooler terverifikasi dengan dua LOGIN terpisah dan verifikasi sertifikat TLS. Bukti runtime dan batas penerimaan ada di docs/verification/Pooler_Production.md. Onboarding, profil, OTP dan pemulihan tersedia pada Tahap1.5; pengiriman nyata menunggu provider email terkonfigurasi. Detail operasional:
+Proyek Supabase dan Vercel telah dibuat. Delapan migrasi SQL remote sudah diterapkan. Koneksi Vercel→Transaction pooler terverifikasi dengan dua LOGIN terpisah dan verifikasi sertifikat TLS. Bukti runtime dan batas penerimaan ada di docs/verification/Pooler_Production.md. Onboarding, profil, OTP dan pemulihan tersedia pada Tahap1.5; pengiriman nyata menunggu provider email terkonfigurasi. Detail operasional:
 
 - [Deployment Vercel/Supabase](docs/operations/Deployment_Vercel_Supabase.md)
 - [Login, sesi, CSRF, rate limit dan logout](docs/operations/Auth_Tahap_1_4.md)
 - [Kerangka UI dan dashboard](docs/operations/UI_Tahap_1_6.md)
+- [Master sekolah dan akademik](docs/operations/Master_Tahap_2_2.md)
 - [Manajemen pengguna](docs/operations/Pengguna_Tahap_2_1.md)
 - [Bootstrap operator](docs/operations/Bootstrap_Tahap_1_3.md)
 - [Fondasi database](docs/operations/Database_Tahap_1_2.md)
@@ -51,6 +52,6 @@ Vercel memakai root proyek ini, Next.js, Node24, install npm ci, build npm run b
 
 ## Cakupan dan langkah berikutnya
 
-Tersedia: fondasi aplikasi, migrasi identitas/privilege/RLS, Argon2id, CLI bootstrap, aktivasi internal/encrypted outbox, login/session/logout HTTP dan status onboarding. Tahap1.5 menambahkan profil, ganti password, onboarding, OTP, pemulihan email/admin dan worker outbox minimum; lihat docs/operations/Akun_Tahap_1_5.md. Pengiriman email produksi masih menunggu provider dan sender terverifikasi. Tahap1.6 menambahkan shell responsif, sidebar, dashboard sesuai peran dan halaman status modul. Tahap2.1 menambahkan manajemen pengguna admin, pencarian/filter/pagination, profil/peran/status, aktivasi dan keputusan pemulihan; lihat docs/operations/Pengguna_Tahap_2_1.md. Belum tersedia: ringkasan kegiatan/keuangan dan modul bisnis lainnya, CRUD master lainnya, kegiatan/jurnal/BAP/ledger/honor, serta integrasi Storage/jobs lengkap.
+Tersedia: fondasi aplikasi, migrasi identitas/privilege/RLS, Argon2id, CLI bootstrap, aktivasi internal/encrypted outbox, login/session/logout HTTP dan status onboarding. Tahap1.5 menambahkan profil, ganti password, onboarding, OTP, pemulihan email/admin dan worker outbox minimum; lihat docs/operations/Akun_Tahap_1_5.md. Pengiriman email produksi masih menunggu provider dan sender terverifikasi. Tahap1.6 menambahkan shell responsif, sidebar, dashboard sesuai peran dan halaman status modul. Tahap2.1 menambahkan manajemen pengguna admin, pencarian/filter/pagination, profil/peran/status, aktivasi dan keputusan pemulihan; lihat docs/operations/Pengguna_Tahap_2_1.md. Tahap2.2 menambahkan identitas sekolah, tahun/semester, kelas/standar siswa, mata pelajaran serta versi tarif/tunjangan. Belum tersedia: kalender/DayContext (Tahap2.3), ringkasan kegiatan/keuangan dan modul bisnis lainnya, kegiatan/jurnal/BAP/ledger/honor, serta integrasi Storage/jobs lengkap.
 
 Acuan desain ada di docs/reference; kemajuan aktual di docs/parity/IMPLEMENTATION_STATUS.md. `npm run test:db` memakai PGlite in-memory. `npm run test:db:native` khusus database lokal disposable kosong berakhiran _test; tidak dijalankan otomatis terhadap proyek produksi. Pengujian MCP remote tidak menggantikan uji TCP/pooler dan browser produksi.

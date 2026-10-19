@@ -63,9 +63,9 @@ export async function runDatabaseSuite(t: TestContext, db: SqlDatabase) {
     const result=await db.query<{ rolname:string; unsafe:boolean }>("select rolname,(rolcanlogin or rolsuper or rolbypassrls or rolcreatedb or rolcreaterole or pg_has_role(rolname,'sim_guru_owner','MEMBER')) as unsafe from pg_roles where rolname in ('sim_guru_business','sim_guru_auth','sim_guru_worker','sim_guru_bootstrap')");
     assert.equal(result.rows.length,4);assert.equal(result.rows.some(({unsafe})=>unsafe),false);
   });
-  await t.test("DB03 seluruh tabel identitas mempunyai ENABLE+FORCE RLS",async () => {
+  await t.test("DB03 seluruh tabel domain mempunyai ENABLE+FORCE RLS",async () => {
     const result=await db.query<{ relrowsecurity:boolean; relforcerowsecurity:boolean }>("select c.relrowsecurity,c.relforcerowsecurity from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('app','auth_private','ops') and c.relkind='r'");
-    assert.equal(result.rows.length,11);assert.equal(result.rows.every((r)=>r.relrowsecurity&&r.relforcerowsecurity),true);
+    assert.equal(result.rows.length,19);assert.equal(result.rows.every((r)=>r.relrowsecurity&&r.relforcerowsecurity),true);
   });
   await t.test("DB04 tanpa context atau UUID actor palsu menghasilkan nol profil",async () => {
     const noContext=await asRole("business",null,(tx)=>tx.query("select id from app.app_users"));assert.equal(noContext.rows.length,0);
