@@ -3,11 +3,13 @@ import { getAuthClient, getBusinessClient, closeDatabaseClients } from "../src/s
 import { getAuthService } from "../src/server/auth/runtime";
 import { getPasswordService } from "../src/server/auth/passwords";
 
+let probeStage = "configuration";
 async function main() {
   if (process.env.NODE_ENV !== "production") throw new Error("PRODUCTION_ENV_REQUIRED");
   const checks: string[] = [];
   const targets = [[getBusinessClient(), "sim_guru_business_login", "sim_guru_business"], [getAuthClient(), "sim_guru_auth_login", "sim_guru_auth"]] as const;
   for (const [sql, login, group] of targets) {
+    probeStage = login;
     const rows = await sql<{ username: string; correct_group: boolean; owner: boolean; superuser: boolean; bypass: boolean; credentials: boolean; tls: boolean }[]>`
       select current_user::text as username,
       pg_has_role(current_user,${group},'MEMBER') as correct_group,
@@ -20,12 +22,15 @@ async function main() {
     if (!row || row.username !== login || !row.correct_group || row.owner || row.superuser || row.bypass || row.credentials) throw new Error("RUNTIME_PRIVILEGES_OR_TLS_INVALID");
     checks.push(login + ": SSL client wajib, privilege minimum; TLS backend pooler=" + String(row.tls));
   }
+  probeStage = "business-rls";
   const businessRows = await getBusinessClient()`select id from app.app_users limit 1`;
   if (businessRows.length !== 0) throw new Error("ANONYMOUS_BUSINESS_RLS_FAILED");
   checks.push("RLS bisnis menolak akses tanpa bukti sesi");
+  probeStage = "auth-session";
   const missing = await (await getAuthService()).session(randomBytes(32).toString("base64url"));
   if (missing !== null) throw new Error("UNKNOWN_SESSION_ACCEPTED");
   checks.push("Adapter auth dan session_snapshot menolak token acak");
+  probeStage = "rollback";
   const marker = new Error("PROBE_ROLLBACK");
   try {
     await getAuthClient().begin(async tx => {
@@ -36,6 +41,7 @@ async function main() {
     });
   } catch (error) { if (error !== marker) throw error; }
   checks.push("Transaksi rate limit berhasil lalu rollback");
+  probeStage = "argon2";
   const passwords = await getPasswordService();
   const synthetic = "Synthetic9!" + randomBytes(24).toString("base64url");
   const hash = await passwords.hashNew(synthetic, { username: "probe.runtime", fullName: "Probe Runtime" });
@@ -45,6 +51,7 @@ async function main() {
 }
 main().catch((error: unknown) => {
   const code = error instanceof Error && /^[A-Z_]{1,50}$/u.test(error.message) ? error.message : "RUNTIME_DATABASE_PROBE_FAILED";
-  console.error(JSON.stringify({ ok: false, code }));
+  const backendCode = typeof error === "object" && error !== null && "code" in error && /^[A-Z0-9_]{1,50}$/u.test(String(error.code)) ? String(error.code) : "UNKNOWN";
+  console.error(JSON.stringify({ ok: false, code, stage: probeStage, backendCode }));
   process.exitCode = 1;
 }).finally(() => closeDatabaseClients());
