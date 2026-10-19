@@ -16,6 +16,6 @@ Migrasi 005 diterapkan pada Supabase dan ledger/checksum diverifikasi: lima migr
 
 ## Batas penerimaan
 
-Tidak ada akun produksi atau sesi bisnis nyata yang dibuat. Upaya menyiapkan Chromium headless gagal karena unduhan arsip tidak valid, sehingga browser interaktif, fokus modal/keyboard/mobile, BroadcastChannel antar-tab nyata, race koneksi PostgreSQL native, dan alur Vercel→pooler→data masih perlu acceptance ketika host pooler tersedia. Kehadiran komponen UI dan tes handler tidak disamakan dengan bukti browser tersebut. Route produksi kini memuat paket native Argon2; verifikasi deployment memastikan endpoint dapat dimuat, tetapi benchmark hash di fungsi Vercel tetap belum dilakukan.
+Tidak ada akun produksi atau sesi bisnis nyata yang dibuat. Upaya menyiapkan Chromium headless gagal karena unduhan arsip tidak valid, sehingga browser interaktif, fokus modal/keyboard/mobile, BroadcastChannel antar-tab nyata dan race koneksi PostgreSQL native masih perlu acceptance. Alur Vercel→pooler→data kini diverifikasi terpisah pada Pooler_Production.md. Kehadiran komponen UI dan tes handler tidak disamakan dengan bukti browser tersebut. Route produksi kini memuat paket native Argon2; verifikasi deployment memastikan endpoint dapat dimuat, tetapi benchmark hash di fungsi Vercel tetap belum dilakukan.
 
-Tahap 1.5 berikutnya: onboarding lengkap dan pemulihan akun. Kesiapan produksi login tetap bergantung pada koneksi database runtime, bukan sekadar deployment halaman.
+Tahap 1.5 berikutnya: onboarding lengkap dan pemulihan akun. Koneksi database runtime telah diverifikasi; onboarding akun produksi dan acceptance browser tetap diperlukan.

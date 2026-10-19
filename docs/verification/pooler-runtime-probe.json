@@ -1,0 +1,18 @@
+{
+  "kind": "Vercel build environment database probe",
+  "ok": true,
+  "checks": [
+    "sim_guru_business_login: SSL client wajib, privilege minimum; TLS backend pooler=false",
+    "sim_guru_auth_login: SSL client wajib, privilege minimum; TLS backend pooler=false",
+    "RLS bisnis menolak akses tanpa bukti sesi",
+    "Adapter auth dan session_snapshot menolak token acak",
+    "Transaksi rate limit berhasil lalu rollback",
+    "Argon2id native hash dan verify"
+  ],
+  "createsAppUser": false,
+  "deploymentId": "dpl_GY7jrGz3ABfZo4J5pqwqUcGThovS",
+  "commit": "036689ded7f4d23f00af998af9535725756b0357",
+  "appToPoolerTlsVerification": true,
+  "backendTls": false,
+  "rlsEmptyResultIsNotPopulatedIsolationProof": true
+}

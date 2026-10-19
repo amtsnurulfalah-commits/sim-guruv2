@@ -1,0 +1,19 @@
+{
+  "kind": "HTTPS production auth smoke, bukan browser interaktif",
+  "verifiedAt": "2026-10-19T12:49:45.853867+07:00",
+  "baseUrl": "https://sim-guruv2.vercel.app",
+  "ok": true,
+  "checks": [
+    "Health HTTPS200 fase1.4",
+    "CSRF production200 dan cookie Secure/HttpOnly",
+    "Origin asing ditolak403",
+    "Username acak ditolak401 melalui fungsi Vercel dan database auth",
+    "Login gagal tidak menerbitkan cookie sesi",
+    "Sesi anonim ditolak401",
+    "Halaman login HTTPS200"
+  ],
+  "createsAppUser": false,
+  "createsSession": false,
+  "writesFailureAuditAndRateCounters": true,
+  "loginFailureRequestId": "d95752b8-e304-444d-8fbc-7285a7b806c9"
+}

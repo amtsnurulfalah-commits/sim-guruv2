@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const metadata: Metadata = { title: "Status Pengembangan" };
 const items = [
   ["Fondasi proyek", "Struktur aplikasi dan komponen dasar tersedia pada tahap ini."],
-  ["Akun dan autentikasi", "Login, sesi dan logout internal tersedia. Onboarding lengkap dan pemulihan menyusul; koneksi runtime Supabase menunggu host pooler."],
-  ["Database dan hak akses", "Fondasi database tersedia di Supabase. Koneksi runtime Vercel dan penerimaan alur akun produksi belum selesai."],
+  ["Akun dan autentikasi", "Login, sesi dan logout internal tersedia. Onboarding admin dan pemulihan akun menyusul."],
+  ["Database dan hak akses", "Koneksi database dan pemisahan hak akses sudah diverifikasi. Penerimaan alur akun lengkap menyusul setelah onboarding tersedia."],
   ["Kegiatan dan honorarium", "Belum tersedia. Seluruh pencatatan bisnis menunggu modul terkait selesai."],
   ["Pengiriman email", "Belum diaktifkan. Tidak ada pesan yang dikirim dari halaman ini."],
 ];

@@ -10,6 +10,6 @@
 | F04–F19 fitur bisnis | Belum dibuat | Schema finance kosong; tidak menyajikan transaksi dummy |
 | F20 otomasi/UX | Dikerjakan | Shell/feedback dasar; email/job/export belum dibuat |
 | X01 fondasi lintas domain | Dikerjakan | Metadata migrasi, settings table dan audit dasar; master akademik belum dibuat |
-| Native PostgreSQL/Supabase | Fondasi remote terpasang | Migrasi dan privilege diverifikasi melalui MCP; koneksi TCP/pooler dan REST acceptance belum selesai |
+| Native PostgreSQL/Supabase | Fondasi remote terpasang | Lima migrasi dan privilege diverifikasi; dua LOGIN melalui pooler Vercel teruji dengan TLS, adapter auth, rollback dan Argon2id; REST acceptance dan browser interaktif masih tertunda |
 
 Matriks Tahap0.1 dalam docs/reference tetap snapshot perencanaan; status saat ini dicatat di sini. Hasil DB belum berarti T01–T50 lulus end-to-end. Tahap1.3 selesai lokal: 7 tes crypto dan10 skenario akun; lihat docs/verification/Tahap_1_3.md. Tahap1.4: 13 skenario AU dan12 pemeriksaan HTTP; lihat docs/verification/Tahap_1_4.md. Tahap1.5 berikutnya: onboarding lengkap dan pemulihan akun.
