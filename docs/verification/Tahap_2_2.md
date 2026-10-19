@@ -19,3 +19,7 @@ Probe native PostgreSQL17.11 melalui MCP memakai owner internal (MCP tidak mempu
 Admin bootstrap sudah dibuat sebelum tahap ini. Tidak ada perubahan password/identitas admin oleh migrasi. Verifikasi email/onboarding lengkap dan pengiriman inbox nyata tetap menunggu provider/sender/worker terkonfigurasi. CRUD master melalui browser dengan admin business nyata, tampilan mobile/keyboard/fokus dan race native multikoneksi belum menjadi bukti pada tahap ini. Tidak menonaktifkan gate onboarding untuk pengujian. Kalender/DayContext adalah Tahap2.3; kalkulasi dan snapshot honor final menyusul.
 
 Pemeriksaan HTTPS produksi dan status deployment/CI dicatat setelah source disinkronkan. Health adalah liveness, bukan bukti CRUD penuh.
+
+Source commit `54b2d9a150aac632733cf143227a1a8209b190ac` berada di main GitHub. GitHub Actions run39244650485 berstatus success, termasuk clean CI build. Vercel production `dpl_BUbcNpPfnAWbnKVV4FhBdd36KhtY` READY, region sin1, alias canonical https://sim-guruv2.vercel.app. Ringkasan mesin: stage-2.2-results.json.
+
+Smoke HTTPS canonical:16 pemeriksaan lolos (health phase2.2, status modul,7 API master anonim401/no-store, history401,3 mutasi tanpa sesi/CSRF403, cross-origin403 dan2 halaman admin/modul mengarahkan ke login tanpa editor privat). Bukti: stage-2.2-production-smoke.json. Tidak menggunakan credential admin atau mengubah data master produksi.

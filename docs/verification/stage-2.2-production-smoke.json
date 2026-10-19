@@ -1,0 +1,26 @@
+{
+  "verifiedAt": "2026-10-19T11:28:47.398635+00:00",
+  "baseUrl": "https://sim-guruv2.vercel.app",
+  "ok": true,
+  "checks": [
+    "Health HTTPS phase2.2",
+    "Public master module availability200",
+    "school anonymous401 no-store",
+    "academic-periods anonymous401 no-store",
+    "classes anonymous401 no-store",
+    "academic-years anonymous401 no-store",
+    "allowances anonymous401 no-store",
+    "subjects anonymous401 no-store",
+    "rates anonymous401 no-store",
+    "History anonymous401",
+    "POST without session CSRF403",
+    "PATCH without session CSRF403",
+    "DELETE without session CSRF403",
+    "Cross-origin403",
+    "/admin/master anonymous login redirect",
+    "/modul/master anonymous login redirect"
+  ],
+  "changesMasterData": false,
+  "usesAdminCredentials": false,
+  "authenticatedBrowserCRUD": false
+}
