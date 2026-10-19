@@ -24,5 +24,14 @@
     "providerAdapter": "resend",
     "workerLoginProvisioned": false
   },
-  "browserAuthenticatedLifecycle": "not verified"
+  "browserAuthenticatedLifecycle": "not verified",
+  "production": {
+    "implementationCommit": "c2d5458962b6f40eb9f6727bc53090c5057173cd",
+    "deploymentId": "dpl_8PxPYPuj7xLEWzDfG99TvL9eoZhX",
+    "deploymentState": "READY",
+    "ci": "success",
+    "httpsChecksPassed": 12,
+    "runtimeErrorScan10m": "no errors in selected new routes",
+    "browserRecoveryPage": "rendered; no application console error"
+  }
 }

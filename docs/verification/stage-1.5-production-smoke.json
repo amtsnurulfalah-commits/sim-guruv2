@@ -1,0 +1,24 @@
+{
+  "verifiedAt": "2026-10-19T13:18:46.862379+07:00",
+  "baseUrl": "https://sim-guruv2.vercel.app",
+  "ok": true,
+  "checks": [
+    "Health phase1.5 HTTPS200",
+    "/login HTTPS200",
+    "/lupa-password HTTPS200",
+    "/aktivasi HTTPS200",
+    "CSRF cookie Secure",
+    "Foreign Origin403",
+    "Unknown username generic recovery200 through database",
+    "Unknown OTP challenge422",
+    "Anonymous profile401",
+    "Anonymous admin recovery401",
+    "Forged reset capability422",
+    "Activation GET405, cannot consume link via GET"
+  ],
+  "createsAppUser": false,
+  "createsSession": false,
+  "sendsEmail": false,
+  "writesRateCounters": true,
+  "browserInteractive": false
+}

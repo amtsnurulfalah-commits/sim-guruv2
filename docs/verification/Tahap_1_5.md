@@ -23,3 +23,9 @@ Probe native SQL melalui MCP dalam transaksi rollback menguji context sendiri, p
 Pengiriman ke inbox nyata, DNS/domain sender, API key provider, LOGIN worker produksi dan scheduler belum dikonfigurasi. Environment mail produksi belum tersedia. Tidak ada pesan nyata dikirim. Aktivasi/onboarding/reset sukses akun produksi belum dibuktikan karena belum ada akun dan layanan email; tidak ada flag verified palsu atau akun dummy permanen. Browser multitab, fokus/keyboard/mobile dan race native multi-koneksi masih acceptance lanjutan.
 
 Tahap2.1 adalah manajemen pengguna. Tahap7.3 melengkapi worker/scheduler dan notifikasi domain; worker security minimum tahap ini dapat dipanggil operator setelah provider siap.
+
+## Deployment dan HTTPS produksi
+
+Commit implementasi `c2d5458962b6f40eb9f6727bc53090c5057173cd`, deployment `dpl_8PxPYPuj7xLEWzDfG99TvL9eoZhX`: READY. Workflow Pemeriksaan fondasi: success. Dua belas pemeriksaan HTTPS lulus; hasil stage-1.5-production-smoke.json. Meliputi halaman/login/pemulihan/aktivasi, CSRF cookie Secure, Origin403, forgot generik melalui database, OTP/reset capability palsu422, profil/admin anonim401 dan aktivasi GET405. Tidak ada akun/sesi/email dibuat; hanya counter rate limit bertambah.
+
+Browser cloud memverifikasi rendering halaman pemulihan (form username, metode, jawaban dan keterangan) dan screenshot desktop. Console tidak menampilkan error aplikasi; ada satu pesan dari ekstensi browser, bukan origin aplikasi. Tidak mengetik password/OTP atau menjalankan alur akun nyata. Runtime error scan10menit pada rute baru: tidak ada error yang ditemukan. Ini bukan bukti tanpa error selamanya atau pengiriman email end-to-end.
