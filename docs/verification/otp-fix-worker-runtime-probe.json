@@ -1,0 +1,12 @@
+{
+  "kind": "security_mail_worker_probe",
+  "ok": true,
+  "identity": "sim_guru_worker_login",
+  "worker": true,
+  "owner": false,
+  "credentials": false,
+  "targeted_claim": true,
+  "tlsVerification": true,
+  "prepare": false,
+  "changesDomainData": false
+}

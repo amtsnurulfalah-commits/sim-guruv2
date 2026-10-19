@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "checks": [
+    "health200 phase2.4",
+    "prelogin csrf200 no-store",
+    "/api/auth/profile GET 401 no-store",
+    "/api/auth/change-password POST 403 no-store",
+    "/api/auth/email-request POST 403 no-store",
+    "/api/auth/email-verify POST 403 no-store",
+    "cross-origin csrf403",
+    "akun anonymous login redirect"
+  ],
+  "baseUrl": "https://sim-guruv2.vercel.app",
+  "verifiedAt": "2026-10-19T16:22:26.168879+00:00",
+  "usesUserCredentials": false,
+  "changesDomainData": false,
+  "sendsEmail": false,
+  "realInboxDeliveryVerified": false
+}

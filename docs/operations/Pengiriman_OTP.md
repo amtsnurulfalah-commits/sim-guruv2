@@ -23,6 +23,6 @@ Migrasi security_otp_dispatch menambah claim_security_otp(uuid), SECURITY DEFINE
 
 429/5xx/provider timeout menjadi retry_wait; penolakan permanen failed; hasil ambigu unknown dan tidak otomatis dianggap terkirim. Percobaan ulang terjadwal masih memakai operator `npm run mail:deliver`/scheduler operasional, bukan cron permenit yang mengharuskan perubahan paket Vercel. Pengguna dapat meminta kode baru setelah cooldown. Jalur ini memperbaiki verifikasi email pribadi; notifikasi aktivasi/password_changed dan OTP pemulihan publik tetap memakai outbox/operator pada cakupan sebelumnya.
 
-`npm run db:verify-mail-worker` adalah probe operator read-only, dijalankan dengan environment production, memeriksa LOGIN, privilege dan TLS tanpa claim atau kirim email. Probe TCP dari scratch tertahan EAI_AGAIN; probe deployment khusus dapat dijalankan pada Vercel dengan perintah build override sementara, tanpa mengubah buildCommand proyek normal.
+`npm run db:verify-mail-worker` adalah probe operator read-only, dijalankan dengan environment production, memeriksa LOGIN, privilege dan TLS tanpa claim atau kirim email. Probe TCP dari scratch tertahan EAI_AGAIN; probe deployment khusus sudah lulus di Vercel dengan perintah build override sementara. Probe membuktikan koneksi pooler, identitas worker, TLS dan privilege tanpa mengambil pesan atau mengirim email; lihat ../verification/otp-fix-worker-runtime-probe.json.
 
 Pengiriman ke inbox nyata belum terbukti sebelum API key/sender aktif. Tidak ada OTP nyata dibaca atau dikirim manual dalam pengujian ini.
