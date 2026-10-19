@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "edfe488773b802e15be23f7f20dc320331c89456",
+  "deploymentId": "dpl_3NCkFCC1jnNrcT2mMNeBtJz1ajLY",
+  "deploymentState": "READY",
+  "productionUrl": "https://sim-guruv2.vercel.app",
+  "githubActionsRun": 39239340998,
+  "githubActionsConclusion": "success",
+  "localScenarios": 113,
+  "localRunnerTestsIncludingParents": 119,
+  "newUserManagementScenarios": 19,
+  "appliedMigrations": 7,
+  "forcedRlsTables": 11,
+  "hardenedUserFunctions": 11,
+  "securityAdvisorFindings": 0,
+  "nativeProbe": "owner internal, transaction rollback, all assertions passed",
+  "persistedAppUsers": 0,
+  "realEmailDeliveryVerified": false,
+  "authenticatedBrowserCRUDVerified": false,
+  "verifiedAt": "2026-10-19T10:44:10.837736+00:00",
+  "productionHttpsChecks": 14,
+  "productionHttpsConclusion": "success"
+}

@@ -1,0 +1,24 @@
+{
+  "verifiedAt": "2026-10-19T10:45:58.914869+00:00",
+  "baseUrl": "https://sim-guruv2.vercel.app",
+  "ok": true,
+  "checks": [
+    "Health HTTPS phase2.1",
+    "Public module availability200",
+    "/api/users anonymous401 no-store",
+    "/api/users/00000000-0000-4000-8000-000000000001 anonymous401 no-store",
+    "/api/users/reset-requests anonymous401 no-store",
+    "/api/users?role=admin&actorId=00000000-0000-4000-8000-000000000001 anonymous401 no-store",
+    "/api/users POST without session CSRF403",
+    "/api/users/00000000-0000-4000-8000-000000000001 PATCH without session CSRF403",
+    "/api/users/00000000-0000-4000-8000-000000000001 DELETE without session CSRF403",
+    "/api/users/reset-requests POST without session CSRF403",
+    "Cross-origin read403",
+    "/admin/pengguna anonymous login redirect",
+    "/modul/pengguna anonymous login redirect",
+    "/admin/pemulihan anonymous login redirect"
+  ],
+  "appUsersCreated": false,
+  "emailsSent": false,
+  "authenticatedBrowserCRUD": false
+}
