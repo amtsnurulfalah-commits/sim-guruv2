@@ -26,3 +26,7 @@ Belum ada koneksi runtime teruji, admin aplikasi, email terkirim atau login publ
 ## Bukti deployment
 
 Deployment `dpl_66j66Uh1XTjVzK1ig6T6NkFLteBK` dari commit `363a5f2` selesai. Pemeriksaan HTTP berautentikasi Vercel pada 19 Oktober 2026 WIB: beranda 200 berbahasa Indonesia; /api/health 200, phase 1.3, Cache-Control no-store, X-Content-Type-Options nosniff, X-Frame-Options DENY. Ini membuktikan aplikasi berjalan, bukan koneksi Supabase atau login pengguna. Paket native Argon2 belum diuji melalui route produksi karena route autentikasi belum dibuat. Audit dependency production lokal melaporkan 0 kerentanan; log install Vercel menandai 4 high pada dependency keseluruhan yang perlu ditinjau tersendiri.
+
+## Pembaruan Tahap 1.4
+
+Migrasi domain 005 auth_http telah diterapkan dan ledger aplikasi kini berisi lima migrasi. Rate limit, session snapshot dan guard maintenance diverifikasi pada PostgreSQL remote memakai probe yang di-rollback. Tidak ada akun atau counter uji yang tersisa. Login/session/logout HTTP dan halaman /login, /akun sudah diimplementasikan; koneksi runtime masih menunggu host Transaction pooler sehingga autentikasi production belum dapat diterima end-to-end. Rincian terdapat pada Auth_Tahap_1_4.md dan ../verification/Tahap_1_4.md.

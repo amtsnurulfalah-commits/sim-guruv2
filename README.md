@@ -1,10 +1,10 @@
 # SiM-Guru — Pembangunan Ulang
 
-Tahap saat ini **1.3: hash password, bootstrap dan aktivasi internal**, dengan pengujian SQL lokal PostgreSQL WASM. Stack: Next.js App Router, TypeScript strict, Tailwind CSS, shadcn/ui source components, Zod dan Postgres.js. Target hosting Vercel dengan Supabase PostgreSQL/Storage. Autentikasi internal akan dibuat pada tahap berikutnya; tanpa Central SSO dan tanpa Supabase Auth.
+Tahap saat ini **1.4: login, sesi dan logout lokal**. Stack: Next.js App Router, TypeScript strict, Tailwind CSS, shadcn/ui source components, Zod, Postgres.js dan Argon2id. Vercel untuk hosting; Supabase PostgreSQL/Storage untuk data. Autentikasi dikelola SiM-Guru sendiri, tanpa Central SSO dan tanpa Supabase Auth.
 
 ## Menjalankan
 
-Gunakan Node24 (lihat .nvmrc) dan npm11. Semua dependensi langsung dikunci versi exact; instalasi ulang memakai lockfile.
+Gunakan Node 24 dan npm 11. Dependensi langsung dikunci versi exact.
 
 ```bash
 npm ci
@@ -12,53 +12,43 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Buka http://localhost:3000. Halaman /kesiapan menjelaskan fitur yang belum tersedia. GET /api/health memeriksa liveness proses saja; tidak memeriksa database, email, akun atau kelayakan transaksi.
+Buka http://localhost:3000. `/login` menampilkan form, `/akun` memeriksa sesi dan status onboarding, `/kesiapan` menjelaskan cakupan fitur. GET `/api/health` hanya memeriksa liveness, bukan koneksi database atau kesiapan login. Tanpa secret/koneksi database yang lengkap, permintaan login ditolak dengan aman.
 
 ## Pemeriksaan
 
 ```bash
-npm run lint
-npm run typecheck
-npm test
-npm run test:db
-npm run build
+npm run check
+python3 docs/verification/http-smoke.py
 npm run db:migrate
 npm run env:check -- core
 npm run env:check -- all
 ```
 
-Opsional setelah build: `python3 docs/verification/http-smoke.py` untuk HTTP smoke dengan Python3 standar.
+`check` mencakup lint, typecheck, unit, crypto, integrasi SQL/HTTP handler dan build. `db:migrate` tanpa --apply hanya menampilkan rencana. `env:check -- all` sengaja gagal sampai layanan opsional yang terkait tahap berikutnya juga diisi. Detail hasil dan batas pengujian: [Tahap 1.4](docs/verification/Tahap_1_4.md).
 
-`all` sengaja keluar nonzero sampai konfigurasi layanan lengkap. Tidak mencetak nilai secret/URL. Core development memakai URL localhost dan timezone WIB; production wajib APP_URL HTTPS. Build halaman fondasi bisa berjalan tanpa database; kesiapan bisnis/auth tetap ditolak jika secret/URL hilang.
+## Konfigurasi
 
-## Konfigurasi dan provisioning
+Gunakan .env.example sebagai daftar nama variabel, bukan credential produksi. APP_URL harus canonical dan HTTPS di production; APP_TIMEZONE=Asia/Jakarta. DATABASE_URL dan AUTH_DATABASE_URL menuju proyek PostgreSQL yang sama dengan LOGIN berbeda, masing-masing hanya anggota role bisnis/auth; bukan owner atau postgres administratif. DB_POOL_MAX default 2 per pool/per instance, SSL production aktif, prepare:false untuk transaction pooling.
 
-.env.example berisi nama variabel saja. DATABASE_URL dan AUTH_DATABASE_URL harus ke PostgreSQL aplikasi yang sama dengan role berbeda, bukan owner. Supabase URL/password harus berasal dari proyek yang dipilih nanti; tidak ada proyek yang diprovision pada 1.1. Jangan gunakan URL contoh sebagai koneksi produksi. DB_POOL_MAX default2 per pool/per instance. SSL production true; tidak memakai rejectUnauthorized:false. prepare:false dipilih agar dapat diuji dengan transaction pooling.
+SESSION_SECRET, AUTH_CHALLENGE_HMAC_SECRET dan AUTH_OUTBOX_ENCRYPTION_KEY wajib berbeda; key enkripsi 32 byte hex (64 digit), secret lain minimal 32 karakter. Jangan memakai NEXT_PUBLIC_ untuk secret. Konfigurasi email/Storage/cron disiapkan pada tahap terkait.
 
-Adapter server-only berada di src/server/db. withBusinessTransaction memasang actor/session/request/sessionTokenHash melalui set_config(...,true) pada transaksi yang sama. Hanya boleh dipanggil setelah sesi terverifikasi; belum ada endpoint yang memakainya. RLS, GRANT dan routine identitas sudah diuji dengan engine PostgreSQL WASM pada1.2; native PostgreSQL, pool TCP dan Supabase nyata belum diuji. Token/hash/OTP/role tidak disimpan localStorage.
+Cookie sesi HttpOnly, Secure production, SameSite=Lax; tidak ada token/role pada localStorage. Setiap POST auth memakai Origin canonical dan CSRF. Sesi dibaca ulang dari database; scope onboarding tidak mendapat akses bisnis. Rate limit dipersistenkan di PostgreSQL. RLS memakai bukti sesi internal, bukan auth.uid().
 
-MAIL_PROVIDER/MAIL_API_KEY/MAIL_FROM, Supabase key, HMAC/encryption/session dan cron secret belum dipakai untuk layanan nyata. Schema hanya memeriksa kesiapan bentuk; provider/bucket/job dibuat pada tahap terkait. AUTH_OUTBOX_ENCRYPTION_KEY berupa 32 byte hex (64 digit); secret lain minimal32 karakter berbeda. Tidak menyimpan nilai nyata dalam dokumentasi/source.
+## Database dan deployment
 
-## Target Vercel
+Lima migrasi domain tercatat dengan checksum pada ledger aplikasi. CLI apply memakai MIGRATION_DATABASE_URL terpisah, flag --apply dan --allow-remote untuk target remote. Bootstrap admin memakai koneksi operator tersendiri dan input password tersembunyi; tidak ada akun/password default atau seed finansial dummy.
 
-Root Directory menunjuk folder proyek ini, Framework Preset Next.js, Node24, Install `npm ci`, Build `npm run build`. Sebelum menghubungkan produksi, jalankan seluruh check dan provisioning layanan sesuai tahap. Tidak ada vercel.json cron atau deployment ID rekaan; belum deploy pada 1.1. Jangan mengatur static export karena aplikasi target membutuhkan server transaction/auth.
+Proyek Supabase dan Vercel telah dibuat. Migrasi SQL remote sudah diterapkan, tetapi koneksi runtime Vercel→pooler masih menunggu host Transaction pooler. Health200 atau halaman login tidak berarti login produksi sudah siap. Detail operasional:
 
-## Cakupan
+- [Deployment Vercel/Supabase](docs/operations/Deployment_Vercel_Supabase.md)
+- [Login, sesi, CSRF, rate limit dan logout](docs/operations/Auth_Tahap_1_4.md)
+- [Bootstrap operator](docs/operations/Bootstrap_Tahap_1_3.md)
+- [Fondasi database](docs/operations/Database_Tahap_1_2.md)
 
-Tersedia: konfigurasi proyek, UI dasar berbahasa Indonesia, halaman status/404/loading/error, favicon, health liveness, schema environment, adapter koneksi/transaksi terpisah, Decimal domain dasar, tes validasi konfigurasi.
+Vercel memakai root proyek ini, Next.js, Node24, install npm ci, build npm run build, region fungsi sin1. Jangan mengaktifkan static export. Preview tidak mendapat credential database production.
 
-Tersedia pada1.2: tiga migrasi identitas, group role terpisah, RLS/GRANT, routine privat, runner checksum dan24 skenario SQL lokal.
+## Cakupan dan langkah berikutnya
 
-Belum tersedia: provisioning Supabase/native, login/aktivasi HTTP, command admin, CRUD master, kegiatan/jurnal/BAP/ledger/honor, email/Storage/jobs serta deployment. Tidak ada seed kredensial, data finansial dummy, maupun tombol login palsu.
+Tersedia: fondasi aplikasi, migrasi identitas/privilege/RLS, Argon2id, CLI bootstrap, aktivasi internal/encrypted outbox, login/session/logout HTTP dan status onboarding. Belum tersedia: onboarding lengkap/ganti password/OTP/recovery/email worker (Tahap 1.5), dashboard dan modul bisnis, CRUD master, kegiatan/jurnal/BAP/ledger/honor, serta integrasi Storage/jobs.
 
-Acuan versi dokumen dalam docs/reference; ADR teknis dalam docs/architecture. Periksa docs/verification/Tahap_1_2.md untuk hasil perintah yang benar-benar dijalankan dan batasnya.
-
-## Migrasi dan pengujian database
-
-`npm run db:migrate` hanya rencana tanpa koneksi. Apply memakai MIGRATION_DATABASE_URL terpisah dan flag --apply; remote perlu --allow-remote eksplisit. Migrasi tidak membuat LOGIN/password DB atau akun admin asli. Baca docs/operations/Database_Tahap_1_2.md sebelum provisioning.
-
-`npm run test:db` menjalankan PGlite in-memory tanpa Supabase. `npm run test:db:native` terpisah, memerlukan database lokal kosong berakhiran _test; ketiadaan URL adalah error, bukan skip. Test native tidak termasuk npm run check sampai target tersedia. RLS memakai bukti sesi internal, bukan auth.uid(). Business/auth group tidak memiliki SELECT tabel privat langsung.
-
-## Tahap 1.3
-
-Argon2id nyata, bootstrap operator terpisah, aktivasi sekali pakai dan encrypted outbox tersedia sebagai layanan internal. Login publik menyusul pada Tahap 1.4. Baca [prosedur operator](docs/operations/Bootstrap_Tahap_1_3.md) dan [hasil verifikasi](docs/verification/Tahap_1_3.md). Tidak ada akun atau email nyata yang dibuat otomatis.
+Acuan desain ada di docs/reference; kemajuan aktual di docs/parity/IMPLEMENTATION_STATUS.md. `npm run test:db` memakai PGlite in-memory. `npm run test:db:native` khusus database lokal disposable kosong berakhiran _test; tidak dijalankan otomatis terhadap proyek produksi. Pengujian MCP remote tidak menggantikan uji TCP/pooler dan browser produksi.

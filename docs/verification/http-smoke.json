@@ -1,14 +1,20 @@
 {
-  "kind": "HTTP smoke on next start production build",
+  "kind": "HTTP smoke against next start production build",
+  "phase": "1.4",
   "result": "passed",
   "checks": [
     "Beranda200, bahasa Indonesia, status fitur jujur",
-    "Header keamanan dasar pada halaman",
-    "Halaman kesiapan200",
-    "Halaman404 berbahasa Indonesia",
-    "Health liveness200, UUID requestId, no-store",
-    "Health tidak mengekspos URL/secret/hasil database",
-    "Login belum dibuat tidak menampilkan form palsu"
+    "Header keamanan dasar",
+    "Kesiapan200",
+    "404 Indonesia",
+    "Liveness200 no-store, phase1.4",
+    "Login200 form nyata dan password autocomplete",
+    "Akun anonim redirect login, termasuk streaming redirect Next.js",
+    "Prelogin CSRF dan secure cookie tanpa database",
+    "Origin jahat403",
+    "CSRF hilang403",
+    "Database belum ada fail closed503 tanpa rahasia",
+    "Logout GET ditolak405"
   ],
   "browser_qa": false,
   "database_integration": false

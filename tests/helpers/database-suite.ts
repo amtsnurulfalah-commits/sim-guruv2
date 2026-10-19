@@ -146,7 +146,7 @@ export async function runDatabaseSuite(t: TestContext, db: SqlDatabase) {
   });
   await t.test("DB17 checksum mismatch dan batch gagal tidak menambah ledger migrasi",async () => {
     await assert.rejects(()=>applyMigrations(db,migrations.map((m,i)=>i===0?{...m,checksum:'0'.repeat(64)}:m)),/MIGRATION_CHECKSUM_MISMATCH/);
-    await assert.rejects(()=>applyMigrations(db,[...migrations,{name:'202610190005_failure.sql',checksum:'f'.repeat(64),sql:"insert into app.system_settings(key,typed_value) values('rollback_probe','true'::jsonb); select missing_migration_function();"}]));
+    await assert.rejects(()=>applyMigrations(db,[...migrations,{name:'202610190006_failure.sql',checksum:'f'.repeat(64),sql:"insert into app.system_settings(key,typed_value) values('rollback_probe','true'::jsonb); select missing_migration_function();"}]));
     assert.equal((await db.query("select * from app.system_settings where key='rollback_probe'")).rows.length,0);
     assert.equal((await db.query("select * from sim_guru_migration.schema_migrations")).rows.length,migrations.length);
   });
