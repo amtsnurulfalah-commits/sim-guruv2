@@ -1,3 +1,4 @@
+import { sqlJson } from "../../../scripts/lib/sql-database";
 import "server-only";
 import { createHmac, randomBytes, randomUUID } from "node:crypto";
 import type {
@@ -97,7 +98,7 @@ export class AccountLifecycleService {
       void _;
       await tx.query(
         "select auth_private.lifecycle_mutate($1,'profile',$2::jsonb)",
-        [tokenHash(token), JSON.stringify(data)],
+        [tokenHash(token), sqlJson(data)],
       );
       return { saved: true };
     });
@@ -114,7 +115,7 @@ export class AccountLifecycleService {
         "select auth_private.lifecycle_mutate($1,'password',$2::jsonb)",
         [
           tokenHash(token),
-          JSON.stringify({
+          sqlJson({
             newHash: hash,
             oldHash: ctx.passwordHash,
             credentialVersion: ctx.credentialVersion,
@@ -133,10 +134,7 @@ export class AccountLifecycleService {
       const hash = await this.passwords.hashAnswer(v.answer);
       await tx.query(
         "select auth_private.lifecycle_mutate($1,'question',$2::jsonb)",
-        [
-          tokenHash(token),
-          JSON.stringify({ question: v.question, answerHash: hash }),
-        ],
+        [tokenHash(token), sqlJson({ question: v.question, answerHash: hash })],
       );
       return { saved: true };
     });

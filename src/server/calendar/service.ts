@@ -1,3 +1,4 @@
+import { sqlJson } from "../../../scripts/lib/sql-database";
 import "server-only";
 import type {
   SqlDatabase,
@@ -24,7 +25,7 @@ export class CalendarService {
   async list(token: string, input: unknown) {
     return this.query<CalendarList>(
       "select app.calendar_list($1,$2::jsonb) as value",
-      [tokenHash(token), JSON.stringify(calendarFilters.parse(input))],
+      [tokenHash(token), sqlJson(calendarFilters.parse(input))],
     );
   }
   async context(token: string, input: unknown) {
@@ -40,7 +41,7 @@ export class CalendarService {
     ).parse(input);
     return this.query<ChangePreview>(
       "select app.calendar_preview($1,$2,$3::jsonb) as value",
-      [tokenHash(token), kind, JSON.stringify(v)],
+      [tokenHash(token), kind, sqlJson(v)],
     );
   }
   async commit(

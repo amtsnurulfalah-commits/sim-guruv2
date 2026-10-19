@@ -4,7 +4,7 @@ import {
   ResendMailAdapter,
   SecurityOutboxWorker,
 } from "../src/server/mail/security-outbox";
-import type { SqlExecutor, SqlParameter } from "./lib/sql-database";
+import { postgresExecutor } from "./lib/postgres-executor";
 async function main() {
   const mail = requireEnvironment("mail"),
     auth = requireEnvironment("auth"),
@@ -28,15 +28,7 @@ async function main() {
     onnotice: () => {},
   });
   try {
-    const db: SqlExecutor = {
-      exec: async (sql) => {
-        await client.unsafe(sql).simple();
-      },
-      query: async <T extends Record<string, unknown>>(
-        sql: string,
-        args: readonly SqlParameter[] = [],
-      ) => ({ rows: [...(await client.unsafe<T[]>(sql, [...args]))] }),
-    };
+    const db = postgresExecutor(client);
     const worker = new SecurityOutboxWorker(
       db,
       new ResendMailAdapter(mail.MAIL_API_KEY, mail.MAIL_FROM),

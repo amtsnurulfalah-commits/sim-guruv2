@@ -1,3 +1,4 @@
+import { sqlJson } from "../../../scripts/lib/sql-database";
 import "server-only";
 import { randomBytes } from "node:crypto";
 import { z } from "zod";
@@ -98,7 +99,7 @@ export class UserService {
           "select auth_private.users_save($1,null,null,$2::jsonb,$3,$4) as value",
           [
             tokenHash(token),
-            JSON.stringify({
+            sqlJson({
               ...data,
               ...(temp ? { method: v.method, evidence: v.evidence } : {}),
             }),
@@ -134,7 +135,7 @@ export class UserService {
       const user = (
         await tx.query<{ value: UserDto }>(
           "select auth_private.users_save($1,$2,$3,$4::jsonb,null,$5) as value",
-          [tokenHash(token), id, v.version, JSON.stringify(data), v.reason],
+          [tokenHash(token), id, v.version, sqlJson(data), v.reason],
         )
       ).rows[0]!.value;
       if (user.status === "pending_activation") {

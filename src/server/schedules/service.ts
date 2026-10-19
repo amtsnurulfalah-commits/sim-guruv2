@@ -1,3 +1,4 @@
+import { sqlJson } from "../../../scripts/lib/sql-database";
 import "server-only";
 import { z } from "zod";
 import type {
@@ -28,7 +29,7 @@ export class ScheduleService {
   async list(token: string, input: unknown, mine = false) {
     return this.query<ScheduleList>(
       "select app.schedule_list($1,$2::jsonb,$3) as value",
-      [tokenHash(token), JSON.stringify(scheduleFilters.parse(input)), mine],
+      [tokenHash(token), sqlJson(scheduleFilters.parse(input)), mine],
     );
   }
   async save(token: string, id: string | undefined, input: unknown) {
@@ -42,7 +43,7 @@ export class ScheduleService {
       tokenHash(token),
       id ?? null,
       "version" in v ? (v.version as string) : null,
-      JSON.stringify(v.data),
+      sqlJson(v.data),
       v.reason,
     ]);
   }
@@ -75,7 +76,7 @@ export class ScheduleService {
       authorizesMutation: false;
     }>("select app.schedule_conflicts($1,$2::jsonb,$3) as value", [
       tokenHash(token),
-      JSON.stringify(v.data),
+      sqlJson(v.data),
       v.id ?? null,
     ]);
   }
@@ -86,7 +87,7 @@ export class ScheduleService {
       basis: string;
     }>("select app.schedule_recaps($1,$2::jsonb) as value", [
       tokenHash(token),
-      JSON.stringify(scheduleFilters.parse(input)),
+      sqlJson(scheduleFilters.parse(input)),
     ]);
   }
   async today(token: string, value: string) {
@@ -117,7 +118,7 @@ export class ScheduleService {
       }[];
     }>("select app.schedule_bulk_preview($1,$2::jsonb) as value", [
       tokenHash(token),
-      JSON.stringify(v),
+      sqlJson(v),
     ]);
   }
   async bulkCommit(token: string, input: unknown) {

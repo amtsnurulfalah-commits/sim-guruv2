@@ -1,29 +1,15 @@
 import "server-only";
+import { postgresExecutor as executor } from "../../../scripts/lib/postgres-executor";
 import type postgres from "postgres";
 import type {
   SqlDatabase,
   SqlExecutor,
-  SqlParameter,
 } from "../../../scripts/lib/sql-database";
 import { getAuthClient, getBusinessClient } from "../db/client";
 import { requireEnvironment } from "../env";
 import { getPasswordService } from "./passwords";
 import { LocalAuthService } from "./service";
-function executor(sql: postgres.Sql | postgres.TransactionSql): SqlExecutor {
-  return {
-    async exec(statement) {
-      await sql.unsafe(statement).simple();
-    },
-    async query<T extends Record<string, unknown>>(
-      statement: string,
-      parameters: readonly SqlParameter[] = [],
-    ) {
-      const rows = await sql.unsafe<T[]>(statement, [...parameters]);
-      return { rows: [...rows] };
-    },
-  };
-}
-function databaseFromClient(client: postgres.Sql): SqlDatabase {
+export function databaseFromClient(client: postgres.Sql): SqlDatabase {
   const database: SqlDatabase = {
     ...executor(client),
     transaction: async <T>(work: (tx: SqlExecutor) => Promise<T>) => {

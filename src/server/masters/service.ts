@@ -1,3 +1,4 @@
+import { sqlJson } from "../../../scripts/lib/sql-database";
 import "server-only";
 import { z } from "zod";
 import type {
@@ -40,7 +41,7 @@ export class MasterService {
     const value = (
       await this.query<{ value: MasterList }>(
         "select app.master_list($1,$2,$3::jsonb) as value",
-        [tokenHash(token), k, JSON.stringify(filter)],
+        [tokenHash(token), k, sqlJson(filter)],
       )
     ).rows[0]!.value;
     return { ...value, items: value.items.map(dto) };
@@ -67,7 +68,7 @@ export class MasterService {
             k,
             v.id ?? null,
             v.version,
-            mapped ? JSON.stringify(mapped) : null,
+            mapped ? sqlJson(mapped) : null,
             archive,
             v.reason,
           ],
