@@ -11,4 +11,6 @@ Implementasi: CRUD jadwal mingguan, filter guru/mapel/kelas/hari/tahun/semester 
 
 Batas: onboarding/email admin nyata belum lengkap; CRUD browser admin belum dibuktikan. Belum ada occurrence, konfirmasi, jurnal, substitusi, eligibility H-1, bonus libur atau posting honor. Bentrok mingguan ditolak secara konservatif meskipun KBM sementara nonaktif. Rekap berbasis baris jadwal, bukan realisasi presensi/honor. Rincian operasional: ../operations/Jadwal_Tahap_2_4.md.
 
-Bukti CI/deployment/HTTPS produksi dicatat setelah source dipush dalam stage-2.4-results.json dan stage-2.4-production-smoke.json.
+Source commit `8f7efcc99cb382dd036006fa3537c8be8c619907` dipush ke main. GitHub Actions39252448971 lulus seluruh npm run check pada source final. Deployment `dpl_DwnS4NWv1HLRpaRMLZLkY3zzCz3P` READY pada https://sim-guruv2.vercel.app. Bukti rinci: stage-2.4-results.json dan stage-2.4-production-smoke.json.
+
+Seluruh17 pemeriksaan HTTPS produksi lulus: health/kesiapan200, enam API anonim401 no-store, enam mutasi tanpa CSRF403, cross-origin403 dan dua halaman mengalihkan ke login. Tidak memakai credential admin dan tidak mengubah data domain.

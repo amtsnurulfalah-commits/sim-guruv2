@@ -1,0 +1,27 @@
+{
+  "verifiedAt": "2026-10-19T12:31:32.806921+00:00",
+  "baseUrl": "https://sim-guruv2.vercel.app",
+  "ok": true,
+  "checks": [
+    "Health phase2.4 HTTPS200",
+    "Public schedule availability200",
+    "/api/schedules/recaps anonymous401 no-store",
+    "/api/schedules anonymous401 no-store",
+    "/api/schedules/mine anonymous401 no-store",
+    "/api/schedules/today anonymous401 no-store",
+    "/api/schedules/00000000-0000-4000-8000-000000000001/history anonymous401 no-store",
+    "/api/dashboard anonymous401 no-store",
+    "/api/schedules/conflicts POST without CSRF403",
+    "/api/schedules POST without CSRF403",
+    "/api/schedules/bulk-delete POST without CSRF403",
+    "/api/schedules/bulk-delete/preview POST without CSRF403",
+    "/api/schedules/00000000-0000-4000-8000-000000000001 PATCH without CSRF403",
+    "/api/schedules/00000000-0000-4000-8000-000000000001 DELETE without CSRF403",
+    "Cross-origin schedule403",
+    "/jadwal anonymous login redirect",
+    "/modul/jadwal anonymous login redirect"
+  ],
+  "usesAdminCredentials": false,
+  "changesDomainData": false,
+  "authenticatedBrowserCRUD": false
+}
