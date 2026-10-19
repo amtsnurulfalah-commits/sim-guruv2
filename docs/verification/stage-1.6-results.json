@@ -1,0 +1,28 @@
+{
+  "verifiedAt": "2026-10-19T06:40:26.344463+00:00",
+  "implementationCommit": "e1337646aefe88f1ec9735bbae50c76ade234883",
+  "deploymentId": "dpl_AJGjKa3NsEGY4uArhVMnUFNRmF5Z",
+  "deploymentState": "READY",
+  "ci": "success",
+  "local": {
+    "substantiveScenarios": 94,
+    "unit": 11,
+    "crypto": 8,
+    "databaseRunnerTestsIncludingParents": 80,
+    "check": "passed"
+  },
+  "httpsChecksPassed": 10,
+  "browser": {
+    "page": "https://sim-guruv2.vercel.app/kesiapan",
+    "sidebarCollapse": true,
+    "persistAfterReload": true,
+    "expandRestored": true,
+    "applicationConsoleErrors": 0,
+    "authenticatedDashboardVerified": false,
+    "mobileDrawerVerified": false
+  },
+  "runtimeErrorsSelectedRoutes10m": 0,
+  "newMigrations": 0,
+  "createsProductionAccount": false,
+  "productionEmailConfigured": false
+}

@@ -17,3 +17,9 @@ Sesi/aktor tidak disimpan di localStorage; hanya preferensi sidebar. UI membaca 
 Akun produksi, bootstrap admin, provider email dan worker pengiriman masih belum disiapkan. Dashboard terautentikasi, modal logout di browser nyata, mobile keyboard/focus dan interaksi multitab masih memerlukan acceptance dengan akun sah. Pengujian handler dan review komponen tidak disamakan dengan bukti browser tersebut. Konfigurasi email tetap diperlukan untuk penerimaan penuh Tahap1.5.
 
 Tahap2.1 berikutnya: manajemen pengguna.
+
+## Produksi dan browser
+
+Commit implementasi `e1337646aefe88f1ec9735bbae50c76ade234883`, deployment `dpl_AJGjKa3NsEGY4uArhVMnUFNRmF5Z`: READY, CI Pemeriksaan fondasi success. Sepuluh pemeriksaan HTTPS lulus; lihat stage-1.6-production-smoke.json. Mencakup health1.6, status shell, form login, redirect anonim dashboard/akun/modul/admin, penolakan manipulasi role/actor dan Origin pada API. Tidak membuat akun, sesi atau perubahan data bisnis.
+
+Browser desktop memverifikasi /kesiapan, label sidebar, collapse, persistensi setelah reload, lalu expand kembali. Bukti screenshot: stage-1.6-desktop-1792391925623.jpg. Tidak ada error console dari aplikasi; pesan error yang teramati berasal dari ekstensi browser. Pemindaian runtime10menit pada rute baru tidak menemukan error; ini bukan jaminan tanpa error selamanya. Drawer mobile dan dashboard terautentikasi belum diuji di browser karena akun produksi belum dibuat.

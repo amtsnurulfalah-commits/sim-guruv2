@@ -1,0 +1,21 @@
+{
+  "verifiedAt": "2026-10-19T13:39:13.026504+07:00",
+  "baseUrl": "https://sim-guruv2.vercel.app",
+  "ok": true,
+  "checks": [
+    "Health phase1.6 HTTPS200",
+    "Public status shell200, accessible sidebar controls and module states",
+    "Login form200",
+    "/dashboard anonymous redirect, no protected dashboard body",
+    "/akun anonymous redirect, no protected dashboard body",
+    "/modul/jadwal anonymous redirect, no protected dashboard body",
+    "/modul/pengguna anonymous redirect, no protected dashboard body",
+    "/admin/pemulihan anonymous redirect, no protected dashboard body",
+    "Anonymous/forged role dashboard API401 no-store",
+    "Cross-origin dashboard API403"
+  ],
+  "createsAppUser": false,
+  "createsSession": false,
+  "writesBusinessData": false,
+  "browserInteractive": false
+}
