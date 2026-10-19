@@ -1,0 +1,28 @@
+{
+  "verifiedAt": "2026-10-19T06:15:12.437730+00:00",
+  "local": {
+    "check": "passed",
+    "unit": 10,
+    "crypto": 8,
+    "databaseScenarios": 24,
+    "accountScenarios": 10,
+    "authHttpScenarios": 13,
+    "lifecycleScenarios": 23,
+    "substantiveTotal": 88
+  },
+  "supabase": {
+    "migrationCount": 6,
+    "securityAdvisorFindings": 0,
+    "nativeSqlProbe": "passed using owner internal with rollback",
+    "appUsersAfterProbe": 0,
+    "authCanClaimOutbox": false,
+    "workerCanClaimOutbox": true
+  },
+  "productionEmail": {
+    "configured": false,
+    "sentRealEmail": false,
+    "providerAdapter": "resend",
+    "workerLoginProvisioned": false
+  },
+  "browserAuthenticatedLifecycle": "not verified"
+}

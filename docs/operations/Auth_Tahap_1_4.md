@@ -46,6 +46,6 @@ Lima migrasi domain sekarang harus tercatat pada ledger aplikasi. Migrasi 005 me
 
 Environment wajib: APP_URL HTTPS production, APP_TIMEZONE=Asia/Jakarta, DATABASE_URL dan AUTH_DATABASE_URL dengan LOGIN berbeda, DB_POOL_MAX=2, serta tiga secret auth terpisah. Pooler harus memakai prepare:false dan SSL; LOGIN aplikasi tidak boleh superuser/owner/bypassrls. Belum ada password default/admin nyata yang dibuat. Koneksi runtime production melalui Transaction pooler sudah terverifikasi; lihat ../verification/Pooler_Production.md. DB_SSL_CA memuat CA publik Supabase dan verifikasi sertifikat tetap aktif. Tanpa konfigurasi lengkap, login sah menolak dengan 503; health liveness tidak membuktikan database siap.
 
-Onboarding lengkap, ganti password, email OTP, pemulihan dan worker email diselesaikan pada Tahap 1.5. Akun bootstrap masih terbatas sampai lifecycle tersebut selesai. Jangan menghapus flag onboarding atau menulis email_verified_at untuk mengakali UI.
+Onboarding, ganti password, email OTP, pemulihan dan worker email minimum telah diimplementasikan pada Tahap 1.5; lihat Akun_Tahap_1_5.md. Pengiriman nyata menunggu provider terkonfigurasi. Akun bootstrap masih terbatas sampai lifecycle tersebut selesai. Jangan menghapus flag onboarding atau menulis email_verified_at untuk mengakali UI.
 
 Referensi: https://nextjs.org/docs/app/guides/authentication , https://nextjs.org/docs/app/api-reference/functions/cookies , https://vercel.com/docs/headers/request-headers .

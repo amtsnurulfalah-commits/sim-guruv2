@@ -16,3 +16,5 @@ Empat schema domain: app, auth_private, finance, ops. Finance/worker belum menda
 Schema app/auth_private/finance/ops tidak boleh masuk daftar exposed schemas PostgREST. Auth lokal tidak menghasilkan JWT Supabase Auth; auth.uid() tidak dipakai. Service-role yang melewati RLS tidak digunakan sebagai koneksi runtime database. Tidak ada endpoint browser yang mengakses tabel langsung.
 
 Lihat docs/operations/Database_Tahap_1_2.md untuk batas privilege, jalur provisioning serta cara uji lokal/native. Jangan menggunakan routine issue_session/set_password_after_verification sebagai endpoint publik: routine tersebut mempercayai layanan auth server yang wajib memverifikasi password dan rate limit pada 1.3–1.4.
+
+Tahap1.5 memakai file 14digit hasil `supabase migration new account_lifecycle` (CLI2.121.0). Runner menerima versi lama12digit dan versi CLI14digit; file historis tidak diubah.

@@ -31,3 +31,7 @@ Migrasi domain 005 auth_http telah diterapkan dan ledger aplikasi kini berisi li
 ## Pembaruan koneksi pooler
 
 Deployment probe `dpl_GY7jrGz3ABfZo4J5pqwqUcGThovS` dari commit `036689d` berstatus READY. `npm run db:verify-runtime` berhasil sebelum build; semua koneksi ditutup setelah probe. Perintah ini adalah pemeriksaan operator opsional, bukan syarat build normal setiap preview. Setelah perubahan password, percobaan awal pooler sempat mengembalikan 28P01; verifikasi ulang berhasil. Database menyimpan verifier SCRAM dan environment menyimpan password sensitif; tidak ada secret dalam hasil probe.
+
+## Pembaruan Tahap 1.5
+
+Migrasi account_lifecycle sudah diterapkan; ledger6 migrasi dan security advisor tanpa temuan. Profil/onboarding/OTP/reset/admin recovery serta adapter outbox minimum tersedia. Konfigurasi MAIL_PROVIDER/MAIL_API_KEY/MAIL_FROM dan LOGIN worker belum tersedia; email nyata belum aktif. Lihat Akun_Tahap_1_5.md dan ../verification/Tahap_1_5.md.
