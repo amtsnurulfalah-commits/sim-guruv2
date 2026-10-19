@@ -21,10 +21,30 @@ export const modules: readonly AppModule[] = [
   },
   {
     slug: "jurnal",
+    href: "/jurnal",
+    available: true,
     title: "Jurnal pembelajaran",
     description: "Catatan pembelajaran, rekap siswa dan riwayat jurnal.",
     group: "Kegiatan",
     stage: "3.6",
+  },
+  {
+    slug: "kegiatan",
+    href: "/kegiatan",
+    available: true,
+    title: "Konfirmasi KBM",
+    description: "Penugasan bertanggal dan konfirmasi kegiatan mengajar.",
+    group: "Kegiatan",
+    stage: "3.1",
+  },
+  {
+    slug: "absensi-siswa",
+    href: "/absensi-siswa/input",
+    available: true,
+    title: "Absensi siswa",
+    description: "Rekap kelas dan progres kelengkapan harian.",
+    group: "Kegiatan",
+    stage: "3.4",
   },
   {
     slug: "piket",
@@ -32,7 +52,7 @@ export const modules: readonly AppModule[] = [
     description:
       "Penugasan, konfirmasi dan pencatatan kegiatan piket serta upacara.",
     group: "Kegiatan",
-    stage: "3.1–3.4",
+    stage: "4.1–4.4",
   },
   {
     slug: "ujian",
@@ -44,10 +64,12 @@ export const modules: readonly AppModule[] = [
   },
   {
     slug: "kehadiran",
+    href: "/kehadiran",
+    available: true,
     title: "Kehadiran",
     description: "Kehadiran, waktu masuk/keluar dan izin sesuai kewenangan.",
     group: "Kegiatan",
-    stage: "5",
+    stage: "3.2–3.3",
   },
   {
     slug: "acara",

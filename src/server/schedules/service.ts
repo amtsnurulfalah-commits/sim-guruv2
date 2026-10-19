@@ -96,8 +96,8 @@ export class ScheduleService {
       items: ScheduleRow[];
       scheduledCount: number;
       dayContext: DayContext;
-      confirmationAvailable: false;
-      journalAvailable: false;
+      confirmationAvailable: true;
+      journalAvailable: true;
       substitutionsAvailable: false;
     }>("select app.schedule_today($1,$2) as value", [tokenHash(token), value]);
   }

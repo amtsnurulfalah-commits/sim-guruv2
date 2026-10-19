@@ -69,6 +69,23 @@ export class AccountLifecycleService {
       if (wait > 0) throw new AuthError("RATE_LIMITED", 429, wait);
     }
   }
+  async activityRate(source: string, key: string, exporting = false) {
+    for (const [scope, value] of [
+      ["activity_ip", source],
+      [exporting ? "activity_export" : "activity_account", key],
+    ]) {
+      const digest = createHmac("sha256", this.config.hmac)
+        .update(JSON.stringify(["sim-guru:activity-rate:v1", scope, value]))
+        .digest("hex");
+      const wait = (
+        await this.db.query<{ wait: number }>(
+          "select auth_private.consume_activity_rate($1,$2) as wait",
+          [scope!, digest],
+        )
+      ).rows[0]!.wait;
+      if (wait > 0) throw new AuthError("RATE_LIMITED", 429, wait);
+    }
+  }
   private async context(tx: SqlExecutor, token: string) {
     const row = (
       await tx.query<{ value: Context }>(

@@ -1,0 +1,10 @@
+✔ CSV escapes multiline quotes and neutralizes spreadsheet formulas (0.847072ms)
+✔ PDF renders multipage attendance and journals as real downloadable documents (168.686589ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 515.604695

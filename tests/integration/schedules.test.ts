@@ -87,7 +87,7 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
   ]);
   await fixture("schedule.onboard", "admin", false);
   await t.test(
-    "SC01 incremental upgrade preserves identity and all25 RLS tables",
+    "SC01 incremental upgrade preserves identity and all38 RLS tables",
     async () => {
       assert.equal((await applyMigrations(db, migrations)).length, 1);
       assert.equal((await applyMigrations(db, migrations)).length, 0);
@@ -102,7 +102,7 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
             "select count(*)::int as n from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in('app','auth_private','ops') and c.relkind='r' and c.relrowsecurity and c.relforcerowsecurity",
           )
         ).rows[0]!.n,
-        25,
+        38,
       );
     },
   );
@@ -582,7 +582,7 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
     async () => {
       const before = await schedules.today(guruA, monday);
       assert.ok(before.items.length >= 2);
-      assert.equal(before.confirmationAvailable, false);
+      assert.equal(before.confirmationAvailable, true);
       const p = await calendar.preview(admin, "calendar", {
         action: "upsert",
         date: monday,
@@ -591,7 +591,7 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
         isHoliday: true,
         reason,
       });
-      assert.equal(p.assignmentIntegration, "teaching_ready");
+      assert.equal(p.assignmentIntegration, "attendance_ready");
       await calendar.commit(
         admin,
         "calendar",

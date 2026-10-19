@@ -1,0 +1,38 @@
+▶ Tahap 3 — occurrences, attendance, students and atomic JTM journals
+  ✔ A01 upgrade preserves identities, migrations rerun is no-op and all new tables FORCE RLS (82.846505ms)
+  ✔ A02 occurrence identity is source/date scoped, snapshots stable, owner-scoped list (29.933829ms)
+  ✔ A03 claim is private and gives no confirmation or JTM; forged actor fields rejected (14.948494ms)
+  ✔ A04 admin confirmation is separate, versioned and occurrence-scoped (18.707329ms)
+  ✔ A05 snapshots protect same-day schedule and calendar mutation (6.368941ms)
+  ✔ A06 template preview lists distinct assigned gurus and apply is once-only (36.84117ms)
+  ✔ A07 one daily row, admin provenance, self/other denial, stale version rejected (21.7885ms)
+  ✔ A08 clipped izin, adjacent intervals, overlap and reverse interval denied (14.755673ms)
+  ✔ A09 deleting izin recalculates effective duration and stale write fails (7.774831ms)
+  ✔ A10 extra attendee must be a guru with reason; no ordinary empty schedule creates 100% (8.128735ms)
+  ✔ A11 stale template preview cannot overwrite actual times (24.257672ms)
+  ✔ A12 standard and integer rekap validation; extra class cannot cover missing required class (23.053107ms)
+  ✔ A13 unassigned guru cannot write rekap or read another submitter history (5.883704ms)
+  ✔ A14 journal counts bind both expected students and recap (7.442851ms)
+  ✔ A15 repeated/concurrent promise submissions produce one journal and one credit (11.181204ms)
+  ✔ A16 revoke with journal blocked; wrong owner has no access (8.870799ms)
+  ✔ A17 edit reverses original posting, reposts once, no net inflation (12.2447ms)
+  ✔ A18 rekap edits cannot contradict existing journals (6.028801ms)
+  ✔ A19 block is enforced by direct service edit; no reversal on failure (14.563314ms)
+  ✔ A20 delete performs exact once reversal and preserves history (11.648276ms)
+  ✔ A21 H-1 disabled/confirmation checks and 3×80%=2.4 applied once (23.851102ms)
+  ✔ A22 final month blocks journal/delete/attendance; ledger remains immutable (11.345073ms)
+  ✔ A23 direct DML, helpers, hashes and worker access denied (11.884282ms)
+  ✔ A24 exports retain complete server scope; filters cannot widen guru ownership (6.303093ms)
+  ✔ A26 H-2 and future dates use same eligibility as submit (9.820224ms)
+  ✔ A27 full export traverses multiple pages and prevents final/ledger tampering (89.445619ms)
+  ✔ A28 business rate permits normal class entry without consuming OTP quotas (75.022423ms)
+  ✔ A25 HTTP CSRF/origin/onboarding, safe conflicts and revoked sessions (21.919774ms)
+✔ Tahap 3 — occurrences, attendance, students and atomic JTM journals (3013.282253ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3728.71085

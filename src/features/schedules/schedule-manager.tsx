@@ -802,9 +802,9 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
           <p role="status">Jadwal harian belum tersedia atau sedang dimuat.</p>
         )}
         <p className="text-sm leading-6 text-muted-foreground">
-          Konfirmasi, jurnal, substitusi dan eligibility H-1 belum termasuk
-          tahap ini. Tidak ada status konfirmasi atau kredit yang dibuat
-          otomatis.
+          Konfirmasi tersedia pada halaman Kegiatan KBM dan pengisian jurnal
+          tersedia pada halaman Jurnal. Jadwal sendiri tidak otomatis memberikan
+          kredit. Substitusi menyusul pada modul piket.
         </p>
       </section>
       <section className="space-y-5 rounded-2xl border bg-card p-5">

@@ -1,0 +1,96 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 build
+> next build
+
+▲ Next.js 16.4.2 (Turbopack)
+✓ Running next.config.ts took 19ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 519ms
+  Running TypeScript ...
+  Finished TypeScript in 2.0s ...
+  Collecting page data using 8 workers ...
+  Generating static pages using 8 workers (0/5) ...
+  Generating static pages using 8 workers (1/5) 
+  Generating static pages using 8 workers (2/5) 
+  Generating static pages using 8 workers (3/5) 
+✓ Generating static pages using 8 workers (5/5) in 239ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /absensi-siswa/input
+├ ƒ /absensi-siswa/riwayat
+├ ƒ /admin/jadwal-kehadiran
+├ ƒ /admin/jurnal
+├ ƒ /admin/kalender
+├ ƒ /admin/kehadiran-harian
+├ ƒ /admin/master
+├ ƒ /admin/pemulihan
+├ ƒ /admin/pengguna
+├ ƒ /aktivasi
+├ ƒ /akun
+├ ƒ /api/activities/[action]
+├ ƒ /api/activities/export
+├ ƒ /api/auth/activation
+├ ƒ /api/auth/admin-recovery
+├ ƒ /api/auth/change-password
+├ ƒ /api/auth/complete-onboarding
+├ ƒ /api/auth/csrf
+├ ƒ /api/auth/email-request
+├ ƒ /api/auth/email-verify
+├ ƒ /api/auth/forgot-password
+├ ƒ /api/auth/login
+├ ƒ /api/auth/logout
+├ ƒ /api/auth/profile
+├ ƒ /api/auth/reset-otp
+├ ƒ /api/auth/reset-password
+├ ƒ /api/auth/security-question
+├ ƒ /api/auth/session
+├ ƒ /api/dashboard
+├ ƒ /api/day-context
+├ ƒ /api/health
+├ ƒ /api/schedules
+├ ƒ /api/schedules/[id]
+├ ƒ /api/schedules/[id]/history
+├ ƒ /api/schedules/bulk-delete
+├ ƒ /api/schedules/bulk-delete/preview
+├ ƒ /api/schedules/conflicts
+├ ƒ /api/schedules/mine
+├ ƒ /api/schedules/recaps
+├ ƒ /api/schedules/today
+├ ƒ /api/settings/[group]
+├ ƒ /api/settings/[group]/history/[id]
+├ ƒ /api/settings/calendar
+├ ƒ /api/settings/calendar/history
+├ ƒ /api/settings/calendar/preview
+├ ƒ /api/settings/calendar/range
+├ ƒ /api/settings/day-context
+├ ƒ /api/settings/day-context/commit
+├ ƒ /api/settings/day-context/preview
+├ ƒ /api/users
+├ ƒ /api/users/[id]
+├ ƒ /api/users/[id]/activation
+├ ƒ /api/users/[id]/recovery
+├ ƒ /api/users/[id]/status
+├ ƒ /api/users/reset-requests
+├ ƒ /dashboard
+├ ○ /icon.svg
+├ ƒ /jadwal
+├ ƒ /jurnal
+├ ƒ /kegiatan
+├ ƒ /kehadiran
+├ ƒ /kehadiran-saya
+├ ○ /kesiapan
+├ ƒ /login
+├ ƒ /lupa-password
+├ ƒ /modul/[slug]
+├ ƒ /onboarding
+└ ƒ /profil
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

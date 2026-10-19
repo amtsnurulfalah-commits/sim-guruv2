@@ -23,6 +23,31 @@ type Dependencies = {
   service: () => Promise<LocalAuthService>;
 };
 const messages: Record<string, string> = {
+  ACTIVITY_INVALID: "Data kegiatan tidak sesuai aturan.",
+  ACTIVITY_REFERENCED:
+    "Kegiatan sudah memiliki bukti bertanggal. Perubahan dihentikan untuk melindungi riwayat.",
+  TODAY_ONLY: "Tindakan ini hanya tersedia pada hari ini (WIB).",
+  FINAL_PERIOD: "Periode sudah final; gunakan alur koreksi.",
+  PREVIEW_STALE:
+    "Pratinjau berubah, kedaluwarsa atau sudah dipakai. Buat pratinjau baru.",
+  ASSIGNMENT_REQUIRED:
+    "Guru tidak memiliki penugasan. Tambahkan sebagai peserta tambahan dengan alasan.",
+  ATTENDANCE_TIME_INVALID:
+    "Jam hadir tidak memenuhi jadwal atau urutan masuk-pulang.",
+  LEAVE_OVERLAP: "Interval izin tidak sah atau bertumpang tindih.",
+  STUDENT_COUNT_MISMATCH: "Jumlah siswa tidak sesuai standar kelas.",
+  STUDENT_ATTENDANCE_MISMATCH:
+    "Jumlah hadir/absen berbeda dengan rekap siswa atau jurnal yang sudah ada.",
+  FUTURE_DATE: "Jurnal tanggal mendatang belum dapat diisi.",
+  DATE_EXPIRED: "Batas input jurnal sudah berakhir.",
+  H1_DISABLED: "Input jurnal H-1 belum diaktifkan administrator.",
+  H1_NOT_CONFIRMED: "Kegiatan kemarin belum dikonfirmasi.",
+  NO_ACTIVE_CONFIRMATION: "Kegiatan harus dikonfirmasi sebelum mengisi jurnal.",
+  JOURNAL_BLOCKED:
+    "Input/edit jurnal sedang diblokir pada mata pelajaran dan tanggal ini.",
+  DUPLICATE_JOURNAL: "Jurnal untuk kegiatan ini sudah ada.",
+  EXPORT_TOO_LARGE: "Hasil ekspor terlalu besar; persempit rentang tanggal.",
+
   EMAIL_DELIVERY_UNAVAILABLE:
     "Layanan pengiriman email belum siap. Hubungi administrator untuk mengaktifkannya, lalu minta kode kembali.",
   SCHEDULE_INVALID:
@@ -147,63 +172,106 @@ export async function handleAuthRequest(
     ].includes(dbMessage)
       ? dbMessage
       : null;
-    const mapped = scheduleCode
+    const activityCode = [
+      "ACTIVITY_INVALID",
+      "ACTIVITY_REFERENCED",
+      "TODAY_ONLY",
+      "FINAL_PERIOD",
+      "PREVIEW_STALE",
+      "ASSIGNMENT_REQUIRED",
+      "ATTENDANCE_TIME_INVALID",
+      "LEAVE_OVERLAP",
+      "STUDENT_COUNT_MISMATCH",
+      "STUDENT_ATTENDANCE_MISMATCH",
+      "FUTURE_DATE",
+      "DATE_EXPIRED",
+      "H1_DISABLED",
+      "H1_NOT_CONFIRMED",
+      "NO_ACTIVE_CONFIRMATION",
+      "JOURNAL_BLOCKED",
+      "DUPLICATE_JOURNAL",
+      "EXPORT_TOO_LARGE",
+    ].includes(dbMessage)
+      ? dbMessage
+      : null;
+    const mapped = activityCode
       ? new AuthError(
-          scheduleCode,
-          scheduleCode === "SCHEDULE_COLLISION"
+          activityCode,
+          [
+            "ACTIVITY_REFERENCED",
+            "PREVIEW_STALE",
+            "DUPLICATE_JOURNAL",
+            "FINAL_PERIOD",
+          ].includes(activityCode)
             ? 409
-            : scheduleCode === "SCHEDULE_HISTORICAL"
+            : [
+                  "TODAY_ONLY",
+                  "ASSIGNMENT_REQUIRED",
+                  "H1_DISABLED",
+                  "H1_NOT_CONFIRMED",
+                  "NO_ACTIVE_CONFIRMATION",
+                  "JOURNAL_BLOCKED",
+                ].includes(activityCode)
               ? 403
               : 422,
         )
-      : calendarCode
+      : scheduleCode
         ? new AuthError(
-            calendarCode,
-            calendarCode === "CONTEXT_DEPENDENCY_UNAVAILABLE"
-              ? 503
-              : calendarCode === "CALENDAR_PREVIEW_STALE" ||
-                  calendarCode === "CALENDAR_PREVIEW_INVALID"
-                ? 409
-                : calendarCode === "CALENDAR_PAST"
-                  ? 403
-                  : 422,
-          )
-        : masterCode
-          ? new AuthError(
-              masterCode,
-              masterCode === "MASTER_OVERLAP" ||
-              masterCode === "MASTER_REFERENCED"
-                ? 409
+            scheduleCode,
+            scheduleCode === "SCHEDULE_COLLISION"
+              ? 409
+              : scheduleCode === "SCHEDULE_HISTORICAL"
+                ? 403
                 : 422,
+          )
+        : calendarCode
+          ? new AuthError(
+              calendarCode,
+              calendarCode === "CONTEXT_DEPENDENCY_UNAVAILABLE"
+                ? 503
+                : calendarCode === "CALENDAR_PREVIEW_STALE" ||
+                    calendarCode === "CALENDAR_PREVIEW_INVALID"
+                  ? 409
+                  : calendarCode === "CALENDAR_PAST"
+                    ? 403
+                    : 422,
             )
-          : [
-                "UNAUTHENTICATED",
-                "ONBOARDING_REQUIRED",
-                "FORBIDDEN",
-                "MAINTENANCE",
-                "LAST_ACTIVE_ADMIN",
-                "VERIFIED_EMAIL_IMMUTABLE",
-                "ARCHIVED_READ_ONLY",
-                "INVALID_STATUS_TRANSITION",
-                "RECOVERY_REQUEST_INVALID",
-                "ACTIVATION_NOT_ALLOWED",
-                "NOT_FOUND",
-              ].includes(dbMessage)
+          : masterCode
             ? new AuthError(
-                dbMessage,
-                dbMessage === "NOT_FOUND"
-                  ? 404
-                  : dbMessage === "INVALID_STATUS_TRANSITION"
-                    ? 422
-                    : dbMessage === "UNAUTHENTICATED"
-                      ? 401
-                      : dbMessage === "MAINTENANCE"
-                        ? 503
-                        : 403,
+                masterCode,
+                masterCode === "MASTER_OVERLAP" ||
+                masterCode === "MASTER_REFERENCED"
+                  ? 409
+                  : 422,
               )
-            : code === "23505" || dbMessage === "VERSION_CONFLICT"
-              ? new AuthError("CONFLICT", 409)
-              : null;
+            : [
+                  "UNAUTHENTICATED",
+                  "ONBOARDING_REQUIRED",
+                  "FORBIDDEN",
+                  "MAINTENANCE",
+                  "LAST_ACTIVE_ADMIN",
+                  "VERIFIED_EMAIL_IMMUTABLE",
+                  "ARCHIVED_READ_ONLY",
+                  "INVALID_STATUS_TRANSITION",
+                  "RECOVERY_REQUEST_INVALID",
+                  "ACTIVATION_NOT_ALLOWED",
+                  "NOT_FOUND",
+                ].includes(dbMessage)
+              ? new AuthError(
+                  dbMessage,
+                  dbMessage === "NOT_FOUND"
+                    ? 404
+                    : dbMessage === "INVALID_STATUS_TRANSITION"
+                      ? 422
+                      : dbMessage === "UNAUTHENTICATED"
+                        ? 401
+                        : dbMessage === "MAINTENANCE"
+                          ? 503
+                          : 403,
+                )
+              : code === "23505" || dbMessage === "VERSION_CONFLICT"
+                ? new AuthError("CONFLICT", 409)
+                : null;
     const auth =
       error instanceof AuthError
         ? error
