@@ -1,0 +1,27 @@
+{
+  "verifiedAt": "2026-10-19T11:54:39.535688+00:00",
+  "baseUrl": "https://sim-guruv2.vercel.app",
+  "ok": true,
+  "checks": [
+    "Health phase2.3 HTTPS200",
+    "Public calendar availability200",
+    "/api/settings/day-context?date=2026-10-19 anonymous401 no-store",
+    "/api/day-context?date=2026-10-19 anonymous401 no-store",
+    "/api/settings/calendar?dateStart=2026-10-01&dateEnd=2026-10-31 anonymous401 no-store",
+    "/api/settings/calendar/history?kind=calendar&date=2026-10-19 anonymous401 no-store",
+    "/api/dashboard anonymous401 no-store",
+    "/api/settings/calendar/range POST without CSRF403",
+    "/api/settings/calendar/preview POST without CSRF403",
+    "/api/settings/day-context/commit POST without CSRF403",
+    "/api/settings/day-context/preview POST without CSRF403",
+    "/api/settings/calendar DELETE without CSRF403",
+    "/api/settings/calendar PATCH without CSRF403",
+    "/api/settings/calendar POST without CSRF403",
+    "Cross-origin day context403",
+    "/admin/kalender anonymous login redirect",
+    "/modul/kalender anonymous login redirect"
+  ],
+  "usesAdminCredentials": false,
+  "changesDomainData": false,
+  "authenticatedBrowserCRUD": false
+}

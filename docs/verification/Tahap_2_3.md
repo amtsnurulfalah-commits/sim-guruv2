@@ -17,3 +17,7 @@ Probe native17.11 melalui MCP menggunakan owner internal, hash Argon2id sintetis
 Belum ada modul penugasan/ujian/keuangan: adapter menyatakan not_installed dan fail-closed bila modul ditambahkan tanpa integrasi. Tidak mengklaim seluruh K09 konflik jadwal atau lock honor final sudah terimplementasi. Auto-jurnal, bonus, posting, reminder/worker bukan cakupan tahap ini. Tidak mengirim email atau memakai credential admin nyata. Browser terautentikasi, mobile/keyboard/fokus dan race native multikoneksi masih acceptance lanjutan setelah onboarding/email selesai.
 
 Status GitHub/CI/deployment dan pemeriksaan HTTPS dicatat setelah source disinkronkan. Liveness bukan bukti CRUD browser penuh.
+
+Source commit `4c3c1167d7a8a6358538b84bb30c1bbe50005477` berada di main GitHub. GitHub Actions run39247782778 success (full check termasuk build). Vercel production `dpl_3EtaRo34sdCSA6cC4hwzJN1qwe25` READY pada region sin1, alias canonical https://sim-guruv2.vercel.app. Ringkasan mesin: stage-2.3-results.json.
+
+Smoke HTTPS canonical:17 pemeriksaan lolos (phase2.3, status kalender,5 GET anonim401/no-store,7 mutasi tanpa sesi/CSRF403, cross-origin403 dan2 halaman admin/modul mengarahkan ke login tanpa pratinjau privat). Bukti: stage-2.3-production-smoke.json. Tidak menggunakan credential admin atau mengubah kalender produksi.
