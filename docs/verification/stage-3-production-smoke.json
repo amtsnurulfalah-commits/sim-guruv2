@@ -1,0 +1,68 @@
+{
+  "ok": true,
+  "checks": [
+    {
+      "path": "/api/health",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/api/activities/occurrences",
+      "method": "GET",
+      "status": 401,
+      "ok": true
+    },
+    {
+      "path": "/api/activities/attendance?from=2026-10-01&to=2026-10-20",
+      "method": "GET",
+      "status": 401,
+      "ok": true
+    },
+    {
+      "path": "/api/activities/students-progress",
+      "method": "GET",
+      "status": 401,
+      "ok": true
+    },
+    {
+      "path": "/api/activities/export?kind=journals&format=pdf&from=2026-10-01&to=2026-10-20",
+      "method": "GET",
+      "status": 401,
+      "ok": true
+    },
+    {
+      "path": "/api/activities/journal-create",
+      "method": "POST",
+      "status": 403,
+      "ok": true
+    },
+    {
+      "path": "/kegiatan",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/kehadiran",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/jurnal",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/absensi-siswa/input",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    }
+  ],
+  "usesProductionCredentials": false,
+  "changesDomainData": false,
+  "sendsEmail": false
+}
