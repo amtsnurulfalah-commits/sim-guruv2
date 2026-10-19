@@ -197,7 +197,11 @@ export function createAuthHandlers(deps: Dependencies) {
           requestCookie(request, names.session),
         );
         const res = authResponse(
-          { session: result.session, redirectTo: "/akun" },
+          {
+            session: result.session,
+            redirectTo:
+              result.session.scope === "business" ? "/dashboard" : "/akun",
+          },
           requestId,
         );
         setCookie(

@@ -291,7 +291,7 @@ export function AccountLifecycle({
           submitLabel="Selesaikan dan lanjutkan"
           onSubmit={async () => {
             await accountRequest("complete-onboarding", {});
-            window.location.replace("/akun");
+            window.location.replace("/dashboard");
           }}
         >
           <p className="text-sm leading-7">

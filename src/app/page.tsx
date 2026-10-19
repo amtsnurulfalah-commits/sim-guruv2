@@ -58,14 +58,22 @@ export default function HomePage() {
               jurnal, dan honorarium dalam satu alur yang jelas.
             </p>
             <p className="mt-4 max-w-lg text-sm leading-7 text-muted-foreground">
-              Halaman login sudah tersedia. Akses akun memerlukan layanan
-              database yang siap; pencatatan kegiatan menyusul.
+              Login dan pengamanan akun sudah tersedia. Modul kegiatan masih
+              dikembangkan; pengiriman email menunggu konfigurasi layanan.
             </p>
             <Button asChild size="lg" className="mt-8">
               <Link href="/login">
                 Masuk ke SiM-Guru <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
+            <p className="mt-5 text-sm">
+              <Link
+                href="/kesiapan"
+                className="font-semibold text-primary underline underline-offset-4"
+              >
+                Lihat status pengembangan
+              </Link>
+            </p>
             <div className="mt-8 flex items-center gap-2 text-xs text-muted-foreground">
               <LockKeyhole aria-hidden="true" className="size-4" /> Akun
               dikelola oleh administrator madrasah.
@@ -111,7 +119,7 @@ export default function HomePage() {
       </main>
       <footer className="mx-auto flex max-w-6xl flex-wrap justify-between gap-2 border-t px-5 py-6 text-xs text-muted-foreground sm:px-8">
         <p>SiM-Guru · Sistem Informasi Guru</p>
-        <p>Tahap 1.5 · Pengamanan akun</p>
+        <p>Tahap 1.6 · Kerangka ruang kerja</p>
       </footer>
     </div>
   );

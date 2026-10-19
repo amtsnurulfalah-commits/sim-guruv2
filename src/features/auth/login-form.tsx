@@ -89,7 +89,9 @@ export function LoginForm() {
           redirectTo: string;
         }> = await res.json();
       if (data.ok) {
-        window.location.replace("/akun");
+        window.location.replace(
+          data.data.redirectTo === "/dashboard" ? "/dashboard" : "/akun",
+        );
         return;
       }
       const retry = res.headers.get("retry-after");

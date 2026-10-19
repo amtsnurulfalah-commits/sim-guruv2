@@ -1,0 +1,217 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 check
+> npm run lint && npm run typecheck && npm test && npm run test:crypto && npm run test:db && npm run build
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 lint
+> eslint . --max-warnings=0
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 test
+> node --import tsx --test tests/unit/*.test.ts
+
+✔ constructor decimal mempertahankan penjumlahan pecahan tanpa float (949.78703ms)
+✔ core development dapat dibangun tanpa secrets (18.675711ms)
+✔ core production wajib URL eksplisit HTTPS dan timezone Jakarta (9.41068ms)
+✔ database hilang ditolak dan output tidak memuat rahasia (10.585218ms)
+✔ database memerlukan role berbeda dan nama database sama (2.882743ms)
+✔ production database menolak sslmode disable (2.728413ms)
+✔ auth gagal tertutup tanpa secrets atau key enkripsi pendek (6.190422ms)
+✔ secret session dan HMAC tidak boleh sama (1.481397ms)
+✔ service yang belum disiapkan tidak lolos validasi (4.32507ms)
+✔ CA database bersifat opsional dan URL sertifikat bukan nilai PEM (0.895393ms)
+✔ navigation registry has unique slugs and enforces role visibility independently of the UI (1.403954ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3622.042681
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 test:crypto
+> node --conditions=react-server --import tsx --test tests/crypto/*.test.ts
+
+✔ CR06 token32byte acak, digest dan cipher tidak memuat token plaintext (228.552622ms)
+✔ CR07 binding email/user/outbox/key dan ciphertext yang diubah ditolak (14.41792ms)
+✔ OTP cryptography: six digits including leading zeros; purpose/address binding and authenticated encryption (7.699858ms)
+✔ CR01 Argon2id nyata, salt unik, verify tepat dan password salah ditolak (2805.445097ms)
+✔ CR02 password tidak di-trim atau dinormalisasi dan panjang memakai code point (583.012114ms)
+✔ CR03 kebijakan menolak unsur identitas, kompleksitas lemah dan panjang tidak sah (0.777135ms)
+✔ CR04 hash rusak atau parameter ekstrem menghasilkan kegagalan crypto terkendali (6.741142ms)
+✔ CR05 rehash hanya setelah verify, mempertahankan parameter lama yang lebih kuat (1675.361308ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7233.242237
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 test:db
+> node --conditions=react-server --import tsx --test tests/integration/database.test.ts tests/integration/accounts.test.ts tests/integration/auth-http.test.ts tests/integration/lifecycle.test.ts tests/integration/dashboard.test.ts
+
+▶ Tahap1.3 — lifecycle awal dengan hash nyata + PostgreSQL WASM
+  ✔ AC01 bootstrap hash nyata, flag wajib ganti, TTL24jam dan idempotensi tanpa overwrite (1019.462549ms)
+  ✔ AC02 invite atomik menulis pending profile+digest+encrypted outbox; bukan email sent (73.488287ms)
+  ✔ AC03 input gagal/encryption key salah rollback seluruh account+challenge+outbox (18.681005ms)
+  ✔ AC04 token salah/kedaluwarsa tidak membuat credential atau mengonsumsi token sah (72.629548ms)
+  ✔ AC05 aktivasi sekali pakai menyimpan hash asli/verifikasi email; masih perlu pertanyaan keamanan (394.48975ms)
+  ✔ AC06 reissue membatalkan token dan secret outbox lama (260.148577ms)
+  ✔ AC07 konflik email terverifikasi rollback aktivasi tanpa menghabiskan challenge (157.693072ms)
+  ✔ AC08 konsumsi ulang dua request memberi satu keberhasilan (antrean satu koneksi, bukan native race) (162.177918ms)
+  ✔ AC09 role bisnis tidak membaca secret outbox atau mengeksekusi activation/bootstrap (29.470089ms)
+  ✔ AC10 rehash CAS memakai hash nyata tanpa mencabut sesi/password_changed_at (238.194979ms)
+✔ Tahap1.3 — lifecycle awal dengan hash nyata + PostgreSQL WASM (114226.418382ms)
+▶ Tahap1.4 login/session/logout — HTTP handlers + Argon2 + PostgreSQL WASM
+  ✔ AU01 login nyata, normalisasi username, cookie aman, DTO tanpa token/hash (633.135841ms)
+  ✔ AU02 salah/tidak ada/pending/nonaktif/kedaluwarsa menghasilkan respons generik (1088.471868ms)
+  ✔ AU03 prelogin CSRF terikat cookie/purpose/TTL; Origin dan body limit (16.493561ms)
+  ✔ AU04 lima gagal/account lintas instance persisten, cooldown, sukses hanya reset account (3244.292339ms)
+  ✔ AU05 IP membatasi 30 usaha lintas akun; header palsu di dev diabaikan (3543.526452ms)
+  ✔ AU06 sesi onboarding boleh status/logout, tidak mendapat akses bisnis (125.251624ms)
+  ✔ AU07 session polling tidak memperpanjang idle; heartbeat CSRF memperpanjang dengan batas absolut (88.96893ms)
+  ✔ AU08 maintenance memblokir login/operasi guru termasuk sesi lama; admin dan logout tetap tersedia (306.722528ms)
+  ✔ AU09 login ulang merotasi token dan mencabut sesi browser sebelumnya (134.657403ms)
+  ✔ AU10 logout CSRF/origin, revoke server, idempotensi dan replay cookie tab lama ditolak (27.987332ms)
+  ✔ AU11 expiry idle/absolut, auth_version dan status nonaktif mencabut akses (1304.867035ms)
+  ✔ AU12 gagal konfigurasi menghasilkan 503 tanpa stack/secret/URL (6.085459ms)
+  ✔ AU13 sesi anonim tidak membuka database, dan error internal tidak bocor (2.593897ms)
+✔ Tahap1.4 login/session/logout — HTTP handlers + Argon2 + PostgreSQL WASM (117285.467315ms)
+▶ Tahap1.6 dashboard boundaries with real local sessions
+  ✔ SH01 anonymous/forged cookie denied; browser role and actor query cannot elevate (83.634058ms)
+  ✔ SH02 admin/guru filtered DTO without credentials or invented financial metrics (13.043439ms)
+  ✔ SH03 onboarding session cannot read dashboard (30.322972ms)
+  ✔ SH04 maintenance affects existing guru session; admin remains allowed (28.315096ms)
+  ✔ SH05 cross-origin and revoked sessions rejected; backend error sanitized (34.408203ms)
+✔ Tahap1.6 dashboard boundaries with real local sessions (121680.268511ms)
+▶ Tahap 1.2 — engine PostgreSQL WASM / PGlite (bukan native/pooling)
+  ✔ DB01 migrasi clean install dan rerun checksum idempotent (413.634768ms)
+  ✔ DB02 role runtime nonowner, NOLOGIN, non-superuser, non-BYPASSRLS dan tanpa membership owner (4.207598ms)
+  ✔ DB03 seluruh tabel identitas mempunyai ENABLE+FORCE RLS (4.227409ms)
+  ✔ DB04 tanpa context atau UUID actor palsu menghasilkan nol profil (34.288331ms)
+  ✔ DB05 guru hanya membaca profil sendiri; NIP tetap teks (19.608257ms)
+  ✔ DB06 admin membaca semua profil/settings/audit; guru tidak membaca settings/audit (24.883401ms)
+  ✔ DB07 business/auth/anon tidak mendapat SELECT langsung ke kredensial/sesi/challenge (35.950853ms)
+  ✔ DB08 business/anon tidak bisa menjalankan lookup hash; auth hanya melalui routine (11.87294ms)
+  ✔ DB09 direct INSERT/UPDATE/TRUNCATE dan DELETE audit ditolak termasuk actor admin (26.05976ms)
+  ✔ DB10 runtime tidak dapat SET ROLE owner atau mengeksekusi bootstrap (11.574525ms)
+  ✔ DB11 create account atomik, username case-insensitive, rollback hash invalid (37.829406ms)
+  ✔ DB12 create account melalui routine tetap memerlukan admin dan sesi sah (18.600719ms)
+  ✔ DB13 onboarding tidak dapat mendapat business session atau membaca data bisnis (14.572324ms)
+  ✔ DB14 context tidak bocor setelah COMMIT atau ROLLBACK dalam koneksi yang sama (14.276935ms)
+  ✔ DB15 search_path caller dan temp table tidak mengubah helper definer (28.420637ms)
+  ✔ DB16 session absolut24jam/idle2jam; touch dibatasi absolute; revoke efektif (59.626142ms)
+  ✔ DB17 checksum mismatch dan batch gagal tidak menambah ledger migrasi (19.915472ms)
+  ✔ DB18 bootstrap idempotent tanpa mengganti hash; target kedua ditolak (24.612348ms)
+  ✔ DB19 constraint FK, nominal dan hash menolak data tidak sah (11.308953ms)
+  ✔ DB20 password replacement CAS, revoke semua sesi/challenge dan audit teredaksi (37.973121ms)
+  ✔ DB21 disable akun segera mencabut sesi dan menolak issuance baru (43.263356ms)
+  ✔ DB22 admin aktif terakhir tidak bisa dinonaktifkan (9.298767ms)
+  ✔ DB23 auth_version berubah menolak sesi lama meski belum ditandai revoked (25.684771ms)
+  ✔ DB24 default privileges tidak membuka objek/routine baru ke PUBLIC (7.500734ms)
+✔ Tahap 1.2 — engine PostgreSQL WASM / PGlite (bukan native/pooling) (123504.02704ms)
+ℹ Engine SQL: PostgreSQL 18.6 (PGlite 0.5.10) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.5 (1db513782be24469589d7cb8a1f1834e9a33f271), 32-bit
+▶ Tahap1.5 — lifecycle akun, capability reset, least privilege dan delivery
+  ✔ LC01 new routines isolated; worker cannot read credentials or run lifecycle (318.745282ms)
+  ✔ LC02 temporary password to permanent: proof, reuse rejection, atomic revoke and relogin (1840.316169ms)
+  ✔ LC03 profile DTO excludes private data; strict fields, version CAS, text NIP, phone normalization (325.465243ms)
+  ✔ LC04 question uses normalized Argon2 answer; onboarding cannot skip email (425.931208ms)
+  ✔ LC05 email request requires password; OTP HMAC + encrypted outbox, no premature verified flag (867.622663ms)
+  ✔ LC06 resend cooldown preserves existing challenge and secret (151.005421ms)
+  ✔ LC07 five wrong attempts commit across requests, then even correct OTP rejected (357.752743ms)
+  ✔ LC08 reissue supersedes; purpose mismatch denied; valid email consumes and revokes session (131.815064ms)
+  ✔ LC09 complete onboarding rotates opaque cookie scope, never upgrades old token (181.712262ms)
+  ✔ LC10 forgot responses structurally equal for existing/missing users, no OTP/token disclosure (275.026411ms)
+  ✔ LC11 reset OTP consumed once yields only five minute capability, no session (32.105605ms)
+  ✔ LC12 reset rejects reuse/tamper/policy failure; success revokes every session and capability (1064.383537ms)
+  ✔ LC13 expired OTP fails without changing password; email change does not preempt old verified address (876.880378ms)
+  ✔ LC14 security answer alone creates at most admin request, never reset capability (433.220491ms)
+  ✔ LC15 admin recovery needs business admin, target-bound request, identity evidence and own password (373.30687ms)
+  ✔ LC16 approval generates one-time handover, clears factors, revokes sessions, no plaintext stored (780.091125ms)
+  ✔ LC17 worker only claims leased security message, acknowledges once, purges secret (134.101714ms)
+  ✔ LC18 provider retry uses stable idempotency, classifies failures, no false delivery success (37.602472ms)
+  ✔ LC19 worker rejects tampered cipher without calling provider (108.490996ms)
+  ✔ LC20 HTTP csrf/origin, private DTO, no-store and generic public recovery (592.662492ms)
+  ✔ LC22 expired lease loses acknowledgement, expired reset capability rejected (295.618558ms)
+  ✔ LC23 wrong-session email OTP cannot modify another user's address (118.335901ms)
+  ✔ LC21 persistent rate limits apply to unknown identities too (186.958349ms)
+✔ Tahap1.5 — lifecycle akun, capability reset, least privilege dan delivery (123833.604838ms)
+ℹ tests 80
+ℹ suites 0
+ℹ pass 80
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 132404.150016
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 build
+> next build
+
+▲ Next.js 16.4.2 (Turbopack)
+✓ Running next.config.ts took 296ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 8.7s
+  Running TypeScript ...
+  Finished TypeScript in 14.1s ...
+  Collecting page data using 8 workers ...
+  Generating static pages using 8 workers (0/5) ...
+  Generating static pages using 8 workers (1/5)
+  Generating static pages using 8 workers (2/5)
+  Generating static pages using 8 workers (3/5)
+✓ Generating static pages using 8 workers (5/5) in 735ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /admin/pemulihan
+├ ƒ /aktivasi
+├ ƒ /akun
+├ ƒ /api/auth/activation
+├ ƒ /api/auth/admin-recovery
+├ ƒ /api/auth/change-password
+├ ƒ /api/auth/complete-onboarding
+├ ƒ /api/auth/csrf
+├ ƒ /api/auth/email-request
+├ ƒ /api/auth/email-verify
+├ ƒ /api/auth/forgot-password
+├ ƒ /api/auth/login
+├ ƒ /api/auth/logout
+├ ƒ /api/auth/profile
+├ ƒ /api/auth/reset-otp
+├ ƒ /api/auth/reset-password
+├ ƒ /api/auth/security-question
+├ ƒ /api/auth/session
+├ ƒ /api/dashboard
+├ ƒ /api/health
+├ ƒ /dashboard
+├ ○ /icon.svg
+├ ○ /kesiapan
+├ ƒ /login
+├ ƒ /lupa-password
+├ ƒ /modul/[slug]
+├ ƒ /onboarding
+└ ƒ /profil
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

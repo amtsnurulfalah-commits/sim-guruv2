@@ -1,60 +1,67 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowLeft } from "lucide-react";
+import { CircleCheck, Clock3 } from "lucide-react";
+import { Workspace } from "@/components/shell/workspace";
+import { ModuleCards } from "@/features/dashboard/module-cards";
+import { modules } from "@/lib/navigation/modules";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-export const metadata: Metadata = { title: "Status Pengembangan" };
-const items = [
-  [
-    "Fondasi proyek",
-    "Struktur aplikasi dan komponen dasar tersedia pada tahap ini.",
-  ],
-  [
-    "Akun dan autentikasi",
-    "Login, sesi dan logout internal tersedia. Onboarding, profil, OTP dan pemulihan tersedia. Penyelesaian email menunggu layanan pengiriman aktif.",
-  ],
-  [
-    "Database dan hak akses",
-    "Koneksi database dan pemisahan hak akses sudah diverifikasi. Pengamanan akun sudah tersedia; pengujian pengiriman email nyata menyusul.",
-  ],
-  [
-    "Kegiatan dan honorarium",
-    "Belum tersedia. Seluruh pencatatan bisnis menunggu modul terkait selesai.",
-  ],
-  [
-    "Pengiriman email",
-    "Antrean dan adapter tersedia. Pengiriman nyata belum diaktifkan karena konfigurasi penyedia email belum lengkap.",
-  ],
-];
+export const metadata: Metadata = { title: "Status pengembangan" };
 export default function ReadinessPage() {
   return (
-    <main id="konten-utama" className="mx-auto max-w-3xl px-5 py-12">
-      <Button asChild variant="outline">
-        <Link href="/">
-          <ArrowLeft aria-hidden="true" /> Kembali ke beranda
-        </Link>
-      </Button>
-      <h1 className="mt-8 text-3xl font-bold tracking-tight">
-        Status pengembangan
-      </h1>
-      <p className="mt-3 leading-7 text-muted-foreground">
-        Halaman ini menjelaskan cakupan tahap saat ini. Kesiapan setiap layanan
-        dicatat terpisah dari ketersediaan halaman.
-      </p>
-      <div className="mt-8 space-y-4">
-        {items.map(([title, description]) => (
-          <Card key={title}>
-            <CardHeader>
-              <CardTitle>{title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm leading-7 text-muted-foreground">
-                {description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </main>
+    <Workspace>
+      <header className="mb-8 space-y-3">
+        <p className="text-xs font-semibold tracking-widest uppercase text-primary">
+          Catatan rilis · Tahap 1.6
+        </p>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Status pengembangan
+        </h1>
+        <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+          Halaman publik ini menjelaskan cakupan aplikasi. Status berikut adalah
+          catatan implementasi, bukan pemeriksaan langsung ketersediaan layanan.
+        </p>
+      </header>
+      <section
+        className="mb-9 grid gap-5 md:grid-cols-2"
+        aria-label="Fondasi aplikasi"
+      >
+        <div className="rounded-2xl border bg-card p-6">
+          <CircleCheck
+            aria-hidden="true"
+            className="mb-4 size-6 text-primary"
+          />
+          <h2 className="text-lg font-bold">Fondasi dan akun tersedia</h2>
+          <p className="mt-3 text-sm leading-7 text-muted-foreground">
+            Login, sesi, profil, onboarding, pemulihan akun dan kerangka
+            dashboard tersedia. Koneksi database dan pemisahan hak akses sudah
+            diverifikasi.
+          </p>
+          <Button asChild variant="outline" className="mt-5">
+            <Link href="/dashboard">Buka ruang kerja</Link>
+          </Button>
+        </div>
+        <div className="rounded-2xl border bg-card p-6">
+          <Clock3 aria-hidden="true" className="mb-4 size-6 text-primary" />
+          <h2 className="text-lg font-bold">
+            Pengiriman email menunggu konfigurasi
+          </h2>
+          <p className="mt-3 text-sm leading-7 text-muted-foreground">
+            Antrean dan adapter tersedia. Pengiriman nyata belum diaktifkan
+            karena konfigurasi penyedia email, pengirim terverifikasi dan akun
+            worker belum lengkap. Akun tanpa email terverifikasi tetap dibatasi.
+          </p>
+        </div>
+      </section>
+      <section aria-labelledby="planned-heading">
+        <h2 id="planned-heading" className="mb-2 text-xl font-bold">
+          Modul yang akan dikembangkan
+        </h2>
+        <p className="mb-5 text-sm leading-7 text-muted-foreground">
+          Daftar cakupan guru dan administrasi. Halaman ini tidak memberikan
+          akses atau kewenangan akun.
+        </p>
+        <ModuleCards items={modules} linked={false} />
+      </section>
+    </Workspace>
   );
 }
