@@ -20,7 +20,8 @@
     "test:db:native": "node --import tsx --test tests/integration/native-database.test.ts",
     "admin:bootstrap": "node --conditions=react-server --import tsx scripts/bootstrap-admin.ts",
     "test:crypto": "node --conditions=react-server --import tsx --test tests/crypto/*.test.ts",
-    "auth:benchmark": "node --conditions=react-server --import tsx scripts/benchmark-password.ts"
+    "auth:benchmark": "node --conditions=react-server --import tsx scripts/benchmark-password.ts",
+    "db:verify-runtime": "node --conditions=react-server --import tsx scripts/verify-runtime-database.ts"
   },
   "dependencies": {
     "@next/env": "16.4.2",
