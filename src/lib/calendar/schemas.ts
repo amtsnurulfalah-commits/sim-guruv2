@@ -113,7 +113,7 @@ export type DayContext = {
   overrideVersion: string;
   reasons: string[];
   policyVersion: string;
-  assignmentIntegration: "not_installed";
+  assignmentIntegration: "not_installed" | "teaching_ready";
 };
 export type ChangePreview = {
   previewId: string;
@@ -122,7 +122,7 @@ export type ChangePreview = {
   action: string;
   count: number;
   policyVersion: string;
-  assignmentIntegration: "not_installed";
+  assignmentIntegration: "not_installed" | "teaching_ready";
   days: { date: string; before: DayContext; after: DayContext }[];
 };
 export function wibDate(now = new Date()) {

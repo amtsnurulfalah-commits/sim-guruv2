@@ -78,7 +78,7 @@ test("Tahap 2.3 — calendar and one operational DayContext", async (t) => {
   await fixture("calendar.guru", "guru");
   await fixture("calendar.onboard", "admin", false);
   await t.test(
-    "CA01 incremental upgrade leaves identities intact, repeat no-op, all23 tables FORCE RLS",
+    "CA01 incremental upgrade leaves identities intact, repeat no-op, all25 tables FORCE RLS",
     async () => {
       assert.equal((await applyMigrations(db, migrations)).length, 1);
       assert.equal((await applyMigrations(db, migrations)).length, 0);
@@ -93,7 +93,7 @@ test("Tahap 2.3 — calendar and one operational DayContext", async (t) => {
             "select count(*)::int as n from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in('app','auth_private','ops') and c.relkind='r' and c.relrowsecurity and c.relforcerowsecurity",
           )
         ).rows[0]!.n,
-        23,
+        25,
       );
     },
   );
@@ -272,7 +272,7 @@ test("Tahap 2.3 — calendar and one operational DayContext", async (t) => {
       assert.equal(d.examEnabled, false);
       assert.deepEqual(d.activeExamPeriods, []);
       assert.equal(d.academicPeriodId, period.id);
-      assert.equal(d.assignmentIntegration, "not_installed");
+      assert.equal(d.assignmentIntegration, "teaching_ready");
       const dashboard = createDashboardHandler({
         service: async () => auth,
         config: () => config,
@@ -701,7 +701,7 @@ test("Tahap 2.3 — calendar and one operational DayContext", async (t) => {
   await t.test(
     "CA22 unintegrated installed scheduling module fails closed for resolver and mutation",
     async () => {
-      await db.exec("create table app.teaching_schedules(id uuid)");
+      await db.exec("create table app.exam_periods(id uuid)");
       await assert.rejects(
         () => day(weekday),
         /CONTEXT_DEPENDENCY_UNAVAILABLE/,
@@ -710,7 +710,7 @@ test("Tahap 2.3 — calendar and one operational DayContext", async (t) => {
         () => preview(input("2090-04-01")),
         /CONTEXT_DEPENDENCY_UNAVAILABLE/,
       );
-      await db.exec("drop table app.teaching_schedules");
+      await db.exec("drop table app.exam_periods");
     },
   );
   await t.test(

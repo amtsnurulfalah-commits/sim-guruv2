@@ -47,3 +47,7 @@ Migrasi academic_masters telah diterapkan, ledger8 migrasi dan19 tabel domain me
 ## Pembaruan Tahap 2.3
 
 Migrasi calendar_day_context diterapkan; ledger9 migrasi,23 tabel domain ENABLE/FORCE RLS. Security advisor tanpa temuan. Probe native di-rollback; pengguna tetap1 dan calendar/override/preview masing-masing0. Resolver, preview/commit, audit dan dashboard memakai DayContext bersama. Tidak ada kalender/libur contoh atau kredit/jurnal otomatis tersimpan. Onboarding/email admin nyata masih menunggu konfigurasi. Lihat Kalender_Tahap_2_3.md dan ../verification/Tahap_2_3.md.
+
+## Pembaruan Tahap 2.4
+
+Migrasi teaching_schedules diterapkan; ledger10 migrasi dan25 tabel ENABLE/FORCE RLS. Security advisor tanpa temuan. Probe native owner internal memverifikasi durasi pecahan, bentrok, jadwal bersebelahan, CAS, rekap seluruh filter, bulk commit/replay serta privilege, kemudian di-rollback. Ini bukan uji dua koneksi bersamaan. Pengguna nyata tetap1; jadwal/preview/master contoh tidak tersimpan. Lihat Jadwal_Tahap_2_4.md dan ../verification/Tahap_2_4.md.

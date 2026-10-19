@@ -12,6 +12,8 @@ export type AppModule = {
 export const modules: readonly AppModule[] = [
   {
     slug: "jadwal",
+    href: "/jadwal",
+    available: true,
     title: "Jadwal mengajar",
     description: "Jadwal KBM, waktu mengajar dan pemeriksaan bentrok jadwal.",
     group: "Kegiatan",

@@ -1,0 +1,52 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 lint
+> eslint . --max-warnings=0
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully
+▶ Tahap 2.4 — weekly teaching schedules and atomic resource conflicts
+  ✔ SC01 incremental upgrade preserves identity and all25 RLS tables (105.167672ms)
+  ✔ SC02 anonymous/guru/onboarding cannot manage; SQL rechecks admin and business scope (105.771246ms)
+  ✔ SC03 method/origin/CSRF and browser actor/role rejected (16.92688ms)
+  ✔ SC04 end time calculated server-side from school minutes, JTM stored exact4dp (52.808943ms)
+  ✔ SC05 relation/period/date and inactive teacher invalid; no client timeEnd or tariff (56.66947ms)
+  ✔ SC06 teacher OR class overlap rejected across subjects and resources (57.201651ms)
+  ✔ SC07 half-open adjacent intervals are accepted without travel buffer (23.00832ms)
+  ✔ SC08 different day, period or disjoint validity do not collide (47.314218ms)
+  ✔ SC09 conflict inspection is read-only and does not authorize mutation (45.195156ms)
+  ✔ SC10 save rechecks after an earlier clear preview, without lost update (41.30752ms)
+  ✔ SC11 fractional JTM seconds remain exact and do not use binary floating honor math (30.258969ms)
+  ✔ SC12 midnight overflow and invalid/overprecise JTM rejected (29.104136ms)
+  ✔ SC13 date windows must include chosen weekday and be bounded (270.97078ms)
+  ✔ SC14 filters cover full data; guru mine cannot expose other users (94.628165ms)
+  ✔ SC15 recap sums exact JTM on all filtered rows, never claims attendance/honor (7.545691ms)
+  ✔ SC16 future edit CAS, server-derived duration and stale write rollback (35.332696ms)
+  ✔ SC17 school-minute changes do not rewrite old snapshots; new schedules use new value (53.901366ms)
+  ✔ SC18 referenced masters cannot be archived or trimmed under live schedules (39.427248ms)
+  ✔ SC19 today is own-user scoped and reads the same holiday DayContext (125.141377ms)
+  ✔ SC20 schedule mutation invalidates calendar previews and context fingerprints (60.051078ms)
+  ✔ SC21 running schedule edit creates forward successor and closes old validity (115.601493ms)
+  ✔ SC22 closed history is read-only and snapshot labels survive master edits (31.372345ms)
+  ✔ SC23 stopping unstarted schedule archives logically and never deletes row (20.37682ms)
+  ✔ SC24 bulk preview binds actor and is read-only; no cross-account commit (59.034623ms)
+  ✔ SC25 bulk preview stales on schedule/calendar changes with no partial writes (36.733225ms)
+  ✔ SC26 injected failure after first bulk item rolls back whole batch and consumption (42.219144ms)
+  ✔ SC27 bulk expiry/duplicate validation, atomic success and one-use replay (59.578224ms)
+  ✔ SC28 least privilege blocks raw tables, helpers, private previews and worker/auth entry points (24.824313ms)
+  ✔ SC29 HTTP create/list/recaps and collision envelopes do not leak SQL or hash (84.344899ms)
+  ✔ SC30 new unsupported exam/occurrence/finance modules fail closed until adapter integrated (39.029151ms)
+✔ Tahap 2.4 — weekly teaching schedules and atomic resource conflicts (14665.839114ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17765.236784

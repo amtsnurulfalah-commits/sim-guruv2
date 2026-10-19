@@ -448,9 +448,10 @@ export function CalendarManager() {
         </label>
         {day && <ContextSummary value={day} />}
         <p className="text-sm leading-7 text-muted-foreground">
-          Modul penugasan, ujian dan keuangan belum terpasang. Status mode tidak
-          membuat penugasan atau hak kredit. Pemindaian bentrok lintas modul
-          wajib dihubungkan saat modul tersebut ditambahkan.
+          Jadwal KBM sudah terhubung; ujian dan keuangan belum terpasang. Status
+          mode tidak membuat penugasan atau hak kredit. Jadwal mingguan
+          diperiksa saat penyimpanan; pemeriksaan ujian/keuangan wajib
+          dihubungkan saat modulnya ditambahkan.
         </p>
         <nav className="flex flex-wrap gap-2" aria-label="Tindakan kalender">
           {(["entry", "range", "context"] as const).map((v) => (
@@ -715,9 +716,9 @@ export function CalendarManager() {
               ))}
             </div>
             <p className="text-sm leading-6">
-              Belum ada modul penugasan untuk dipindai. Tidak ada bonus/jurnal
-              yang dihasilkan tahap ini. Jika modul penugasan/keuangan dipasang
-              tanpa integrasi pemeriksaan, perubahan ditolak oleh server.
+              Jadwal KBM telah terhubung. Tidak ada bonus/jurnal yang dihasilkan
+              tahap ini. Jika modul penugasan/keuangan dipasang tanpa integrasi
+              pemeriksaan, perubahan ditolak oleh server.
             </p>
             {error && <p role="alert">{error}</p>}
             <div className="flex justify-end gap-3">
