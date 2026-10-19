@@ -162,3 +162,27 @@ test("worker requires its own LOGIN and mail supports the Resend integration key
     false,
   );
 });
+
+test("Gmail SMTP requires TLS and matching sender, without a Resend key", () => {
+  const source = {
+    MAIL_PROVIDER: "gmail",
+    SMTP_HOST: "smtp.gmail.com",
+    SMTP_PORT: "465",
+    SMTP_SECURE: "true",
+    SMTP_USER: "sender@gmail.com",
+    MAIL_FROM: "sender@gmail.com",
+    SMTP_PASSWORD: "abcd efgh ijkl mnop",
+  };
+  const result = parseEnvironment("mail", source);
+  assert.equal(result.ok, true);
+  if (result.ok && result.value.MAIL_PROVIDER === "gmail")
+    assert.equal(result.value.SMTP_PASSWORD, "abcdefghijklmnop");
+  for (const patch of [
+    { SMTP_SECURE: "false" },
+    { SMTP_PORT: "25" },
+    { SMTP_HOST: "other.test" },
+    { MAIL_FROM: "other@gmail.com" },
+    { SMTP_PASSWORD: "" },
+  ])
+    assert.equal(parseEnvironment("mail", { ...source, ...patch }).ok, false);
+});

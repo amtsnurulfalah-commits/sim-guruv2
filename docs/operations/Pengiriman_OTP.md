@@ -26,3 +26,22 @@ Migrasi security_otp_dispatch menambah claim_security_otp(uuid), SECURITY DEFINE
 `npm run db:verify-mail-worker` adalah probe operator read-only, dijalankan dengan environment production, memeriksa LOGIN, privilege dan TLS tanpa claim atau kirim email. Probe TCP dari scratch tertahan EAI_AGAIN; probe deployment khusus sudah lulus di Vercel dengan perintah build override sementara. Probe membuktikan koneksi pooler, identitas worker, TLS dan privilege tanpa mengambil pesan atau mengirim email; lihat ../verification/otp-fix-worker-runtime-probe.json.
 
 Pengiriman ke inbox nyata belum terbukti sebelum API key/sender aktif. Tidak ada OTP nyata dibaca atau dikirim manual dalam pengujian ini.
+
+## Gmail SMTP
+
+Pilih `MAIL_PROVIDER=gmail`. Wajib mengisi `SMTP_HOST=smtp.gmail.com`,
+`SMTP_PORT=465`, `SMTP_SECURE=true`, `SMTP_USER`, `SMTP_PASSWORD`, dan
+`MAIL_FROM` yang sama dengan `SMTP_USER`. Password memakai Google App Password
+16 karakter (spasi tampilan Google dinormalisasi), bukan password akun.
+Simpan sebagai Secret di Vercel Production. Resend tetap didukung jika dipilih
+secara eksplisit; API key Resend tidak diperlukan untuk Gmail.
+
+Transport memakai Nodemailer dengan verifikasi sertifikat TLS dan tanpa log
+SMTP. Status accepted hanya berarti Gmail menerima pesan, bukan jaminan masuk
+inbox. SMTP tidak menyediakan idempotency key; koneksi terputus pada DATA diberi
+status unknown untuk menghindari pengiriman ulang otomatis yang tidak pasti.
+Antrean, enkripsi OTP, masa berlaku, cooldown dan izin worker tetap berlaku.
+
+`node --conditions=react-server --import tsx scripts/verify-gmail.ts` memeriksa
+koneksi TLS dan autentikasi tanpa mengirim email. Jalankan pada lingkungan yang
+memiliki secret; hasil tidak menampilkan kredensial atau alamat pengirim.

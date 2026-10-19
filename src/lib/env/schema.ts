@@ -56,11 +56,34 @@ const schemas = {
       }
     }),
   }),
-  mail: z.object({
-    MAIL_PROVIDER: z.literal("resend"),
-    MAIL_API_KEY: z.string().trim().min(1),
-    MAIL_FROM: z.email(),
-  }),
+  mail: z.discriminatedUnion("MAIL_PROVIDER", [
+    z.object({
+      MAIL_PROVIDER: z.literal("resend"),
+      MAIL_API_KEY: z.string().trim().min(1),
+      MAIL_FROM: z.email(),
+    }),
+    z
+      .object({
+        MAIL_PROVIDER: z.literal("gmail"),
+        MAIL_FROM: z.email(),
+        SMTP_HOST: z.literal("smtp.gmail.com"),
+        SMTP_PORT: z.literal("465"),
+        SMTP_SECURE: z.literal("true"),
+        SMTP_USER: z.email(),
+        SMTP_PASSWORD: z
+          .string()
+          .transform((value) => value.replace(/\s/g, ""))
+          .pipe(z.string().regex(/^[a-zA-Z0-9]{16}$/)),
+      })
+      .refine(
+        (value) =>
+          value.MAIL_FROM.toLowerCase() === value.SMTP_USER.toLowerCase(),
+        {
+          path: ["MAIL_FROM"],
+          message: "Pengirim harus sama dengan akun Gmail.",
+        },
+      ),
+  ]),
   jobs: z.object({ CRON_SECRET: secret }),
 } as const;
 export const environmentScopes = [

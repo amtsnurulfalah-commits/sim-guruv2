@@ -3,7 +3,8 @@ import { requireEnvironment } from "../env";
 import { AuthError } from "../auth/service";
 import { getWorkerDatabase } from "../auth/runtime";
 import type { SecurityOtpDelivery } from "../accounts/http";
-import { ResendMailAdapter, SecurityOutboxWorker } from "./security-outbox";
+import { SecurityOutboxWorker } from "./security-outbox";
+import { createMailAdapter } from "./adapter";
 
 export function createSecurityOtpDelivery(deps: {
   ready(): void;
@@ -36,7 +37,7 @@ export const securityOtpDelivery = createSecurityOtpDelivery({
     const mail = requireEnvironment("mail");
     return new SecurityOutboxWorker(
       getWorkerDatabase(),
-      new ResendMailAdapter(mail.MAIL_API_KEY, mail.MAIL_FROM),
+      createMailAdapter(mail),
       requireEnvironment("auth").AUTH_OUTBOX_ENCRYPTION_KEY,
       requireEnvironment("core").APP_URL,
     );

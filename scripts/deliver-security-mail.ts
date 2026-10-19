@@ -1,9 +1,7 @@
 import postgres from "postgres";
 import { requireEnvironment } from "../src/server/env";
-import {
-  ResendMailAdapter,
-  SecurityOutboxWorker,
-} from "../src/server/mail/security-outbox";
+import { SecurityOutboxWorker } from "../src/server/mail/security-outbox";
+import { createMailAdapter } from "../src/server/mail/adapter";
 import { postgresExecutor } from "./lib/postgres-executor";
 async function main() {
   const mail = requireEnvironment("mail"),
@@ -31,7 +29,7 @@ async function main() {
     const db = postgresExecutor(client);
     const worker = new SecurityOutboxWorker(
       db,
-      new ResendMailAdapter(mail.MAIL_API_KEY, mail.MAIL_FROM),
+      createMailAdapter(mail),
       auth.AUTH_OUTBOX_ENCRYPTION_KEY,
       core.APP_URL,
     );
