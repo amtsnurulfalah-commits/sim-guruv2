@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DayContextCard } from "@/features/calendar/day-context-card";
 import { ArrowRight, BookOpenCheck, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModuleCards } from "./module-cards";
@@ -23,6 +24,7 @@ export function DashboardView({
             : "Ruang kerja guru. Akses pengamanan akun dan pantau kesiapan modul kegiatan Anda."}
         </p>
       </header>
+      <DayContextCard />
       <section
         className="grid gap-5 md:grid-cols-2"
         aria-label="Akses yang tersedia"

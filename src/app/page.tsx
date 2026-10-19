@@ -119,7 +119,7 @@ export default function HomePage() {
       </main>
       <footer className="mx-auto flex max-w-6xl flex-wrap justify-between gap-2 border-t px-5 py-6 text-xs text-muted-foreground sm:px-8">
         <p>SiM-Guru · Sistem Informasi Guru</p>
-        <p>Tahap 2.2 · Manajemen pengguna</p>
+        <p>Tahap 2.3 · Manajemen pengguna</p>
       </footer>
     </div>
   );

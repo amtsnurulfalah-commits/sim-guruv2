@@ -23,6 +23,16 @@ type Dependencies = {
   service: () => Promise<LocalAuthService>;
 };
 const messages: Record<string, string> = {
+  CALENDAR_INVALID:
+    "Tanggal, data kalender atau periode akademik tidak sesuai aturan.",
+  CALENDAR_PAST:
+    "Tanggal lampau tidak dapat diubah melalui kalender biasa. Gunakan alur koreksi historis yang sah.",
+  CALENDAR_PREVIEW_INVALID:
+    "Pratinjau sudah dipakai, kedaluwarsa, atau tidak sesuai tindakan/akun. Buat pratinjau baru.",
+  CALENDAR_PREVIEW_STALE:
+    "Kalender atau periode akademik berubah sejak pratinjau. Muat ulang dan periksa pratinjau baru.",
+  CONTEXT_DEPENDENCY_UNAVAILABLE:
+    "Integrasi pemeriksaan penugasan/keuangan belum tersedia. Perubahan dihentikan sampai integrasi lengkap.",
   MASTER_INVALID: "Data master tidak sesuai aturan atau relasi yang dipilih.",
   MASTER_OVERLAP:
     "Rentang tanggal bertumpang tindih dengan data yang sudah ada.",
@@ -102,6 +112,15 @@ export async function handleAuthRequest(
       ].includes(code) ||
       code.startsWith("08");
     const dbMessage = error instanceof Error ? error.message : "";
+    const calendarCode = [
+      "CALENDAR_INVALID",
+      "CALENDAR_PAST",
+      "CALENDAR_PREVIEW_INVALID",
+      "CALENDAR_PREVIEW_STALE",
+      "CONTEXT_DEPENDENCY_UNAVAILABLE",
+    ].includes(dbMessage)
+      ? dbMessage
+      : null;
     const masterCode = [
       "MASTER_INVALID",
       "MASTER_OVERLAP",
@@ -113,41 +132,54 @@ export async function handleAuthRequest(
       : ["23503", "23514", "23502", "22007", "22008", "22P02"].includes(code)
         ? "MASTER_INVALID"
         : null;
-    const mapped = masterCode
+    const mapped = calendarCode
       ? new AuthError(
-          masterCode,
-          masterCode === "MASTER_OVERLAP" || masterCode === "MASTER_REFERENCED"
-            ? 409
-            : 422,
+          calendarCode,
+          calendarCode === "CONTEXT_DEPENDENCY_UNAVAILABLE"
+            ? 503
+            : calendarCode === "CALENDAR_PREVIEW_STALE" ||
+                calendarCode === "CALENDAR_PREVIEW_INVALID"
+              ? 409
+              : calendarCode === "CALENDAR_PAST"
+                ? 403
+                : 422,
         )
-      : [
-            "UNAUTHENTICATED",
-            "ONBOARDING_REQUIRED",
-            "FORBIDDEN",
-            "MAINTENANCE",
-            "LAST_ACTIVE_ADMIN",
-            "VERIFIED_EMAIL_IMMUTABLE",
-            "ARCHIVED_READ_ONLY",
-            "INVALID_STATUS_TRANSITION",
-            "RECOVERY_REQUEST_INVALID",
-            "ACTIVATION_NOT_ALLOWED",
-            "NOT_FOUND",
-          ].includes(dbMessage)
+      : masterCode
         ? new AuthError(
-            dbMessage,
-            dbMessage === "NOT_FOUND"
-              ? 404
-              : dbMessage === "INVALID_STATUS_TRANSITION"
-                ? 422
-                : dbMessage === "UNAUTHENTICATED"
-                  ? 401
-                  : dbMessage === "MAINTENANCE"
-                    ? 503
-                    : 403,
+            masterCode,
+            masterCode === "MASTER_OVERLAP" ||
+              masterCode === "MASTER_REFERENCED"
+              ? 409
+              : 422,
           )
-        : code === "23505" || dbMessage === "VERSION_CONFLICT"
-          ? new AuthError("CONFLICT", 409)
-          : null;
+        : [
+              "UNAUTHENTICATED",
+              "ONBOARDING_REQUIRED",
+              "FORBIDDEN",
+              "MAINTENANCE",
+              "LAST_ACTIVE_ADMIN",
+              "VERIFIED_EMAIL_IMMUTABLE",
+              "ARCHIVED_READ_ONLY",
+              "INVALID_STATUS_TRANSITION",
+              "RECOVERY_REQUEST_INVALID",
+              "ACTIVATION_NOT_ALLOWED",
+              "NOT_FOUND",
+            ].includes(dbMessage)
+          ? new AuthError(
+              dbMessage,
+              dbMessage === "NOT_FOUND"
+                ? 404
+                : dbMessage === "INVALID_STATUS_TRANSITION"
+                  ? 422
+                  : dbMessage === "UNAUTHENTICATED"
+                    ? 401
+                    : dbMessage === "MAINTENANCE"
+                      ? 503
+                      : 403,
+            )
+          : code === "23505" || dbMessage === "VERSION_CONFLICT"
+            ? new AuthError("CONFLICT", 409)
+            : null;
     const auth =
       error instanceof AuthError
         ? error

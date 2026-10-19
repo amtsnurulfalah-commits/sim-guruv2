@@ -1,0 +1,35 @@
+▶ Tahap 2.3 — calendar and one operational DayContext
+  ✔ CA01 incremental upgrade leaves identities intact, repeat no-op, all23 tables FORCE RLS (95.620528ms)
+  ✔ CA02 admin list denied for anonymous/guru/onboard; shared context only business sessions (105.53713ms)
+  ✔ CA03 origin/CSRF/method/actor spoof rejected before mutation (21.208316ms)
+  ✔ CA04 default weekday has KBM, no invented exams, no period outside configured range (73.608089ms)
+  ✔ CA05 nonholiday preview is read-only and keeps KBM active (T41/B25) (62.985019ms)
+  ✔ CA06 one-use actor-bound/action-bound previews prevent replay and ID substitution (53.593329ms)
+  ✔ CA07 stale preview detects calendar changes without partial writes (33.141233ms)
+  ✔ CA08 academic period change invalidates preview even if calendar row unchanged (32.047673ms)
+  ✔ CA09 expired preview is denied without consuming or modifying source (34.546832ms)
+  ✔ CA10 holiday disables regular KBM/exam; description alone does not (30.488197ms)
+  ✔ CA11 CAS rejects old row version before preview (6.618749ms)
+  ✔ CA12 delete is audited tombstone; restores default and re-add requires tombstone version (72.207811ms)
+  ✔ CA13 range preview and commit cover inclusive dates and create one audited entry per date (62.324174ms)
+  ✔ CA14 range collision aborts all dates; no partial overwrite or lost reason (22.244158ms)
+  ✔ CA15 impossible/inverted/oversized ranges and historical writes rejected (13.424279ms)
+  ✔ CA16 Sunday does not create activity or credit; explicit dated override only changes requested mode (29.575436ms)
+  ✔ CA17 holiday takes precedence over requested mode; clearing override reverts Sunday policy (86.093269ms)
+  ✔ CA18 explicit context requires existing nonarchived semester containing the exact date (20.594092ms)
+  ✔ CA19 parent range/archival cannot invalidate live dated override (30.23916ms)
+  ✔ CA20 dataset search/filter and stable paging; nonholiday does not match holiday filter (32.608245ms)
+  ✔ CA21 context version changes with relevant calendar or semester revisions, no stale cache (26.345492ms)
+  ✔ CA22 unintegrated installed scheduling module fails closed for resolver and mutation (20.46801ms)
+  ✔ CA23 least privilege and full audits exclude hashes or session proof (33.271355ms)
+  ✔ CA24 HTTP preview/commit returns no-store and maps expired/stale safely (121.110421ms)
+  ✔ CA25 revoked session cannot read context or commit despite owning prior preview (33.468402ms)
+✔ Tahap 2.3 — calendar and one operational DayContext (12242.33963ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14895.352695

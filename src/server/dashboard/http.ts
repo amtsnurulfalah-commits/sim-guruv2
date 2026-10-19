@@ -8,9 +8,12 @@ import {
   requestCookie,
   type HttpAuthConfig,
 } from "../auth/security";
+import type { CalendarService } from "../calendar/service";
+import { wibDate } from "../../lib/calendar/schemas";
 import { dashboardDto } from "./query";
 export function createDashboardHandler(deps: {
   config: () => HttpAuthConfig;
+  calendar?: () => Promise<CalendarService>;
   service: () => Promise<LocalAuthService>;
 }) {
   return (request: Request) =>
@@ -23,6 +26,12 @@ export function createDashboardHandler(deps: {
       );
       if (!opaqueToken(token)) throw new AuthError("UNAUTHENTICATED", 401);
       const session = await (await deps.service()).requireSession(token, true);
-      return authResponse(dashboardDto(session), requestId);
+      const dayContext = deps.calendar
+        ? await (await deps.calendar()).context(token, { date: wibDate() })
+        : undefined;
+      return authResponse(
+        { ...dashboardDto(session), ...(dayContext ? { dayContext } : {}) },
+        requestId,
+      );
     });
 }

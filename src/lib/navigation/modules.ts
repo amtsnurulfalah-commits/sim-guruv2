@@ -84,6 +84,8 @@ export const modules: readonly AppModule[] = [
   },
   {
     slug: "kalender",
+    href: "/admin/kalender",
+    available: true,
     title: "Kalender akademik",
     description: "Kalender akademik dan pengelolaan hari libur.",
     group: "Administrasi",

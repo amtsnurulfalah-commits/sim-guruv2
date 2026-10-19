@@ -43,3 +43,7 @@ Migrasi user_management telah diterapkan dan ledger berisi7 migrasi. Entry point
 ## Pembaruan Tahap 2.2
 
 Migrasi academic_masters telah diterapkan, ledger8 migrasi dan19 tabel domain memakai ENABLE/FORCE RLS. Role business hanya memperoleh entry point master, tanpa DML tabel/helper/hash. Security advisor tanpa temuan; native probe di-rollback tanpa menyisakan data sekolah/tarif contoh. Admin bootstrap telah dibuat sebelumnya; migrasi tidak mengubahnya. Onboarding dan email nyata tetap menunggu konfigurasi layanan email. Cakupan dan batas: Master_Tahap_2_2.md serta ../verification/Tahap_2_2.md.
+
+## Pembaruan Tahap 2.3
+
+Migrasi calendar_day_context diterapkan; ledger9 migrasi,23 tabel domain ENABLE/FORCE RLS. Security advisor tanpa temuan. Probe native di-rollback; pengguna tetap1 dan calendar/override/preview masing-masing0. Resolver, preview/commit, audit dan dashboard memakai DayContext bersama. Tidak ada kalender/libur contoh atau kredit/jurnal otomatis tersimpan. Onboarding/email admin nyata masih menunggu konfigurasi. Lihat Kalender_Tahap_2_3.md dan ../verification/Tahap_2_3.md.
