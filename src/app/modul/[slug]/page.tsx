@@ -28,6 +28,7 @@ export default async function ModulePage({
       />
     );
   if (!canViewModule(result.session.role, entry)) redirect("/dashboard");
+  if (entry.href) redirect(entry.href);
   return (
     <AuthenticatedWorkspace>
       <div className="max-w-2xl space-y-6">

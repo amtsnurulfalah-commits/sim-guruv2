@@ -23,6 +23,17 @@ type Dependencies = {
   service: () => Promise<LocalAuthService>;
 };
 const messages: Record<string, string> = {
+  LAST_ACTIVE_ADMIN:
+    "Harus tetap ada administrator aktif yang sudah menyelesaikan pengamanan akun.",
+  VERIFIED_EMAIL_IMMUTABLE:
+    "Email terverifikasi hanya dapat diganti melalui pemulihan identitas yang sah.",
+  ARCHIVED_READ_ONLY: "Akun telah diarsipkan dan tidak dapat diubah.",
+  INVALID_STATUS_TRANSITION: "Perubahan status akun tidak diizinkan.",
+  RECOVERY_REQUEST_INVALID:
+    "Permintaan pemulihan tidak cocok, sudah diproses, atau kedaluwarsa.",
+  ACTIVATION_NOT_ALLOWED:
+    "Aktivasi ulang hanya tersedia untuk akun yang menunggu aktivasi.",
+  NOT_FOUND: "Pengguna atau permintaan tidak ditemukan.",
   CHALLENGE_INVALID:
     "Kode atau tautan tidak berlaku, sudah digunakan, atau kedaluwarsa.",
   CONFLICT:
@@ -88,14 +99,25 @@ export async function handleAuthRequest(
       "ONBOARDING_REQUIRED",
       "FORBIDDEN",
       "MAINTENANCE",
+      "LAST_ACTIVE_ADMIN",
+      "VERIFIED_EMAIL_IMMUTABLE",
+      "ARCHIVED_READ_ONLY",
+      "INVALID_STATUS_TRANSITION",
+      "RECOVERY_REQUEST_INVALID",
+      "ACTIVATION_NOT_ALLOWED",
+      "NOT_FOUND",
     ].includes(dbMessage)
       ? new AuthError(
           dbMessage,
-          dbMessage === "UNAUTHENTICATED"
-            ? 401
-            : dbMessage === "MAINTENANCE"
-              ? 503
-              : 403,
+          dbMessage === "NOT_FOUND"
+            ? 404
+            : dbMessage === "INVALID_STATUS_TRANSITION"
+              ? 422
+              : dbMessage === "UNAUTHENTICATED"
+                ? 401
+                : dbMessage === "MAINTENANCE"
+                  ? 503
+                  : 403,
         )
       : code === "23505" || dbMessage === "VERSION_CONFLICT"
         ? new AuthError("CONFLICT", 409)

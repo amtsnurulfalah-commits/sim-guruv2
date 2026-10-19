@@ -11,7 +11,7 @@ export default function ReadinessPage() {
     <Workspace>
       <header className="mb-8 space-y-3">
         <p className="text-xs font-semibold tracking-widest uppercase text-primary">
-          Catatan rilis · Tahap 1.6
+          Catatan rilis · Tahap 2.1
         </p>
         <h1 className="text-3xl font-bold tracking-tight">
           Status pengembangan
@@ -32,9 +32,9 @@ export default function ReadinessPage() {
           />
           <h2 className="text-lg font-bold">Fondasi dan akun tersedia</h2>
           <p className="mt-3 text-sm leading-7 text-muted-foreground">
-            Login, sesi, profil, onboarding, pemulihan akun dan kerangka
-            dashboard tersedia. Koneksi database dan pemisahan hak akses sudah
-            diverifikasi.
+            Login, sesi, profil, onboarding, pemulihan dan manajemen pengguna
+            serta kerangka dashboard tersedia. Koneksi database dan pemisahan
+            hak akses sudah diverifikasi.
           </p>
           <Button asChild variant="outline" className="mt-5">
             <Link href="/dashboard">Buka ruang kerja</Link>
@@ -54,11 +54,11 @@ export default function ReadinessPage() {
       </section>
       <section aria-labelledby="planned-heading">
         <h2 id="planned-heading" className="mb-2 text-xl font-bold">
-          Modul yang akan dikembangkan
+          Ketersediaan modul
         </h2>
         <p className="mb-5 text-sm leading-7 text-muted-foreground">
-          Daftar cakupan guru dan administrasi. Halaman ini tidak memberikan
-          akses atau kewenangan akun.
+          Daftar cakupan guru dan administrasi beserta status implementasinya.
+          Halaman ini tidak memberikan akses atau kewenangan akun.
         </p>
         <ModuleCards items={modules} linked={false} />
       </section>

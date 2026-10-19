@@ -35,3 +35,7 @@ Deployment probe `dpl_GY7jrGz3ABfZo4J5pqwqUcGThovS` dari commit `036689d` bersta
 ## Pembaruan Tahap 1.5
 
 Migrasi account_lifecycle sudah diterapkan; ledger6 migrasi dan security advisor tanpa temuan. Profil/onboarding/OTP/reset/admin recovery serta adapter outbox minimum tersedia. Konfigurasi MAIL_PROVIDER/MAIL_API_KEY/MAIL_FROM dan LOGIN worker belum tersedia; email nyata belum aktif. Lihat Akun_Tahap_1_5.md dan ../verification/Tahap_1_5.md.
+
+## Pembaruan Tahap 2.1
+
+Migrasi user_management telah diterapkan dan ledger berisi7 migrasi. Entry point manajemen pengguna hanya diberikan kepada role auth, helper tetap privat. Probe native rollback dan security advisor lolos, akun aplikasi tetap0. API/UI admin tersedia setelah deployment source tahap2.1; lihat Pengguna_Tahap_2_1.md dan ../verification/Tahap_2_1.md. Email provider/sender/worker dan admin bootstrap tetap belum diprovision.

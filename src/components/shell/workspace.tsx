@@ -121,7 +121,7 @@ export function Workspace({
             <div key={group} className="border-t pt-2">
               {list.map((m) =>
                 item(
-                  "/modul/" + m.slug,
+                  m.href ?? "/modul/" + m.slug,
                   m.title,
                   group === "Kegiatan" ? BookOpen : Settings2,
                 ),
@@ -136,7 +136,7 @@ export function Workspace({
               <div className="space-y-1">
                 {list.map((m) =>
                   item(
-                    "/modul/" + m.slug,
+                    m.href ?? "/modul/" + m.slug,
                     m.title,
                     group === "Kegiatan" ? CalendarDays : Settings2,
                   ),
@@ -225,7 +225,7 @@ export function Workspace({
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden rounded-full border bg-muted px-3 py-1 text-xs sm:inline">
-              Tahap 1.6
+              Tahap 2.1
             </span>
             {onLogout ? (
               <Button variant="outline" onClick={onLogout}>

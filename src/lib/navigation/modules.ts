@@ -6,6 +6,8 @@ export type AppModule = {
   group: "Kegiatan" | "Administrasi";
   stage: string;
   adminOnly?: boolean;
+  href?: string;
+  available?: boolean;
 };
 export const modules: readonly AppModule[] = [
   {
@@ -62,6 +64,8 @@ export const modules: readonly AppModule[] = [
   },
   {
     slug: "pengguna",
+    href: "/admin/pengguna",
+    available: true,
     title: "Manajemen pengguna",
     description: "Kelola pengguna, peran dan status akses akun madrasah.",
     group: "Administrasi",
