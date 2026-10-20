@@ -19,7 +19,7 @@
   },
   "supabase": {
     "projectId": "aeethjbvdaydzdmqhawt",
-    "domainMigrationCount": 15,
+    "domainMigrationCount": 17,
     "forcedRlsTables": 57,
     "securityAdvisorFindings": 0,
     "remainingProbeUsers": 0,
@@ -37,23 +37,28 @@
       {
         "name": "20261020022247_exam_api_attendance_stage5.sql",
         "checksum": "bdfd4d3cdd4145e675c0eaf1bac6809b5c8ad9e3a658957c2f3620f7af7eb538",
-        "appliedInProduction": false
+        "appliedInProduction": true
       },
       {
         "name": "20261020045419_exam_attendance_guards_stage5.sql",
         "checksum": "8f52e9ae8b9b2e8e1d8ce290262f3d3fc7d8ddfb829dfbffc88aaf59c3290dd9",
-        "appliedInProduction": false
+        "appliedInProduction": true
       }
     ],
-    "releaseBlocked": true,
-    "error": "McpServerError: Invalid or expired requestState",
+    "releaseBlocked": false,
     "pendingDatabaseTransaction": false,
-    "nativeProductionProbe": "not run: exam API migration unavailable"
+    "nativeProductionProbe": "passed: six invariant checks; all fixtures rolled back",
+    "nativeRollbackChecks": 6,
+    "nativeTwoConnectionRaceVerified": false,
+    "dashboardAppliedMigrations": [
+      "20261020022247_exam_api_attendance_stage5.sql",
+      "20261020045419_exam_attendance_guards_stage5.sql"
+    ]
   },
   "production": {
     "released": false,
     "previousPhase": "4.4",
-    "pending": "Two remaining migrations, then source release and native/HTTP verification"
+    "pending": "Merge reviewed source and verify Vercel production deployment"
   },
   "sendsEmail": false
 }
