@@ -149,6 +149,11 @@ export function MigrationManager() {
                     {i.source_table} · baris {i.row_number ?? "—"} ·{" "}
                     {i.field ?? "—"} · {i.code} ·{" "}
                     {i.resolution ? "Ditinjau" : "Belum selesai"}
+                    {i.resolution && (
+                      <span className="block text-sm">
+                        Hasil tinjauan: {i.resolution}
+                      </span>
+                    )}
                   </p>
                   {i.severity === "review" && !i.resolution && (
                     <DataForm
@@ -184,6 +189,11 @@ export function MigrationManager() {
                   {b.gates.find((x) => x.gate === g)?.passed
                     ? "Disetujui dengan bukti"
                     : "Belum disetujui"}
+                  {b.gates.find((x) => x.gate === g)?.evidence && (
+                    <span className="block text-sm">
+                      Bukti: {b.gates.find((x) => x.gate === g)!.evidence}
+                    </span>
+                  )}
                 </p>
               ))}
               <DataForm

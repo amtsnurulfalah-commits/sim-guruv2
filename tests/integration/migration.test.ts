@@ -430,6 +430,102 @@ test("Tahap 8 staging, operator import, reconciliation and isolated restore", as
     },
   );
   await t.test(
+    "MIG11 historical honor is imported exactly, immutable and locks its period",
+    async () => {
+      const batch = randomUUID(),
+        period = randomUUID(),
+        statement = randomUUID();
+      await db.query(
+        "insert into ops.migration_batches(id,source,source_checksum,exported_at,state,summary,metadata,created_by) values($1,'history-fixture',$2,clock_timestamp(),'validated','{}','{}',$3)",
+        [batch, "a".repeat(64), adminId],
+      );
+      await db.query(
+        "insert into ops.migration_staging_rows(batch_id,source_table,row_number,legacy_id,raw_payload,normalized_payload) values($1,'Honor_History',2,'hist1','{}','{}')",
+        [batch],
+      );
+      for (const gate of ["source_backup", "restore_drill", "rollback_plan"])
+        await db.query(
+          "insert into ops.migration_gates(batch_id,gate,passed,evidence,actor_id) values($1,$2,true,'Synthetic operator proof only',$3)",
+          [batch, gate, adminId],
+        );
+      const historical: ImportPlan = {
+        version: 1,
+        batchId: batch,
+        sourceChecksum: "a".repeat(64),
+        reason,
+        entries: [
+          {
+            sourceTable: "Honor_History",
+            legacyId: "hist1",
+            targetTable: "finance.honor_periods",
+            values: {
+              id: period,
+              period_start: "2024-01-01",
+              state: "final",
+              finalized_at: "2024-02-01T00:00:00Z",
+              formula_version: "legacy",
+            },
+          },
+          {
+            sourceTable: "Honor_History",
+            legacyId: "hist1",
+            targetTable: "finance.honor_statements",
+            values: {
+              id: statement,
+              period_id: period,
+              user_id: otherId,
+              trx_id: "LEGACY-SYNTHETIC-01",
+              snapshot: {
+                formulaVersion: "legacy",
+                total: "9007199254740993",
+                totalJtm: "1.2345",
+              },
+              total_jtm: "1.2345",
+              total_honor: "9007199254740993",
+              checksum: "b".repeat(64),
+            },
+          },
+        ],
+      };
+      const unsafe = structuredClone(historical);
+      unsafe.entries[1]!.values.total_honor = 9007199254740992;
+      await assert.rejects(
+        () => applyImportPlan(db, unsafe, planHash(unsafe)),
+        /EXACT_NUMERIC_STRING_REQUIRED/,
+      );
+      await applyImportPlan(db, historical, planHash(historical));
+      assert.equal(
+        (
+          await db.query(
+            "select total_honor::text value from finance.honor_statements where id=$1",
+            [statement],
+          )
+        ).rows[0]!.value,
+        "9007199254740993",
+      );
+      assert.ok(
+        (
+          await db.query(
+            "select finalized_at from finance.period_guards where period_start='2024-01-01'",
+          )
+        ).rows[0]!.finalized_at,
+      );
+      await assert.rejects(
+        () =>
+          db.query(
+            "update finance.honor_statements set total_honor=1 where id=$1",
+            [statement],
+          ),
+        /FINAL_IMMUTABLE/,
+      );
+      await assert.rejects(
+        () => db.query("select finance.guard_open('2024-01-15'::date)"),
+        /FINAL_PERIOD/,
+      );
+      assert.equal((await reconcilePlan(db, historical)).matched, true);
+    },
+  );
+  await t.test(
     "MIG09 AES-GCM authenticates archives and rejects corruption/wrong keys",
     async () => {
       const key = randomBytes(32).toString("hex"),

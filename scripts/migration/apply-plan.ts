@@ -66,9 +66,17 @@ export async function applyImportPlan(
         )
       ).rows;
       if (source.length !== 1) throw new Error("STAGING_SOURCE_NOT_UNIQUE");
+      if (e.targetTable === "finance.honor_statements") {
+        const historicalPeriod = await tx.query(
+          "select 1 from finance.honor_periods where id=$1 and state='final' and formula_version='legacy'",
+          [String(e.values.period_id)],
+        );
+        if (!historicalPeriod.rows.length)
+          throw new Error("LEGACY_FINAL_PERIOD_REQUIRED");
+      }
       const columns = (
-        await tx.query<{ name: string; primary: boolean }>(
-          "select a.attname name,exists(select 1 from pg_index i where i.indrelid=a.attrelid and i.indisprimary and a.attnum=any(i.indkey)) primary from pg_attribute a where a.attrelid=$1::regclass and a.attnum>0 and not a.attisdropped and a.attgenerated=''",
+        await tx.query<{ name: string; primary: boolean; numeric: boolean }>(
+          "select a.attname name,a.atttypid='numeric'::regtype numeric,exists(select 1 from pg_index i where i.indrelid=a.attrelid and i.indisprimary and a.attnum=any(i.indkey)) primary from pg_attribute a where a.attrelid=$1::regclass and a.attnum>0 and not a.attisdropped and a.attgenerated=''",
           [e.targetTable],
         )
       ).rows;
@@ -76,6 +84,16 @@ export async function applyImportPlan(
         keys = Object.keys(e.values);
       if (!keys.length || keys.some((k) => !valid.has(k)))
         throw new Error("UNKNOWN_TARGET_COLUMN");
+      if (
+        columns.some(
+          (c) =>
+            c.numeric &&
+            c.name in e.values &&
+            e.values[c.name] !== null &&
+            typeof e.values[c.name] !== "string",
+        )
+      )
+        throw new Error("EXACT_NUMERIC_STRING_REQUIRED");
       const primary = columns.filter((c) => c.primary).map((c) => c.name);
       if (
         !primary.length ||
@@ -122,6 +140,16 @@ export async function applyImportPlan(
         ],
       );
       inserted++;
+    }
+    // Historical final periods must lock operational mutations in the same transaction.
+    // Existing finalized guards are never changed or relaxed.
+    for (const e of p.entries.filter(
+      (entry) => entry.targetTable === "finance.honor_periods",
+    )) {
+      await tx.query(
+        "insert into finance.period_guards(period_start,finalized_at) select period_start,finalized_at from finance.honor_periods where id=$1 and state='final' and formula_version='legacy' on conflict(period_start) do update set finalized_at=coalesce(finance.period_guards.finalized_at,excluded.finalized_at)",
+        [String(e.values.id)],
+      );
     }
     await tx.exec(
       "UPDATE ops.domain_outbox o SET state='cancelled' WHERE o.state IN('pending','retry_wait') AND NOT EXISTS(SELECT 1 FROM migration_prior_outbox p WHERE p.id=o.id)",

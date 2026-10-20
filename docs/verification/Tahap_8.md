@@ -4,9 +4,9 @@ Tanggal pemeriksaan: 20 Oktober 2026. Semua fixture pengujian migrasi adalah sin
 
 ## Bukti lokal
 
-`npm run check` lulus lint, typecheck, 28 unit, 13 crypto, 324 hasil integrasi (termasuk 17 parent runner), serta build Next.js. Total 365 hasil runner; bukan 365 skenario bisnis end-to-end. Pemeriksaan ulang terarah dilakukan setelah perbaikan guard kredensial nested dan pemilihan batch UI.
+`npm run check` lulus lint, typecheck, 28 unit, 13 crypto, 325 hasil integrasi (termasuk 17 parent runner), serta build Next.js. Total 366 hasil runner; bukan 365 skenario bisnis end-to-end. Pemeriksaan ulang terarah dilakukan setelah perbaikan guard kredensial nested dan pemilihan batch UI.
 
-Enam unit migrasi memeriksa normalisasi tanggal/waktu/boolean/desimal, nol awal ID, duplicate/orphan, redaksi kredensial/nested secret, checksum kanonis, allowlist target, akun wajib aktivasi dan klasifikasi selisih. Sepuluh skenario integrasi migrasi membuktikan:
+Enam unit migrasi memeriksa normalisasi tanggal/waktu/boolean/desimal, nol awal ID, duplicate/orphan, redaksi kredensial/nested secret, checksum kanonis, allowlist target, akun wajib aktivasi dan klasifikasi selisih. Sebelas skenario integrasi migrasi membuktikan:
 
 1. Lima tabel staging privat FORCE RLS, raw access runtime ditolak, admin-only.
 2. Unggah idempotent, ID nol awal dipertahankan, password lama tidak disimpan.
@@ -18,6 +18,7 @@ Enam unit migrasi memeriksa normalisasi tanggal/waktu/boolean/desimal, nol awal 
 8. Cutover membutuhkan sembilan bukti pendukung; perubahan bukti membatalkan persetujuan.
 9. AES-GCM menolak key salah dan arsip yang dimodifikasi.
 10. Snapshot PGlite dipulihkan ke instance baru; inventori, agregat keuangan, role/RLS dan penolakan raw access dibandingkan.
+11. Honor historis mempertahankan nilai di atas batas presisi Number, menolak float NUMERIC, immutable, dan mengunci periode pada transaksi impor.
 
 Uji snapshot WASM tersebut tidak membuktikan keberhasilan `pg_dump`/`pg_restore` native. Binary klien PostgreSQL dan target lokal native disposable tidak tersedia dalam lingkungan pemeriksaan ini. Tool backup/restore menyediakan alur native yang harus dijalankan operator dan dilampiri waktu pemulihan/RPO/RTO nyata.
 

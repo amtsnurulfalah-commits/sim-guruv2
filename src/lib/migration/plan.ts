@@ -100,7 +100,9 @@ export const planSchema = z
         });
       if (
         e.targetTable === "finance.honor_periods" &&
-        e.values.formula_version !== "legacy"
+        (e.values.formula_version !== "legacy" ||
+          e.values.state !== "final" ||
+          !e.values.finalized_at)
       )
         ctx.addIssue({
           code: "custom",
