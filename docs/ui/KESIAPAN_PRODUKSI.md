@@ -3,6 +3,10 @@
 Tanggal pemeriksaan: 21 Oktober 2026 WIB (20 Oktober UTC).
 Branch: `feat/production-polish`, dasar main `dfc22986b022de178019abcdd4e2fb8f9cf8b25a`.
 
+> Pembaruan operasional setelah laporan ini: lihat
+> [Aktivasi operasional produksi dan UAT](../verification/AKTIVASI_OPERASIONAL_PRODUKSI.md).
+> Bagian pemeriksaan operasional di bawah merupakan snapshot sebelum aktivasi.
+
 ## Hasil dan cakupan
 
 Antarmuka diarahkan pada tugas guru dan administrator. Perubahan hanya menyentuh
