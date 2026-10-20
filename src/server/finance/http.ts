@@ -43,7 +43,7 @@ export function createFinanceHandler(deps: {
           ["read", "pdf", "excel"].includes(action) && request.method === "GET";
       if (
         !read &&
-        ((!(action in commandSchemas) && action !== "pdf") ||
+        ((!Object.hasOwn(commandSchemas, action) && action !== "pdf") ||
           request.method !== "POST")
       )
         throw new AuthError("FORBIDDEN", 405);
