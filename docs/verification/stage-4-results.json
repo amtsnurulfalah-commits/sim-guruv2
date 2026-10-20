@@ -22,5 +22,13 @@
     "nativeRollbackChecks": 7,
     "remainingProbeUsers": 0
   },
-  "sendsEmail": false
+  "sendsEmail": false,
+  "production": {
+    "deploymentId": "dpl_2Q7dJe991qssyvQNNKSuK1ASLC2c",
+    "sourceCommit": "1cefe48d353772abc698493a3e98e7e7068da8af",
+    "state": "READY",
+    "url": "https://sim-guruv2.vercel.app",
+    "httpGuardChecks": 10,
+    "unhandledRuntimeErrorClustersObserved": 0
+  }
 }

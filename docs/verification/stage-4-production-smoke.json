@@ -1,0 +1,70 @@
+{
+  "ok": true,
+  "baseUrl": "https://sim-guruv2.vercel.app",
+  "verifiedAt": "2026-10-20T01:14:03.016569+00:00",
+  "checks": [
+    {
+      "path": "/api/health",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/api/duties/board",
+      "method": "GET",
+      "status": 401,
+      "ok": true
+    },
+    {
+      "path": "/api/duties/preview",
+      "method": "POST",
+      "status": 403,
+      "ok": true
+    },
+    {
+      "path": "/api/duties/commit",
+      "method": "POST",
+      "status": 403,
+      "ok": true
+    },
+    {
+      "path": "/api/duties/schedule",
+      "method": "POST",
+      "status": 403,
+      "ok": true
+    },
+    {
+      "path": "/api/activities/attendance?from=2026-10-01&to=2026-10-20",
+      "method": "GET",
+      "status": 401,
+      "ok": true
+    },
+    {
+      "path": "/piket",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/upacara",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/admin/piket",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/admin/upacara",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    }
+  ],
+  "usesProductionCredentials": false,
+  "changesDomainData": false,
+  "sendsEmail": false
+}
