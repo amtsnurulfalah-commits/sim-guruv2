@@ -1,0 +1,1271 @@
+{
+  "fixture": true,
+  "realProductionCredentials": false,
+  "matrix": [
+    {
+      "view": "home",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "login",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "lab",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "masters",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "users",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "calendar",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "schedules",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "occurrences",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "attendance",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "students",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "journals",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "duties",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "exams",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "events",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "finance",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "history",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "financeOperations",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "announcements",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "operations",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "migration",
+      "role": "admin",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "occurrences",
+      "role": "guru",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "attendance",
+      "role": "guru",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "students",
+      "role": "guru",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "journals",
+      "role": "guru",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "duties",
+      "role": "guru",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "exams",
+      "role": "guru",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "events",
+      "role": "guru",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "finance",
+      "role": "guru",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "history",
+      "role": "guru",
+      "width": 320,
+      "scroll": 320,
+      "alerts": []
+    },
+    {
+      "view": "home",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "login",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "lab",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "masters",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "users",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "calendar",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "schedules",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "occurrences",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "attendance",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "students",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "journals",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "duties",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "exams",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "events",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "finance",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "history",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "financeOperations",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "announcements",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "operations",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "migration",
+      "role": "admin",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "occurrences",
+      "role": "guru",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "attendance",
+      "role": "guru",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "students",
+      "role": "guru",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "journals",
+      "role": "guru",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "duties",
+      "role": "guru",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "exams",
+      "role": "guru",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "events",
+      "role": "guru",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "finance",
+      "role": "guru",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "history",
+      "role": "guru",
+      "width": 375,
+      "scroll": 375,
+      "alerts": []
+    },
+    {
+      "view": "home",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "login",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "lab",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "masters",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "users",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "calendar",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "schedules",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "occurrences",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "attendance",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "students",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "journals",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "duties",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "exams",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "events",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "finance",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "history",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "financeOperations",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "announcements",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "operations",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "migration",
+      "role": "admin",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "occurrences",
+      "role": "guru",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "attendance",
+      "role": "guru",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "students",
+      "role": "guru",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "journals",
+      "role": "guru",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "duties",
+      "role": "guru",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "exams",
+      "role": "guru",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "events",
+      "role": "guru",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "finance",
+      "role": "guru",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "history",
+      "role": "guru",
+      "width": 767,
+      "scroll": 767,
+      "alerts": []
+    },
+    {
+      "view": "home",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "login",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "lab",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "masters",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "users",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "calendar",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "schedules",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "occurrences",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "attendance",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "students",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "journals",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "duties",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "exams",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "events",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "finance",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "history",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "financeOperations",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "announcements",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "operations",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "migration",
+      "role": "admin",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "occurrences",
+      "role": "guru",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "attendance",
+      "role": "guru",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "students",
+      "role": "guru",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "journals",
+      "role": "guru",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "duties",
+      "role": "guru",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "exams",
+      "role": "guru",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "events",
+      "role": "guru",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "finance",
+      "role": "guru",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "history",
+      "role": "guru",
+      "width": 768,
+      "scroll": 768,
+      "alerts": []
+    },
+    {
+      "view": "home",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "login",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "lab",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "masters",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "users",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "calendar",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "schedules",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "occurrences",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "attendance",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "students",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "journals",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "duties",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "exams",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "events",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "finance",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "history",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "financeOperations",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "announcements",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "operations",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "migration",
+      "role": "admin",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "occurrences",
+      "role": "guru",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "attendance",
+      "role": "guru",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "students",
+      "role": "guru",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "journals",
+      "role": "guru",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "duties",
+      "role": "guru",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "exams",
+      "role": "guru",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "events",
+      "role": "guru",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "finance",
+      "role": "guru",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "history",
+      "role": "guru",
+      "width": 1024,
+      "scroll": 1024,
+      "alerts": []
+    },
+    {
+      "view": "home",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "login",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "lab",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "masters",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "users",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "calendar",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "schedules",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "occurrences",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "attendance",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "students",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "journals",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "duties",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "exams",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "events",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "finance",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "history",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "financeOperations",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "announcements",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "operations",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "migration",
+      "role": "admin",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "occurrences",
+      "role": "guru",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "attendance",
+      "role": "guru",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "students",
+      "role": "guru",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "journals",
+      "role": "guru",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "duties",
+      "role": "guru",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "exams",
+      "role": "guru",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "events",
+      "role": "guru",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "finance",
+      "role": "guru",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    },
+    {
+      "view": "history",
+      "role": "guru",
+      "width": 1440,
+      "scroll": 1440,
+      "alerts": []
+    }
+  ],
+  "interactions": [
+    {
+      "width": 320,
+      "focus": true,
+      "failedSubmission": true,
+      "dirtyClose": true,
+      "checkboxes": true,
+      "nativeEditor": true,
+      "navigation": true
+    },
+    {
+      "width": 375,
+      "focus": true,
+      "failedSubmission": true,
+      "dirtyClose": true,
+      "checkboxes": true,
+      "nativeEditor": true,
+      "navigation": true
+    },
+    {
+      "width": 768,
+      "focus": true,
+      "failedSubmission": true,
+      "dirtyClose": true,
+      "checkboxes": true,
+      "nativeEditor": true,
+      "navigation": true
+    },
+    {
+      "width": 1440,
+      "focus": true,
+      "failedSubmission": true,
+      "dirtyClose": true,
+      "checkboxes": true,
+      "nativeEditor": true,
+      "navigation": true
+    },
+    {
+      "crud": "master-subject",
+      "create": true,
+      "update": true,
+      "archive": true
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "serverErrors": ""
+}

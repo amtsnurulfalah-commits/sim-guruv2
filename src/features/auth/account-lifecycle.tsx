@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { FormDialog } from "@/components/ui/dialog";
+import { notifySuccess } from "@/components/feedback/toast-region";
 import { Button } from "@/components/ui/button";
 import type { ApiResult } from "@/types/api";
 import type { ProfileDto } from "@/lib/accounts/schemas";
@@ -92,20 +94,27 @@ export function ActionForm({
   ) => Promise<string | void>;
 }) {
   const [busy, setBusy] = useState(false),
-    [message, setMessage] = useState("");
+    [message, setMessage] = useState(""),
+    [open, setOpen] = useState(false),
+    [failed, setFailed] = useState(false);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
     const form = event.currentTarget;
     setBusy(true);
     setMessage("");
+    setFailed(false);
     try {
       const data = Object.fromEntries(new FormData(form)) as Record<
         string,
         string
       >;
-      setMessage((await onSubmit(data, form)) ?? "Tersimpan.");
+      const result = (await onSubmit(data, form)) ?? "Tersimpan.";
+      setMessage(result);
+      setOpen(false);
+      notifySuccess(result);
     } catch (error) {
+      setFailed(true);
       setMessage(
         error instanceof Error && error.name !== "TimeoutError"
           ? error.message
@@ -115,9 +124,10 @@ export function ActionForm({
       setBusy(false);
     }
   }
-  return (
+  const content = (
     <form
-      className="space-y-4 rounded-xl border p-5"
+      aria-busy={busy}
+      className="ui-panel space-y-4"
       onSubmit={(event) => void submit(event)}
     >
       <h3 className="text-lg font-semibold">{title}</h3>
@@ -128,11 +138,32 @@ export function ActionForm({
         </Button>
       </fieldset>
       {message && (
-        <p role="status" aria-live="polite" className="text-sm leading-7">
+        <p
+          role={failed ? "alert" : "status"}
+          aria-live="polite"
+          className="text-sm leading-7"
+        >
           {message}
         </p>
       )}
     </form>
+  );
+  if (title !== "Ganti kata sandi" && title !== "Ubah profil") return content;
+  return (
+    <FormDialog
+      title={title}
+      busy={busy}
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) {
+          setMessage("");
+          setFailed(false);
+        }
+      }}
+    >
+      {content}
+    </FormDialog>
   );
 }
 export const PasswordHelp = () => (

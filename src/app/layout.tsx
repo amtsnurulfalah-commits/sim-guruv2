@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
+import { ToastRegion } from "@/components/feedback/toast-region";
 export const metadata: Metadata = {
   title: { default: "SiM-Guru — Ruang Kerja Guru", template: "%s | SiM-Guru" },
   description: "Sistem informasi kegiatan dan administrasi guru madrasah.",
@@ -19,6 +20,7 @@ export default function RootLayout({
           Lewati ke konten utama
         </a>
         {children}
+        <ToastRegion />
       </body>
     </html>
   );

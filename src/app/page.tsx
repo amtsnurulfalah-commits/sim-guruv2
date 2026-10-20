@@ -8,21 +8,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const steps = [
   {
     number: "01",
-    title: "Fondasi aplikasi",
-    description: "Struktur proyek dan migrasi identitas dasar telah disiapkan.",
+    title: "Kegiatan pembelajaran",
+    description: "Jadwal, kehadiran, dan jurnal dalam satu ruang kerja.",
     state: "Tersedia",
   },
   {
     number: "02",
     title: "Akun dan akses",
     description: "Login internal, aktivasi akun, dan kewenangan pengguna.",
-    state: "Tahap saat ini",
+    state: "Tersedia",
   },
   {
     number: "03",
     title: "Kegiatan dan administrasi",
     description: "Jadwal, kehadiran, jurnal, ujian, dan honorarium.",
-    state: "Belum tersedia",
+    state: "Tersedia",
   },
 ];
 export default function HomePage() {
@@ -34,7 +34,7 @@ export default function HomePage() {
             <Brand />
           </Link>
           <Badge className="border-primary/15 bg-primary/5 text-primary">
-            Dalam pengembangan
+            Ruang kerja madrasah
           </Badge>
         </div>
       </header>
@@ -54,12 +54,13 @@ export default function HomePage() {
               <span className="text-primary">Fokus untuk mengajar.</span>
             </h1>
             <p className="mt-6 max-w-lg text-base leading-8 text-muted-foreground">
-              SiM-Guru sedang dibangun untuk menghubungkan kegiatan, kehadiran,
-              jurnal, dan honorarium dalam satu alur yang jelas.
+              SiM-Guru menghubungkan kegiatan, kehadiran, jurnal, dan honorarium
+              dalam satu alur yang jelas.
             </p>
             <p className="mt-4 max-w-lg text-sm leading-7 text-muted-foreground">
-              Login dan pengamanan akun sudah tersedia. Modul kegiatan masih
-              dikembangkan; pengiriman email menunggu konfigurasi layanan.
+              Akses modul mengikuti peran dan kewenangan akun. Mulai dari
+              jadwal, lengkapi catatan kegiatan, lalu pantau rekap administrasi
+              Anda.
             </p>
             <Button asChild size="lg" className="mt-8">
               <Link href="/login">
@@ -111,7 +112,7 @@ export default function HomePage() {
               ))}
               <div className="flex items-center gap-2 border-t pt-5 text-xs text-muted-foreground">
                 <Check aria-hidden="true" className="size-4 text-primary" />{" "}
-                Acuan fitur dan kebijakan telah disusun.
+                Akses dikelola oleh administrator madrasah.
               </div>
             </CardContent>
           </Card>
@@ -119,7 +120,7 @@ export default function HomePage() {
       </main>
       <footer className="mx-auto flex max-w-6xl flex-wrap justify-between gap-2 border-t px-5 py-6 text-xs text-muted-foreground sm:px-8">
         <p>SiM-Guru · Sistem Informasi Guru</p>
-        <p>Tahap 2.4 · Manajemen pengguna</p>
+        <p>Ruang kerja madrasah</p>
       </footer>
     </div>
   );

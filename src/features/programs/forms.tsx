@@ -1,12 +1,20 @@
 "use client";
 import { useEffect, useId, useRef, useState } from "react";
-export const input =
-  "min-h-11 w-full min-w-0 rounded border border-slate-300 bg-white p-2 text-sm text-slate-900";
-export const button =
-  "min-h-11 rounded bg-blue-800 px-3 py-2 text-sm font-medium text-white disabled:opacity-50";
-export const secondary =
-  "min-h-11 rounded border px-3 py-2 text-sm disabled:opacity-50";
-export const panel = "space-y-4 rounded-xl border bg-white p-5";
+import { z } from "zod";
+import { notifySuccess } from "@/components/feedback/toast-region";
+export {
+  control as input,
+  primaryAction as button,
+  secondaryAction as secondary,
+  surface as panel,
+} from "@/components/ui/styles";
+import {
+  control as input,
+  primaryAction as button,
+  secondaryAction as secondary,
+  surface as panel,
+} from "@/components/ui/styles";
+import { FormDialog } from "@/components/ui/dialog";
 export type Field = {
   key: string;
   label: string;
@@ -31,18 +39,34 @@ export function DataForm({
   label,
   onSave,
   busy,
+  inline = false,
+  openOnMount = false,
+  onDismiss,
+  description,
 }: {
+  inline?: boolean;
+  openOnMount?: boolean;
+  onDismiss?: () => void;
+  description?: string;
   fields: Field[];
   label: string;
   onSave: (data: Record<string, unknown>) => Promise<void>;
   busy: boolean;
 }) {
-  const [error, setError] = useState("");
-  return (
+  const [error, setError] = useState(""),
+    [open, setOpen] = useState(openOnMount),
+    [saving, setSaving] = useState(false);
+  const pending = useRef(false);
+  const prefix = useId();
+  const form = (
     <form
-      className="grid gap-3 md:grid-cols-2"
+      id={prefix + "-form"}
+      className="ui-form"
+      aria-busy={saving || busy}
       onSubmit={async (e) => {
         e.preventDefault();
+        if (pending.current || busy) return;
+        const element = e.currentTarget;
         const f = new FormData(e.currentTarget);
         const data: Record<string, unknown> = {};
         for (const x of fields) {
@@ -62,89 +86,193 @@ export function DataForm({
         }
         setError("");
         try {
+          z.record(z.string(), z.unknown())
+            .superRefine((value, ctx) => {
+              for (const field of fields) {
+                const v = value[field.key];
+                if (
+                  !field.optional &&
+                  (v === "" || v === null || v === undefined)
+                )
+                  ctx.addIssue({
+                    code: "custom",
+                    path: [field.key],
+                    message: field.label + " wajib diisi.",
+                  });
+                if (
+                  field.type === "number" &&
+                  (typeof v !== "number" ||
+                    !Number.isFinite(v) ||
+                    (field.min !== undefined && v < field.min) ||
+                    (field.max !== undefined && v > field.max))
+                )
+                  ctx.addIssue({
+                    code: "custom",
+                    path: [field.key],
+                    message:
+                      "Periksa rentang " + field.label.toLowerCase() + ".",
+                  });
+                if (
+                  field.key === "reason" &&
+                  typeof v === "string" &&
+                  v.length < 5
+                )
+                  ctx.addIssue({
+                    code: "custom",
+                    path: [field.key],
+                    message: "Alasan harus berisi minimal 5 karakter.",
+                  });
+              }
+            })
+            .parse(data);
+          pending.current = true;
+          setSaving(true);
           await onSave(data);
+          setOpen(false);
+          notifySuccess("Permintaan berhasil diproses.");
         } catch (e) {
-          setError(e instanceof Error ? e.message : "Gagal menyimpan.");
+          setError(
+            e instanceof z.ZodError
+              ? (e.issues[0]?.message ?? "Periksa isian formulir.")
+              : e instanceof Error
+                ? e.message
+                : "Gagal menyimpan.",
+          );
+          const key = e instanceof z.ZodError ? e.issues[0]?.path[0] : null;
+          const invalid = key ? element.elements.namedItem(String(key)) : null;
+          if (invalid instanceof HTMLElement) invalid.focus();
+        } finally {
+          pending.current = false;
+          setSaving(false);
         }
       }}
     >
-      {fields.map((x) => (
-        <label
-          key={x.key}
-          className="grid content-start gap-1 text-sm font-medium"
-        >
-          {x.label}
-          {x.type === "multi" || x.type === "days" ? (
-            <select
-              multiple
-              name={x.key}
-              className={input}
-              defaultValue={((x.value as (string | number)[]) ?? []).map(
-                String,
-              )}
-              aria-label={x.label}
-            >
-              {x.options?.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.name}
-                </option>
-              ))}
-            </select>
-          ) : x.type === "select" ? (
-            <select
-              name={x.key}
-              className={input}
-              required={!x.optional}
-              defaultValue={String(x.value ?? "")}
-            >
-              <option value="">Pilih…</option>
-              {x.options?.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.name}
-                </option>
-              ))}
-            </select>
-          ) : x.type === "textarea" || x.type === "dates" ? (
-            <textarea
-              name={x.key}
-              className={input}
-              maxLength={x.type === "dates" ? 5000 : 1000}
-              required={!x.optional}
-              defaultValue={
-                Array.isArray(x.value) ? x.value.join("\n") : (x.value ?? "")
-              }
-            />
-          ) : (
-            <input
-              name={x.key}
-              className={input}
-              type={x.type ?? "text"}
-              required={!x.optional}
-              min={x.min}
-              max={x.max}
-              step={x.type === "number" ? 1 : undefined}
-              maxLength={x.key === "reason" ? 500 : 120}
-              defaultValue={x.value as string | number | undefined}
-            />
+      <fieldset disabled={busy || saving} className="contents">
+        {fields.map((x) => (
+          <div
+            key={x.key}
+            className="grid content-start gap-1 text-sm font-medium"
+          >
+            <label id={prefix + x.key + "-label"} htmlFor={prefix + x.key}>
+              <span>
+                {x.label}
+                {!x.optional && (
+                  <span aria-hidden="true" className="ml-1 text-destructive">
+                    *
+                  </span>
+                )}
+              </span>
+            </label>
+            {x.type === "multi" || x.type === "days" ? (
+              <fieldset
+                aria-labelledby={prefix + x.key + "-label"}
+                className="grid max-h-52 gap-1 overflow-y-auto rounded-lg border bg-muted/30 p-2"
+              >
+                {x.options?.map((o) => (
+                  <label
+                    key={o.id}
+                    className="flex! min-h-11 cursor-pointer flex-row! items-center gap-3 rounded-md px-2 hover:bg-accent"
+                  >
+                    <input
+                      type="checkbox"
+                      name={x.key}
+                      value={o.id}
+                      defaultChecked={((x.value as (string | number)[]) ?? [])
+                        .map(String)
+                        .includes(o.id)}
+                    />
+                    <span>{o.name}</span>
+                  </label>
+                ))}
+              </fieldset>
+            ) : x.type === "select" ? (
+              <select
+                name={x.key}
+                id={prefix + x.key}
+                className={input}
+                required={!x.optional}
+                defaultValue={String(x.value ?? "")}
+              >
+                <option value="">Pilih…</option>
+                {x.options?.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+              </select>
+            ) : x.type === "textarea" || x.type === "dates" ? (
+              <textarea
+                name={x.key}
+                id={prefix + x.key}
+                className={input}
+                maxLength={x.type === "dates" ? 5000 : 1000}
+                required={!x.optional}
+                defaultValue={
+                  Array.isArray(x.value) ? x.value.join("\n") : (x.value ?? "")
+                }
+              />
+            ) : (
+              <input
+                name={x.key}
+                id={prefix + x.key}
+                className={input}
+                type={x.type ?? "text"}
+                required={!x.optional}
+                min={x.min}
+                max={x.max}
+                step={x.type === "number" ? 1 : undefined}
+                maxLength={x.key === "reason" ? 500 : 120}
+                defaultValue={x.value as string | number | undefined}
+              />
+            )}
+            {x.type === "multi" || x.type === "days" ? (
+              <span className="font-normal text-slate-500">
+                Centang pilihan yang diperlukan.
+              </span>
+            ) : null}
+          </div>
+        ))}
+        <div className="flex flex-wrap items-center gap-3 border-t pt-4 sm:col-span-2">
+          {inline && (
+            <button className={button} disabled={busy || saving}>
+              {busy || saving ? "Menyimpan…" : label}
+            </button>
           )}
-          {x.type === "multi" || x.type === "days" ? (
-            <span className="font-normal text-slate-500">
-              Pilih beberapa dengan Ctrl/Command.
-            </span>
-          ) : null}
-        </label>
-      ))}
-      <div className="md:col-span-2">
-        <button className={button} disabled={busy}>
-          {label}
-        </button>
-        {error && (
-          <p role="alert" className="mt-2 text-red-700">
-            {error}
-          </p>
-        )}
-      </div>
+          {error && (
+            <p role="alert" className="mt-2 text-red-700">
+              {error}
+            </p>
+          )}
+        </div>
+      </fieldset>
     </form>
+  );
+  if (inline) return form;
+  return (
+    <FormDialog
+      title={label}
+      {...(description ? { description } : {})}
+      trigger={label}
+      footer={
+        <button
+          className={button}
+          type="submit"
+          form={prefix + "-form"}
+          disabled={busy || saving}
+        >
+          {busy || saving ? "Menyimpan…" : label}
+        </button>
+      }
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) setError("");
+        else onDismiss?.();
+      }}
+      busy={busy || saving}
+    >
+      {form}
+    </FormDialog>
   );
 }
 export function ImpactDialog({

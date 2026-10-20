@@ -69,3 +69,8 @@ Tahap 4.1–4.4: [Piket, upacara dan relokasi JTM](docs/operations/Piket_Upacara
 Tahap 5.1–5.5: [Ujian, BAP dan acara](docs/operations/Ujian_Acara_Tahap_5.md).
 
 Tahap 6.1–6.5: [Honor, transport dan libur](docs/operations/Honorarium_Tahap_6.md) · [Verifikasi](docs/verification/Tahap_6.md).
+
+
+## Antarmuka dan design system
+
+Modernisasi UI mempertahankan auth internal, hak akses dan kontrak API. Layout, kontrol, breadcrumb, modal kontekstual serta state feedback menggunakan komponen bersama. [Audit46halaman](docs/ui/AUDIT_UI_UX.md), [pedoman design system](docs/ui/DESIGN_SYSTEM.md) dan [laporan verifikasi UI](docs/ui/VERIFIKASI_UI_UX.md) mencatat cakupan serta batas penerimaan. `npm run test:ui` memakai fixture localhost disposable dan memerlukan Playwright/Chromium eksternal; tidak mengakses data produksi. Pengujian integrasi dibatasi dua file bersamaan untuk menghindari kehabisan sumber daya saat menjalankan PostgreSQL WASM.

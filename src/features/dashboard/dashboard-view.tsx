@@ -21,16 +21,13 @@ export function DashboardView({
         </h1>
         <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
           {data.user.role === "admin"
-            ? "Ruang administrasi madrasah. Kelola akses akun yang tersedia dan pantau kesiapan modul aplikasi."
-            : "Ruang kerja guru. Akses pengamanan akun dan pantau kesiapan modul kegiatan Anda."}
+            ? "Ruang administrasi madrasah. Kelola kegiatan, data akademik, pengguna, dan honorarium dari satu ruang kerja."
+            : "Ruang kerja guru. Pantau jadwal, catat kehadiran, lengkapi jurnal, dan lihat honorarium Anda."}
         </p>
       </header>
       <DayContextCard />
       <LiveSummary />
-      <section
-        className="grid gap-5 md:grid-cols-2"
-        aria-label="Akses yang tersedia"
-      >
+      <section className="grid gap-5" aria-label="Akses yang tersedia">
         <div className="rounded-2xl border bg-primary p-6 text-primary-foreground">
           <ShieldCheck className="mb-5 size-7" aria-hidden="true" />
           <h2 className="text-lg font-bold">Akun sudah terlindungi</h2>
@@ -70,8 +67,7 @@ export function DashboardView({
             Modul ruang kerja
           </h2>
           <p className="text-sm leading-7 text-muted-foreground">
-            Berikut cakupan modul sesuai peran Anda. Halaman status menyediakan
-            penjelasan tahap pengerjaannya.
+            Pilih modul untuk melanjutkan pekerjaan sesuai kewenangan akun Anda.
           </p>
         </div>
         <ModuleCards items={data.modules} />

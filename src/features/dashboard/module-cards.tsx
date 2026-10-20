@@ -14,13 +14,15 @@ export function ModuleCards({
       {items.map((module) => (
         <article
           key={module.slug}
-          className="flex flex-col rounded-2xl border bg-card p-5"
+          className="group flex min-w-0 flex-col rounded-2xl border bg-card p-5 shadow-xs transition-shadow hover:shadow-md"
         >
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <Badge>{module.available ? "Tersedia" : "Belum tersedia"}</Badge>
-            <span className="text-xs text-muted-foreground">
-              Tahap {module.stage}
-            </span>
+            {!linked && (
+              <span className="text-xs text-muted-foreground">
+                Tahap {module.stage}
+              </span>
+            )}
           </div>
           <h3 className="font-semibold">{module.title}</h3>
           <p className="mt-2 flex-1 text-sm leading-7 text-muted-foreground">
@@ -29,7 +31,7 @@ export function ModuleCards({
           {linked && (
             <Link
               href={module.href ?? "/modul/" + module.slug}
-              className="mt-5 inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring"
+              className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring"
             >
               {module.available ? "Buka modul" : "Lihat status modul"}
               <ArrowUpRight aria-hidden="true" className="size-4" />

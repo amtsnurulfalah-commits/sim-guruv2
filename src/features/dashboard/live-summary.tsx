@@ -56,7 +56,7 @@ export function LiveSummary() {
       ) : (
         <>
           <section className="grid gap-4 sm:grid-cols-3">
-            <article className="rounded-xl border p-5">
+            <article className="ui-panel space-y-3">
               <h2 className="font-bold">Kehadiran hari ini</h2>
               <p>Masuk: {value.attendance?.actualIn ?? "Belum tercatat"}</p>
               <p>Keluar: {value.attendance?.actualOut ?? "Belum tercatat"}</p>
@@ -64,7 +64,7 @@ export function LiveSummary() {
                 Buka kehadiran
               </Link>
             </article>
-            <article className="rounded-xl border p-5">
+            <article className="ui-panel space-y-3">
               <h2 className="font-bold">Honor terealisasi bulan ini</h2>
               <p className="text-xl font-bold">
                 {value.honor.rateMissing
@@ -88,7 +88,7 @@ export function LiveSummary() {
                 Rincian honorarium
               </Link>
             </article>
-            <article className="rounded-xl border p-5">
+            <article className="ui-panel space-y-3">
               <h2 className="font-bold">Progres kegiatan tercatat</h2>
               <p>
                 {value.tasks.filter((t) => t.confirmed).length} /{" "}
@@ -106,7 +106,7 @@ export function LiveSummary() {
               </Link>
             </article>
           </section>
-          <section className="space-y-3 rounded-xl border p-5">
+          <section className="ui-panel space-y-3">
             <h2 className="font-bold">
               Penugasan efektif yang sudah tercatat hari ini
             </h2>
@@ -135,7 +135,7 @@ export function LiveSummary() {
             ))}
           </section>
           {value.admin && (
-            <section className="rounded-xl border p-5">
+            <section className="ui-panel space-y-3">
               <h2 className="font-bold">Ringkasan administrasi</h2>
               <p>
                 {value.admin.activeUsers} pengguna aktif ·{" "}

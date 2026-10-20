@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { Brand } from "@/components/brand";
+import { AuthLayout } from "@/components/shell/auth-layout";
 import { requireEnvironment } from "@/server/env";
 import { RecoveryForm } from "@/features/auth/recovery-form";
 export const dynamic = "force-dynamic";
@@ -11,16 +11,17 @@ export default async function Page() {
   if ((await headers()).get("host") !== app.host)
     redirect(new URL("/lupa-password", app).toString());
   return (
-    <main id="konten-utama" className="mx-auto max-w-2xl space-y-7 px-5 py-12">
-      <Brand />
-      <h1 className="text-3xl font-bold">Pemulihan akun</h1>
+    <AuthLayout
+      title="Pemulihan akun"
+      description="Ikuti langkah verifikasi untuk memulihkan akses akun Anda."
+    >
       <RecoveryForm />
-      <Link href="/akun" className="block underline">
-        Kembali ke akun
+      <Link
+        href="/login"
+        className="inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4"
+      >
+        Kembali ke halaman masuk
       </Link>
-      <Link href="/login" className="block underline">
-        Ke halaman masuk
-      </Link>
-    </main>
+    </AuthLayout>
   );
 }

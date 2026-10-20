@@ -1,4 +1,6 @@
 "use client";
+import { statusLabel } from "@/lib/ui-status";
+import { EmptyState } from "@/components/feedback/feature-state";
 import { useCallback, useEffect, useState } from "react";
 import { masterRequest } from "@/features/masters/api";
 import {
@@ -64,7 +66,7 @@ export function AnnouncementManager() {
       type: "select",
       options: ["info", "success", "warning", "critical"].map((id) => ({
         id,
-        name: id,
+        name: statusLabel(id),
       })),
       value: edit?.severity ?? "info",
     },
@@ -154,6 +156,7 @@ export function AnnouncementManager() {
           names={edit?.recipientNames ?? {}}
         />
         <DataForm
+          inline
           key={edit ? edit.id + edit.version : "new"}
           fields={fields}
           busy={busy}
@@ -302,11 +305,11 @@ export function OperationsManager() {
           Status unknown memerlukan pemeriksaan penerimaan; tidak dikirim ulang
           otomatis.
         </p>
-        {data.outbox.length === 0 && <p>Belum ada antrean.</p>}
+        {data.outbox.length === 0 && <EmptyState title="Belum ada antrean." />}
         {data.outbox.map((o) => (
           <div className="space-y-2 border-b py-3" key={o.id}>
             <p>
-              {o.id} · {o.state} · {o.attempts} percobaan
+              {o.id} · {statusLabel(o.state)} · {o.attempts} percobaan
             </p>
             {["failed", "unknown"].includes(o.state) && (
               <DataForm
@@ -352,7 +355,7 @@ export function OperationsManager() {
         {data.jobs.map((j) => (
           <div key={j.business_key}>
             <p>
-              {j.business_key} · {j.state} · {j.attempts} eksekusi
+              {j.business_key} · {statusLabel(j.state)} · {j.attempts} eksekusi
             </p>
             {j.state === "failed" && (
               <DataForm
@@ -375,7 +378,7 @@ export function OperationsManager() {
             )}
           </div>
         ))}
-        {data.jobs.length === 0 && <p>Belum ada eksekusi.</p>}
+        {data.jobs.length === 0 && <EmptyState title="Belum ada eksekusi." />}
       </section>
     </div>
   );

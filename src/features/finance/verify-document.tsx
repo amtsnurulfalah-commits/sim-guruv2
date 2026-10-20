@@ -42,10 +42,15 @@ export function VerifyDocument() {
     return () => c.abort();
   }, []);
   return (
-    <main className="mx-auto max-w-xl space-y-4 p-6">
+    <main
+      id="konten-utama"
+      className="ui-panel mx-auto my-8 max-w-xl space-y-5 p-6"
+    >
       <h1 className="text-2xl font-bold">Verifikasi Dokumen SiM-Guru</h1>
       {error ? (
-        <p role="alert">{error}</p>
+        <p role="alert" className="form-feedback-error">
+          {error}
+        </p>
       ) : !result ? (
         <p role="status">Memeriksa dokumen…</p>
       ) : (
@@ -58,7 +63,7 @@ export function VerifyDocument() {
                 : "Dokumen tidak ditemukan"}
           </p>
           {result.status !== "not_found" && (
-            <dl>
+            <dl className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-3 rounded-xl border bg-muted/40 p-4 text-sm">
               <dt>Jenis dokumen</dt>
               <dd>{result.documentType}</dd>
               <dt>Madrasah</dt>

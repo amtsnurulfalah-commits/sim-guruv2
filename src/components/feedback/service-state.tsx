@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import { Brand } from "@/components/brand";
+import { WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 export function ServiceState({
   title = "Layanan belum dapat dihubungi",
@@ -11,7 +13,15 @@ export function ServiceState({
   retry?: () => void;
 }) {
   return (
-    <main id="konten-utama" className="mx-auto max-w-lg space-y-5 px-5 py-20">
+    <main
+      id="konten-utama"
+      className="ui-panel mx-4 my-12 max-w-lg space-y-5 sm:mx-auto sm:p-8"
+    >
+      <Brand />
+      <WifiOff
+        className="mt-7 size-9 text-muted-foreground"
+        aria-hidden="true"
+      />
       <h1 className="text-2xl font-bold">{title}</h1>
       <p role="alert" className="text-sm leading-7 text-muted-foreground">
         {message}

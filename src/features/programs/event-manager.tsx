@@ -1,4 +1,6 @@
 "use client";
+import { EmptyState } from "@/components/feedback/feature-state";
+import { FeatureState } from "@/components/feedback/feature-state";
 import { useEffect, useState } from "react";
 import { masterRequest } from "../masters/api";
 import { wibDate } from "../../lib/calendar/schemas";
@@ -52,7 +54,11 @@ export function EventManager({
   }, [date, revision]);
   const post = <T,>(action: string, data: unknown) =>
     masterRequest<T>("/api/programs/" + action, "POST", data);
-  async function run(work: () => Promise<unknown>, refresh = true) {
+  async function run(
+    work: () => Promise<unknown>,
+    refresh = true,
+    propagate = false,
+  ) {
     setBusy(true);
     setError("");
     setMessage("");
@@ -64,11 +70,21 @@ export function EventManager({
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Permintaan gagal.");
+      if (propagate) throw e;
     } finally {
       setBusy(false);
     }
   }
-  if (!board) return <p role="status">{error || "Memuat acara…"}</p>;
+  const formRun = (work: () => Promise<unknown>, refresh = true) =>
+    run(work, refresh, true);
+  if (!board)
+    return (
+      <FeatureState
+        error={error}
+        label="Memuat acara…"
+        retry={() => setRevision((v) => v + 1)}
+      />
+    );
   const masterFields: Field[] = [
     { key: "name", label: "Nama acara", value: edit?.name },
     {
@@ -216,7 +232,7 @@ export function EventManager({
               reason,
             ]}
             onSave={async (data) =>
-              run(() =>
+              formRun(() =>
                 post("attendance", { operation: "attend", date, ...data }),
               )
             }
@@ -227,7 +243,9 @@ export function EventManager({
         <h2 className="font-semibold">
           Riwayat kehadiran dan jurnal bulan terpilih
         </h2>
-        {board.attendance.length === 0 && <p>Belum ada riwayat.</p>}
+        {board.attendance.length === 0 && (
+          <EmptyState title="Belum ada riwayat." />
+        )}
         {board.attendance.map((a) => (
           <article key={a.id} className="space-y-2 border-b pb-4">
             <h3 className="font-semibold">
@@ -256,7 +274,7 @@ export function EventManager({
                   },
                 ]}
                 onSave={async (data) =>
-                  run(() =>
+                  formRun(() =>
                     post("journal", {
                       attendanceId: a.id,
                       version: a.version,
@@ -313,13 +331,16 @@ export function EventManager({
               </button>
             )}
             <DataForm
+              description={"Acara " + type + ". Periksa tanggal, waktu, dan sasaran sebelum menyimpan."}
+              openOnMount={Boolean(edit)}
+              onDismiss={() => setEdit(null)}
               key={(edit?.id ?? "new") + type}
               busy={busy}
               label="Simpan acara"
               fields={masterFields}
               onSave={async (values) => {
                 const { reason, ...data } = values;
-                await run(async () => {
+                await formRun(async () => {
                   await post("event-save", {
                     id: edit?.id,
                     version: edit?.version ?? "0",
@@ -415,7 +436,7 @@ export function EventManager({
                 reason,
               ]}
               onSave={async (data) =>
-                run(() =>
+                formRun(() =>
                   post("block", {
                     eventId: eventId || null,
                     version: "0",

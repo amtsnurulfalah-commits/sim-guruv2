@@ -1,0 +1,52 @@
+{
+  "fixture": true,
+  "realProductionCredentials": false,
+  "matrix": [],
+  "interactions": [
+    {
+      "width": 320,
+      "focus": true,
+      "failedSubmission": true,
+      "dirtyClose": true,
+      "checkboxes": true,
+      "nativeEditor": true,
+      "navigation": true
+    },
+    {
+      "width": 375,
+      "focus": true,
+      "failedSubmission": true,
+      "dirtyClose": true,
+      "checkboxes": true,
+      "nativeEditor": true,
+      "navigation": true
+    },
+    {
+      "width": 768,
+      "focus": true,
+      "failedSubmission": true,
+      "dirtyClose": true,
+      "checkboxes": true,
+      "nativeEditor": true,
+      "navigation": true
+    },
+    {
+      "width": 1440,
+      "focus": true,
+      "failedSubmission": true,
+      "dirtyClose": true,
+      "checkboxes": true,
+      "nativeEditor": true,
+      "navigation": true
+    },
+    {
+      "crud": "master-subject",
+      "create": true,
+      "update": true,
+      "archive": true
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "serverErrors": ""
+}
