@@ -1,0 +1,148 @@
+{
+  "ok": true,
+  "baseUrl": "https://sim-guruv2.vercel.app",
+  "verifiedAt": "2026-10-20T06:42:11.293845+00:00",
+  "checks": [
+    {
+      "path": "/api/health",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/read?kind=estimate&period=2026-10",
+      "method": "GET",
+      "status": 401,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/read?kind=recap&period=2026-10",
+      "method": "GET",
+      "status": 401,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/read?kind=history&period=2026-10",
+      "method": "GET",
+      "status": 401,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/read?kind=statement&period=2026-10",
+      "method": "GET",
+      "status": 401,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/read?kind=operations&period=2026-10",
+      "method": "GET",
+      "status": 401,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/pdf",
+      "method": "GET",
+      "status": 401,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/excel",
+      "method": "GET",
+      "status": 401,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/preview",
+      "method": "POST",
+      "status": 403,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/commit",
+      "method": "POST",
+      "status": 403,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/holiday",
+      "method": "POST",
+      "status": 403,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/block",
+      "method": "POST",
+      "status": 403,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/request",
+      "method": "POST",
+      "status": 403,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/token",
+      "method": "POST",
+      "status": 403,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/pdf",
+      "method": "POST",
+      "status": 403,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/verify",
+      "method": "POST",
+      "status": 422,
+      "ok": true
+    },
+    {
+      "path": "/honorarium",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/honorarium/riwayat",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/admin/honorarium",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/admin/honorarium/riwayat",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/admin/honorarium/operasi",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/verifikasi-dokumen",
+      "method": "GET",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/api/honorarium/verify",
+      "method": "POST",
+      "status": 200,
+      "ok": true
+    }
+  ],
+  "usesProductionCredentials": false,
+  "changesDomainData": false,
+  "sendsEmail": false
+}

@@ -13,7 +13,8 @@
     "financeSubstantiveTests": 24,
     "build": "passed",
     "cleanInstallAndUpgrade": "passed",
-    "xlsxZipXmlOpenpyxl": "passed"
+    "xlsxZipXmlOpenpyxl": "passed",
+    "githubQualityChecks": "passed on reviewed PR head"
   },
   "database": {
     "migrated": true,
@@ -31,8 +32,15 @@
   },
   "sendsEmail": false,
   "production": {
-    "released": false,
-    "pending": "Vercel deployment and public HTTP verification"
+    "released": true,
+    "phase": "6.5",
+    "url": "https://sim-guruv2.vercel.app",
+    "state": "READY",
+    "publicHttpGuardChecks": 23,
+    "verifiedAt": "2026-10-20T06:42:11.293845+00:00",
+    "runtimeErrorClusters": 0,
+    "runtimeScan": "selected honorarium routes; last 10 minutes",
+    "browserRealAccountCrudVerified": false
   },
   "formulaVersion": "honor-v1.1"
 }
