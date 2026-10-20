@@ -91,7 +91,7 @@ test("Tahap 6 — holiday, transport, canonical honor and immutable final", asyn
   await t.test(
     "F01 upgrade preserves users, idempotent migration and all69 tables FORCE RLS",
     async () => {
-      assert.equal((await applyMigrations(db, migrations)).length, 4);
+      assert.equal((await applyMigrations(db, migrations)).length, 5);
       assert.equal((await applyMigrations(db, migrations)).length, 0);
       assert.equal(
         (
