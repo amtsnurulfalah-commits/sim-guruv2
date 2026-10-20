@@ -55,6 +55,7 @@ try {
     if (message.type() === "error") consoleErrors.push(message.text());
   });
   const adminViews = [
+    "dashboard",
     "home",
     "login",
     "lab",
@@ -77,6 +78,7 @@ try {
     "migration",
   ];
   const guruViews = [
+    "dashboard",
     "occurrences",
     "attendance",
     "students",
@@ -115,7 +117,7 @@ try {
     await page.waitForLoadState("networkidle");
   }
   if (!process.env.UI_INTERACTIONS_ONLY)
-    for (const width of [320, 375, 767, 768, 1024, 1440]) {
+    for (const width of [320, 375, 767, 768, 1024, 1440, 1920]) {
       await page.setViewportSize({ width, height: 900 });
       for (const role of ["admin", "guru"])
         for (const view of role === "admin" ? adminViews : guruViews) {
@@ -268,6 +270,18 @@ try {
     name: "Ganti kata sandi",
     exact: true,
   });
+  const accountInput = accountDialog.getByLabel("Input akun sintetis", {
+    exact: true,
+  });
+  await accountInput.fill("Synthetic9!account");
+  await accountDialog
+    .getByRole("button", { name: "Tampilkan isian rahasia", exact: true })
+    .click();
+  assert.equal(await accountInput.inputValue(), "Synthetic9!account");
+  await accountDialog
+    .getByRole("button", { name: "Sembunyikan isian rahasia", exact: true })
+    .click();
+  assert.equal(await accountInput.getAttribute("type"), "password");
   await accountDialog.locator("form").evaluate((form) => {
     form.requestSubmit();
     form.requestSubmit();
@@ -358,6 +372,204 @@ try {
   });
   await page.unroute("**/api/migration/board*");
 
+  // Pro Max adaptation: observable interaction outcomes, not snapshots of class names.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await go("login");
+  const password = page.getByLabel("Kata sandi", { exact: true });
+  await password.fill("Synthetic9!password");
+  await page
+    .getByRole("button", { name: "Tampilkan isian rahasia", exact: true })
+    .click();
+  assert.equal(await password.getAttribute("type"), "text");
+  assert.equal(await password.inputValue(), "Synthetic9!password");
+  await page
+    .getByRole("button", { name: "Sembunyikan isian rahasia", exact: true })
+    .click();
+  assert.equal(await password.getAttribute("type"), "password");
+  assert.equal(await password.getAttribute("autocomplete"), "current-password");
+  interactions.push({ proMax: "password-visibility", passed: true });
+
+  for (const role of ["admin", "guru"]) {
+    await go("lab", role);
+    const expand = page.getByRole("button", {
+      name: "Perluas sidebar",
+      exact: true,
+    });
+    if (await expand.count()) await expand.click();
+    const sidebar = page.getByRole("complementary", {
+      name: "Sidebar desktop",
+    });
+    const search = sidebar.getByRole("searchbox", { name: "Cari menu" });
+    await search.fill("honor");
+    assert.equal(
+      await sidebar.getByRole("link", { name: /Honorarium/ }).count(),
+      1,
+    );
+    await search.fill("zzzzzzz");
+    assert.equal(
+      await sidebar.getByRole("navigation").getByRole("link").count(),
+      0,
+    );
+    await sidebar.getByRole("button", { name: "Hapus pencarian" }).click();
+    assert.ok(
+      await sidebar
+        .getByRole("link", { name: "Dashboard", exact: true })
+        .count(),
+    );
+    if (role === "guru") {
+      await search.fill("pengguna");
+      assert.equal(
+        await sidebar.getByRole("navigation").getByRole("link").count(),
+        0,
+      );
+    }
+  }
+  interactions.push({ proMax: "role-scoped-menu-search", passed: true });
+  await go("lab");
+  await page
+    .getByRole("button", { name: "Simpan contoh", exact: true })
+    .click();
+  const validationDialog = page.getByRole("dialog", {
+    name: "Simpan contoh",
+    exact: true,
+  });
+  await validationDialog
+    .getByRole("button", { name: "Simpan contoh", exact: true })
+    .click();
+  const validationSummary = validationDialog.getByRole("alert");
+  await validationSummary.waitFor();
+  await page.waitForFunction(
+    () => document.activeElement?.getAttribute("role") === "alert",
+  );
+  assert.equal(
+    await validationDialog.locator("input[aria-invalid=true]").count(),
+    2,
+  );
+  await validationSummary.getByRole("link", { name: /^Nama:/ }).click();
+  assert.equal(
+    await validationDialog
+      .getByLabel("Nama", { exact: false })
+      .evaluate((e) => e === document.activeElement),
+    true,
+  );
+  await validationDialog
+    .getByLabel("Nama", { exact: false })
+    .fill("Validasi sintetis");
+  await validationDialog.getByLabel("Alasan", { exact: false }).fill("x");
+  await validationDialog
+    .getByRole("button", { name: "Simpan contoh", exact: true })
+    .click();
+  await validationSummary.getByRole("link", { name: /^Alasan:/ }).waitFor();
+  const reason = validationDialog.getByLabel("Alasan", { exact: false });
+  assert.ok(await reason.getAttribute("aria-describedby"));
+  await reason.fill("Pengujian validasi sintetis");
+  await validationDialog
+    .getByRole("button", { name: "Simpan contoh", exact: true })
+    .click();
+  await validationDialog.waitFor({ state: "hidden" });
+  interactions.push({ proMax: "linked-field-errors-and-focus", passed: true });
+
+  await page.setViewportSize({ width: 320, height: 850 });
+  await go("masters");
+  await page
+    .getByRole("button", { name: "Mata pelajaran", exact: true })
+    .click();
+  const tableRegion = page.getByRole("region", {
+    name: "Data master",
+    exact: true,
+  });
+  await tableRegion.waitFor();
+  await page.waitForFunction(
+    () =>
+      document.querySelector(".ui-table-region")?.getAttribute("tabindex") ===
+      "0",
+  );
+  await tableRegion.focus();
+  const scrollBefore = await tableRegion.evaluate((e) => e.scrollLeft);
+  for (let index = 0; index < 8; index++)
+    await page.keyboard.press("ArrowRight");
+  await page.waitForTimeout(150);
+  assert.ok((await tableRegion.evaluate((e) => e.scrollLeft)) > scrollBefore);
+  interactions.push({ proMax: "keyboard-table-scroll", passed: true });
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 812, height: 375 });
+  await go("lab");
+  await page
+    .getByRole("button", { name: "Simpan contoh", exact: true })
+    .click();
+  const landscape = page.getByRole("dialog", {
+    name: "Simpan contoh",
+    exact: true,
+  });
+  const landscapeBounds = await landscape.boundingBox();
+  assert.ok(landscapeBounds.y >= 0 && landscapeBounds.height <= 375);
+  assert.ok(
+    await landscape.evaluate(
+      (e) => parseFloat(getComputedStyle(e).animationDuration) <= 0.001,
+    ),
+  );
+  await page.keyboard.press("Escape");
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  interactions.push({ proMax: "landscape-reduced-motion", passed: true });
+
+  for (const view of ["login", "dashboard", "masters"]) {
+    await page.setViewportSize({ width: 375, height: 850 });
+    await go(view);
+    await page.addStyleTag({ content: "html {font-size: 200% !important;}" });
+    await page.waitForTimeout(100);
+    const textScale = await page.evaluate(() => ({
+      width: innerWidth,
+      scroll: document.documentElement.scrollWidth,
+      elements: [...document.querySelectorAll("body *")]
+        .filter((element) => {
+          const box = element.getBoundingClientRect();
+          return box.width > innerWidth || box.right > innerWidth + 1;
+        })
+        .map((element) => ({
+          tag: element.tagName,
+          className: element.className,
+          text: element.textContent?.slice(0, 80),
+          width: element.getBoundingClientRect().width,
+          right: element.getBoundingClientRect().right,
+        }))
+        .slice(0, 20),
+    }));
+    assert.ok(
+      textScale.scroll <= textScale.width + 1,
+      "TEXT_SCALE_OVERFLOW " + view + " " + JSON.stringify(textScale),
+    );
+  }
+  interactions.push({ proMax: "text-scale-200-percent", passed: true });
+
+  const touchPage = await browser.newPage({
+    viewport: { width: 375, height: 812 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  touchPage.on("pageerror", (error) => errors.push(error.message));
+  touchPage.on("console", (message) => {
+    if (message.type() === "error") consoleErrors.push(message.text());
+  });
+  await touchPage.goto("http://127.0.0.1:4319/?view=lab&role=guru");
+  await touchPage
+    .getByRole("button", { name: "Buka navigasi", exact: true })
+    .tap();
+  const touchDrawer = touchPage.getByRole("dialog", {
+    name: "Navigasi SiM-Guru",
+    exact: true,
+  });
+  await touchDrawer
+    .getByRole("searchbox", { name: "Cari menu" })
+    .fill("jurnal");
+  assert.ok(await touchDrawer.getByRole("link", { name: /Jurnal/ }).count());
+  await touchDrawer
+    .getByRole("button", { name: "Tutup navigasi", exact: true })
+    .tap();
+  await touchDrawer.waitFor({ state: "hidden" });
+  await touchPage.close();
+  interactions.push({ proMax: "touch-navigation", passed: true });
+
   await page.setViewportSize({ width: 1024, height: 900 });
   await go("masters");
   await page
@@ -442,6 +654,12 @@ try {
   await go("login");
   await page.screenshot({
     path: resolve(output, "login-desktop.png"),
+    fullPage: true,
+    animations: "disabled",
+  });
+  await go("dashboard");
+  await page.screenshot({
+    path: resolve(output, "dashboard-desktop.png"),
     fullPage: true,
     animations: "disabled",
   });

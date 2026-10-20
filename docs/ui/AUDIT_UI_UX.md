@@ -77,3 +77,20 @@ Penanganan melalui komponen bersama berlaku pada semua pemakai, termasuk alias r
 ## Batas audit
 
 Tidak ada perubahan schema, RPC, API contract atau arsitektur auth. Tidak dibuat KPI/dataset operasional baru. Tidak dilakukan migrasi data atau pengaktifan email/worker. Sorting/pagination/filter yang sudah tersedia dipertahankan; tidak ditambahkan parameter API untuk sorting yang belum ada. Dark mode tidak diaktifkan karena komponen domain dan dokumen cetak memerlukan audit kontras tersendiri; rilis ini menstandarkan light mode.
+
+## Tindak lanjut UI UX Pro Max (baseline d28269c)
+
+Pemetaan 46 route di atas tetap berlaku; tidak ada route, backend, atau alur bisnis yang ditambah/dihapus. Pemeriksaan source dan dokumentasi sebelumnya menunjukkan perbaikan yang sudah baik (modal dirty guard, CSRF, feedback gagal simpan, RBAC, breadcrumb) sehingga dipertahankan. Adaptasi berikut berfokus pada kesenjangan terukur:
+
+| Prioritas | Kesenjangan awal | Perubahan | Area terdampak |
+|---|---|---|---|
+| P1 | Batas input terlalu pucat pada permukaan terang | Token input yang diuji ≥3:1 | Kontrol bersama, login, filter, formulir |
+| P1 | DataForm menampilkan satu error umum tanpa asosiasi tiap field | Summary focusable, tautan field, inline error, aria-invalid/describedby | Pemakai DataForm pada ujian/acara/honor/operasional/migrasi |
+| P1 | Overflow tabel sudah terkurung tetapi tanpa petunjuk/fokus keyboard eksplisit | TableRegion bernama, hint kondisional, keyboard scroll, sticky header | 8 tabel di 6 manager |
+| P1 | Sidebar admin panjang dan perlu pemindaian banyak menu | Pencarian lokal berbasis daftar role existing, hasil kosong/reset | Semua Workspace; desktop dan drawer |
+| P2 | Dashboard menampilkan ringkasan sebagai paragraf setara | MetricCard, native progress dan tautan kontekstual; kartu akun lebih tenang | Dashboard guru/admin |
+| P2 | Isian rahasia tidak mempunyai kontrol visibilitas | PasswordInput, tetap mendukung paste/password manager | Login, aktivasi, pemulihan, lifecycle akun |
+| P2 | Topbar sticky mengambil ruang layar pendek | Topbar statis di mobile; drawer tetap modal | Workspace mobile/lanskap |
+| P2 | Focus offset, motion, print table dan target breadcrumb belum dinyatakan konsisten | Scroll padding, motion tokens, forced colors, safe area, target tautan | Komponen bersama dan CSS |
+
+Riset memakai generator aktual dan pencarian terarah, bukan pemasangan template UI. Hasil awal yang tidak cocok, pencarian tanpa hasil, pencarian ulang dan keputusan yang ditolak dicatat pada `DESIGN_SYSTEM.md` serta JSON riset. Tidak ada library ikon/font/chart baru, KPI rekaan, penghilangan kolom, penggantian auth internal, atau perubahan API/database.

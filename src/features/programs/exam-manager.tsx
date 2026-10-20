@@ -1,4 +1,5 @@
 "use client";
+import { TableRegion } from "@/components/ui/table-region";
 import { FeatureState } from "@/components/feedback/feature-state";
 import { useEffect, useState } from "react";
 import { masterRequest } from "../masters/api";
@@ -498,7 +499,19 @@ export function ExamManager({
             </button>
           )}
           <DataForm
-            description={"Jenis data: " + ({period:"periode ujian",session:"sesi ujian",room:"ruang ujian",supervisor:"pengawas ujian",committee:"panitia ujian"} as const)[entity] + ". Periksa relasi sebelum menyimpan."}
+            description={
+              "Jenis data: " +
+              (
+                {
+                  period: "periode ujian",
+                  session: "sesi ujian",
+                  room: "ruang ujian",
+                  supervisor: "pengawas ujian",
+                  committee: "panitia ujian",
+                } as const
+              )[entity] +
+              ". Periksa relasi sebelum menyimpan."
+            }
             openOnMount={Boolean(edit)}
             onDismiss={() => setEdit(null)}
             key={entity + (edit?.id ?? "new")}
@@ -671,7 +684,7 @@ export function ExamManager({
             {r.teacherName} · {r.sourceKind}: {r.jtm} JTM
           </p>
         ))}
-        <div className="overflow-x-auto">
+        <TableRegion label="Data ujian">
           <table className="w-full text-left text-sm">
             <thead>
               <tr>
@@ -696,7 +709,7 @@ export function ExamManager({
               ))}
             </tbody>
           </table>
-        </div>
+        </TableRegion>
       </section>
     </div>
   );
@@ -718,7 +731,11 @@ function BapForm({
       <DataForm
         busy={busy}
         label={o.bap ? "Simpan edit BAP" : "Kirim BAP"}
-        description={"Total siswa pada penugasan ini: " + o.expectedStudents + ". Periksa jumlah hadir dan tidak hadir."}
+        description={
+          "Total siswa pada penugasan ini: " +
+          o.expectedStudents +
+          ". Periksa jumlah hadir dan tidak hadir."
+        }
         fields={[
           {
             key: "present",

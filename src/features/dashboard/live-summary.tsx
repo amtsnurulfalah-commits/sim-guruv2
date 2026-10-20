@@ -1,6 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ClipboardCheck, Wallet, CalendarCheck2 } from "lucide-react";
+import { MetricCard } from "@/components/ui/metric-card";
+import { FeatureState } from "@/components/feedback/feature-state";
 import { masterRequest } from "@/features/masters/api";
 import { Announcements } from "@/features/operations/announcements";
 type Summary = {
@@ -26,7 +29,8 @@ type Summary = {
 };
 export function LiveSummary() {
   const [value, setValue] = useState<Summary | null>(null),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [revision, setRevision] = useState(0);
   useEffect(() => {
     const c = new AbortController();
     masterRequest<{ summary: Summary }>(
@@ -42,38 +46,46 @@ export function LiveSummary() {
         if (!c.signal.aborted) setError(e.message);
       });
     return () => c.abort();
-  }, []);
+  }, [revision]);
   return (
     <div className="space-y-5">
       <Announcements />
-      {error && <p role="alert">{error}</p>}
       {!value ? (
-        <p role="status">
-          {error
-            ? "Ringkasan belum dapat dimuat."
-            : "Memuat ringkasan kegiatan…"}
-        </p>
+        <FeatureState
+          headingLevel={2}
+          error={error}
+          label="Memuat ringkasan kegiatan…"
+          retry={() => {
+            setError("");
+            setRevision((value) => value + 1);
+          }}
+        />
       ) : (
         <>
           <section className="grid gap-4 sm:grid-cols-3">
-            <article className="ui-panel space-y-3">
-              <h2 className="font-bold">Kehadiran hari ini</h2>
-              <p>Masuk: {value.attendance?.actualIn ?? "Belum tercatat"}</p>
+            <MetricCard
+              title="Kehadiran hari ini"
+              icon={CalendarCheck2}
+              value={value.attendance?.actualIn ?? "Belum tercatat"}
+            >
+              <p>Jam masuk · WIB</p>
               <p>Keluar: {value.attendance?.actualOut ?? "Belum tercatat"}</p>
-              <Link className="underline" href="/kehadiran">
+              <Link className="ui-text-link" href="/kehadiran">
                 Buka kehadiran
               </Link>
-            </article>
-            <article className="ui-panel space-y-3">
-              <h2 className="font-bold">Honor terealisasi bulan ini</h2>
-              <p className="text-xl font-bold">
-                {value.honor.rateMissing
+            </MetricCard>
+            <MetricCard
+              title="Honor terealisasi bulan ini"
+              icon={Wallet}
+              value={
+                value.honor.rateMissing
                   ? "Tarif belum lengkap"
                   : "Rp " +
                     value.honor.total
                       .split(".")[0]!
-                      .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
-              </p>
+                      .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+              }
+            >
               <p>
                 {value.honor.totalJtm} JTM · {value.pendingHolidays} hak libur
                 belum diproses
@@ -81,30 +93,49 @@ export function LiveSummary() {
               {value.honor.rateMissing && (
                 <p>Tarif belum lengkap; nominal belum dapat disimpulkan.</p>
               )}
-              <p className="text-sm">
+              <p className="text-muted-foreground">
                 Perhitungan berjalan, dapat berubah sampai finalisasi.
               </p>
-              <Link className="underline" href="/honorarium">
+              <Link className="ui-text-link" href="/honorarium">
                 Rincian honorarium
               </Link>
-            </article>
-            <article className="ui-panel space-y-3">
-              <h2 className="font-bold">Progres kegiatan tercatat</h2>
-              <p>
-                {value.tasks.filter((t) => t.confirmed).length} /{" "}
-                {value.tasks.length} terkonfirmasi
-              </p>
+            </MetricCard>
+            <MetricCard
+              title="Progres kegiatan tercatat"
+              icon={ClipboardCheck}
+              value={
+                <>
+                  {value.tasks.filter((task) => task.confirmed).length}
+                  <span className="ml-2 text-base font-medium text-muted-foreground">
+                    / {value.tasks.length}
+                  </span>
+                </>
+              }
+            >
+              <p>Terkonfirmasi hari ini</p>
+              <progress
+                className="ui-progress"
+                aria-label="Kegiatan terkonfirmasi"
+                aria-valuetext={
+                  value.tasks.length === 0
+                    ? "Belum ada kegiatan tercatat"
+                    : `${value.tasks.filter((task) => task.confirmed).length} dari ${value.tasks.length} kegiatan terkonfirmasi`
+                }
+                max={value.tasks.length || 1}
+                value={value.tasks.filter((task) => task.confirmed).length}
+              />
               <p>
                 {
-                  value.tasks.filter((t) => t.confirmed && !t.journalComplete)
-                    .length
+                  value.tasks.filter(
+                    (task) => task.confirmed && !task.journalComplete,
+                  ).length
                 }{" "}
                 jurnal / BAP perlu dilengkapi
               </p>
-              <Link className="underline" href="/kegiatan">
+              <Link className="ui-text-link" href="/kegiatan">
                 Buka kegiatan
               </Link>
-            </article>
+            </MetricCard>
           </section>
           <section className="ui-panel space-y-3">
             <h2 className="font-bold">

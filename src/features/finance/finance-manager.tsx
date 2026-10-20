@@ -1,4 +1,5 @@
 "use client";
+import { TableRegion } from "@/components/ui/table-region";
 import { EmptyState } from "@/components/feedback/feature-state";
 import Link from "next/link";
 import { TeacherPicker, type TeacherChoice } from "./teacher-picker";
@@ -66,7 +67,7 @@ function Breakdown({ s, hidden }: { s: HonorSnapshot; hidden: boolean }) {
         <summary className="cursor-pointer">
           Rincian sumber ({s.lines.length})
         </summary>
-        <div className="overflow-x-auto">
+        <TableRegion label="Rincian honorarium">
           <table className="w-full text-left text-sm">
             <thead>
               <tr>
@@ -95,7 +96,7 @@ function Breakdown({ s, hidden }: { s: HonorSnapshot; hidden: boolean }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </TableRegion>
       </details>
       {s.pendingHolidays.length > 0 && (
         <p className="text-sm text-amber-800">
@@ -386,7 +387,7 @@ export function FinanceManager({
               Ekspor Excel (semua hasil filter)
             </a>
           </div>
-          <div className="overflow-x-auto">
+          <TableRegion label="Riwayat honorarium">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr>
@@ -417,7 +418,7 @@ export function FinanceManager({
                 ))}
               </tbody>
             </table>
-          </div>
+          </TableRegion>
           {history?.total === 0 && <EmptyState title="Belum ada slip final." />}
           <div className="flex items-center gap-3">
             <button
@@ -602,7 +603,7 @@ export function FinanceManager({
                   : formRun(() => post("holiday", data))
               }
             />
-            <div className="overflow-x-auto">
+            <TableRegion label="Operasi honorarium">
               <table className="w-full text-sm">
                 <thead>
                   <tr>
@@ -632,7 +633,7 @@ export function FinanceManager({
                   ))}
                 </tbody>
               </table>
-            </div>
+            </TableRegion>
             {operations?.runs
               .filter((r) => r.state === "completed")
               .map((r) => (

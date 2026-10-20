@@ -1,0 +1,770 @@
+{
+  "reference": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+  "commit": "56ea9cf174ed86786187daa9de0e6247cb0747e4",
+  "applicationBase": "d28269cba130f8f5430f8508cc275d2b49c9e334",
+  "results": {
+    "pro-max-design-result.json": {
+      "design_system": {
+        "project_name": "Rebuilt SiM-Guru",
+        "category": "General",
+        "pattern": {
+          "name": "Hero + Features + CTA",
+          "sections": "Hero with headline/image > Value prop > Key features (3-5) > CTA section > Footer",
+          "cta_placement": "Hero (sticky) + Bottom",
+          "color_strategy": "Hero: Brand primary or vibrant. Features: Card bg #FAFAFA. CTA: Contrasting accent color",
+          "conversion": "Deep CTA placement. For CTA label text, verify at least 4.5:1 against the button fill; use 7:1 only when the product explicitly targets AAA normal-text contrast. Keep focus and component boundaries independently visible. Disable hero parallax under reduced motion and render its static final state."
+        },
+        "style": {
+          "id": "minimalism-and-swiss-style",
+          "name": "Minimalism & Swiss Style",
+          "type": "General",
+          "effects": "Subtle hover (200-250ms), smooth transitions, sharp shadows if any, clear type hierarchy, fast loading",
+          "keywords": "Clean, simple, spacious, functional, white space, high contrast, geometric, sans-serif, grid-based, essential",
+          "best_for": "Enterprise apps, dashboards, documentation sites, SaaS platforms, professional tools",
+          "performance": "cost:low|drivers:none",
+          "accessibility": "risk:low|requires:contrast-text-4.5,keyboard,visible-focus,reduced-motion",
+          "light_mode": "supported",
+          "dark_mode": "supported"
+        },
+        "colors": {
+          "primary": "#0D9488",
+          "on_primary": "#000000",
+          "secondary": "#2DD4BF",
+          "on_secondary": "#0F172A",
+          "accent": "#D97706",
+          "on_accent": "#000000",
+          "background": "#F0FDFA",
+          "foreground": "#134E4A",
+          "card": "#FFFFFF",
+          "card_foreground": "#134E4A",
+          "muted": "#E8F1F4",
+          "muted_foreground": "#475569",
+          "border": "#5EEAD4",
+          "destructive": "#DC2626",
+          "on_destructive": "#FFFFFF",
+          "ring": "#0D9488",
+          "notes": "Education teal + course amber + grade green",
+          "cta": "#D97706",
+          "text": "#134E4A",
+          "on_cta": "#000000"
+        },
+        "typography": {
+          "heading": "Fira Code",
+          "body": "Fira Sans",
+          "mood": "dashboard, data, analytics, code, technical, precise",
+          "best_for": "Dashboards, analytics, data visualization, admin panels",
+          "google_fonts_url": "https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap",
+          "css_import": "@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');"
+        },
+        "key_effects": "Subtle hover (200-250ms), smooth transitions, sharp shadows if any, clear type hierarchy, fast loading",
+        "anti_patterns": "",
+        "decision_rules": {},
+        "activated_rules": [],
+        "constraints": [],
+        "reasoning_default": true,
+        "source_identities": {
+          "product": null,
+          "reasoning": null,
+          "style": "minimalism-and-swiss-style",
+          "color": "LMS (Learning Management System)",
+          "typography": "Dashboard Data",
+          "landing": "Hero + Features + CTA"
+        },
+        "source_derivations": {
+          "color_mode": null
+        },
+        "severity": "MEDIUM",
+        "dials": {
+          "variance": 3,
+          "variance_label": "Centered / Minimal",
+          "motion": 2,
+          "motion_label": "Subtle",
+          "density": 8,
+          "density_label": "Dense / Dashboard"
+        },
+        "motion_snippet": {
+          "Category": "Scroll Reveal",
+          "Intensity Tier": "Subtle",
+          "Trigger": "scroll (viewport enter)",
+          "Duration": "300-400ms",
+          "Easing": "power1.out",
+          "GSAP Snippet": "gsap.from(el, { opacity: 0, y: 12, duration: 0.35, ease: 'power1.out', scrollTrigger: { trigger: el, start: 'top 90%', toggleActions: 'play none none reverse' } });",
+          "Framework Notes": "Requires the ScrollTrigger plugin registered once via gsap.registerPlugin(ScrollTrigger); Use matchMedia('(prefers-reduced-motion: reduce)') to skip non-essential motion and render the final state immediately",
+          "Do": "Keep the y offset small (8-16px) so it reads as a fade, not a slide",
+          "Don't": "Don't reveal below-the-fold content needed for SEO/crawlers as invisible-by-default without a no-JS fallback",
+          "Performance Notes": "toggleActions 'play none none reverse' avoids re-triggering on every scroll direction change"
+        },
+        "spacing_scale": {
+          "xs": "2px",
+          "sm": "4px",
+          "md": "8px",
+          "lg": "12px",
+          "xl": "16px",
+          "2xl": "24px",
+          "3xl": "32px"
+        }
+      },
+      "persistence": null
+    },
+    "pro-max-design-verified.json": {
+      "design_system": {
+        "project_name": "Rebuilt SiM-Guru",
+        "category": "SaaS (General)",
+        "pattern": {
+          "name": "Hero + Features + CTA",
+          "sections": "Hero with headline/image > Value prop > Key features (3-5) > CTA section > Footer",
+          "cta_placement": "Hero (sticky) + Bottom",
+          "color_strategy": "Hero: Brand primary or vibrant. Features: Card bg #FAFAFA. CTA: Contrasting accent color",
+          "conversion": "Deep CTA placement. For CTA label text, verify at least 4.5:1 against the button fill; use 7:1 only when the product explicitly targets AAA normal-text contrast. Keep focus and component boundaries independently visible. Disable hero parallax under reduced motion and render its static final state."
+        },
+        "style": {
+          "id": "minimalism-and-swiss-style",
+          "name": "Minimalism & Swiss Style",
+          "type": "General",
+          "effects": "Subtle hover (200-250ms), smooth transitions, sharp shadows if any, clear type hierarchy, fast loading",
+          "keywords": "Clean, simple, spacious, functional, white space, high contrast, geometric, sans-serif, grid-based, essential",
+          "best_for": "Enterprise apps, dashboards, documentation sites, SaaS platforms, professional tools",
+          "performance": "cost:low|drivers:none",
+          "accessibility": "risk:low|requires:contrast-text-4.5,keyboard,visible-focus,reduced-motion",
+          "light_mode": "supported",
+          "dark_mode": "supported"
+        },
+        "colors": {
+          "primary": "#2563EB",
+          "on_primary": "#FFFFFF",
+          "secondary": "#3B82F6",
+          "on_secondary": "#000000",
+          "accent": "#EA580C",
+          "on_accent": "#000000",
+          "background": "#F8FAFC",
+          "foreground": "#1E293B",
+          "card": "#FFFFFF",
+          "card_foreground": "#1E293B",
+          "muted": "#E9EFF8",
+          "muted_foreground": "#475569",
+          "border": "#E2E8F0",
+          "destructive": "#DC2626",
+          "on_destructive": "#FFFFFF",
+          "ring": "#2563EB",
+          "notes": "Trust blue + orange CTA contrast [Accent adjusted from #F97316]",
+          "cta": "#EA580C",
+          "text": "#1E293B",
+          "on_cta": "#000000"
+        },
+        "typography": {
+          "heading": "Plus Jakarta Sans",
+          "body": "Plus Jakarta Sans",
+          "mood": "enterprise, saas, b2b, professional, indigo, modern, approachable, legible, ios dynamic type, android scaling",
+          "best_for": "B2B SaaS apps, productivity tools, government and finance mobile apps, admin dashboards, enterprise onboarding",
+          "google_fonts_url": "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400",
+          "css_import": "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap');"
+        },
+        "key_effects": "Subtle hover (200-250ms), smooth transitions, sharp shadows if any, clear type hierarchy, fast loading",
+        "anti_patterns": "Excessive animation + Dark mode by default",
+        "decision_rules": {
+          "if_ux_focused": [
+            "style:minimalism-and-swiss-style"
+          ],
+          "if_data_heavy": [
+            "style:glassmorphism"
+          ]
+        },
+        "activated_rules": [],
+        "constraints": [],
+        "reasoning_default": false,
+        "source_identities": {
+          "product": "SaaS (General)",
+          "reasoning": "SaaS (General)",
+          "style": "minimalism-and-swiss-style",
+          "color": "SaaS (General)",
+          "typography": "Enterprise SaaS Mobile (Plus Jakarta Sans)",
+          "landing": "Hero + Features + CTA"
+        },
+        "source_derivations": {
+          "color_mode": null
+        },
+        "severity": "HIGH",
+        "dials": {
+          "variance": 3,
+          "variance_label": "Centered / Minimal",
+          "motion": 2,
+          "motion_label": "Subtle",
+          "density": 8,
+          "density_label": "Dense / Dashboard"
+        },
+        "motion_snippet": {
+          "Category": "Scroll Reveal",
+          "Intensity Tier": "Subtle",
+          "Trigger": "scroll (viewport enter)",
+          "Duration": "300-400ms",
+          "Easing": "power1.out",
+          "GSAP Snippet": "gsap.from(el, { opacity: 0, y: 12, duration: 0.35, ease: 'power1.out', scrollTrigger: { trigger: el, start: 'top 90%', toggleActions: 'play none none reverse' } });",
+          "Framework Notes": "Requires the ScrollTrigger plugin registered once via gsap.registerPlugin(ScrollTrigger); Use matchMedia('(prefers-reduced-motion: reduce)') to skip non-essential motion and render the final state immediately",
+          "Do": "Keep the y offset small (8-16px) so it reads as a fade, not a slide",
+          "Don't": "Don't reveal below-the-fold content needed for SEO/crawlers as invisible-by-default without a no-JS fallback",
+          "Performance Notes": "toggleActions 'play none none reverse' avoids re-triggering on every scroll direction change"
+        },
+        "spacing_scale": {
+          "xs": "2px",
+          "sm": "4px",
+          "md": "8px",
+          "lg": "12px",
+          "xl": "16px",
+          "2xl": "24px",
+          "3xl": "32px"
+        }
+      },
+      "persistence": null
+    },
+    "pro-max-form-result.json": {
+      "domain": "ux",
+      "query": "error summary validation",
+      "file": "ux-guidelines.csv",
+      "count": 3,
+      "results": [
+        {
+          "Category": "Forms / Accessibility",
+          "Issue": "Focusable Error Summary",
+          "Platform": "Web",
+          "Description": "An error summary for failed validation complements inline field errors and must be easy to find by keyboard and screen reader users",
+          "Do": "Place it at the top of the form; move focus to its heading or container after failed submit; link each item to its invalid field; retain inline errors",
+          "Don't": "Replace inline errors with a visual-only summary or move focus on every blur",
+          "Code Example Good": "<div role=\"alert\" tabindex=\"-1\" aria-labelledby=\"error-title\"><h2 id=\"error-title\">There is a problem</h2><a href=\"#email\">Enter an email address</a></div>",
+          "Code Example Bad": "Toast only with no field links or focus target",
+          "Severity": "High"
+        },
+        {
+          "Category": "Accessibility",
+          "Issue": "Error Messages",
+          "Platform": "All",
+          "Description": "Error messages must be announced",
+          "Do": "Use aria-live or role=alert for errors",
+          "Don't": "Visual-only error indication",
+          "Code Example Good": "role='alert'",
+          "Code Example Bad": "Red border only",
+          "Severity": "High"
+        },
+        {
+          "Category": "Forms",
+          "Issue": "Error Placement",
+          "Platform": "All",
+          "Description": "Each invalid field needs an inline error connected to that field",
+          "Do": "Show a specific error below the input and reference it with aria-describedby",
+          "Don't": "Show only a top-level error without identifying each invalid field",
+          "Code Example Good": "<input aria-describedby=\"email-error\"><p id=\"email-error\">Enter an email address</p>",
+          "Code Example Bad": "Red border or summary only",
+          "Severity": "High"
+        }
+      ]
+    },
+    "pro-max-table-result.json": {
+      "domain": "stack",
+      "stack": "html-tailwind",
+      "query": "table horizontal scroll",
+      "file": "stacks/html-tailwind.csv",
+      "count": 0,
+      "results": [],
+      "suggestions": []
+    },
+    "pro-max-table-verified.json": {
+      "domain": "stack",
+      "stack": "html-tailwind",
+      "query": "overflow responsive",
+      "file": "stacks/html-tailwind.csv",
+      "count": 3,
+      "results": [
+        {
+          "Category": "Typography",
+          "Guideline": "Text truncation",
+          "Description": "Handle long text gracefully",
+          "Do": "truncate or line-clamp-*",
+          "Don't": "Overflow breaking layout",
+          "Code Good": "line-clamp-2",
+          "Code Bad": "No overflow handling",
+          "Severity": "Medium",
+          "Docs URL": "https://tailwindcss.com/docs/text-overflow",
+          "Applies To": "html-tailwind 4.3",
+          "Status": "active",
+          "Verified At": "2026-08-13"
+        },
+        {
+          "Category": "Layout",
+          "Guideline": "Compact label layout",
+          "Description": "Handle chip and badge text overflow without breaking compact labels or hiding collection values",
+          "Do": "Use flex flex-wrap gap-2 for collections; for one label use whitespace-nowrap bounded min-w-0 truncate and shrink-0 controls",
+          "Don't": "Clip a fixed-height row let labels wrap inside a pill or let dismiss icons shrink",
+          "Code Good": "flex flex-wrap gap-2; label min-w-0 whitespace-nowrap truncate; icon shrink-0",
+          "Code Bad": "flex h-8 overflow-hidden",
+          "Severity": "High",
+          "Docs URL": "https://tailwindcss.com/docs/flex-wrap",
+          "Applies To": "html-tailwind 4.3",
+          "Status": "active",
+          "Verified At": "2026-08-13"
+        },
+        {
+          "Category": "Images",
+          "Guideline": "Reserve image space",
+          "Description": "Give image wrappers an aspect ratio or dimensions to avoid layout shifts",
+          "Do": "aspect-video or explicit dimensions",
+          "Don't": "Let images determine layout after load",
+          "Code Good": "aspect-video overflow-hidden",
+          "Code Bad": "Image without reserved space",
+          "Severity": "High",
+          "Docs URL": "https://tailwindcss.com/docs/aspect-ratio",
+          "Applies To": "html-tailwind 4.3",
+          "Status": "active",
+          "Verified At": "2026-08-13"
+        }
+      ]
+    },
+    "pro-max-next-result.json": {
+      "domain": "stack",
+      "stack": "nextjs",
+      "query": "dashboard loading navigation",
+      "file": "stacks/nextjs.csv",
+      "count": 3,
+      "results": [
+        {
+          "Category": "Routing",
+          "Guideline": "Handle loading states",
+          "Description": "Use loading.tsx for route loading UI",
+          "Do": "loading.tsx alongside page.tsx",
+          "Don't": "Manual loading state management",
+          "Code Good": "app/dashboard/loading.tsx",
+          "Code Bad": "useState for loading in page",
+          "Severity": "Medium",
+          "Docs URL": "https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming",
+          "Applies To": "nextjs 16.2",
+          "Status": "active",
+          "Verified At": "2026-08-13"
+        },
+        {
+          "Category": "Link",
+          "Guideline": "Use next/link for navigation",
+          "Description": "Client-side navigation with prefetching",
+          "Do": "<Link href=\"\"> for internal links",
+          "Don't": "<a> for internal navigation",
+          "Code Good": "<Link href=\"/about\">About</Link>",
+          "Code Bad": "<a href=\"/about\">About</a>",
+          "Severity": "High",
+          "Docs URL": "https://nextjs.org/docs/app/api-reference/components/link",
+          "Applies To": "nextjs 16.2",
+          "Status": "active",
+          "Verified At": "2026-08-13"
+        },
+        {
+          "Category": "Routing",
+          "Guideline": "Colocate related files",
+          "Description": "Keep components styles tests with their routes",
+          "Do": "Component files alongside page.tsx",
+          "Don't": "Separate components folder",
+          "Code Good": "app/dashboard/_components/",
+          "Code Bad": "components/dashboard/",
+          "Severity": "Low",
+          "Docs URL": "",
+          "Applies To": "nextjs 16.2",
+          "Status": "active",
+          "Verified At": "2026-08-13"
+        }
+      ]
+    },
+    "pro-max-shadcn-result.json": {
+      "domain": "stack",
+      "stack": "shadcn",
+      "query": "forms validation",
+      "file": "stacks/shadcn.csv",
+      "count": 3,
+      "results": [
+        {
+          "Category": "Dialog",
+          "Guideline": "Use Dialog for modal content",
+          "Description": "Dialog component for overlay modal windows",
+          "Do": "Dialog for confirmations forms details",
+          "Don't": "Alert for modal content",
+          "Code Good": "<Dialog><DialogContent>",
+          "Code Bad": "<Alert> styled as modal",
+          "Severity": "High",
+          "Docs URL": "https://ui.shadcn.com/docs/components/dialog",
+          "Applies To": "shadcn cli 4; base=base|radix|aria",
+          "Status": "active",
+          "Verified At": "2026-08-13"
+        },
+        {
+          "Category": "Form",
+          "Guideline": "Display field errors",
+          "Description": "Render validation messages with FieldError",
+          "Do": "FieldError with controller fieldState errors",
+          "Don't": "Unassociated custom error text",
+          "Code Good": "<FieldError errors={[fieldState.error]}/>",
+          "Code Bad": "<span>{error.message}</span>",
+          "Severity": "Medium",
+          "Docs URL": "https://ui.shadcn.com/docs/components/field",
+          "Applies To": "shadcn cli 4; base=base|radix|aria",
+          "Status": "active",
+          "Verified At": "2026-08-13"
+        },
+        {
+          "Category": "Form",
+          "Guideline": "Use schema validation",
+          "Description": "Use a Standard Schema compatible validator such as Zod where it adds value",
+          "Do": "Zod schema with resolver or form adapter",
+          "Don't": "Assume Zod is the only supported validator",
+          "Code Good": "zodResolver(formSchema)",
+          "Code Bad": "Hand-written divergent client rules",
+          "Severity": "Medium",
+          "Docs URL": "https://ui.shadcn.com/docs/forms",
+          "Applies To": "shadcn cli 4; base=base|radix|aria",
+          "Status": "active",
+          "Verified At": "2026-08-13"
+        }
+      ]
+    },
+    "pro-max-react-result.json": {
+      "domain": "stack",
+      "stack": "react",
+      "query": "effect derived state",
+      "file": "stacks/react.csv",
+      "count": 3,
+      "results": [
+        {
+          "Category": "Effects",
+          "Guideline": "Specify dependencies correctly",
+          "Description": "Include every reactive value used inside an Effect dependency array.",
+          "Do": "All referenced values in dependency array",
+          "Don't": "Empty deps with external references",
+          "Code Good": "[value] when using value in effect",
+          "Code Bad": "[] when using props/state in effect",
+          "Severity": "High",
+          "Docs URL": "https://react.dev/reference/react/useEffect#specifying-reactive-dependencies",
+          "Applies To": "react 19.2.x",
+          "Status": "active",
+          "Verified At": "2026-08-13"
+        },
+        {
+          "Category": "Hooks",
+          "Guideline": "Use an Effect Event for non-reactive effect logic",
+          "Description": "Use useEffectEvent to separate event-like logic from reactive Effect dependencies.",
+          "Do": "Read latest props and state inside useEffectEvent callbacks",
+          "Don't": "Use useEffectEvent to hide missing dependencies",
+          "Code Good": "const onConnected = useEffectEvent(() => showNotification('Connected!', theme))",
+          "Code Bad": "useEffect(() => { log(theme) }, [])",
+          "Severity": "High",
+          "Docs URL": "https://react.dev/reference/react/useEffectEvent",
+          "Applies To": "react 19.2.x",
+          "Status": "active",
+          "Verified At": "2026-08-13"
+        },
+        {
+          "Category": "Effects",
+          "Guideline": "Avoid unnecessary effects",
+          "Description": "Avoid Effects for derived data or event handling.",
+          "Do": "Transform data during render handle events directly",
+          "Don't": "useEffect for derived state or event handling",
+          "Code Good": "const filtered = items.filter(...)",
+          "Code Bad": "useEffect(() => setFiltered(items.filter(...)))",
+          "Severity": "High",
+          "Docs URL": "https://react.dev/learn/you-might-not-need-an-effect",
+          "Applies To": "react 19.2.x",
+          "Status": "active",
+          "Verified At": "2026-08-13"
+        }
+      ]
+    },
+    "pro-max-extra-results.json": [
+      {
+        "domain": "ux",
+        "query": "table keyboard scroll",
+        "file": "ux-guidelines.csv",
+        "count": 3,
+        "results": [
+          {
+            "Category": "Navigation",
+            "Issue": "Smooth Scroll",
+            "Platform": "Web",
+            "Description": "Anchor links should scroll smoothly to target section",
+            "Do": "Use scroll-behavior: smooth on html element",
+            "Don't": "Jump directly without transition",
+            "Code Example Good": "html { scroll-behavior: smooth; }",
+            "Code Example Bad": "<a href='#section'> without CSS",
+            "Severity": "High"
+          },
+          {
+            "Category": "Responsive",
+            "Issue": "Table Handling",
+            "Platform": "Web",
+            "Description": "Tables can overflow on mobile",
+            "Do": "Use horizontal scroll or card layout",
+            "Don't": "Wide tables breaking layout",
+            "Code Example Good": "overflow-x-auto wrapper",
+            "Code Example Bad": "Table overflows viewport",
+            "Severity": "Medium"
+          },
+          {
+            "Category": "Responsive",
+            "Issue": "Horizontal Scroll",
+            "Platform": "Web",
+            "Description": "Avoid horizontal scrolling",
+            "Do": "Ensure content fits viewport width",
+            "Don't": "Content wider than viewport",
+            "Code Example Good": "max-w-full overflow-x-hidden",
+            "Code Example Bad": "Horizontal scrollbar on mobile",
+            "Severity": "High"
+          }
+        ]
+      },
+      {
+        "domain": "ux",
+        "query": "focus not obscured",
+        "file": "ux-guidelines.csv",
+        "count": 3,
+        "results": [
+          {
+            "Category": "Accessibility",
+            "Issue": "Focus Not Obscured (Enhanced)",
+            "Platform": "Web",
+            "Description": "WCAG 2.2 AAA requires keyboard focus to remain fully visible",
+            "Do": "Keep the entire focused component unobscured by author-created content",
+            "Don't": "Present this enhanced AAA criterion as an AA requirement or allow persistent UI to hide any part of focus",
+            "Code Example Good": "close persistent overlay before focus moves behind it",
+            "Code Example Bad": "sticky footer covers half the focused button",
+            "Severity": "Medium"
+          },
+          {
+            "Category": "Accessibility",
+            "Issue": "Focus Not Obscured (Minimum)",
+            "Platform": "Web",
+            "Description": "WCAG 2.2 AA requires keyboard focus to remain at least partially visible",
+            "Do": "Offset sticky UI with scroll-padding and dismiss or move persistent overlays",
+            "Don't": "Let headers footers banners or chat widgets fully cover focus",
+            "Code Example Good": "scroll-padding-top: var(--header-height)",
+            "Code Example Bad": "fixed overlay covers :focus",
+            "Severity": "High"
+          },
+          {
+            "Category": "Accessibility",
+            "Issue": "Focus Appearance",
+            "Platform": "Web",
+            "Description": "WCAG 2.2 AAA defines minimum area and contrast for focus indicators",
+            "Do": "Use an indicator at least as large as a 2 CSS px perimeter with 3:1 state contrast",
+            "Don't": "Present this enhanced AAA criterion as an AA requirement or use a thin low-contrast outline",
+            "Code Example Good": "outline: 2px solid currentColor; outline-offset: 2px",
+            "Code Example Bad": "box-shadow: 0 0 1px low-contrast",
+            "Severity": "Medium"
+          }
+        ]
+      },
+      {
+        "domain": "icons",
+        "query": "decorative icon aria hidden",
+        "file": "icons.csv",
+        "count": 3,
+        "results": [
+          {
+            "Category": "Guideline",
+            "Icon Name": "icon-context-accessibility",
+            "Keywords": "decorative icon aria hidden, meaningful icon text alternative, icon button accessible label, accessible name, aria pressed, aria expanded, semantic context, phosphor, heroicons",
+            "Library": "Phosphor (primary) + Heroicons (fallback)",
+            "Import Code": "import { Question } from '@phosphor-icons/react'; import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';",
+            "Usage": "Prefer the most semantically precise Phosphor icon, even if it is outside this curated subset. Use Heroicons only as a consistent fallback. Keep one visual family per surface. Context is chosen by use: if decorative beside visible text, set aria-hidden=\"true\"; if meaningful without equivalent visible text, provide a text alternative; if inside an interactive control, give the control an accessible name and expose applicable state (for example aria-pressed or aria-expanded).",
+            "Best For": "Contextual icon semantics, icon accessibility, and library fallback rules",
+            "Style": "Outline",
+            "Semantic Role": "guideline",
+            "Allowed Contexts": "decorative|meaningful|interactive"
+          },
+          {
+            "Category": "Security",
+            "Icon Name": "eye-slash",
+            "Keywords": "hide invisible password hidden",
+            "Library": "Phosphor",
+            "Import Code": "import { EyeSlash } from '@phosphor-icons/react'",
+            "Usage": "<EyeSlash size={20} weight=\"regular\" />; Context is chosen by use: if decorative beside visible text, set aria-hidden=\"true\"; if meaningful without equivalent visible text, provide a text alternative; if inside an interactive control, give the control an accessible name and expose applicable state (for example aria-pressed or aria-expanded).",
+            "Best For": "Hide password",
+            "Style": "Outline",
+            "Semantic Role": "meaningful",
+            "Allowed Contexts": "decorative|meaningful|interactive"
+          },
+          {
+            "Category": "Style Config",
+            "Icon Name": "cyberpunk-icon-system",
+            "Keywords": "cyberpunk, neon, glow, hud, phosphor, weight regular, accent glow, dark, angular, react native",
+            "Library": "Phosphor (react-native)",
+            "Import Code": "import { Lightning } from 'phosphor-react-native'",
+            "Usage": "<Lightning size={24} weight=\"regular\" color={colors.accent} />; Context is chosen by use: if decorative beside visible text, set aria-hidden=\"true\"; if meaningful without equivalent visible text, provide a text alternative; if inside an interactive control, give the control an accessible name and expose applicable state (for example aria-pressed or aria-expanded).",
+            "Best For": "Cyberpunk Mobile HUD style: weight=\"regular\", color={colors.accent} (#00FF88 Matrix Green). Wrap every icon in a View with shadowColor: colors.accent / shadowOpacity: 0.6 / shadowRadius: 8 to simulate neon glow. Use borderRadius: 0 on wrapper. Avoid rounded icon containers. Always pair icon with data label in JetBrains Mono.",
+            "Style": "Outline",
+            "Semantic Role": "meaningful",
+            "Allowed Contexts": "decorative|meaningful|interactive"
+          }
+        ]
+      },
+      {
+        "domain": "chart",
+        "query": "progress completion",
+        "file": "charts.csv",
+        "count": 3,
+        "results": [
+          {
+            "Data Type": "Proportional / Percentage",
+            "Keywords": "waffle, percentage, proportion, progress, filled, grid, accessible chart, keyboard accessible chart",
+            "Best Chart Type": "Waffle Chart",
+            "Secondary Options": "Pictogram, Stacked Bar 100%",
+            "When to Use": "Showing what fraction of a whole is filled; percentage progress in a visually engaging and accessible format",
+            "When NOT to Use": "More than 5 categories (use stacked bar); exact values matter over visual proportion; very tight space",
+            "Data Volume Threshold": "10×10 grid standard (100 cells); for > 5 categories switch to stacked 100% bar",
+            "Color Guidance": "3–5 categories max. 2–3px gap between cells. Each category a distinct accessible color pair",
+            "Accessibility Grade": "deprecated: use Accessibility Risk",
+            "Accessibility Risk": "risk:low",
+            "Accessibility Notes": "Label each category and percentage and add patterns or symbols; filled-cell color alone is insufficient.",
+            "A11y Fallback": "Percentage table/list plus part-to-whole summary. Keyboard: focus reveals each cell value.",
+            "Library Recommendation": "D3.js, React-Waffle, Custom CSS Grid",
+            "Interactive Level": "Hover"
+          },
+          {
+            "Data Type": "Performance vs Target",
+            "Keywords": "performance, target, kpi, gauge, goal, threshold, progress, accessible chart, keyboard accessible chart",
+            "Best Chart Type": "Gauge Chart or Bullet Chart",
+            "Secondary Options": "Dial, Thermometer",
+            "When to Use": "Single KPI measured against a defined target or threshold; dashboard summary context",
+            "When NOT to Use": "No target or benchmark exists; comparing multiple KPIs at once (use bullet chart grid)",
+            "Data Volume Threshold": "Single metric per gauge; for 3+ KPIs use bullet chart grid layout",
+            "Color Guidance": "Performance: Red → Yellow → Green gradient. Target: marker line. Threshold zones clearly differentiated",
+            "Accessibility Grade": "deprecated: use Accessibility Risk",
+            "Accessibility Risk": "risk:low",
+            "Accessibility Notes": "Place the number and target text beside the gauge and label threshold zones; red/yellow/green alone is insufficient.",
+            "A11y Fallback": "Visible KPI/target text and a one-row data table plus status summary. Keyboard: focus reveals the same detail as hover.",
+            "Library Recommendation": "D3.js, ApexCharts, Custom SVG",
+            "Interactive Level": "Hover"
+          },
+          {
+            "Data Type": "Trend Over Time",
+            "Keywords": "trend, time-series, line, growth, timeline, progress, accessible chart, keyboard accessible chart",
+            "Best Chart Type": "Line Chart",
+            "Secondary Options": "Area Chart, Smooth Area",
+            "When to Use": "Data has a time axis; user needs to observe rise/fall trends or rate of change over a continuous period",
+            "When NOT to Use": "Fewer than 4 data points (use stat card); more than 6 series (visual noise); no time dimension exists",
+            "Data Volume Threshold": "<1000 pts: SVG; ≥1000 pts: Canvas + downsampling; >10000: aggregate to intervals",
+            "Color Guidance": "Primary: #0080FF. Multiple series: distinct colors + distinct line styles. Fill: 20% opacity",
+            "Accessibility Grade": "deprecated: use Accessibility Risk",
+            "Accessibility Risk": "risk:low",
+            "Accessibility Notes": "Use solid, dashed, and dotted line styles plus direct series labels; never distinguish series by hue alone.",
+            "A11y Fallback": "Visible data table plus concise trend summary. Keyboard: focus reveals hover values; +/- buttons zoom; Reset restores the full range.",
+            "Library Recommendation": "Chart.js, Recharts, ApexCharts",
+            "Interactive Level": "Hover + Zoom"
+          }
+        ]
+      },
+      {
+        "domain": "color",
+        "query": "enterprise dashboard",
+        "file": "colors.csv",
+        "count": 3,
+        "results": [
+          {
+            "Product Type": "Financial Dashboard",
+            "Primary": "#0F172A",
+            "On Primary": "#FFFFFF",
+            "Secondary": "#1E293B",
+            "On Secondary": "#FFFFFF",
+            "Accent": "#22C55E",
+            "On Accent": "#0F172A",
+            "Background": "#020617",
+            "Foreground": "#F8FAFC",
+            "Card": "#0E1223",
+            "Card Foreground": "#F8FAFC",
+            "Muted": "#1A1E2F",
+            "Muted Foreground": "#94A3B8",
+            "Border": "#334155",
+            "Destructive": "#EF4444",
+            "On Destructive": "#000000",
+            "Ring": "#FFFFFF",
+            "Notes": "Dark bg + green positive indicators"
+          },
+          {
+            "Product Type": "Smart Home/IoT Dashboard",
+            "Primary": "#1E293B",
+            "On Primary": "#FFFFFF",
+            "Secondary": "#334155",
+            "On Secondary": "#FFFFFF",
+            "Accent": "#22C55E",
+            "On Accent": "#0F172A",
+            "Background": "#0F172A",
+            "Foreground": "#F8FAFC",
+            "Card": "#1B2336",
+            "Card Foreground": "#F8FAFC",
+            "Muted": "#272F42",
+            "Muted Foreground": "#94A3B8",
+            "Border": "#475569",
+            "Destructive": "#EF4444",
+            "On Destructive": "#000000",
+            "Ring": "#FFFFFF",
+            "Notes": "Dark tech + status green"
+          },
+          {
+            "Product Type": "Analytics Dashboard",
+            "Primary": "#1E40AF",
+            "On Primary": "#FFFFFF",
+            "Secondary": "#3B82F6",
+            "On Secondary": "#000000",
+            "Accent": "#D97706",
+            "On Accent": "#000000",
+            "Background": "#F8FAFC",
+            "Foreground": "#1E3A8A",
+            "Card": "#FFFFFF",
+            "Card Foreground": "#1E3A8A",
+            "Muted": "#E9EEF6",
+            "Muted Foreground": "#475569",
+            "Border": "#DBEAFE",
+            "Destructive": "#DC2626",
+            "On Destructive": "#FFFFFF",
+            "Ring": "#1E40AF",
+            "Notes": "Blue data + amber highlights [Accent adjusted from #F59E0B]"
+          }
+        ]
+      },
+      {
+        "domain": "typography",
+        "query": "enterprise legible",
+        "file": "typography.csv",
+        "count": 3,
+        "results": [
+          {
+            "Font Pairing Name": "Enterprise SaaS Mobile (Plus Jakarta Sans)",
+            "Category": "Geometric Sans (Single Family)",
+            "Heading Font": "Plus Jakarta Sans",
+            "Body Font": "Plus Jakarta Sans",
+            "Mood/Style Keywords": "enterprise, saas, b2b, professional, indigo, modern, approachable, legible, ios dynamic type, android scaling",
+            "Best For": "B2B SaaS apps, productivity tools, government and finance mobile apps, admin dashboards, enterprise onboarding",
+            "Google Fonts URL": "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400",
+            "CSS Import": "@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap');",
+            "Tailwind Config": "fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }",
+            "Notes": "Single-family system: Plus Jakarta Sans balances professional authority with mobile approachability. Weight scale: ExtraBold 800 for screen titles/hero (line height 1.1–1.2). Bold 700 for section headers. SemiBold 600 for card titles and buttons. Regular 400 for body text (line height 1.4–1.5). Must support iOS Dynamic Type and Android font scaling — never hardcode pixel sizes without respecting system font scale. Button text: uppercase, letterSpacing 0.5. Caption: 12px Regular. Muted: Slate 500 #64748B."
+          },
+          {
+            "Font Pairing Name": "Spatial Clear",
+            "Category": "Sans + Sans",
+            "Heading Font": "Inter",
+            "Body Font": "Inter",
+            "Mood/Style Keywords": "spatial, legible, glass, system, clean, neutral",
+            "Best For": "Spatial computing, AR/VR, glassmorphism interfaces",
+            "Google Fonts URL": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap",
+            "CSS Import": "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');",
+            "Tailwind Config": "fontFamily: { sans: ['Inter', 'sans-serif'] }",
+            "Notes": "Optimized for readability on dynamic backgrounds."
+          },
+          {
+            "Font Pairing Name": "Corporate Trust",
+            "Category": "Sans + Sans",
+            "Heading Font": "Lexend",
+            "Body Font": "Source Sans 3",
+            "Mood/Style Keywords": "corporate, trustworthy, accessible, readable, professional, clean",
+            "Best For": "Enterprise, government, healthcare, finance, accessibility-focused",
+            "Google Fonts URL": "https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap",
+            "CSS Import": "@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');",
+            "Tailwind Config": "fontFamily: { heading: ['Lexend', 'sans-serif'], body: ['Source Sans 3', 'sans-serif'] }",
+            "Notes": "Lexend designed for readability. Excellent accessibility."
+          }
+        ]
+      }
+    ]
+  }
+}

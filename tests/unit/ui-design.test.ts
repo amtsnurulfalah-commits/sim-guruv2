@@ -24,6 +24,9 @@ test("UI semantic foreground/background pairs meet AA normal-text contrast", asy
     ["muted-foreground", "background"],
     ["muted-foreground", "card"],
     ["destructive", "card"],
+    ["destructive", "error-surface"],
+    ["success", "success-surface"],
+    ["accent-foreground", "accent"],
   ]) {
     assert.ok(tokens[a!] && tokens[b!], `missing token ${a}/${b}`);
     const values = [luminance(tokens[a!]!), luminance(tokens[b!]!)].sort(
@@ -34,4 +37,21 @@ test("UI semantic foreground/background pairs meet AA normal-text contrast", asy
       `insufficient contrast ${a}/${b}`,
     );
   }
+});
+
+test("UI input boundary and focus ring retain 3:1 contrast against surfaces", async () => {
+  const css = await readFile("src/app/globals.css", "utf8");
+  const tokens = Object.fromEntries(
+    [...css.matchAll(/--([a-z-]+):\s*(#[0-9a-f]{3,6})\s*;/g)].map((m) => [
+      m[1],
+      m[2],
+    ]),
+  );
+  for (const a of ["input", "ring"])
+    for (const b of ["card", "background"]) {
+      const values = [luminance(tokens[a]!), luminance(tokens[b]!)].sort(
+        (x, y) => x - y,
+      );
+      assert.ok((values[1]! + 0.05) / (values[0]! + 0.05) >= 3, a + "/" + b);
+    }
 });

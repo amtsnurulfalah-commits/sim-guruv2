@@ -60,7 +60,7 @@ export function Breadcrumbs({
         <>
           <Link
             href={currentModule.href!}
-            className="rounded-md hover:text-primary"
+            className="inline-flex min-h-11 items-center rounded-md hover:text-primary"
           >
             {currentModule.title}
           </Link>

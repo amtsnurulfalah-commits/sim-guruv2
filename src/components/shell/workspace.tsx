@@ -25,6 +25,7 @@ import {
   ShieldCheck,
   UserRound,
   X,
+  Search,
 } from "lucide-react";
 import { Breadcrumbs } from "./breadcrumbs";
 import { Brand } from "@/components/brand";
@@ -60,6 +61,7 @@ export function Workspace({
 }) {
   const pathname = usePathname(),
     [collapsed, setCollapsed] = useState(false),
+    [query, setQuery] = useState(""),
     drawer = useRef<HTMLDialogElement>(null),
     mobileTrigger = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -81,6 +83,7 @@ export function Workspace({
     };
   }, []);
   function toggle() {
+    setQuery("");
     const next = !collapsed;
     setCollapsed(next);
     try {
@@ -99,6 +102,13 @@ export function Workspace({
   const role = session?.user.role,
     ready = session?.scope === "business";
   const links = role && ready ? modulesFor(role) : [];
+  const matches = (label: string) =>
+    label
+      .toLocaleLowerCase("id-ID")
+      .includes(query.trim().toLocaleLowerCase("id-ID"));
+  const filteredLinks = links.filter((module) =>
+    matches(module.title + " " + module.group),
+  );
   const activeHref = [
     "/dashboard",
     "/akun",
@@ -109,35 +119,61 @@ export function Workspace({
     .filter((href) => pathname === href || pathname.startsWith(href + "/"))
     .sort((a, b) => b.length - a.length)[0];
   function nav(compact = false) {
-    const item = (
-      href: string,
-      label: string,
-      Icon: typeof LayoutDashboard,
-    ) => (
-      <Link
-        key={href}
-        href={href}
-        onClick={() => {
-          if (drawer.current?.open) closeDrawer();
-        }}
-        aria-current={
-          pathname === href || activeHref === href ? "page" : undefined
-        }
-        title={compact ? label : undefined}
-        className={cn(
-          "group flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring",
-          pathname === href || activeHref === href
-            ? "bg-primary font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
-            : "text-muted-foreground",
-          compact && "justify-center",
-        )}
-      >
-        <Icon className="size-5 shrink-0" aria-hidden="true" />
-        <span className={compact ? "sr-only" : ""}>{label}</span>
-      </Link>
-    );
+    const item = (href: string, label: string, Icon: typeof LayoutDashboard) =>
+      !matches(label) &&
+      !filteredLinks.some((module) => module.title === label) ? null : (
+        <Link
+          key={href}
+          href={href}
+          onClick={() => {
+            if (drawer.current?.open) closeDrawer();
+          }}
+          aria-current={
+            pathname === href || activeHref === href ? "page" : undefined
+          }
+          title={compact ? label : undefined}
+          className={cn(
+            "ui-nav-item group flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring",
+            pathname === href || activeHref === href
+              ? "bg-accent font-semibold text-accent-foreground ring-1 ring-primary/15"
+              : "text-muted-foreground",
+            compact && "justify-center",
+          )}
+        >
+          <Icon className="size-5 shrink-0" aria-hidden="true" />
+          <span className={compact ? "sr-only" : ""}>{label}</span>
+        </Link>
+      );
     return (
       <nav aria-label="Navigasi utama" className="space-y-2">
+        {!compact && (
+          <label className="relative mb-4 block">
+            <span className="sr-only">Cari menu</span>
+            <Search
+              className="pointer-events-none absolute left-3 top-3.5 size-4 text-muted-foreground"
+              aria-hidden="true"
+            />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              className="ui-control pl-9"
+              placeholder="Cari menu…"
+            />
+          </label>
+        )}
+        {query.trim() && (
+          <p role="status" className="px-3 py-2 text-xs text-muted-foreground">
+            {filteredLinks.length} modul sesuai pencarian.{" "}
+            <button
+              type="button"
+              className="min-h-11 underline"
+              onClick={() => setQuery("")}
+            >
+              Hapus pencarian
+            </button>
+          </p>
+        )}
         {session ? (
           <>
             {ready && item("/dashboard", "Dashboard", LayoutDashboard)}
@@ -153,7 +189,7 @@ export function Workspace({
           </>
         )}
         {(["Kegiatan", "Administrasi"] as const).map((group) => {
-          const list = links.filter((m) => m.group === group);
+          const list = filteredLinks.filter((m) => m.group === group);
           if (!list.length) return null;
           return compact ? (
             <div key={group} className="border-t pt-2">
@@ -194,7 +230,7 @@ export function Workspace({
       <aside
         aria-label="Sidebar desktop"
         className={cn(
-          "sticky top-0 hidden h-svh shrink-0 flex-col border-r bg-card lg:flex",
+          "ui-sidebar sticky top-0 hidden h-svh shrink-0 flex-col border-r lg:flex",
           collapsed ? "w-20" : "w-72",
         )}
       >
@@ -235,7 +271,7 @@ export function Workspace({
         </div>
       </aside>
       <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-20 flex min-h-20 flex-wrap items-center justify-between gap-3 border-b bg-card/95 px-4 py-3 backdrop-blur-md sm:px-8">
+        <header className="ui-topbar sticky top-0 z-20 flex min-h-20 flex-wrap items-center justify-between gap-3 border-b bg-card/95 px-4 py-3 backdrop-blur-md sm:px-8">
           <div className="flex min-w-0 items-center gap-3">
             <Button
               ref={mobileTrigger}
@@ -248,7 +284,7 @@ export function Workspace({
             >
               <Menu aria-hidden="true" />
             </Button>
-            <div>
+            <div className="min-w-0 [overflow-wrap:anywhere]">
               <p className="text-sm font-semibold">
                 {session
                   ? session.user.role === "admin"
@@ -263,7 +299,11 @@ export function Workspace({
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden rounded-full border bg-muted px-3 py-1 text-xs sm:inline">
-              SiM-Guru
+              {role === "admin"
+                ? "Administrator"
+                : role === "guru"
+                  ? "Guru"
+                  : "SiM-Guru"}
             </span>
             {onLogout ? (
               <Button variant="outline" onClick={onLogout}>

@@ -1,4 +1,5 @@
 "use client";
+import { TableRegion } from "@/components/ui/table-region";
 import {
   ManagedDialog,
   requestDialogClose,
@@ -538,7 +539,7 @@ export function UserManager() {
                 tambahkan pengguna baru.
               </p>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border bg-card">
+              <TableRegion label="Daftar pengguna">
                 <table className="w-full min-w-200 text-left text-sm">
                   <caption className="sr-only">
                     Daftar pengguna sesuai filter
@@ -659,7 +660,7 @@ export function UserManager() {
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </TableRegion>
             )}
             <div className="flex justify-between gap-3">
               <Button

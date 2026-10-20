@@ -2,11 +2,13 @@
 import Link from "next/link";
 import {
   useEffect,
+  useId,
   useRef,
   useState,
   type FormEvent,
   type ReactNode,
 } from "react";
+import { PasswordInput } from "@/components/ui/password-input";
 import { FormDialog } from "@/components/ui/dialog";
 import { notifySuccess } from "@/components/feedback/toast-region";
 import { Button } from "@/components/ui/button";
@@ -68,21 +70,36 @@ export function Field({
   maxLength?: number;
   autoComplete?: string;
 }) {
+  const id = useId();
   return (
-    <label className="block space-y-2 text-sm">
-      <span>{label}</span>
-      <input
-        name={name}
-        type={type}
-        defaultValue={value}
-        required={required}
-        maxLength={maxLength}
-        autoComplete={
-          autoComplete ?? (type === "password" ? "current-password" : "off")
-        }
-        className="h-11 w-full rounded-lg border bg-background px-3"
-      />
-    </label>
+    <div className="block min-w-0 space-y-2 text-sm">
+      <label htmlFor={id} className="block">
+        {label}
+      </label>
+      {type === "password" ? (
+        <PasswordInput
+          id={id}
+          name={name}
+          defaultValue={value}
+          required={required}
+          maxLength={maxLength}
+          autoComplete={autoComplete ?? "current-password"}
+        />
+      ) : (
+        <input
+          id={id}
+          name={name}
+          type={type}
+          defaultValue={value}
+          required={required}
+          maxLength={maxLength}
+          autoComplete={
+            autoComplete ?? (type === "password" ? "current-password" : "off")
+          }
+          className="h-11 w-full rounded-lg border bg-background px-3"
+        />
+      )}
+    </div>
   );
 }
 export function ActionForm({

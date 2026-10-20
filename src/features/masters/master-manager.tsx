@@ -1,4 +1,5 @@
 "use client";
+import { TableRegion } from "@/components/ui/table-region";
 import { EmptyState } from "@/components/feedback/feature-state";
 import {
   ManagedDialog,
@@ -637,7 +638,7 @@ export function MasterManager() {
             Tambah {labels[kind].toLowerCase()}
           </Button>
         </div>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap items-end gap-3">
           <label className="text-sm">
             Cari nama / label
             <input
@@ -689,7 +690,7 @@ export function MasterManager() {
               {data.items.length === 0 ? (
                 <EmptyState title="Belum ada data sesuai pencarian." />
               ) : (
-                <div className="overflow-x-auto">
+                <TableRegion label="Data master">
                   <table className="w-full min-w-[620px] text-left text-sm">
                     <thead>
                       <tr className="border-b">
@@ -807,7 +808,7 @@ export function MasterManager() {
                       ))}
                     </tbody>
                   </table>
-                </div>
+                </TableRegion>
               )}
               <div className="flex flex-wrap justify-between gap-3">
                 <Button
