@@ -23,7 +23,7 @@ test("Tahap 5 — exams, BAP and events", async (t) => {
   const db = await openPgliteDatabase();
   t.after(() => db.close());
   const migrations = await readMigrations("supabase/migrations");
-  await applyMigrations(db, migrations.slice(0, -4));
+  await applyMigrations(db, migrations.filter(m => m.name < "20261020014753"));
   const passwords = await getPasswordService(),
     hash = await passwords.hashNew(password, {
       username: "operator",
@@ -80,7 +80,7 @@ test("Tahap 5 — exams, BAP and events", async (t) => {
   await t.test(
     "A01 upgrade preserves identities, migrations rerun is no-op and all new tables FORCE RLS",
     async () => {
-      assert.equal((await applyMigrations(db, migrations)).length, 4);
+      assert.equal((await applyMigrations(db, migrations)).length, 5);
       assert.equal((await applyMigrations(db, migrations)).length, 0);
       assert.equal(
         (await db.query("select id from app.app_users where id=$1", [guruId]))

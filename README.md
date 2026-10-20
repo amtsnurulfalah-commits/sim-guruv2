@@ -55,10 +55,17 @@ Vercel memakai root proyek ini, Next.js, Node24, install npm ci, build npm run b
 
 ## Cakupan dan langkah berikutnya
 
-Tersedia: fondasi aplikasi, migrasi identitas/privilege/RLS, Argon2id, CLI bootstrap, aktivasi internal/encrypted outbox, login/session/logout HTTP dan status onboarding. Tahap1.5 menambahkan profil, ganti password, onboarding, OTP, pemulihan email/admin dan worker outbox minimum; lihat docs/operations/Akun_Tahap_1_5.md. Pengiriman email produksi masih menunggu provider dan sender terverifikasi. Tahap1.6 menambahkan shell responsif, sidebar, dashboard sesuai peran dan halaman status modul. Tahap2.1 menambahkan manajemen pengguna admin, pencarian/filter/pagination, profil/peran/status, aktivasi dan keputusan pemulihan; lihat docs/operations/Pengguna_Tahap_2_1.md. Tahap2.2 menambahkan identitas sekolah, tahun/semester, kelas/standar siswa, mata pelajaran serta versi tarif/tunjangan. Tahap2.3 menambahkan kalender tunggal/rentang, DayContext bersama, preview/commit dan audit; belum membuat jurnal/bonus otomatis. Tahap2.4 menambahkan jadwal KBM, pemeriksaan bentrok guru/kelas, rekap sesuai filter, jadwal pribadi/hari ini dan penghentian massal atomik. Belum tersedia: ringkasan kegiatan/keuangan dan modul bisnis lainnya, kegiatan/jurnal/BAP/ledger/honor, serta integrasi Storage/jobs lengkap.
+Tersedia: autentikasi internal, akun/onboarding/OTP dan Gmail SMTP, pengguna, master akademik/tarif/tunjangan, kalender/DayContext, jadwal KBM, kehadiran/izin, rekap siswa, jurnal/ledger, piket/upacara/substitusi/JTM, ujian/BAP dan acara. Tahap6 menambahkan bonus libur, transport, engine honor tunggal, finalisasi/snapshot immutable, koreksi, riwayat/slip/PDF/cetak/XLSX dan verifikasi dokumen publik. Baca [runbook Tahap6](docs/operations/Honorarium_Tahap_6.md).
+
+Berikutnya: pengumuman, pengaturan operasional lengkap, worker/reminder/cron termasuk notifikasi honor (Tahap7), integrasi Storage dan UAT/cutover lengkap. Posting libur dan finalisasi honor Tahap6 dijalankan manual melalui UI; antrean notifikasi tersedia, belum ada pengiriman honor otomatis.
 
 Acuan desain ada di docs/reference; kemajuan aktual di docs/parity/IMPLEMENTATION_STATUS.md. `npm run test:db` memakai PGlite in-memory. `npm run test:db:native` khusus database lokal disposable kosong berakhiran _test; tidak dijalankan otomatis terhadap proyek produksi. Pengujian MCP remote tidak menggantikan uji TCP/pooler dan browser produksi.
 
 Tahap 3.1–3.6: [Kehadiran dan jurnal](docs/operations/Kehadiran_Jurnal_Tahap_3.md) · [Bukti pengujian](docs/verification/Tahap_3.md). Dua belas migrasi, 40 tabel domain FORCE RLS.
 
 Tahap 4.1–4.4: [Piket, upacara dan relokasi JTM](docs/operations/Piket_Upacara_JTM_Tahap_4.md) · [Verifikasi](docs/verification/Tahap_4.md). Tiga belas migrasi, 45 tabel domain FORCE RLS.
+
+
+Tahap 5.1–5.5: [Ujian, BAP dan acara](docs/operations/Ujian_Acara_Tahap_5.md).
+
+Tahap 6.1–6.5: [Honor, transport dan libur](docs/operations/Honorarium_Tahap_6.md) · [Verifikasi](docs/verification/Tahap_6.md).

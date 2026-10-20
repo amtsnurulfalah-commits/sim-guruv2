@@ -86,6 +86,8 @@ export const modules: readonly AppModule[] = [
   },
   {
     slug: "honorarium",
+    href: "/honorarium",
+    available: true,
     title: "Honorarium",
     description:
       "Perhitungan, finalisasi dan slip honorarium dari kegiatan yang sah.",

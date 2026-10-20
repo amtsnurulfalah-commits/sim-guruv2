@@ -31,3 +31,12 @@ body:has(#mobile-navigation[open]) { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+body:has(dialog[open]) { overflow: hidden; }
+@media print {
+  body * { visibility: hidden; }
+  .honor-print, .honor-print * { visibility: visible; }
+  .honor-print { position: absolute; left: 0; top: 0; width: 100%; border: 0; }
+  .honor-print .print\:hidden, .honor-print .print\:hidden * { display: none; }
+  .honor-print form { display: none; }
+}

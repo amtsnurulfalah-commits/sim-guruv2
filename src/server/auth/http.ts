@@ -23,6 +23,12 @@ type Dependencies = {
   service: () => Promise<LocalAuthService>;
 };
 const messages: Record<string, string> = {
+  FINANCE_INVALID: "Data honorarium atau koreksi tidak sesuai aturan.",
+  FINANCE_BLOCKED:
+    "Finalisasi diblokir. Selesaikan seluruh temuan pada pratinjau.",
+  FINAL_IMMUTABLE:
+    "Snapshot final tidak dapat diubah. Gunakan koreksi pada periode terbuka.",
+  HOLIDAY_NOT_DUE: "Posting libur hari ini tersedia mulai pukul 16.00 WIB.",
   DUTY_INVALID: "Jadwal tugas atau data operasi tidak sesuai aturan.",
   DUTY_COLLISION:
     "Guru atau tanggal bertabrakan dengan penugasan yang sudah ada. Pengganti lama tetap dipertahankan.",
@@ -187,6 +193,10 @@ export async function handleAuthRequest(
       ? dbMessage
       : null;
     const activityCode = [
+      "FINANCE_INVALID",
+      "FINANCE_BLOCKED",
+      "FINAL_IMMUTABLE",
+      "HOLIDAY_NOT_DUE",
       "DUTY_INVALID",
       "DUTY_COLLISION",
       "SUBSTITUTE_INVALID",

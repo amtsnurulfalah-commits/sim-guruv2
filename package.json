@@ -16,7 +16,7 @@
     "check": "npm run lint && npm run typecheck && npm test && npm run test:crypto && npm run test:db && npm run build",
     "env:check": "node --import tsx scripts/check-env.ts",
     "db:migrate": "node --import tsx scripts/migrate.ts",
-    "test:db": "node --conditions=react-server --import tsx --test tests/integration/database.test.ts tests/integration/accounts.test.ts tests/integration/auth-http.test.ts tests/integration/lifecycle.test.ts tests/integration/dashboard.test.ts tests/integration/users.test.ts tests/integration/masters.test.ts tests/integration/calendar.test.ts tests/integration/schedules.test.ts tests/integration/password-transport.test.ts tests/integration/otp-dispatch.test.ts tests/integration/activities.test.ts tests/integration/duties.test.ts tests/integration/programs.test.ts",
+    "test:db": "node --conditions=react-server --import tsx --test tests/integration/database.test.ts tests/integration/accounts.test.ts tests/integration/auth-http.test.ts tests/integration/lifecycle.test.ts tests/integration/dashboard.test.ts tests/integration/users.test.ts tests/integration/masters.test.ts tests/integration/calendar.test.ts tests/integration/schedules.test.ts tests/integration/password-transport.test.ts tests/integration/otp-dispatch.test.ts tests/integration/activities.test.ts tests/integration/duties.test.ts tests/integration/programs.test.ts tests/integration/finance.test.ts",
     "test:db:native": "node --import tsx --test tests/integration/native-database.test.ts",
     "admin:bootstrap": "node --conditions=react-server --import tsx scripts/bootstrap-admin.ts",
     "test:crypto": "node --conditions=react-server --import tsx --test tests/crypto/*.test.ts",
