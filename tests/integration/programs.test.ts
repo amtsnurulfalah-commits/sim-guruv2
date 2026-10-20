@@ -80,7 +80,7 @@ test("Tahap 5 — exams, BAP and events", async (t) => {
   await t.test(
     "A01 upgrade preserves identities, migrations rerun is no-op and all new tables FORCE RLS",
     async () => {
-      assert.equal((await applyMigrations(db, migrations)).length, 5);
+      assert.equal((await applyMigrations(db, migrations)).length, 6);
       assert.equal((await applyMigrations(db, migrations)).length, 0);
       assert.equal(
         (await db.query("select id from app.app_users where id=$1", [guruId]))

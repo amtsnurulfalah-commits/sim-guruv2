@@ -34,4 +34,4 @@ Tahap3: lihat docs/verification/Tahap_3.md dan docs/operations/Kehadiran_Jurnal_
 Tahap4: lihat docs/verification/Tahap_4.md dan docs/operations/Piket_Upacara_JTM_Tahap_4.md. Tiga belas migrasi, 45 tabel FORCE RLS dan probe native rollback telah diverifikasi.
 
 
-Tahap6: lihat docs/verification/Tahap_6.md dan docs/operations/Honorarium_Tahap_6.md. Delapan pemeriksaan native rollback lulus;18migrasi dan69tabel FORCE RLS.315skenario substantif lokal lulus. Browser CRUD produksi dan race native dua koneksi belum terverifikasi; notifikasi honor diantrekan untuk worker Tahap7.
+Tahap6: lihat docs/verification/Tahap_6.md dan docs/operations/Honorarium_Tahap_6.md. Sembilan pemeriksaan native rollback lulus;19migrasi dan69tabel FORCE RLS.316skenario substantif lokal lulus. Browser CRUD produksi dan race native dua koneksi belum terverifikasi; notifikasi honor diantrekan untuk worker Tahap7.

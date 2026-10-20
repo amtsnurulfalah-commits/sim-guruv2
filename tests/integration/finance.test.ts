@@ -31,7 +31,10 @@ test("Tahap 6 — holiday, transport, canonical honor and immutable final", asyn
   const db = await openPgliteDatabase();
   t.after(() => db.close());
   const migrations = await readMigrations("supabase/migrations");
-  await applyMigrations(db, migrations.slice(0, -1));
+  await applyMigrations(
+    db,
+    migrations.filter((m) => m.name < "20261020055614"),
+  );
   function scope(role: string): SqlDatabase {
     return {
       transaction: async <T>(work: (tx: SqlExecutor) => Promise<T>) => {
@@ -88,7 +91,7 @@ test("Tahap 6 — holiday, transport, canonical honor and immutable final", asyn
   await t.test(
     "F01 upgrade preserves users, idempotent migration and all69 tables FORCE RLS",
     async () => {
-      assert.equal((await applyMigrations(db, migrations)).length, 1);
+      assert.equal((await applyMigrations(db, migrations)).length, 2);
       assert.equal((await applyMigrations(db, migrations)).length, 0);
       assert.equal(
         (
@@ -287,6 +290,40 @@ test("Tahap 6 — holiday, transport, canonical honor and immutable final", asyn
         ).rows[0]!.v,
         "500",
       );
+    },
+  );
+  await t.test(
+    "F03b exact monthly rational boundary: 1000/3 + .02/3 settles to500, not0",
+    async () => {
+      const fractional = (rate: string) => ({
+        distance: "0.01",
+        rate,
+        effectiveMicroseconds: "60000000",
+        scheduledMicroseconds: "180000000",
+        blocked: false,
+      });
+      for (const [sum, expected] of [
+        ["100002", "500"],
+        ["100001", "0"],
+        ["200001", "1000"],
+        ["200000", "500"],
+      ]) {
+        const rows = [fractional(String(Number(sum) - 2)), fractional("2")];
+        const r = (
+          await db.query<{ value: { raw: string; settled: string } }>(
+            "select finance.transport_settlement($1::jsonb) value",
+            [JSON.stringify(rows)],
+          )
+        ).rows[0]!.value;
+        assert.equal(r.settled, expected);
+      }
+      const empty = (
+        await db.query<{ value: { raw: string; settled: string } }>(
+          "select finance.transport_settlement('[]'::jsonb) value",
+        )
+      ).rows[0]!.value;
+      assert.equal(Number(empty.raw), 0);
+      assert.equal(empty.settled, "0");
     },
   );
   // Production APIs create schedules; calendar is also preview/commit through its own domain.

@@ -4,6 +4,7 @@ SET LOCAL ROLE sim_guru_owner;
 DO $probe$
 DECLARE g uuid:=gen_random_uuid();a uuid;m date:=date_trunc('month',finance.today())::date;s jsonb;lines jsonb;v jsonb;pid uuid;sid uuid:=gen_random_uuid();t text:=replace(gen_random_uuid()::text||gen_random_uuid()::text||gen_random_uuid()::text,'-','');r numeric;
 BEGIN
+ IF (finance.transport_settlement('[{"distance":"0.01","rate":"100000","effectiveMicroseconds":"60000000","scheduledMicroseconds":"180000000"},{"distance":"0.01","rate":"2","effectiveMicroseconds":"60000000","scheduledMicroseconds":"180000000"}]'::jsonb)->>'settled')::numeric<>500 THEN RAISE EXCEPTION 'NATIVE_RATIONAL_BOUNDARY_FAILED';END IF;
  IF finance.transport_round(10333.33)<>10000 OR finance.transport_round(10333.34)<>10500 OR finance.transport_round(10666.66)<>10500 OR finance.transport_round(10666.67)<>11000 THEN RAISE EXCEPTION 'NATIVE_ROUNDING_FAILED';END IF;
  INSERT INTO app.app_users(id,username,full_name,role,status,km_distance) VALUES(g,'stage6probe.'||replace(g::text,'-',''),'Probe sementara','guru','active',10);
  s:=finance.calculate(g,m,'realized');IF(s->>'totalJtm')::numeric<>0 OR(s->>'total')::numeric<>0 THEN RAISE EXCEPTION 'NATIVE_ZERO_ENGINE_FAILED';END IF;
@@ -22,4 +23,4 @@ BEGIN
  INSERT INTO finance.period_guards(period_start,finalized_at) VALUES('2198-01-01',clock_timestamp());BEGIN PERFORM finance.guard_open('2198-01-02');RAISE EXCEPTION 'NATIVE_FINAL_GUARD_FAILED';EXCEPTION WHEN SQLSTATE '42501' THEN IF SQLERRM<>'FINAL_PERIOD' THEN RAISE;END IF;END;
 END $probe$;
 ROLLBACK;
-SELECT jsonb_build_object('ok',true,'checks',8,'rolledBack',true,'sendsEmail',false,'remainingProbeUsers',(SELECT count(*) FROM app.app_users WHERE username LIKE 'stage6probe.%')) result;
+SELECT jsonb_build_object('ok',true,'checks',9,'rolledBack',true,'sendsEmail',false,'remainingProbeUsers',(SELECT count(*) FROM app.app_users WHERE username LIKE 'stage6probe.%')) result;
