@@ -116,7 +116,8 @@ export type DayContext = {
   assignmentIntegration:
     | "not_installed"
     | "teaching_ready"
-    | "attendance_ready";
+    | "attendance_ready"
+    | "exams_ready";
 };
 export type ChangePreview = {
   previewId: string;
@@ -128,7 +129,8 @@ export type ChangePreview = {
   assignmentIntegration:
     | "not_installed"
     | "teaching_ready"
-    | "attendance_ready";
+    | "attendance_ready"
+    | "exams_ready";
   days: { date: string; before: DayContext; after: DayContext }[];
 };
 export function wibDate(now = new Date()) {

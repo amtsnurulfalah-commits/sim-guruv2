@@ -87,7 +87,7 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
   ]);
   await fixture("schedule.onboard", "admin", false);
   await t.test(
-    "SC01 incremental upgrade preserves identity and all41 RLS tables",
+    "SC01 incremental upgrade preserves identity and all53 RLS tables",
     async () => {
       assert.equal((await applyMigrations(db, migrations)).length, 1);
       assert.equal((await applyMigrations(db, migrations)).length, 0);
@@ -102,7 +102,7 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
             "select count(*)::int as n from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in('app','auth_private','ops') and c.relkind='r' and c.relrowsecurity and c.relforcerowsecurity",
           )
         ).rows[0]!.n,
-        41,
+        53,
       );
     },
   );
@@ -591,7 +591,7 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
         isHoliday: true,
         reason,
       });
-      assert.equal(p.assignmentIntegration, "attendance_ready");
+      assert.equal(p.assignmentIntegration, "exams_ready");
       await calendar.commit(
         admin,
         "calendar",
@@ -961,9 +961,9 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
     },
   );
   await t.test(
-    "SC30 new unsupported exam/occurrence/finance modules fail closed until adapter integrated",
+    "SC30 new unsupported finance modules fail closed until adapter integrated",
     async () => {
-      await db.exec("create table app.exam_periods(id uuid)");
+      await db.exec("create table finance.honor_periods(id uuid)");
       await assert.rejects(
         () => create(data({ timeStart: "20:00" })),
         /CONTEXT_DEPENDENCY_UNAVAILABLE/,
@@ -972,7 +972,7 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
         () => schedules.today(guruA, monday),
         /CONTEXT_DEPENDENCY_UNAVAILABLE/,
       );
-      await db.exec("drop table app.exam_periods");
+      await db.exec("drop table finance.honor_periods");
     },
   );
 });

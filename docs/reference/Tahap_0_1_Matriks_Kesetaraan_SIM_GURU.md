@@ -610,3 +610,7 @@ Keputusan terbuka tidak dianggap fitur selesai atau alasan mengurangi cakupan. A
 - Belum ada aplikasi, schema SQL, deployment, pengujian runtime atau rekonsiliasi data produksi yang dibuat/dijalankan pada tahap ini.
 
 Syarat keluar Tahap 0.1 terpenuhi pada tingkat pemetaan dokumen. Berikutnya Tahap 0.2 menetapkan keputusan K01–K09, kemudian 0.3 merinci model dan kontrak teknis. Saat repositori legacy dibaca ulang pada implementasi, selisih inventaris harus dicatat terhadap commit beku; pemetaan ini tidak membuktikan dependensi transitif lengkap.
+
+### Pembaruan implementasi Tahap 5.1–5.5
+
+F10/F11/F12(ujian)/F14 mempunyai implementasi pada migrasi `exams_bap_stage5` dan `events_journals_stage5`, layanan `src/server/programs`, serta halaman `/ujian` dan `/acara`. Lihat `docs/operations/Ujian_Acara_Tahap_5.md` dan `docs/verification/Tahap_5.md` untuk perilaku, cakupan uji dan keterbatasan verifikasi. Status baris awal merupakan baseline perencanaan; kelulusan produksi mengikuti bukti verifikasi Tahap5.

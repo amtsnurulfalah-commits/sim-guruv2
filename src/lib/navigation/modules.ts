@@ -58,11 +58,13 @@ export const modules: readonly AppModule[] = [
   },
   {
     slug: "ujian",
+    href: "/ujian",
+    available: true,
     title: "Ujian dan BAP",
     description:
       "Penugasan panitia/pengawas dan berita acara pelaksanaan ujian.",
     group: "Kegiatan",
-    stage: "4",
+    stage: "5.1–5.3",
   },
   {
     slug: "kehadiran",
@@ -75,10 +77,12 @@ export const modules: readonly AppModule[] = [
   },
   {
     slug: "acara",
+    href: "/acara",
+    available: true,
     title: "Kegiatan dan acara",
     description: "Penugasan peserta, kehadiran dan jurnal kegiatan madrasah.",
     group: "Kegiatan",
-    stage: "5",
+    stage: "5.4–5.5",
   },
   {
     slug: "honorarium",
