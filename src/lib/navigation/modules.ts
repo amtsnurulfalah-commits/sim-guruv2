@@ -126,6 +126,8 @@ export const modules: readonly AppModule[] = [
   },
   {
     slug: "pengumuman",
+    href: "/admin/pengumuman",
+    available: true,
     title: "Pengumuman",
     description: "Pengumuman bagi guru dan pengelolaan sasaran informasi.",
     group: "Administrasi",
@@ -134,6 +136,8 @@ export const modules: readonly AppModule[] = [
   },
   {
     slug: "operasional",
+    href: "/admin/operasional",
+    available: true,
     title: "Pengaturan operasional",
     description:
       "Pemblokiran, pemeliharaan dan pemantauan pekerjaan terjadwal.",

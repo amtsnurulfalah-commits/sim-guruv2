@@ -13,6 +13,7 @@ import { wibDate } from "../../lib/calendar/schemas";
 import { dashboardDto } from "./query";
 export function createDashboardHandler(deps: {
   config: () => HttpAuthConfig;
+  summary?: (token: string) => Promise<unknown>;
   calendar?: () => Promise<CalendarService>;
   service: () => Promise<LocalAuthService>;
 }) {
@@ -30,7 +31,17 @@ export function createDashboardHandler(deps: {
         ? await (await deps.calendar()).context(token, { date: wibDate() })
         : undefined;
       return authResponse(
-        { ...dashboardDto(session), ...(dayContext ? { dayContext } : {}) },
+        {
+          ...dashboardDto(session),
+          ...(dayContext ? { dayContext } : {}),
+          ...(deps.summary
+            ? {
+                summary: await deps.summary(token),
+                activitySummaryAvailable: true,
+                financeSummaryAvailable: true,
+              }
+            : {}),
+        },
         requestId,
       );
     });

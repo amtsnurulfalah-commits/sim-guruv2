@@ -7,10 +7,10 @@ export function GET() {
   const body: ApiResult<{
     service: "sim-guru";
     status: "alive";
-    phase: "6.5";
+    phase: "7.5";
   }> = {
     ok: true,
-    data: { service: "sim-guru", status: "alive", phase: "6.5" },
+    data: { service: "sim-guru", status: "alive", phase: "7.5" },
     requestId: randomUUID(),
   };
   return Response.json(body, { headers: { "Cache-Control": "no-store" } });

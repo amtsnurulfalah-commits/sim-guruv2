@@ -65,7 +65,7 @@ export async function runDatabaseSuite(t: TestContext, db: SqlDatabase) {
   });
   await t.test("DB03 seluruh tabel domain mempunyai ENABLE+FORCE RLS",async () => {
     const result=await db.query<{ relrowsecurity:boolean; relforcerowsecurity:boolean }>("select c.relrowsecurity,c.relforcerowsecurity from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('app','auth_private','ops') and c.relkind='r'");
-    assert.equal(result.rows.length,54);assert.equal(result.rows.every((r)=>r.relrowsecurity&&r.relforcerowsecurity),true);
+    assert.equal(result.rows.length,59);assert.equal(result.rows.every((r)=>r.relrowsecurity&&r.relforcerowsecurity),true);
   });
   await t.test("DB04 tanpa context atau UUID actor palsu menghasilkan nol profil",async () => {
     const noContext=await asRole("business",null,(tx)=>tx.query("select id from app.app_users"));assert.equal(noContext.rows.length,0);
@@ -78,7 +78,7 @@ export async function runDatabaseSuite(t: TestContext, db: SqlDatabase) {
   });
   await t.test("DB06 admin membaca semua profil/settings/audit; guru tidak membaca settings/audit",async () => {
     assert.equal((await asRole("business",admin,(tx)=>tx.query("select id from app.app_users"))).rows.length,4);
-    assert.equal((await asRole("business",admin,(tx)=>tx.query("select key from app.system_settings"))).rows.length,1);
+    assert.equal((await asRole("business",admin,(tx)=>tx.query("select key from app.system_settings"))).rows.length,2);
     assert.ok((await asRole("business",admin,(tx)=>tx.query("select action from ops.audit_logs"))).rows.length>0);
     assert.equal((await asRole("business",a,(tx)=>tx.query("select key from app.system_settings"))).rows.length,0);
     assert.equal((await asRole("business",a,(tx)=>tx.query("select action from ops.audit_logs"))).rows.length,0);

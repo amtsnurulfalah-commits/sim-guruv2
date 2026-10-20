@@ -398,6 +398,17 @@ export function EventManager({
               busy={busy}
               label="Aktifkan blok"
               fields={[
+                {
+                  key: "eventType",
+                  label: "Jenis acara",
+                  type: "select",
+                  optional: true,
+                  options: [
+                    { id: "", name: "Semua jenis" },
+                    { id: "rutin", name: "Rutin" },
+                    { id: "insidental", name: "Insidental" },
+                  ],
+                },
                 { key: "dateStart", label: "Mulai", type: "date", value: date },
                 { key: "dateEnd", label: "Sampai", type: "date", value: date },
                 { key: "message", label: "Pesan blok" },
@@ -428,6 +439,7 @@ export function EventManager({
                       post("block", {
                         id: b.id,
                         eventId: b.event_id,
+                        eventType: b.event_type,
                         version: b.version,
                         dateStart: b.date_start,
                         dateEnd: b.date_end,
