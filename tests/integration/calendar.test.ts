@@ -78,7 +78,7 @@ test("Tahap 2.3 — calendar and one operational DayContext", async (t) => {
   await fixture("calendar.guru", "guru");
   await fixture("calendar.onboard", "admin", false);
   await t.test(
-    "CA01 incremental upgrade leaves identities intact, repeat no-op, all38 tables FORCE RLS",
+    "CA01 incremental upgrade leaves identities intact, repeat no-op, all41 tables FORCE RLS",
     async () => {
       assert.equal((await applyMigrations(db, migrations)).length, 1);
       assert.equal((await applyMigrations(db, migrations)).length, 0);
@@ -93,7 +93,7 @@ test("Tahap 2.3 — calendar and one operational DayContext", async (t) => {
             "select count(*)::int as n from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in('app','auth_private','ops') and c.relkind='r' and c.relrowsecurity and c.relforcerowsecurity",
           )
         ).rows[0]!.n,
-        38,
+        41,
       );
     },
   );

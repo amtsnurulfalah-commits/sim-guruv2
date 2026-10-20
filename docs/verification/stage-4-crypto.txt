@@ -1,0 +1,25 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 test:crypto
+> node --conditions=react-server --import tsx --test tests/crypto/*.test.ts
+
+✔ CR06 token32byte acak, digest dan cipher tidak memuat token plaintext (4.693426ms)
+✔ CR07 binding email/user/outbox/key dan ciphertext yang diubah ditolak (1.261616ms)
+✔ CSV escapes multiline quotes and neutralizes spreadsheet formulas (1.275588ms)
+✔ PDF renders multipage attendance and journals as real downloadable documents (211.256437ms)
+✔ Gmail adapter reports acceptance and disables file/url content access (0.776577ms)
+✔ Gmail adapter distinguishes rejected, temporary and uncertain SMTP delivery (0.318749ms)
+✔ OTP cryptography: six digits including leading zeros; purpose/address binding and authenticated encryption (6.809107ms)
+✔ CR01 Argon2id nyata, salt unik, verify tepat dan password salah ditolak (260.456734ms)
+✔ CR02 password tidak di-trim atau dinormalisasi dan panjang memakai code point (82.029406ms)
+✔ CR03 kebijakan menolak unsur identitas, kompleksitas lemah dan panjang tidak sah (0.501724ms)
+✔ CR04 hash rusak atau parameter ekstrem menghasilkan kegagalan crypto terkendali (0.980124ms)
+✔ CR05 rehash hanya setelah verify, mempertahankan parameter lama yang lebih kuat (282.876387ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 953.087832

@@ -23,6 +23,20 @@ type Dependencies = {
   service: () => Promise<LocalAuthService>;
 };
 const messages: Record<string, string> = {
+  DUTY_INVALID: "Jadwal tugas atau data operasi tidak sesuai aturan.",
+  DUTY_COLLISION:
+    "Guru atau tanggal bertabrakan dengan penugasan yang sudah ada. Pengganti lama tetap dipertahankan.",
+  SUBSTITUTE_INVALID:
+    "Pengganti harus guru aktif yang berbeda dari guru asli, pemilik efektif dan petugas yang menunjuk.",
+  SELF_OPERATION_FORBIDDEN:
+    "Anda tidak dapat mengesahkan perubahan kredit atau pengganti untuk tugas sendiri.",
+  ADJUSTED_INVALID:
+    "Penyesuaian harus bilangan bulat antara nol dan JTM terjadwal.",
+  ALLOCATION_INVALID:
+    "Penerima atau jumlah alokasi tidak sah. Gunakan angka positif maksimal empat desimal.",
+  CONSERVATION_VIOLATION:
+    "JTM pemilik ditambah seluruh alokasi melebihi JTM terjadwal.",
+
   ACTIVITY_INVALID: "Data kegiatan tidak sesuai aturan.",
   ACTIVITY_REFERENCED:
     "Kegiatan sudah memiliki bukti bertanggal. Perubahan dihentikan untuk melindungi riwayat.",
@@ -173,6 +187,13 @@ export async function handleAuthRequest(
       ? dbMessage
       : null;
     const activityCode = [
+      "DUTY_INVALID",
+      "DUTY_COLLISION",
+      "SUBSTITUTE_INVALID",
+      "SELF_OPERATION_FORBIDDEN",
+      "ADJUSTED_INVALID",
+      "ALLOCATION_INVALID",
+      "CONSERVATION_VIOLATION",
       "ACTIVITY_INVALID",
       "ACTIVITY_REFERENCED",
       "TODAY_ONLY",
@@ -201,11 +222,13 @@ export async function handleAuthRequest(
             "ACTIVITY_REFERENCED",
             "PREVIEW_STALE",
             "DUPLICATE_JOURNAL",
+            "DUTY_COLLISION",
             "FINAL_PERIOD",
           ].includes(activityCode)
             ? 409
             : [
                   "TODAY_ONLY",
+                  "SELF_OPERATION_FORBIDDEN",
                   "ASSIGNMENT_REQUIRED",
                   "H1_DISABLED",
                   "H1_NOT_CONFIRMED",

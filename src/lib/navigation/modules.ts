@@ -48,6 +48,8 @@ export const modules: readonly AppModule[] = [
   },
   {
     slug: "piket",
+    href: "/piket",
+    available: true,
     title: "Piket dan upacara",
     description:
       "Penugasan, konfirmasi dan pencatatan kegiatan piket serta upacara.",

@@ -1,4 +1,4 @@
-# Status implementasi pada Tahap 3.6
+# Status implementasi pada Tahap 4.4
 
 | Lingkup | Status | Bukti/batas |
 |---|---|---|
@@ -14,7 +14,9 @@
 | Tahap3.2–3.3 kehadiran dan izin | Tersedia | Satu guru/tanggal, jadwal/aktual, template preview/apply, extra/manual admin, izin non-overlap/klip, pribadi/CSV/PDF |
 | Tahap3.4 rekap siswa | Tersedia | Standar/revalidasi jurnal, kelas wajib vs tambahan, progres dan riwayat penginput |
 | Tahap3.5–3.6 ledger dan jurnal | Tersedia | KBM/reversal append-only, H/H-1/konfirmasi, versi/edit/hapus, pemblokiran, riwayat/filter/CSV/PDF; native race dan browser nyata belum dibuktikan |
-| F07–F19 fitur bisnis berikutnya | Bertahap | Piket/substitusi/adjustment, ujian/BAP, acara, honor/slip/otomasi menyusul; tidak ada transaksi dummy |
+| Tahap4.1–4.2 piket/upacara | Tersedia | Jadwal, konfirmasi/cabut, kredit4/5, panel operasional dan precedence waktu; hak piket memerlukan konfirmasi+time-in |
+| Tahap4.3–4.4 substitusi/JTM | Tersedia | Preview/commit atomik, replace gagal mempertahankan penugasan lama, pembatalan scoped, multi-alokasi4dp, conservation/reversal; native race dan browser nyata belum dibuktikan |
+| F10–F19 fitur bisnis berikutnya | Bertahap | Ujian/BAP, acara, honor/slip/otomasi menyusul; tidak ada transaksi dummy |
 | F20 otomasi/UX | Dikerjakan | Shell responsif, sidebar/disclosure/mobile dialog, session/logout bersama dan feedback tersedia; email produksi/job/export menunggu tahap terkait |
 | X01 fondasi lintas domain | Dikerjakan | Metadata migrasi, settings dan audit; master akademik tersedia, kalender/DayContext tersedia; snapshot honor/adapter penugasan menyusul |
 | Native PostgreSQL/Supabase | Fondasi remote terpasang | Dua belas migrasi dan privilege diverifikasi; dua LOGIN melalui pooler Vercel teruji dengan TLS, adapter auth, rollback dan Argon2id; REST acceptance dan browser interaktif masih tertunda |
@@ -24,3 +26,5 @@ Matriks Tahap0.1 dalam docs/reference tetap snapshot perencanaan; status saat in
 Tahap1.6: lihat docs/verification/Tahap_1_6.md. Tahap2.1: lihat docs/verification/Tahap_2_1.md. Tahap2.2: lihat docs/verification/Tahap_2_2.md. Tahap2.3: lihat docs/verification/Tahap_2_3.md. Tahap2.4: lihat docs/verification/Tahap_2_4.md. Admin bootstrap telah dibuat19Oktober2026. Onboarding lengkap dan email nyata masih menunggu konfigurasi layanan email.
 
 Tahap3: lihat docs/verification/Tahap_3.md dan docs/operations/Kehadiran_Jurnal_Tahap_3.md. Gmail SMTP sudah terautentikasi dari Vercel; penerimaan inbox nyata bukan bagian verifikasi ini.
+
+Tahap4: lihat docs/verification/Tahap_4.md dan docs/operations/Piket_Upacara_JTM_Tahap_4.md. Tiga belas migrasi, 45 tabel FORCE RLS dan probe native rollback telah diverifikasi.

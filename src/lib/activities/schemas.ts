@@ -214,6 +214,7 @@ export type List<T> = {
   pageSize: number;
 };
 export type Options = {
+  canOperate?: boolean;
   teachers: { id: string; name: string }[];
   classes: {
     id: string;

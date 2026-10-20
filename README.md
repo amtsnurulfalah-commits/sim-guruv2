@@ -60,3 +60,5 @@ Tersedia: fondasi aplikasi, migrasi identitas/privilege/RLS, Argon2id, CLI boots
 Acuan desain ada di docs/reference; kemajuan aktual di docs/parity/IMPLEMENTATION_STATUS.md. `npm run test:db` memakai PGlite in-memory. `npm run test:db:native` khusus database lokal disposable kosong berakhiran _test; tidak dijalankan otomatis terhadap proyek produksi. Pengujian MCP remote tidak menggantikan uji TCP/pooler dan browser produksi.
 
 Tahap 3.1–3.6: [Kehadiran dan jurnal](docs/operations/Kehadiran_Jurnal_Tahap_3.md) · [Bukti pengujian](docs/verification/Tahap_3.md). Dua belas migrasi, 40 tabel domain FORCE RLS.
+
+Tahap 4.1–4.4: [Piket, upacara dan relokasi JTM](docs/operations/Piket_Upacara_JTM_Tahap_4.md) · [Verifikasi](docs/verification/Tahap_4.md). Tiga belas migrasi, 45 tabel domain FORCE RLS.

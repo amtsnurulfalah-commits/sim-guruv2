@@ -1,0 +1,35 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> sim-guru@0.1.0 test
+> node --import tsx --test tests/unit/*.test.ts
+
+✔ WIB operational date crosses midnight at17:00 UTC, independent of browser timezone (24.398082ms)
+✔ Calendar schema permits literal nonholiday, real leap date and inclusive366-day range only (4.330792ms)
+✔ Dated context requires explicit flags/period and rejects browser permission payloads (1.468868ms)
+✔ constructor decimal mempertahankan penjumlahan pecahan tanpa float (2.521851ms)
+✔ core development dapat dibangun tanpa secrets (3.455976ms)
+✔ core production wajib URL eksplisit HTTPS dan timezone Jakarta (1.338172ms)
+✔ database hilang ditolak dan output tidak memuat rahasia (1.485204ms)
+✔ database memerlukan role berbeda dan nama database sama (0.649767ms)
+✔ production database menolak sslmode disable (0.300401ms)
+✔ auth gagal tertutup tanpa secrets atau key enkripsi pendek (1.244441ms)
+✔ secret session dan HMAC tidak boleh sama (0.230247ms)
+✔ service yang belum disiapkan tidak lolos validasi (1.417751ms)
+✔ CA database bersifat opsional dan URL sertifikat bukan nilai PEM (0.53879ms)
+✔ worker requires its own LOGIN and mail supports the Resend integration key (1.822921ms)
+✔ Gmail SMTP requires TLS and matching sender, without a Resend key (1.714547ms)
+✔ Master class standards follow each source level and permit empty parallel classes (5.220279ms)
+✔ Master inputs reject impossible dates and money precision without throwing unsafe errors (1.500646ms)
+✔ navigation registry has unique slugs and enforces role visibility independently of the UI (1.140635ms)
+✔ Schedule preview end combines JTM and rest minutes without midnight modulo (2.642543ms)
+✔ Fractional JTM retains four decimal places down to fractional seconds (0.431439ms)
+✔ Schedule inputs reject hidden end-time/precision/negative and inverted validity (4.927128ms)
+✔ Bulk scheduling changes reject duplicate targets and actor-controlled keys (1.525253ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 488.854704

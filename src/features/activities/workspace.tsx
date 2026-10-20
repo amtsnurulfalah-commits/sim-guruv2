@@ -271,7 +271,7 @@ export function ActivityWorkspace({
           );
           if (live) setTemplates(t.items);
         }
-        if (mode === "students" && admin) {
+        if (mode === "students" && (admin || opts.canOperate)) {
           const p = await masterRequest<NonNullable<typeof progress>>(
             `/api/activities/students-progress?date=${date}`,
             "GET",
@@ -900,7 +900,7 @@ export function ActivityWorkspace({
       )}
       {mode === "students" && (
         <>
-          {admin && (
+          {(admin || options.canOperate) && (
             <>
               <section className={panel}>
                 <h2 className="font-semibold">Kelengkapan tanggal {date}</h2>

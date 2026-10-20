@@ -1,0 +1,26 @@
+{
+  "phase": "4.1–4.4",
+  "implementation": true,
+  "local": {
+    "unitTests": 22,
+    "cryptoTests": 12,
+    "dbRunnerTests": 247,
+    "runnerTestsIncludingParentSuites": 281,
+    "substantiveTests": 268,
+    "newDutyScenarios": 19,
+    "lint": "passed",
+    "typecheck": "passed",
+    "build": "passed after clearing corrupt local Turbopack cache",
+    "nativeTwoConnectionRaceVerified": false,
+    "browserRealAccountCrudVerified": false
+  },
+  "supabase": {
+    "migrationCount": 13,
+    "forcedRlsTables": 45,
+    "checksum": "fa072cf82e68b1ff3b520b0babd386589f0baeef8245e5040ca07718c3478dda",
+    "securityAdvisorFindings": 0,
+    "nativeRollbackChecks": 7,
+    "remainingProbeUsers": 0
+  },
+  "sendsEmail": false
+}
