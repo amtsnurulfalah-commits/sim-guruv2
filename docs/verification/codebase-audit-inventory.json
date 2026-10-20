@@ -1,0 +1,2216 @@
+{
+  "baseCommit": "7f5c6cc38979917e25a759105c92c74054846ae3",
+  "limitations": "Literal module graph only; framework routes are roots, not dead code. Dynamic expressions, SQL RPCs, operational entrypoints and exports require human review.",
+  "analyzedFiles": 292,
+  "sourceFiles": 232,
+  "pages": 46,
+  "apiRouteFiles": 50,
+  "sqlMigrations": 23,
+  "unreferencedModuleCandidates": [
+    "src/server/db/transaction.ts"
+  ],
+  "dynamicExpressions": [
+    {
+      "file": "tests/ui/verify.mjs",
+      "line": 6
+    }
+  ],
+  "importedPackages": [
+    "@electric-sql/pglite",
+    "@electric-sql/pglite-socket",
+    "@next/env",
+    "@radix-ui/react-dialog",
+    "@radix-ui/react-slot",
+    "@tailwindcss/postcss",
+    "argon2",
+    "class-variance-authority",
+    "clsx",
+    "decimal.js",
+    "esbuild",
+    "lucide-react",
+    "next",
+    "nodemailer",
+    "pdfkit",
+    "postcss",
+    "postgres",
+    "react",
+    "react-dom",
+    "tailwind-merge",
+    "typescript",
+    "zod"
+  ],
+  "files": [
+    {
+      "path": "scripts/audit-codebase.ts",
+      "importedBy": []
+    },
+    {
+      "path": "scripts/backup-database.ts",
+      "importedBy": []
+    },
+    {
+      "path": "scripts/benchmark-password.ts",
+      "importedBy": []
+    },
+    {
+      "path": "scripts/bootstrap-admin.ts",
+      "importedBy": []
+    },
+    {
+      "path": "scripts/check-env.ts",
+      "importedBy": []
+    },
+    {
+      "path": "scripts/deliver-security-mail.ts",
+      "importedBy": []
+    },
+    {
+      "path": "scripts/lib/migrations.ts",
+      "importedBy": [
+        "scripts/migrate.ts",
+        "tests/helpers/database-suite.ts",
+        "tests/integration/accounts.test.ts",
+        "tests/integration/activities.test.ts",
+        "tests/integration/auth-http.test.ts",
+        "tests/integration/calendar.test.ts",
+        "tests/integration/dashboard.test.ts",
+        "tests/integration/duties.test.ts",
+        "tests/integration/finance.test.ts",
+        "tests/integration/lifecycle.test.ts",
+        "tests/integration/masters.test.ts",
+        "tests/integration/migration.test.ts",
+        "tests/integration/native-schedules-race.test.ts",
+        "tests/integration/operations.test.ts",
+        "tests/integration/otp-dispatch.test.ts",
+        "tests/integration/password-transport.test.ts",
+        "tests/integration/programs.test.ts",
+        "tests/integration/schedules.test.ts",
+        "tests/integration/users.test.ts",
+        "tests/ui/server.ts"
+      ]
+    },
+    {
+      "path": "scripts/lib/native-database.ts",
+      "importedBy": [
+        "scripts/backup-database.ts",
+        "scripts/bootstrap-admin.ts",
+        "scripts/migrate-legacy.ts",
+        "scripts/migrate.ts",
+        "tests/integration/native-database.test.ts",
+        "tests/integration/native-schedules-race.test.ts"
+      ]
+    },
+    {
+      "path": "scripts/lib/postgres-executor.ts",
+      "importedBy": [
+        "scripts/deliver-security-mail.ts",
+        "scripts/lib/native-database.ts",
+        "src/server/auth/runtime.ts"
+      ]
+    },
+    {
+      "path": "scripts/lib/secret-input.ts",
+      "importedBy": [
+        "scripts/bootstrap-admin.ts"
+      ]
+    },
+    {
+      "path": "scripts/lib/sql-database.ts",
+      "importedBy": [
+        "scripts/lib/migrations.ts",
+        "scripts/lib/native-database.ts",
+        "scripts/lib/postgres-executor.ts",
+        "scripts/migration/apply-plan.ts",
+        "scripts/migration/reconcile-plan.ts",
+        "scripts/migration/restore-inventory.ts",
+        "src/server/accounts/lifecycle.ts",
+        "src/server/accounts/provisioning.ts",
+        "src/server/activities/service.ts",
+        "src/server/auth/runtime.ts",
+        "src/server/auth/service.ts",
+        "src/server/calendar/service.ts",
+        "src/server/duties/service.ts",
+        "src/server/finance/service.ts",
+        "src/server/mail/security-outbox.ts",
+        "src/server/masters/service.ts",
+        "src/server/migration/service.ts",
+        "src/server/operations/service.ts",
+        "src/server/operations/worker.ts",
+        "src/server/programs/service.ts",
+        "src/server/schedules/service.ts",
+        "src/server/users/service.ts",
+        "tests/crypto/audit-regressions.test.ts",
+        "tests/helpers/database-suite.ts",
+        "tests/helpers/pglite-database.ts",
+        "tests/integration/accounts.test.ts",
+        "tests/integration/activities.test.ts",
+        "tests/integration/auth-http.test.ts",
+        "tests/integration/calendar.test.ts",
+        "tests/integration/dashboard.test.ts",
+        "tests/integration/duties.test.ts",
+        "tests/integration/finance.test.ts",
+        "tests/integration/lifecycle.test.ts",
+        "tests/integration/masters.test.ts",
+        "tests/integration/migration.test.ts",
+        "tests/integration/native-schedules-race.test.ts",
+        "tests/integration/operations.test.ts",
+        "tests/integration/otp-dispatch.test.ts",
+        "tests/integration/password-transport.test.ts",
+        "tests/integration/programs.test.ts",
+        "tests/integration/schedules.test.ts",
+        "tests/integration/users.test.ts"
+      ]
+    },
+    {
+      "path": "scripts/migrate-legacy.ts",
+      "importedBy": []
+    },
+    {
+      "path": "scripts/migrate.ts",
+      "importedBy": []
+    },
+    {
+      "path": "scripts/migration/apply-plan.ts",
+      "importedBy": [
+        "scripts/migrate-legacy.ts",
+        "tests/integration/migration.test.ts"
+      ]
+    },
+    {
+      "path": "scripts/migration/backup-crypto.ts",
+      "importedBy": [
+        "scripts/backup-database.ts",
+        "tests/integration/migration.test.ts"
+      ]
+    },
+    {
+      "path": "scripts/migration/reconcile-plan.ts",
+      "importedBy": [
+        "scripts/migrate-legacy.ts",
+        "tests/integration/migration.test.ts"
+      ]
+    },
+    {
+      "path": "scripts/migration/restore-inventory.ts",
+      "importedBy": [
+        "scripts/backup-database.ts",
+        "tests/integration/migration.test.ts"
+      ]
+    },
+    {
+      "path": "scripts/verify-gmail.ts",
+      "importedBy": []
+    },
+    {
+      "path": "scripts/verify-mail-worker.ts",
+      "importedBy": []
+    },
+    {
+      "path": "scripts/verify-runtime-database.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/absensi-siswa/input/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/absensi-siswa/riwayat/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/acara/jurnal/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/acara/kehadiran/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/acara/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/acara/riwayat/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/acara/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/honorarium/operasi/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/honorarium/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/honorarium/riwayat/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/jadwal-kehadiran/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/jurnal/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/kalender/error.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/kalender/loading.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/kalender/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/kehadiran-harian/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/master/error.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/master/loading.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/master/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/migrasi/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/operasional/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/pemulihan/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/pengguna/error.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/pengguna/loading.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/pengguna/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/pengumuman/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/piket/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/ujian/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/admin/upacara/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/aktivasi/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/akun/page.tsx",
+      "importedBy": [
+        "src/app/onboarding/page.tsx",
+        "src/app/profil/page.tsx"
+      ]
+    },
+    {
+      "path": "src/app/api/activities/[action]/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/activities/export/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/activation/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/admin-recovery/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/change-password/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/complete-onboarding/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/csrf/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/email-request/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/email-verify/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/forgot-password/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/login/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/logout/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/profile/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/reset-otp/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/reset-password/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/security-question/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/auth/session/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/dashboard/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/day-context/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/duties/[action]/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/health/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/honorarium/[action]/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/internal/worker/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/migration/[action]/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/operations/[action]/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/programs/[action]/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/schedules/[id]/history/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/schedules/[id]/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/schedules/bulk-delete/preview/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/schedules/bulk-delete/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/schedules/conflicts/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/schedules/mine/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/schedules/recaps/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/schedules/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/schedules/today/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/settings/[group]/history/[id]/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/settings/[group]/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/settings/calendar/history/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/settings/calendar/preview/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/settings/calendar/range/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/settings/calendar/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/settings/day-context/commit/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/settings/day-context/preview/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/settings/day-context/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/users/[id]/activation/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/users/[id]/recovery/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/users/[id]/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/users/[id]/status/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/users/reset-requests/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/api/users/route.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/dashboard/error.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/dashboard/loading.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/dashboard/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/error.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/honorarium/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/honorarium/riwayat/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/jadwal/error.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/jadwal/loading.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/jadwal/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/jurnal/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/kegiatan/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/kehadiran-saya/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/kehadiran/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/kesiapan/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/loading.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/login/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/lupa-password/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/modul/[slug]/error.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/modul/[slug]/loading.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/modul/[slug]/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/not-found.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/onboarding/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/page.tsx",
+      "importedBy": [
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/app/piket/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/profil/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/ujian/bap/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/ujian/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/ujian/panitia/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/upacara/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/app/verifikasi-dokumen/page.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "src/components/brand.tsx",
+      "importedBy": [
+        "src/app/not-found.tsx",
+        "src/app/page.tsx",
+        "src/components/feedback/service-state.tsx",
+        "src/components/shell/auth-layout.tsx",
+        "src/components/shell/workspace.tsx"
+      ]
+    },
+    {
+      "path": "src/components/feedback/feature-state.tsx",
+      "importedBy": [
+        "src/features/calendar/calendar-manager.tsx",
+        "src/features/finance/finance-manager.tsx",
+        "src/features/masters/master-manager.tsx",
+        "src/features/migration/manager.tsx",
+        "src/features/operations/managers.tsx",
+        "src/features/programs/event-manager.tsx",
+        "src/features/programs/exam-manager.tsx"
+      ]
+    },
+    {
+      "path": "src/components/feedback/service-state.tsx",
+      "importedBy": [
+        "src/app/absensi-siswa/input/page.tsx",
+        "src/app/absensi-siswa/riwayat/page.tsx",
+        "src/app/acara/jurnal/page.tsx",
+        "src/app/acara/kehadiran/page.tsx",
+        "src/app/acara/page.tsx",
+        "src/app/acara/riwayat/page.tsx",
+        "src/app/admin/acara/page.tsx",
+        "src/app/admin/honorarium/operasi/page.tsx",
+        "src/app/admin/honorarium/page.tsx",
+        "src/app/admin/honorarium/riwayat/page.tsx",
+        "src/app/admin/jadwal-kehadiran/page.tsx",
+        "src/app/admin/jurnal/page.tsx",
+        "src/app/admin/kalender/error.tsx",
+        "src/app/admin/kalender/loading.tsx",
+        "src/app/admin/kalender/page.tsx",
+        "src/app/admin/kehadiran-harian/page.tsx",
+        "src/app/admin/master/error.tsx",
+        "src/app/admin/master/loading.tsx",
+        "src/app/admin/master/page.tsx",
+        "src/app/admin/migrasi/page.tsx",
+        "src/app/admin/operasional/page.tsx",
+        "src/app/admin/pemulihan/page.tsx",
+        "src/app/admin/pengguna/error.tsx",
+        "src/app/admin/pengguna/loading.tsx",
+        "src/app/admin/pengguna/page.tsx",
+        "src/app/admin/pengumuman/page.tsx",
+        "src/app/admin/piket/page.tsx",
+        "src/app/admin/ujian/page.tsx",
+        "src/app/admin/upacara/page.tsx",
+        "src/app/akun/page.tsx",
+        "src/app/dashboard/error.tsx",
+        "src/app/dashboard/loading.tsx",
+        "src/app/dashboard/page.tsx",
+        "src/app/error.tsx",
+        "src/app/honorarium/page.tsx",
+        "src/app/honorarium/riwayat/page.tsx",
+        "src/app/jadwal/error.tsx",
+        "src/app/jadwal/loading.tsx",
+        "src/app/jadwal/page.tsx",
+        "src/app/jurnal/page.tsx",
+        "src/app/kegiatan/page.tsx",
+        "src/app/kehadiran-saya/page.tsx",
+        "src/app/kehadiran/page.tsx",
+        "src/app/modul/[slug]/error.tsx",
+        "src/app/modul/[slug]/loading.tsx",
+        "src/app/modul/[slug]/page.tsx",
+        "src/app/piket/page.tsx",
+        "src/app/ujian/bap/page.tsx",
+        "src/app/ujian/page.tsx",
+        "src/app/ujian/panitia/page.tsx",
+        "src/app/upacara/page.tsx",
+        "src/features/auth/session-boundary.tsx"
+      ]
+    },
+    {
+      "path": "src/components/feedback/toast-region.tsx",
+      "importedBy": [
+        "src/app/layout.tsx",
+        "src/features/auth/account-lifecycle.tsx",
+        "src/features/programs/forms.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/components/shell/auth-layout.tsx",
+      "importedBy": [
+        "src/app/aktivasi/page.tsx",
+        "src/app/login/page.tsx",
+        "src/app/lupa-password/page.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/components/shell/authenticated-workspace.tsx",
+      "importedBy": [
+        "src/app/absensi-siswa/input/page.tsx",
+        "src/app/absensi-siswa/riwayat/page.tsx",
+        "src/app/acara/jurnal/page.tsx",
+        "src/app/acara/kehadiran/page.tsx",
+        "src/app/acara/page.tsx",
+        "src/app/acara/riwayat/page.tsx",
+        "src/app/admin/acara/page.tsx",
+        "src/app/admin/honorarium/operasi/page.tsx",
+        "src/app/admin/honorarium/page.tsx",
+        "src/app/admin/honorarium/riwayat/page.tsx",
+        "src/app/admin/jadwal-kehadiran/page.tsx",
+        "src/app/admin/jurnal/page.tsx",
+        "src/app/admin/kalender/page.tsx",
+        "src/app/admin/kehadiran-harian/page.tsx",
+        "src/app/admin/master/page.tsx",
+        "src/app/admin/migrasi/page.tsx",
+        "src/app/admin/operasional/page.tsx",
+        "src/app/admin/pemulihan/page.tsx",
+        "src/app/admin/pengguna/page.tsx",
+        "src/app/admin/pengumuman/page.tsx",
+        "src/app/admin/piket/page.tsx",
+        "src/app/admin/ujian/page.tsx",
+        "src/app/admin/upacara/page.tsx",
+        "src/app/dashboard/page.tsx",
+        "src/app/honorarium/page.tsx",
+        "src/app/honorarium/riwayat/page.tsx",
+        "src/app/jadwal/page.tsx",
+        "src/app/jurnal/page.tsx",
+        "src/app/kegiatan/page.tsx",
+        "src/app/kehadiran-saya/page.tsx",
+        "src/app/kehadiran/page.tsx",
+        "src/app/modul/[slug]/page.tsx",
+        "src/app/piket/page.tsx",
+        "src/app/ujian/bap/page.tsx",
+        "src/app/ujian/page.tsx",
+        "src/app/ujian/panitia/page.tsx",
+        "src/app/upacara/page.tsx"
+      ]
+    },
+    {
+      "path": "src/components/shell/breadcrumbs.tsx",
+      "importedBy": [
+        "src/components/shell/workspace.tsx"
+      ]
+    },
+    {
+      "path": "src/components/shell/workspace.tsx",
+      "importedBy": [
+        "src/app/kesiapan/page.tsx",
+        "src/components/shell/authenticated-workspace.tsx",
+        "src/features/auth/session-panel.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/components/ui/badge.tsx",
+      "importedBy": [
+        "src/app/page.tsx",
+        "src/features/dashboard/module-cards.tsx"
+      ]
+    },
+    {
+      "path": "src/components/ui/button.tsx",
+      "importedBy": [
+        "src/app/kesiapan/page.tsx",
+        "src/app/modul/[slug]/page.tsx",
+        "src/app/not-found.tsx",
+        "src/app/page.tsx",
+        "src/components/feedback/feature-state.tsx",
+        "src/components/feedback/service-state.tsx",
+        "src/components/shell/workspace.tsx",
+        "src/components/ui/dialog.tsx",
+        "src/components/ui/managed-dialog.tsx",
+        "src/features/auth/account-lifecycle.tsx",
+        "src/features/auth/admin-recovery.tsx",
+        "src/features/auth/login-form.tsx",
+        "src/features/auth/session-boundary.tsx",
+        "src/features/auth/session-panel.tsx",
+        "src/features/calendar/calendar-manager.tsx",
+        "src/features/dashboard/dashboard-view.tsx",
+        "src/features/masters/master-manager.tsx",
+        "src/features/schedules/schedule-manager.tsx",
+        "src/features/users/user-manager.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/components/ui/card.tsx",
+      "importedBy": [
+        "src/app/page.tsx"
+      ]
+    },
+    {
+      "path": "src/components/ui/dialog.tsx",
+      "importedBy": [
+        "src/features/activities/workspace.tsx",
+        "src/features/auth/account-lifecycle.tsx",
+        "src/features/duties/duty-manager.tsx",
+        "src/features/programs/forms.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/components/ui/managed-dialog.tsx",
+      "importedBy": [
+        "src/features/masters/master-manager.tsx",
+        "src/features/schedules/schedule-manager.tsx",
+        "src/features/users/user-manager.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/components/ui/styles.ts",
+      "importedBy": [
+        "src/features/activities/workspace.tsx",
+        "src/features/duties/duty-manager.tsx",
+        "src/features/programs/forms.tsx"
+      ]
+    },
+    {
+      "path": "src/features/activities/workspace.tsx",
+      "importedBy": [
+        "src/app/absensi-siswa/input/page.tsx",
+        "src/app/absensi-siswa/riwayat/page.tsx",
+        "src/app/admin/jadwal-kehadiran/page.tsx",
+        "src/app/admin/jurnal/page.tsx",
+        "src/app/admin/kehadiran-harian/page.tsx",
+        "src/app/jurnal/page.tsx",
+        "src/app/kegiatan/page.tsx",
+        "src/app/kehadiran-saya/page.tsx",
+        "src/app/kehadiran/page.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/features/auth/account-lifecycle.tsx",
+      "importedBy": [
+        "src/features/auth/admin-recovery.tsx",
+        "src/features/auth/recovery-form.tsx",
+        "src/features/auth/session-panel.tsx",
+        "src/features/users/user-manager.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/features/auth/admin-recovery.tsx",
+      "importedBy": [
+        "src/app/admin/pemulihan/page.tsx"
+      ]
+    },
+    {
+      "path": "src/features/auth/login-form.tsx",
+      "importedBy": [
+        "src/app/login/page.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/features/auth/recovery-form.tsx",
+      "importedBy": [
+        "src/app/aktivasi/page.tsx",
+        "src/app/lupa-password/page.tsx"
+      ]
+    },
+    {
+      "path": "src/features/auth/session-boundary.tsx",
+      "importedBy": [
+        "src/components/shell/authenticated-workspace.tsx",
+        "src/features/auth/session-panel.tsx"
+      ]
+    },
+    {
+      "path": "src/features/auth/session-panel.tsx",
+      "importedBy": [
+        "src/app/akun/page.tsx"
+      ]
+    },
+    {
+      "path": "src/features/calendar/calendar-manager.tsx",
+      "importedBy": [
+        "src/app/admin/kalender/page.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/features/calendar/day-context-card.tsx",
+      "importedBy": [
+        "src/features/dashboard/dashboard-view.tsx"
+      ]
+    },
+    {
+      "path": "src/features/dashboard/dashboard-view.tsx",
+      "importedBy": [
+        "src/app/dashboard/page.tsx"
+      ]
+    },
+    {
+      "path": "src/features/dashboard/live-summary.tsx",
+      "importedBy": [
+        "src/features/dashboard/dashboard-view.tsx"
+      ]
+    },
+    {
+      "path": "src/features/dashboard/module-cards.tsx",
+      "importedBy": [
+        "src/app/kesiapan/page.tsx",
+        "src/features/dashboard/dashboard-view.tsx"
+      ]
+    },
+    {
+      "path": "src/features/duties/duty-manager.tsx",
+      "importedBy": [
+        "src/app/admin/piket/page.tsx",
+        "src/app/admin/upacara/page.tsx",
+        "src/app/piket/page.tsx",
+        "src/app/upacara/page.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/features/finance/finance-manager.tsx",
+      "importedBy": [
+        "src/app/admin/honorarium/operasi/page.tsx",
+        "src/app/admin/honorarium/page.tsx",
+        "src/app/admin/honorarium/riwayat/page.tsx",
+        "src/app/honorarium/page.tsx",
+        "src/app/honorarium/riwayat/page.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/features/finance/teacher-picker.tsx",
+      "importedBy": [
+        "src/features/finance/finance-manager.tsx"
+      ]
+    },
+    {
+      "path": "src/features/finance/verify-document.tsx",
+      "importedBy": [
+        "src/app/verifikasi-dokumen/page.tsx"
+      ]
+    },
+    {
+      "path": "src/features/masters/api.ts",
+      "importedBy": [
+        "src/features/activities/workspace.tsx",
+        "src/features/calendar/calendar-manager.tsx",
+        "src/features/calendar/day-context-card.tsx",
+        "src/features/dashboard/live-summary.tsx",
+        "src/features/duties/duty-manager.tsx",
+        "src/features/finance/finance-manager.tsx",
+        "src/features/finance/teacher-picker.tsx",
+        "src/features/masters/master-manager.tsx",
+        "src/features/migration/manager.tsx",
+        "src/features/operations/announcements.tsx",
+        "src/features/operations/managers.tsx",
+        "src/features/operations/recipient-picker.tsx",
+        "src/features/programs/event-manager.tsx",
+        "src/features/programs/exam-manager.tsx",
+        "src/features/schedules/schedule-manager.tsx"
+      ]
+    },
+    {
+      "path": "src/features/masters/master-manager.tsx",
+      "importedBy": [
+        "src/app/admin/master/page.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/features/migration/manager.tsx",
+      "importedBy": [
+        "src/app/admin/migrasi/page.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/features/operations/announcements.tsx",
+      "importedBy": [
+        "src/features/dashboard/live-summary.tsx"
+      ]
+    },
+    {
+      "path": "src/features/operations/managers.tsx",
+      "importedBy": [
+        "src/app/admin/operasional/page.tsx",
+        "src/app/admin/pengumuman/page.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/features/operations/recipient-picker.tsx",
+      "importedBy": [
+        "src/features/operations/managers.tsx"
+      ]
+    },
+    {
+      "path": "src/features/programs/event-manager.tsx",
+      "importedBy": [
+        "src/app/acara/jurnal/page.tsx",
+        "src/app/acara/kehadiran/page.tsx",
+        "src/app/acara/page.tsx",
+        "src/app/acara/riwayat/page.tsx",
+        "src/app/admin/acara/page.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/features/programs/exam-manager.tsx",
+      "importedBy": [
+        "src/app/admin/ujian/page.tsx",
+        "src/app/ujian/bap/page.tsx",
+        "src/app/ujian/page.tsx",
+        "src/app/ujian/panitia/page.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/features/programs/forms.tsx",
+      "importedBy": [
+        "src/features/finance/finance-manager.tsx",
+        "src/features/finance/teacher-picker.tsx",
+        "src/features/migration/manager.tsx",
+        "src/features/operations/managers.tsx",
+        "src/features/operations/recipient-picker.tsx",
+        "src/features/programs/event-manager.tsx",
+        "src/features/programs/exam-manager.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/features/schedules/schedule-manager.tsx",
+      "importedBy": [
+        "src/app/jadwal/page.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/features/users/api.ts",
+      "importedBy": [
+        "src/features/auth/admin-recovery.tsx",
+        "src/features/users/user-manager.tsx"
+      ]
+    },
+    {
+      "path": "src/features/users/user-manager.tsx",
+      "importedBy": [
+        "src/app/admin/pengguna/page.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "src/lib/accounts/schemas.ts",
+      "importedBy": [
+        "src/features/auth/account-lifecycle.tsx",
+        "src/server/accounts/http.ts",
+        "src/server/accounts/lifecycle.ts"
+      ]
+    },
+    {
+      "path": "src/lib/activities/schemas.ts",
+      "importedBy": [
+        "src/features/activities/workspace.tsx",
+        "src/server/activities/service.ts",
+        "tests/integration/activities.test.ts",
+        "tests/integration/duties.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/calendar/schemas.ts",
+      "importedBy": [
+        "src/features/activities/workspace.tsx",
+        "src/features/calendar/calendar-manager.tsx",
+        "src/features/calendar/day-context-card.tsx",
+        "src/features/duties/duty-manager.tsx",
+        "src/features/finance/finance-manager.tsx",
+        "src/features/programs/event-manager.tsx",
+        "src/features/programs/exam-manager.tsx",
+        "src/features/schedules/schedule-manager.tsx",
+        "src/lib/activities/schemas.ts",
+        "src/lib/duties/schemas.ts",
+        "src/lib/programs/schemas.ts",
+        "src/server/calendar/service.ts",
+        "src/server/dashboard/http.ts",
+        "src/server/schedules/http.ts",
+        "src/server/schedules/service.ts",
+        "tests/integration/calendar.test.ts",
+        "tests/integration/schedules.test.ts",
+        "tests/unit/calendar.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/decimal.ts",
+      "importedBy": [
+        "src/lib/schedules/schemas.ts",
+        "src/lib/users/schemas.ts",
+        "tests/unit/decimal.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/duties/schemas.ts",
+      "importedBy": [
+        "src/features/duties/duty-manager.tsx",
+        "src/lib/programs/schemas.ts",
+        "src/server/duties/service.ts",
+        "tests/integration/duties.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/env/schema.ts",
+      "importedBy": [
+        "scripts/check-env.ts",
+        "src/server/env.ts",
+        "src/server/mail/adapter.ts",
+        "tests/unit/environment.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/finance/schemas.ts",
+      "importedBy": [
+        "src/features/finance/finance-manager.tsx",
+        "src/server/finance/export.ts",
+        "src/server/finance/http.ts",
+        "src/server/finance/service.ts",
+        "tests/integration/finance.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/masters/schemas.ts",
+      "importedBy": [
+        "src/features/calendar/calendar-manager.tsx",
+        "src/features/masters/master-manager.tsx",
+        "src/features/schedules/schedule-manager.tsx",
+        "src/lib/activities/schemas.ts",
+        "src/lib/calendar/schemas.ts",
+        "src/lib/duties/schemas.ts",
+        "src/lib/programs/schemas.ts",
+        "src/lib/schedules/schemas.ts",
+        "src/server/masters/http.ts",
+        "src/server/masters/service.ts",
+        "src/server/schedules/service.ts",
+        "tests/integration/masters.test.ts",
+        "tests/unit/masters.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/migration/contracts.ts",
+      "importedBy": [
+        "src/features/migration/manager.tsx",
+        "src/lib/migration/profile.ts",
+        "src/server/migration/service.ts",
+        "tests/integration/migration.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/migration/normalize.ts",
+      "importedBy": [
+        "src/lib/migration/profile.ts",
+        "tests/unit/migration.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/migration/plan.ts",
+      "importedBy": [
+        "scripts/migrate-legacy.ts",
+        "scripts/migration/apply-plan.ts",
+        "scripts/migration/reconcile-plan.ts",
+        "tests/integration/migration.test.ts",
+        "tests/unit/migration.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/migration/profile.ts",
+      "importedBy": [
+        "scripts/backup-database.ts",
+        "scripts/migrate-legacy.ts",
+        "scripts/migration/apply-plan.ts",
+        "src/lib/migration/plan.ts",
+        "src/server/migration/service.ts",
+        "tests/unit/migration.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/navigation/modules.ts",
+      "importedBy": [
+        "src/app/kesiapan/page.tsx",
+        "src/app/modul/[slug]/page.tsx",
+        "src/components/shell/breadcrumbs.tsx",
+        "src/components/shell/workspace.tsx",
+        "src/features/dashboard/module-cards.tsx",
+        "src/server/dashboard/query.ts",
+        "tests/unit/navigation.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/operations/schemas.ts",
+      "importedBy": [
+        "src/features/operations/announcements.tsx",
+        "src/features/operations/managers.tsx",
+        "src/server/operations/service.ts",
+        "tests/integration/operations.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/programs/schemas.ts",
+      "importedBy": [
+        "src/features/programs/event-manager.tsx",
+        "src/features/programs/exam-manager.tsx",
+        "src/server/programs/service.ts",
+        "tests/integration/programs.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/schedules/schemas.ts",
+      "importedBy": [
+        "src/features/schedules/schedule-manager.tsx",
+        "src/server/schedules/service.ts",
+        "tests/integration/schedules.test.ts",
+        "tests/unit/schedules.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/ui-status.ts",
+      "importedBy": [
+        "src/features/migration/manager.tsx",
+        "src/features/operations/managers.tsx"
+      ]
+    },
+    {
+      "path": "src/lib/users/schemas.ts",
+      "importedBy": [
+        "src/features/auth/admin-recovery.tsx",
+        "src/features/finance/teacher-picker.tsx",
+        "src/features/masters/master-manager.tsx",
+        "src/features/operations/recipient-picker.tsx",
+        "src/features/schedules/schedule-manager.tsx",
+        "src/features/users/user-manager.tsx",
+        "src/server/users/http.ts",
+        "src/server/users/service.ts",
+        "tests/integration/users.test.ts"
+      ]
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "importedBy": [
+        "src/components/shell/workspace.tsx",
+        "src/components/ui/badge.tsx",
+        "src/components/ui/button.tsx",
+        "src/components/ui/card.tsx"
+      ]
+    },
+    {
+      "path": "src/server/accounts/endpoints.ts",
+      "importedBy": [
+        "src/app/api/auth/activation/route.ts",
+        "src/app/api/auth/admin-recovery/route.ts",
+        "src/app/api/auth/change-password/route.ts",
+        "src/app/api/auth/complete-onboarding/route.ts",
+        "src/app/api/auth/email-request/route.ts",
+        "src/app/api/auth/email-verify/route.ts",
+        "src/app/api/auth/forgot-password/route.ts",
+        "src/app/api/auth/profile/route.ts",
+        "src/app/api/auth/reset-otp/route.ts",
+        "src/app/api/auth/reset-password/route.ts",
+        "src/app/api/auth/security-question/route.ts"
+      ]
+    },
+    {
+      "path": "src/server/accounts/http.ts",
+      "importedBy": [
+        "src/server/accounts/endpoints.ts",
+        "src/server/mail/runtime.ts",
+        "tests/integration/lifecycle.test.ts",
+        "tests/integration/otp-dispatch.test.ts",
+        "tests/integration/password-transport.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/accounts/lifecycle-secrets.ts",
+      "importedBy": [
+        "src/server/accounts/lifecycle.ts",
+        "src/server/mail/security-outbox.ts",
+        "tests/crypto/lifecycle.test.ts",
+        "tests/integration/lifecycle.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/accounts/lifecycle.ts",
+      "importedBy": [
+        "src/server/accounts/http.ts",
+        "src/server/accounts/runtime.ts",
+        "src/server/activities/http.ts",
+        "src/server/calendar/http.ts",
+        "src/server/duties/http.ts",
+        "src/server/finance/http.ts",
+        "src/server/masters/http.ts",
+        "src/server/migration/http.ts",
+        "src/server/operations/http.ts",
+        "src/server/programs/http.ts",
+        "src/server/schedules/http.ts",
+        "src/server/users/http.ts",
+        "tests/integration/activities.test.ts",
+        "tests/integration/calendar.test.ts",
+        "tests/integration/duties.test.ts",
+        "tests/integration/finance.test.ts",
+        "tests/integration/lifecycle.test.ts",
+        "tests/integration/masters.test.ts",
+        "tests/integration/otp-dispatch.test.ts",
+        "tests/integration/password-transport.test.ts",
+        "tests/integration/programs.test.ts",
+        "tests/integration/schedules.test.ts",
+        "tests/integration/users.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/accounts/provisioning.ts",
+      "importedBy": [
+        "scripts/bootstrap-admin.ts",
+        "src/server/accounts/lifecycle.ts",
+        "src/server/users/service.ts",
+        "tests/integration/accounts.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/accounts/runtime.ts",
+      "importedBy": [
+        "src/app/api/activities/export/route.ts",
+        "src/server/accounts/endpoints.ts",
+        "src/server/activities/endpoints.ts",
+        "src/server/calendar/endpoints.ts",
+        "src/server/duties/endpoints.ts",
+        "src/server/finance/endpoints.ts",
+        "src/server/masters/endpoints.ts",
+        "src/server/migration/endpoints.ts",
+        "src/server/operations/endpoints.ts",
+        "src/server/programs/endpoints.ts",
+        "src/server/schedules/endpoints.ts",
+        "src/server/users/endpoints.ts"
+      ]
+    },
+    {
+      "path": "src/server/activities/endpoints.ts",
+      "importedBy": [
+        "src/app/api/activities/[action]/route.ts"
+      ]
+    },
+    {
+      "path": "src/server/activities/export.ts",
+      "importedBy": [
+        "src/app/api/activities/export/route.ts",
+        "tests/crypto/activity-export.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/activities/http.ts",
+      "importedBy": [
+        "src/server/activities/endpoints.ts",
+        "tests/integration/activities.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/activities/service.ts",
+      "importedBy": [
+        "src/app/api/activities/export/route.ts",
+        "src/server/activities/endpoints.ts",
+        "src/server/activities/http.ts",
+        "tests/crypto/audit-regressions.test.ts",
+        "tests/integration/activities.test.ts",
+        "tests/integration/duties.test.ts",
+        "tests/integration/finance.test.ts",
+        "tests/integration/programs.test.ts",
+        "tests/ui/server.ts"
+      ]
+    },
+    {
+      "path": "src/server/auth/activation-secrets.ts",
+      "importedBy": [
+        "src/server/accounts/provisioning.ts",
+        "src/server/mail/security-outbox.ts",
+        "tests/crypto/activation.test.ts",
+        "tests/integration/accounts.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/auth/endpoints.ts",
+      "importedBy": [
+        "src/app/api/auth/csrf/route.ts",
+        "src/app/api/auth/login/route.ts",
+        "src/app/api/auth/logout/route.ts",
+        "src/app/api/auth/session/route.ts"
+      ]
+    },
+    {
+      "path": "src/server/auth/http.ts",
+      "importedBy": [
+        "src/app/api/activities/export/route.ts",
+        "src/server/accounts/http.ts",
+        "src/server/activities/http.ts",
+        "src/server/auth/endpoints.ts",
+        "src/server/calendar/http.ts",
+        "src/server/dashboard/http.ts",
+        "src/server/duties/http.ts",
+        "src/server/finance/http.ts",
+        "src/server/masters/http.ts",
+        "src/server/migration/http.ts",
+        "src/server/operations/http.ts",
+        "src/server/programs/http.ts",
+        "src/server/schedules/http.ts",
+        "src/server/users/http.ts",
+        "tests/integration/auth-http.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/auth/page-session.ts",
+      "importedBy": [
+        "src/app/absensi-siswa/input/page.tsx",
+        "src/app/absensi-siswa/riwayat/page.tsx",
+        "src/app/acara/jurnal/page.tsx",
+        "src/app/acara/kehadiran/page.tsx",
+        "src/app/acara/page.tsx",
+        "src/app/acara/riwayat/page.tsx",
+        "src/app/admin/acara/page.tsx",
+        "src/app/admin/honorarium/operasi/page.tsx",
+        "src/app/admin/honorarium/page.tsx",
+        "src/app/admin/honorarium/riwayat/page.tsx",
+        "src/app/admin/jadwal-kehadiran/page.tsx",
+        "src/app/admin/jurnal/page.tsx",
+        "src/app/admin/kalender/page.tsx",
+        "src/app/admin/kehadiran-harian/page.tsx",
+        "src/app/admin/master/page.tsx",
+        "src/app/admin/migrasi/page.tsx",
+        "src/app/admin/operasional/page.tsx",
+        "src/app/admin/pemulihan/page.tsx",
+        "src/app/admin/pengguna/page.tsx",
+        "src/app/admin/pengumuman/page.tsx",
+        "src/app/admin/piket/page.tsx",
+        "src/app/admin/ujian/page.tsx",
+        "src/app/admin/upacara/page.tsx",
+        "src/app/akun/page.tsx",
+        "src/app/dashboard/page.tsx",
+        "src/app/honorarium/page.tsx",
+        "src/app/honorarium/riwayat/page.tsx",
+        "src/app/jadwal/page.tsx",
+        "src/app/jurnal/page.tsx",
+        "src/app/kegiatan/page.tsx",
+        "src/app/kehadiran-saya/page.tsx",
+        "src/app/kehadiran/page.tsx",
+        "src/app/modul/[slug]/page.tsx",
+        "src/app/piket/page.tsx",
+        "src/app/ujian/bap/page.tsx",
+        "src/app/ujian/page.tsx",
+        "src/app/ujian/panitia/page.tsx",
+        "src/app/upacara/page.tsx"
+      ]
+    },
+    {
+      "path": "src/server/auth/passwords.ts",
+      "importedBy": [
+        "scripts/benchmark-password.ts",
+        "scripts/bootstrap-admin.ts",
+        "scripts/verify-runtime-database.ts",
+        "src/server/accounts/lifecycle.ts",
+        "src/server/accounts/provisioning.ts",
+        "src/server/accounts/runtime.ts",
+        "src/server/auth/http.ts",
+        "src/server/auth/runtime.ts",
+        "src/server/auth/service.ts",
+        "src/server/users/endpoints.ts",
+        "src/server/users/service.ts",
+        "tests/crypto/passwords.test.ts",
+        "tests/integration/accounts.test.ts",
+        "tests/integration/activities.test.ts",
+        "tests/integration/auth-http.test.ts",
+        "tests/integration/calendar.test.ts",
+        "tests/integration/dashboard.test.ts",
+        "tests/integration/duties.test.ts",
+        "tests/integration/finance.test.ts",
+        "tests/integration/lifecycle.test.ts",
+        "tests/integration/masters.test.ts",
+        "tests/integration/migration.test.ts",
+        "tests/integration/native-schedules-race.test.ts",
+        "tests/integration/operations.test.ts",
+        "tests/integration/otp-dispatch.test.ts",
+        "tests/integration/password-transport.test.ts",
+        "tests/integration/programs.test.ts",
+        "tests/integration/schedules.test.ts",
+        "tests/integration/users.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/auth/runtime.ts",
+      "importedBy": [
+        "scripts/verify-runtime-database.ts",
+        "src/app/api/activities/export/route.ts",
+        "src/app/api/dashboard/route.ts",
+        "src/app/api/internal/worker/route.ts",
+        "src/server/accounts/runtime.ts",
+        "src/server/activities/endpoints.ts",
+        "src/server/auth/endpoints.ts",
+        "src/server/auth/page-session.ts",
+        "src/server/calendar/endpoints.ts",
+        "src/server/duties/endpoints.ts",
+        "src/server/finance/endpoints.ts",
+        "src/server/mail/runtime.ts",
+        "src/server/masters/endpoints.ts",
+        "src/server/migration/endpoints.ts",
+        "src/server/operations/endpoints.ts",
+        "src/server/programs/endpoints.ts",
+        "src/server/schedules/endpoints.ts",
+        "src/server/users/endpoints.ts",
+        "tests/integration/password-transport.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/auth/security.ts",
+      "importedBy": [
+        "src/app/api/activities/export/route.ts",
+        "src/server/accounts/http.ts",
+        "src/server/activities/http.ts",
+        "src/server/auth/http.ts",
+        "src/server/auth/page-session.ts",
+        "src/server/calendar/http.ts",
+        "src/server/dashboard/http.ts",
+        "src/server/duties/http.ts",
+        "src/server/finance/http.ts",
+        "src/server/masters/http.ts",
+        "src/server/migration/http.ts",
+        "src/server/operations/http.ts",
+        "src/server/programs/http.ts",
+        "src/server/schedules/http.ts",
+        "src/server/users/http.ts",
+        "tests/integration/activities.test.ts",
+        "tests/integration/auth-http.test.ts",
+        "tests/integration/calendar.test.ts",
+        "tests/integration/duties.test.ts",
+        "tests/integration/finance.test.ts",
+        "tests/integration/lifecycle.test.ts",
+        "tests/integration/masters.test.ts",
+        "tests/integration/otp-dispatch.test.ts",
+        "tests/integration/password-transport.test.ts",
+        "tests/integration/programs.test.ts",
+        "tests/integration/schedules.test.ts",
+        "tests/integration/users.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/auth/service.ts",
+      "importedBy": [
+        "src/app/api/activities/export/route.ts",
+        "src/app/api/dashboard/route.ts",
+        "src/server/accounts/http.ts",
+        "src/server/accounts/lifecycle.ts",
+        "src/server/activities/http.ts",
+        "src/server/activities/service.ts",
+        "src/server/auth/http.ts",
+        "src/server/auth/runtime.ts",
+        "src/server/auth/security.ts",
+        "src/server/calendar/http.ts",
+        "src/server/calendar/service.ts",
+        "src/server/dashboard/http.ts",
+        "src/server/dashboard/query.ts",
+        "src/server/duties/http.ts",
+        "src/server/duties/service.ts",
+        "src/server/finance/http.ts",
+        "src/server/finance/service.ts",
+        "src/server/mail/runtime.ts",
+        "src/server/masters/http.ts",
+        "src/server/masters/service.ts",
+        "src/server/migration/http.ts",
+        "src/server/migration/service.ts",
+        "src/server/operations/http.ts",
+        "src/server/operations/service.ts",
+        "src/server/programs/http.ts",
+        "src/server/programs/service.ts",
+        "src/server/schedules/http.ts",
+        "src/server/schedules/service.ts",
+        "src/server/users/http.ts",
+        "src/server/users/service.ts",
+        "tests/integration/activities.test.ts",
+        "tests/integration/auth-http.test.ts",
+        "tests/integration/calendar.test.ts",
+        "tests/integration/dashboard.test.ts",
+        "tests/integration/duties.test.ts",
+        "tests/integration/finance.test.ts",
+        "tests/integration/lifecycle.test.ts",
+        "tests/integration/masters.test.ts",
+        "tests/integration/migration.test.ts",
+        "tests/integration/operations.test.ts",
+        "tests/integration/otp-dispatch.test.ts",
+        "tests/integration/password-transport.test.ts",
+        "tests/integration/programs.test.ts",
+        "tests/integration/schedules.test.ts",
+        "tests/integration/users.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/calendar/endpoints.ts",
+      "importedBy": [
+        "src/app/api/day-context/route.ts",
+        "src/app/api/settings/calendar/history/route.ts",
+        "src/app/api/settings/calendar/preview/route.ts",
+        "src/app/api/settings/calendar/range/route.ts",
+        "src/app/api/settings/calendar/route.ts",
+        "src/app/api/settings/day-context/commit/route.ts",
+        "src/app/api/settings/day-context/preview/route.ts",
+        "src/app/api/settings/day-context/route.ts"
+      ]
+    },
+    {
+      "path": "src/server/calendar/http.ts",
+      "importedBy": [
+        "src/server/calendar/endpoints.ts",
+        "tests/integration/calendar.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/calendar/service.ts",
+      "importedBy": [
+        "src/app/api/dashboard/route.ts",
+        "src/server/calendar/endpoints.ts",
+        "src/server/calendar/http.ts",
+        "src/server/dashboard/http.ts",
+        "tests/integration/activities.test.ts",
+        "tests/integration/calendar.test.ts",
+        "tests/integration/duties.test.ts",
+        "tests/integration/finance.test.ts",
+        "tests/integration/schedules.test.ts",
+        "tests/ui/server.ts"
+      ]
+    },
+    {
+      "path": "src/server/dashboard/http.ts",
+      "importedBy": [
+        "src/app/api/dashboard/route.ts",
+        "tests/integration/calendar.test.ts",
+        "tests/integration/dashboard.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/dashboard/query.ts",
+      "importedBy": [
+        "src/app/dashboard/page.tsx",
+        "src/features/dashboard/dashboard-view.tsx",
+        "src/server/dashboard/http.ts"
+      ]
+    },
+    {
+      "path": "src/server/db/client.ts",
+      "importedBy": [
+        "scripts/verify-mail-worker.ts",
+        "scripts/verify-runtime-database.ts",
+        "src/server/auth/runtime.ts",
+        "src/server/db/transaction.ts"
+      ]
+    },
+    {
+      "path": "src/server/db/transaction.ts",
+      "importedBy": []
+    },
+    {
+      "path": "src/server/duties/endpoints.ts",
+      "importedBy": [
+        "src/app/api/duties/[action]/route.ts"
+      ]
+    },
+    {
+      "path": "src/server/duties/http.ts",
+      "importedBy": [
+        "src/server/duties/endpoints.ts",
+        "tests/integration/duties.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/duties/service.ts",
+      "importedBy": [
+        "src/server/duties/endpoints.ts",
+        "src/server/duties/http.ts",
+        "tests/integration/duties.test.ts",
+        "tests/ui/server.ts"
+      ]
+    },
+    {
+      "path": "src/server/env.ts",
+      "importedBy": [
+        "scripts/deliver-security-mail.ts",
+        "scripts/verify-gmail.ts",
+        "src/app/aktivasi/page.tsx",
+        "src/app/api/activities/export/route.ts",
+        "src/app/api/dashboard/route.ts",
+        "src/app/api/internal/worker/route.ts",
+        "src/app/login/page.tsx",
+        "src/app/lupa-password/page.tsx",
+        "src/server/accounts/endpoints.ts",
+        "src/server/accounts/runtime.ts",
+        "src/server/activities/endpoints.ts",
+        "src/server/auth/endpoints.ts",
+        "src/server/auth/http.ts",
+        "src/server/auth/page-session.ts",
+        "src/server/auth/runtime.ts",
+        "src/server/calendar/endpoints.ts",
+        "src/server/db/client.ts",
+        "src/server/duties/endpoints.ts",
+        "src/server/finance/endpoints.ts",
+        "src/server/mail/runtime.ts",
+        "src/server/masters/endpoints.ts",
+        "src/server/migration/endpoints.ts",
+        "src/server/operations/endpoints.ts",
+        "src/server/programs/endpoints.ts",
+        "src/server/schedules/endpoints.ts",
+        "src/server/users/endpoints.ts",
+        "tests/integration/auth-http.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/finance/endpoints.ts",
+      "importedBy": [
+        "src/app/api/honorarium/[action]/route.ts"
+      ]
+    },
+    {
+      "path": "src/server/finance/export.ts",
+      "importedBy": [
+        "src/server/finance/http.ts",
+        "tests/crypto/finance-export.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/finance/http.ts",
+      "importedBy": [
+        "src/server/finance/endpoints.ts",
+        "tests/crypto/audit-regressions.test.ts",
+        "tests/integration/finance.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/finance/service.ts",
+      "importedBy": [
+        "src/server/finance/endpoints.ts",
+        "src/server/finance/http.ts",
+        "tests/integration/finance.test.ts",
+        "tests/ui/server.ts"
+      ]
+    },
+    {
+      "path": "src/server/finance/xlsx.ts",
+      "importedBy": [
+        "src/server/finance/export.ts"
+      ]
+    },
+    {
+      "path": "src/server/mail/adapter.ts",
+      "importedBy": [
+        "scripts/deliver-security-mail.ts",
+        "src/app/api/internal/worker/route.ts",
+        "src/server/mail/runtime.ts",
+        "tests/crypto/gmail-mail.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/mail/runtime.ts",
+      "importedBy": [
+        "src/server/accounts/endpoints.ts",
+        "tests/integration/otp-dispatch.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/mail/security-outbox.ts",
+      "importedBy": [
+        "scripts/deliver-security-mail.ts",
+        "src/app/api/internal/worker/route.ts",
+        "src/server/mail/adapter.ts",
+        "src/server/mail/runtime.ts",
+        "src/server/operations/worker.ts",
+        "tests/crypto/audit-regressions.test.ts",
+        "tests/integration/lifecycle.test.ts",
+        "tests/integration/otp-dispatch.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/masters/endpoints.ts",
+      "importedBy": [
+        "src/app/api/settings/[group]/history/[id]/route.ts",
+        "src/app/api/settings/[group]/route.ts"
+      ]
+    },
+    {
+      "path": "src/server/masters/http.ts",
+      "importedBy": [
+        "src/server/masters/endpoints.ts",
+        "tests/integration/masters.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/masters/service.ts",
+      "importedBy": [
+        "src/server/masters/endpoints.ts",
+        "src/server/masters/http.ts",
+        "tests/integration/activities.test.ts",
+        "tests/integration/calendar.test.ts",
+        "tests/integration/duties.test.ts",
+        "tests/integration/finance.test.ts",
+        "tests/integration/masters.test.ts",
+        "tests/integration/native-schedules-race.test.ts",
+        "tests/integration/programs.test.ts",
+        "tests/integration/schedules.test.ts",
+        "tests/ui/server.ts"
+      ]
+    },
+    {
+      "path": "src/server/migration/endpoints.ts",
+      "importedBy": [
+        "src/app/api/migration/[action]/route.ts"
+      ]
+    },
+    {
+      "path": "src/server/migration/http.ts",
+      "importedBy": [
+        "src/server/migration/endpoints.ts"
+      ]
+    },
+    {
+      "path": "src/server/migration/service.ts",
+      "importedBy": [
+        "src/server/migration/endpoints.ts",
+        "src/server/migration/http.ts",
+        "tests/integration/migration.test.ts",
+        "tests/ui/server.ts"
+      ]
+    },
+    {
+      "path": "src/server/operations/batch.ts",
+      "importedBy": [
+        "src/app/api/internal/worker/route.ts",
+        "tests/integration/operations.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/operations/endpoints.ts",
+      "importedBy": [
+        "src/app/api/operations/[action]/route.ts"
+      ]
+    },
+    {
+      "path": "src/server/operations/http.ts",
+      "importedBy": [
+        "src/server/operations/endpoints.ts"
+      ]
+    },
+    {
+      "path": "src/server/operations/service.ts",
+      "importedBy": [
+        "src/server/operations/endpoints.ts",
+        "src/server/operations/http.ts",
+        "tests/integration/migration.test.ts",
+        "tests/integration/operations.test.ts",
+        "tests/ui/server.ts"
+      ]
+    },
+    {
+      "path": "src/server/operations/worker.ts",
+      "importedBy": [
+        "src/app/api/internal/worker/route.ts",
+        "tests/integration/operations.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/programs/endpoints.ts",
+      "importedBy": [
+        "src/app/api/programs/[action]/route.ts"
+      ]
+    },
+    {
+      "path": "src/server/programs/http.ts",
+      "importedBy": [
+        "src/server/programs/endpoints.ts",
+        "tests/integration/programs.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/programs/service.ts",
+      "importedBy": [
+        "src/server/programs/endpoints.ts",
+        "src/server/programs/http.ts",
+        "tests/integration/finance.test.ts",
+        "tests/integration/programs.test.ts",
+        "tests/ui/server.ts"
+      ]
+    },
+    {
+      "path": "src/server/schedules/endpoints.ts",
+      "importedBy": [
+        "src/app/api/schedules/[id]/history/route.ts",
+        "src/app/api/schedules/[id]/route.ts",
+        "src/app/api/schedules/bulk-delete/preview/route.ts",
+        "src/app/api/schedules/bulk-delete/route.ts",
+        "src/app/api/schedules/conflicts/route.ts",
+        "src/app/api/schedules/mine/route.ts",
+        "src/app/api/schedules/recaps/route.ts",
+        "src/app/api/schedules/route.ts",
+        "src/app/api/schedules/today/route.ts"
+      ]
+    },
+    {
+      "path": "src/server/schedules/http.ts",
+      "importedBy": [
+        "src/server/schedules/endpoints.ts",
+        "tests/integration/schedules.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/schedules/service.ts",
+      "importedBy": [
+        "src/server/schedules/endpoints.ts",
+        "src/server/schedules/http.ts",
+        "tests/integration/activities.test.ts",
+        "tests/integration/duties.test.ts",
+        "tests/integration/finance.test.ts",
+        "tests/integration/native-schedules-race.test.ts",
+        "tests/integration/schedules.test.ts",
+        "tests/ui/server.ts"
+      ]
+    },
+    {
+      "path": "src/server/users/endpoints.ts",
+      "importedBy": [
+        "src/app/api/users/[id]/activation/route.ts",
+        "src/app/api/users/[id]/recovery/route.ts",
+        "src/app/api/users/[id]/route.ts",
+        "src/app/api/users/[id]/status/route.ts",
+        "src/app/api/users/reset-requests/route.ts",
+        "src/app/api/users/route.ts"
+      ]
+    },
+    {
+      "path": "src/server/users/http.ts",
+      "importedBy": [
+        "src/server/users/endpoints.ts",
+        "tests/integration/users.test.ts"
+      ]
+    },
+    {
+      "path": "src/server/users/service.ts",
+      "importedBy": [
+        "src/server/users/endpoints.ts",
+        "src/server/users/http.ts",
+        "tests/integration/users.test.ts"
+      ]
+    },
+    {
+      "path": "src/types/api.ts",
+      "importedBy": [
+        "src/app/api/health/route.ts",
+        "src/features/auth/account-lifecycle.tsx",
+        "src/features/auth/login-form.tsx",
+        "src/features/auth/session-boundary.tsx",
+        "src/features/masters/api.ts",
+        "src/features/users/api.ts"
+      ]
+    },
+    {
+      "path": "src/types/auth.ts",
+      "importedBy": [
+        "src/components/shell/breadcrumbs.tsx",
+        "src/components/shell/workspace.tsx",
+        "src/features/auth/session-boundary.tsx",
+        "tests/ui/harness.tsx"
+      ]
+    },
+    {
+      "path": "tests/crypto/activation.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/crypto/activity-export.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/crypto/audit-regressions.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/crypto/finance-export.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/crypto/gmail-mail.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/crypto/lifecycle.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/crypto/passwords.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/helpers/database-suite.ts",
+      "importedBy": [
+        "tests/integration/database.test.ts",
+        "tests/integration/native-database.test.ts"
+      ]
+    },
+    {
+      "path": "tests/helpers/pglite-database.ts",
+      "importedBy": [
+        "tests/integration/accounts.test.ts",
+        "tests/integration/activities.test.ts",
+        "tests/integration/auth-http.test.ts",
+        "tests/integration/calendar.test.ts",
+        "tests/integration/dashboard.test.ts",
+        "tests/integration/database.test.ts",
+        "tests/integration/duties.test.ts",
+        "tests/integration/finance.test.ts",
+        "tests/integration/lifecycle.test.ts",
+        "tests/integration/masters.test.ts",
+        "tests/integration/migration.test.ts",
+        "tests/integration/operations.test.ts",
+        "tests/integration/otp-dispatch.test.ts",
+        "tests/integration/password-transport.test.ts",
+        "tests/integration/programs.test.ts",
+        "tests/integration/schedules.test.ts",
+        "tests/integration/users.test.ts",
+        "tests/ui/server.ts"
+      ]
+    },
+    {
+      "path": "tests/integration/accounts.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/activities.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/auth-http.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/calendar.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/dashboard.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/database.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/duties.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/finance.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/lifecycle.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/masters.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/migration.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/native-database.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/native-schedules-race.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/operations.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/otp-dispatch.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/password-transport.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/programs.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/schedules.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/integration/users.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/ui/harness.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "tests/ui/navigation-stub.tsx",
+      "importedBy": []
+    },
+    {
+      "path": "tests/ui/server.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/ui/verify.mjs",
+      "importedBy": []
+    },
+    {
+      "path": "tests/unit/calendar.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/unit/decimal.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/unit/environment.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/unit/masters.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/unit/migration.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/unit/navigation.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/unit/schedules.test.ts",
+      "importedBy": []
+    },
+    {
+      "path": "tests/unit/ui-design.test.ts",
+      "importedBy": []
+    }
+  ]
+}

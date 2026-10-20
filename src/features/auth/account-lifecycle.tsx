@@ -1,6 +1,12 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import { FormDialog } from "@/components/ui/dialog";
 import { notifySuccess } from "@/components/feedback/toast-region";
 import { Button } from "@/components/ui/button";
@@ -97,9 +103,11 @@ export function ActionForm({
     [message, setMessage] = useState(""),
     [open, setOpen] = useState(false),
     [failed, setFailed] = useState(false);
+  const pending = useRef(false);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy) return;
+    if (pending.current) return;
+    pending.current = true;
     const form = event.currentTarget;
     setBusy(true);
     setMessage("");
@@ -121,6 +129,7 @@ export function ActionForm({
           : "Layanan belum dapat dihubungi. Coba kembali.",
       );
     } finally {
+      pending.current = false;
       setBusy(false);
     }
   }

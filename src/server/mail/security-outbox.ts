@@ -98,9 +98,11 @@ export class SecurityOutboxWorker {
     try {
       const app = new URL(this.appUrl),
         publicApp = new URL(value.public.appUrl);
+      const expiresAt = new Date(value.public.expiresAt).getTime();
       if (
+        !Number.isFinite(expiresAt) ||
         app.origin !== publicApp.origin ||
-        new Date(value.public.expiresAt).getTime() <= Date.now()
+        expiresAt <= Date.now()
       )
         throw new Error("STALE_OUTBOX");
       let subject = "Perubahan kata sandi SiM-Guru",
@@ -136,12 +138,18 @@ export class SecurityOutboxWorker {
             : "Pemulihan akun SiM-Guru";
         text = `Kode ${value.template === "email_verify" ? "verifikasi email" : "pemulihan akun"} SiM-Guru Anda: ${otp}\nKode berlaku 10 menit, maksimal 5 percobaan. Jangan bagikan kode ini. Abaikan jika Anda tidak mengajukannya.`;
       }
-      result = await this.mail.send({
-        id: value.id,
-        to: value.email,
-        subject,
-        text,
-      });
+      // A transport exception may occur after the provider accepted the message.
+      // Keep ambiguous delivery separate from invalid/stale payload failures.
+      try {
+        result = await this.mail.send({
+          id: value.id,
+          to: value.email,
+          subject,
+          text,
+        });
+      } catch {
+        result = "unknown";
+      }
     } catch {
       result = "failed";
     }

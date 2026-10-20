@@ -260,6 +260,104 @@ try {
       navigation: true,
     });
   }
+  await go("lab");
+  await page
+    .getByRole("button", { name: "Ganti kata sandi", exact: true })
+    .click();
+  const accountDialog = page.getByRole("dialog", {
+    name: "Ganti kata sandi",
+    exact: true,
+  });
+  await accountDialog.locator("form").evaluate((form) => {
+    form.requestSubmit();
+    form.requestSubmit();
+  });
+  await accountDialog.waitFor({ state: "hidden" });
+  assert.equal(
+    await page.getByText("Jumlah aksi akun: 1", { exact: true }).count(),
+    1,
+  );
+  await page.waitForTimeout(250);
+  assert.equal(
+    await page.getByText("Jumlah aksi akun: 2", { exact: true }).count(),
+    0,
+  );
+  interactions.push({
+    regression: "account-synchronous-double-submit",
+    passed: true,
+  });
+
+  const batches = ["A", "B"].map((name) => ({
+    id: name,
+    source: "Batch " + name,
+    state: "staged",
+    version: "1",
+    gates: [],
+    summary: { rows: 1, errors: 0, review: 1, redactedFields: 0 },
+  }));
+  await page.route("**/api/migration/board*", async (route) => {
+    const id = new URL(route.request().url()).searchParams.get("id");
+    if (id === "B") {
+      await route.fulfill({
+        status: 503,
+        json: { ok: false, error: { message: "Laporan B gagal dimuat" } },
+      });
+    } else {
+      await route.fulfill({
+        json: {
+          ok: true,
+          data: id
+            ? {
+                mappedRows: 7,
+                counts: {},
+                issues: [
+                  {
+                    sequence: 1,
+                    code: "TEMUAN_KHUSUS_A",
+                    source_table: "Fixture",
+                    row_number: 1,
+                    field: null,
+                    severity: "review",
+                    resolution: null,
+                  },
+                ],
+              }
+            : { batches },
+        },
+      });
+    }
+  });
+  await go("migration");
+  const batchA = page.locator("section").filter({
+    has: page.getByRole("heading", { name: "Batch A", exact: true }),
+  });
+  const batchB = page.locator("section").filter({
+    has: page.getByRole("heading", { name: "Batch B", exact: true }),
+  });
+  await batchA
+    .getByRole("button", { name: "Periksa temuan dan bukti" })
+    .click();
+  await batchA.getByText(/TEMUAN_KHUSUS_A/).waitFor();
+  const beforeExpected503 = consoleErrors.length;
+  await batchB
+    .getByRole("button", { name: "Periksa temuan dan bukti" })
+    .click();
+  await page
+    .getByRole("alert")
+    .filter({ hasText: "Laporan B gagal dimuat" })
+    .waitFor();
+  const expectedNetworkErrors = consoleErrors.splice(beforeExpected503);
+  assert.deepEqual(expectedNetworkErrors, [
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+  ]);
+  assert.equal(await batchB.getByText(/TEMUAN_KHUSUS_A/).count(), 0);
+  assert.equal(await batchA.getByText(/TEMUAN_KHUSUS_A/).count(), 1);
+  interactions.push({
+    regression: "migration-report-batch-binding",
+    passed: true,
+  });
+  await page.unroute("**/api/migration/board*");
+
   await page.setViewportSize({ width: 1024, height: 900 });
   await go("masters");
   await page

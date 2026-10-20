@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { AuthLayout } from "../../src/components/shell/auth-layout";
+import { ActionForm } from "../../src/features/auth/account-lifecycle";
 import { LoginForm } from "../../src/features/auth/login-form";
 import HomePage from "../../src/app/page";
 import { Workspace } from "../../src/components/shell/workspace";
@@ -55,10 +56,24 @@ function Lab() {
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
   const legacy = useRef<HTMLDialogElement>(null);
+  const [accountSaves, setAccountSaves] = useState(0);
   return (
     <div className="ui-panel space-y-6">
       <h1>Laboratorium antarmuka sintetis</h1>
       <p role="status">Jumlah penyimpanan: {count}</p>
+      <p role="status">Jumlah aksi akun: {accountSaves}</p>
+      <ActionForm
+        title="Ganti kata sandi"
+        onSubmit={async () => {
+          await new Promise((resolve) => setTimeout(resolve, 150));
+          setAccountSaves((value) => value + 1);
+        }}
+      >
+        <label>
+          Input akun sintetis
+          <input name="account" />
+        </label>
+      </ActionForm>
       <DataForm
         label="Simpan contoh"
         busy={busy}

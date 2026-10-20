@@ -135,10 +135,12 @@ export function MigrationManager() {
             disabled={busy}
             onClick={() =>
               run(async () => {
-                setSelected(b.id);
-                setReport(
-                  await masterRequest("/api/migration/board?id=" + b.id),
+                const next = await masterRequest<Report>(
+                  "/api/migration/board?id=" + b.id,
                 );
+                // Select the batch and its report together after a successful read.
+                setReport(next);
+                setSelected(b.id);
               })
             }
           >
