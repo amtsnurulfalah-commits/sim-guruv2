@@ -1,0 +1,15 @@
+# Verifikasi Tahap 5.1–5.5
+
+Implementasi dan alur ada di [runbook](../operations/Ujian_Acara_Tahap_5.md). Empat migrasi baru memperluas occurrence bertipe sumber serta ledger yang sama, menambah8tabel ujian/pratinjau dan4tabel acara. Seluruh57tabel pada schema app/auth_private/ops/finance wajib FORCE RLS; assertion khusus tiga schema nonfinance berubah41→53.
+
+`tests/integration/programs.test.ts` mencakup upgrade/idempotensi, batas admin/onboarding, hierarki dan kelas gabungan, bentrok guru/ruang/sesi, konfirmasi panitia, BAP dan batas waktunya, integer/jumlah siswa, pemilik, submit/edit/versi/reversal, basis0, konservasi alokasi, fingerprint/actor/replay, BAP terkunci, batas akhir periode/final guard, template UJIAN, PC/PCT/rekap, substitusi dan absensi harian, hapus cascade, acara bertanggal, interval hadir, peserta guru, pemilik jurnal, blok, H-1, snapshot/ledger atomik, penghapusan dengan reversal, ledger immutable serta guard HTTP/CSRF/payload.
+
+Seluruh regresi lama dijalankan bersama lint, typecheck, unit, crypto dan build. Hasil akhir dicatat pada `stage-5-check.txt` dan `stage-5-results.json` setelah verifikasi selesai. Bukti lokal bukan klaim UAT browser produksi atau race native dua koneksi.
+
+Migrasi ujian dibagi menjadi inti schema/ledger dan API/integrasi kehadiran untuk membatasi ukuran panggilan konektor. Urutan: `20261020014753_exams_bap_stage5.sql`, `20261020015111_events_journals_stage5.sql`, `20261020022247_exam_api_attendance_stage5.sql`, `20261020045419_exam_attendance_guards_stage5.sql`. Keempatnya harus diterapkan sebelum publikasi UI Tahap5.
+
+Hasil akhir lokal: lint/typecheck,22unit,12crypto,271pengujian runner database (termasuk14parent) dan build semuanya lulus — total305runner/291skenario substantif. Suite Tahap5 berisi24runner/23skenario substantif, termasuk probe rollback yang juga diuji pada PGlite. Build sebelumnya pernah gagal akibat cache persistence Turbopack korup; pemeriksaan akhir pada `stage-5-check.txt` lulus seluruh rangkaian.
+
+**Rilis produksi tertahan:** dua migrasi pertama sudah diterapkan dan checksum cocok; ledger domain berjumlah15migrasi,57tabel FORCE RLS, advisor keamanan0temuan, akun probe tersisa0. Dua migrasi API/integrasi terakhir belum diterapkan. Konektor menghasilkan `McpServerError: Invalid or expired requestState` sebelum SQL mencapai PostgreSQL, termasuk setelah payload dibagi dan nama request diperbarui. Tidak ada transaksi migrasi yang menggantung atau API ujian parsial yang terbentuk. Jangan mengubah migrasi pertama/kedua yang sudah diterapkan. Payload tepat untuk dua panggilan tersisa disimpan dalam `stage-5-pending-migrations.json`, dengan pemeriksaan seluruh checksum terdahulu.
+
+Cabang implementasi disiapkan terpisah dari main sampai database lengkap; Vercel produksi belum dirilis ke Tahap5. Probe PostgreSQL produksi serta smoke HTTP Tahap5 belum dijalankan. Lihat `stage-5-results.json` untuk status terstruktur. Pengujian CRUD browser akun nyata dan race native dua koneksi tetap terbuka.

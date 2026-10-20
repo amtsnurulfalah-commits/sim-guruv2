@@ -1,0 +1,59 @@
+{
+  "phase": "5.1–5.5",
+  "implementation": true,
+  "local": {
+    "lint": "passed",
+    "typecheck": "passed",
+    "unitTests": 22,
+    "cryptoTests": 12,
+    "databaseRunnerTests": 271,
+    "runnerTestsIncludingParentSuites": 305,
+    "substantiveTests": 291,
+    "stage5RunnerTests": 24,
+    "stage5SubstantiveScenarios": 23,
+    "build": "passed",
+    "migrationCleanInstallAndUpgrade": "passed with final four-file order",
+    "nativeRollbackProbe": "passed in disposable PGlite only",
+    "nativeTwoConnectionRaceVerified": false,
+    "browserRealAccountCrudVerified": false
+  },
+  "supabase": {
+    "projectId": "aeethjbvdaydzdmqhawt",
+    "domainMigrationCount": 15,
+    "forcedRlsTables": 57,
+    "securityAdvisorFindings": 0,
+    "remainingProbeUsers": 0,
+    "migrations": [
+      {
+        "name": "20261020014753_exams_bap_stage5.sql",
+        "checksum": "3cbea9d2e6cfd20ecb84a66ce45894de303022fc3237bdbd83127bfccc38481c",
+        "appliedInProduction": true
+      },
+      {
+        "name": "20261020015111_events_journals_stage5.sql",
+        "checksum": "76e7fb6f741d861a6bb114157be65864b6010f607b9033c586463c20f6c1cbc3",
+        "appliedInProduction": true
+      },
+      {
+        "name": "20261020022247_exam_api_attendance_stage5.sql",
+        "checksum": "bdfd4d3cdd4145e675c0eaf1bac6809b5c8ad9e3a658957c2f3620f7af7eb538",
+        "appliedInProduction": false
+      },
+      {
+        "name": "20261020045419_exam_attendance_guards_stage5.sql",
+        "checksum": "8f52e9ae8b9b2e8e1d8ce290262f3d3fc7d8ddfb829dfbffc88aaf59c3290dd9",
+        "appliedInProduction": false
+      }
+    ],
+    "releaseBlocked": true,
+    "error": "McpServerError: Invalid or expired requestState",
+    "pendingDatabaseTransaction": false,
+    "nativeProductionProbe": "not run: exam API migration unavailable"
+  },
+  "production": {
+    "released": false,
+    "previousPhase": "4.4",
+    "pending": "Two remaining migrations, then source release and native/HTTP verification"
+  },
+  "sendsEmail": false
+}
