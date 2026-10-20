@@ -1,65 +1,75 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { CircleCheck, Clock3 } from "lucide-react";
+import { CircleHelp, LogIn } from "lucide-react";
 import { Workspace } from "@/components/shell/workspace";
 import { ModuleCards } from "@/features/dashboard/module-cards";
 import { modules } from "@/lib/navigation/modules";
 import { Button } from "@/components/ui/button";
-export const metadata: Metadata = { title: "Status pengembangan" };
+export const metadata: Metadata = { title: "Panduan aplikasi" };
 export default function ReadinessPage() {
   return (
     <Workspace>
       <header className="mb-8 space-y-3">
         <p className="text-xs font-semibold tracking-widest uppercase text-primary">
-          Catatan rilis · Tahap 8
+          Bantuan pengguna
         </p>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Status pengembangan
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight">Panduan aplikasi</h1>
         <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
-          Halaman publik ini menjelaskan cakupan aplikasi. Status berikut adalah
-          catatan implementasi, bukan pemeriksaan langsung ketersediaan layanan.
+          Gunakan SiM-Guru untuk memeriksa jadwal, mencatat kegiatan, dan
+          memantau administrasi madrasah. Menu yang tersedia mengikuti peran dan
+          kewenangan akun Anda.
         </p>
       </header>
       <section
         className="mb-9 grid gap-5 md:grid-cols-2"
-        aria-label="Fondasi aplikasi"
+        aria-label="Mulai menggunakan aplikasi"
       >
-        <div className="rounded-2xl border bg-card p-6">
-          <CircleCheck
-            aria-hidden="true"
-            className="mb-4 size-6 text-primary"
-          />
-          <h2 className="text-lg font-bold">Fondasi dan akun tersedia</h2>
-          <p className="mt-3 text-sm leading-7 text-muted-foreground">
-            Login, sesi, profil, onboarding, pemulihan dan manajemen pengguna
-            serta kerangka dashboard tersedia. Koneksi database dan pemisahan
-            hak akses sudah diverifikasi.
-          </p>
-          <Button asChild variant="outline" className="mt-5">
-            <Link href="/dashboard">Buka ruang kerja</Link>
+        <div className="ui-panel space-y-4">
+          <LogIn aria-hidden="true" className="size-6 text-primary" />
+          <h2 className="text-lg font-bold">Masuk dan lengkapi akun</h2>
+          <ol className="list-decimal space-y-3 pl-5 text-sm leading-7 text-muted-foreground">
+            <li>Dapatkan akun dari administrator madrasah.</li>
+            <li>
+              Masuk dengan username dan kata sandi Anda. Selesaikan aktivasi
+              atau pengamanan akun jika diminta.
+            </li>
+            <li>
+              Buka jadwal dan pilih tanggal kegiatan. Lengkapi kehadiran serta
+              jurnal sesuai penugasan Anda.
+            </li>
+          </ol>
+          <Button asChild variant="outline">
+            <Link href="/login">Masuk ke SiM-Guru</Link>
           </Button>
         </div>
-        <div className="rounded-2xl border bg-card p-6">
-          <Clock3 aria-hidden="true" className="mb-4 size-6 text-primary" />
-          <h2 className="text-lg font-bold">
-            Pengiriman dan migrasi dikendalikan admin
-          </h2>
-          <p className="mt-3 text-sm leading-7 text-muted-foreground">
-            Gmail SMTP, worker dan scheduler tersedia. Pengiriman antrean
-            mengikuti pengaturan admin. Migrasi data dan cutover memerlukan
-            ekspor legacy, rekonsiliasi, bukti pemulihan dan persetujuan
-            operasional.
+        <div className="ui-panel space-y-4">
+          <CircleHelp aria-hidden="true" className="size-6 text-primary" />
+          <h2 className="text-lg font-bold">Saat membutuhkan bantuan</h2>
+          <p className="text-sm leading-7 text-muted-foreground">
+            Lupa kata sandi? Gunakan pemulihan akun. Jika aktivasi atau kode
+            verifikasi belum diterima, periksa folder spam dan hubungi
+            administrator untuk memeriksa status pengiriman.
           </p>
+          <p className="text-sm leading-7 text-muted-foreground">
+            Jika jadwal atau penugasan tidak sesuai, sampaikan tanggal dan
+            kegiatan terkait kepada administrator. Jangan membagikan kata sandi,
+            kode OTP, atau tautan pemulihan akun.
+          </p>
+          <Button asChild variant="outline">
+            <Link href="/lupa-password">Buka pemulihan akun</Link>
+          </Button>
         </div>
       </section>
-      <section aria-labelledby="planned-heading">
-        <h2 id="planned-heading" className="mb-2 text-xl font-bold">
-          Ketersediaan modul
+      <section
+        className="page-section space-y-5 rounded-2xl border bg-card p-5"
+        aria-labelledby="modules-heading"
+      >
+        <h2 id="modules-heading" className="text-xl font-bold">
+          Modul SiM-Guru
         </h2>
-        <p className="mb-5 text-sm leading-7 text-muted-foreground">
-          Daftar cakupan guru dan administrasi beserta status implementasinya.
-          Halaman ini tidak memberikan akses atau kewenangan akun.
+        <p className="text-sm leading-7 text-muted-foreground">
+          Daftar ini menjelaskan fungsi aplikasi. Masuk untuk menggunakan modul
+          yang diizinkan bagi akun Anda.
         </p>
         <ModuleCards items={modules} linked={false} />
       </section>

@@ -417,7 +417,7 @@ export function DutyManager({
             />
           </Field>
           <button className={button} disabled={busy || loading}>
-            Periksa dampak
+            Tinjau dampak perubahan
           </button>
           {preview && (
             <section className="space-y-3 rounded border border-amber-300 bg-amber-50 p-4">
@@ -455,7 +455,8 @@ export function DutyManager({
                   }
                 }}
               >
-                Konfirmasi tindakan
+                {labels[preview.request.operation ?? ""] ??
+                  "Konfirmasi perubahan tugas"}
               </button>
               <button
                 type="button"
@@ -513,7 +514,7 @@ export function DutyManager({
             >
               <h2 className="font-semibold">
                 {editing
-                  ? "Edit jadwal tugas"
+                  ? "Ubah jadwal tugas"
                   : "Tambah jadwal piket / pembina upacara"}
               </h2>
               <div className="grid gap-3 sm:grid-cols-2">
@@ -649,7 +650,7 @@ export function DutyManager({
                   </p>
                 </div>
                 <button className={secondary} onClick={() => edit(s)}>
-                  Edit / nonaktifkan
+                  Ubah jadwal tugas
                 </button>
               </article>
             ))}

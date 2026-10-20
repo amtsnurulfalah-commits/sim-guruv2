@@ -94,3 +94,13 @@ Pemetaan 46 route di atas tetap berlaku; tidak ada route, backend, atau alur bis
 | P2 | Focus offset, motion, print table dan target breadcrumb belum dinyatakan konsisten | Scroll padding, motion tokens, forced colors, safe area, target tautan | Komponen bersama dan CSS |
 
 Riset memakai generator aktual dan pencarian terarah, bukan pemasangan template UI. Hasil awal yang tidak cocok, pencarian tanpa hasil, pencarian ulang dan keputusan yang ditolak dicatat pada `DESIGN_SYSTEM.md` serta JSON riset. Tidak ada library ikon/font/chart baru, KPI rekaan, penghilangan kolom, penggantian auth internal, atau perubahan API/database.
+
+## Perapihan produksi setelah adaptasi Pro Max
+
+Audit lanjutan mengganti catatan pembangunan pada beranda/panduan dan nomor tahap
+pada kartu modul; memperjelas label pembuka, pratinjau, submit dan konfirmasi pada
+modul yang memakai komponen bersama; memperkuat batas bagian; serta memperbaiki
+pembukaan ulang editor izin dari baris kehadiran yang sama dan semantik feedback.
+Rincian perubahan, bukti pengujian, serta batas kesiapan operasional dicatat dalam
+[`KESIAPAN_PRODUKSI.md`](KESIAPAN_PRODUKSI.md). Peringatan transaksi dan aturan bisnis
+tetap ditampilkan saat relevan, bukan dihapus sebagai teks pengembangan.

@@ -1,0 +1,1364 @@
+{
+  "scope": "Source inventory of user-facing action components; expressions remain source expressions. Business routes are unchanged.",
+  "buttons": [
+    {
+      "file": "src/components/ui/password-input.tsx",
+      "line": 23,
+      "component": "button",
+      "type": "\"button\"",
+      "aria-label": "{\n          visible ? \"Sembunyikan isian rahasia\" : \"Tampilkan isian rahasia\"\n        }",
+      "text": "<Icon className=\"size-5\" aria-hidden=\"true\" />"
+    },
+    {
+      "file": "src/components/ui/managed-dialog.tsx",
+      "line": 96,
+      "component": "Button",
+      "text": "Lanjutkan mengisi"
+    },
+    {
+      "file": "src/components/ui/managed-dialog.tsx",
+      "line": 99,
+      "component": "Button",
+      "text": "Buang perubahan"
+    },
+    {
+      "file": "src/components/ui/dialog.tsx",
+      "line": 100,
+      "component": "Button",
+      "type": "\"button\"",
+      "text": "{trigger ?? title}"
+    },
+    {
+      "file": "src/components/ui/dialog.tsx",
+      "line": 132,
+      "component": "Button",
+      "type": "\"button\"",
+      "aria-label": "\"Tutup formulir\"",
+      "text": "<X aria-hidden=\"true\" />"
+    },
+    {
+      "file": "src/components/ui/dialog.tsx",
+      "line": 175,
+      "component": "Button",
+      "type": "\"button\"",
+      "text": "Lanjutkan mengisi"
+    },
+    {
+      "file": "src/components/ui/dialog.tsx",
+      "line": 192,
+      "component": "Button",
+      "type": "\"button\"",
+      "text": "Buang perubahan"
+    },
+    {
+      "file": "src/components/ui/dialog.tsx",
+      "line": 227,
+      "component": "Button",
+      "type": "\"button\"",
+      "text": "Batal"
+    },
+    {
+      "file": "src/components/shell/workspace.tsx",
+      "line": 168,
+      "component": "button",
+      "type": "\"button\"",
+      "text": "Hapus pencarian"
+    },
+    {
+      "file": "src/components/shell/workspace.tsx",
+      "line": 255,
+      "component": "Button",
+      "aria-label": "{collapsed ? \"Perluas sidebar\" : \"Ciutkan sidebar\"}",
+      "text": "{collapsed ? ( <ChevronRight aria-hidden=\"true\" /> ) : ( <> <ChevronLeft aria-hidden=\"true\" /> Ciutkan menu </> )}"
+    },
+    {
+      "file": "src/components/shell/workspace.tsx",
+      "line": 276,
+      "component": "Button",
+      "aria-label": "\"Buka navigasi\"",
+      "text": "<Menu aria-hidden=\"true\" />"
+    },
+    {
+      "file": "src/components/shell/workspace.tsx",
+      "line": 309,
+      "component": "Button",
+      "text": "<LogOut aria-hidden=\"true\" /> Keluar"
+    },
+    {
+      "file": "src/components/shell/workspace.tsx",
+      "line": 314,
+      "component": "Button",
+      "text": "<Link href=\"/login\">Masuk</Link>"
+    },
+    {
+      "file": "src/components/shell/workspace.tsx",
+      "line": 343,
+      "component": "Button",
+      "aria-label": "\"Tutup navigasi\"",
+      "text": "<X aria-hidden=\"true\" />"
+    },
+    {
+      "file": "src/components/feedback/service-state.tsx",
+      "line": 30,
+      "component": "Button",
+      "text": "Coba kembali"
+    },
+    {
+      "file": "src/components/feedback/service-state.tsx",
+      "line": 33,
+      "component": "Button",
+      "text": "<Link href=\"/akun\">Ke akun</Link>"
+    },
+    {
+      "file": "src/components/feedback/feature-state.tsx",
+      "line": 42,
+      "component": "Button",
+      "text": "<RotateCcw className=\"size-4\" aria-hidden=\"true\" /> Coba kembali"
+    },
+    {
+      "file": "src/components/feedback/toast-region.tsx",
+      "line": 42,
+      "component": "button",
+      "type": "\"button\"",
+      "aria-label": "\"Tutup notifikasi\"",
+      "text": "<X className=\"mx-auto size-4\" aria-hidden=\"true\" />"
+    },
+    {
+      "file": "src/app/modul/[slug]/page.tsx",
+      "line": 53,
+      "component": "Button",
+      "text": "<Link href=\"/dashboard\">Kembali ke dashboard</Link>"
+    },
+    {
+      "file": "src/features/auth/session-boundary.tsx",
+      "line": 227,
+      "component": "Button",
+      "text": "Batal"
+    },
+    {
+      "file": "src/features/auth/session-boundary.tsx",
+      "line": 234,
+      "component": "Button",
+      "text": "{busy ? \"Mengakhiri sesi…\" : \"Ya, keluar\"}"
+    },
+    {
+      "file": "src/features/auth/login-form.tsx",
+      "line": 156,
+      "component": "Button",
+      "type": "\"submit\"",
+      "text": "{busy ? \"Memeriksa akun…\" : ready ? \"Masuk\" : \"Menyiapkan formulir…\"}"
+    },
+    {
+      "file": "src/features/auth/login-form.tsx",
+      "line": 160,
+      "component": "Button",
+      "type": "\"button\"",
+      "text": "Muat ulang formulir"
+    },
+    {
+      "file": "src/features/auth/session-panel.tsx",
+      "line": 52,
+      "component": "Button",
+      "text": "<Link href=\"/dashboard\">Buka dashboard</Link>"
+    },
+    {
+      "file": "src/features/auth/admin-recovery.tsx",
+      "line": 39,
+      "component": "Button",
+      "text": "Muat ulang permintaan"
+    },
+    {
+      "file": "src/features/auth/admin-recovery.tsx",
+      "line": 53,
+      "component": "Button",
+      "text": "Sudah diserahkan, sembunyikan"
+    },
+    {
+      "file": "src/features/auth/admin-recovery.tsx",
+      "line": 59,
+      "component": "ActionForm",
+      "title": "{`${item.fullName} (${item.username})`}",
+      "submitLabel": "\"Proses keputusan\"",
+      "text": "<p className=\"text-sm\"> Diajukan:{\" \"} {new Date(item.createdAt).toLocaleString(\"id-ID\", { timeZone: \"Asia/Jakarta\", })} . Keterangan: {item.reason || \"—\"} </p> <label className=\"block space-y-2 text-sm\"> <span>Keputusan</span> <select name=\"decision\" className=\"h-11 w-full rounded-lg border bg-background px-3\" > <option value=\"approve\">Setujui setelah verifikasi</option> <option value=\"reject\">Tolak permintaan</option> </select> </label> <label className=\"block space-y-2 text-sm\"> <span>Metode pemeriksaan identitas (untuk persetujuan)</span> <select name=\"method\" className=\"h-11 w-full rounded-lg border bg-background px-3\" > <option value=\"tatap_muka\">Tatap muka</option> <option value=\"dokumen_dan_panggilan\"> Dokumen dan panggilan terverifikasi </option> </select> </label> <Field name=\"evidence\" label=\"Referensi bukti (wajib untuk persetujuan)\" required={false} maxLength={300} /> <Field name=\"reason\" label=\"Alasan keputusan\" maxLength={500} /> <Field name=\"currentPassword\" label=\"Konfirmasi kata sandi administrator\" type=\"password\" />"
+    },
+    {
+      "file": "src/features/auth/account-lifecycle.tsx",
+      "line": 162,
+      "component": "Button",
+      "type": "\"submit\"",
+      "text": "{busy ? \"Memproses…\" : submitLabel}"
+    },
+    {
+      "file": "src/features/auth/account-lifecycle.tsx",
+      "line": 179,
+      "component": "FormDialog",
+      "title": "{title}",
+      "text": "{content}"
+    },
+    {
+      "file": "src/features/auth/account-lifecycle.tsx",
+      "line": 231,
+      "component": "ActionForm",
+      "title": "\"Ganti kata sandi\"",
+      "text": "<PasswordHelp /> <Field name=\"currentPassword\" label=\"Kata sandi saat ini\" type=\"password\" /> <Field name=\"newPassword\" label=\"Kata sandi baru\" type=\"password\" autoComplete=\"new-password\" /> <Field name=\"confirmation\" label=\"Ulangi kata sandi baru\" type=\"password\" autoComplete=\"new-password\" /> <p className=\"text-sm\"> Setelah berhasil, seluruh sesi diakhiri. Silakan masuk kembali. </p>"
+    },
+    {
+      "file": "src/features/auth/account-lifecycle.tsx",
+      "line": 261,
+      "component": "ActionForm",
+      "title": "\"Verifikasi email\"",
+      "submitLabel": "\"Kirim kode OTP\"",
+      "text": "<p className=\"text-sm leading-7\"> Email: {profile.email || \"belum diisi\"} ( {profile.emailVerified ? \"terverifikasi\" : \"belum terverifikasi\"}). Email lama tetap berlaku sampai OTP alamat baru terbukti. Setelah verifikasi, Anda diminta masuk kembali. </p> <Field name=\"email\" label=\"Alamat email milik Anda\" type=\"email\" value={profile.email} maxLength={254} /> <Field name=\"currentPassword\" label=\"Kata sandi saat ini\" type=\"password\" />"
+    },
+    {
+      "file": "src/features/auth/account-lifecycle.tsx",
+      "line": 303,
+      "component": "ActionForm",
+      "title": "\"Masukkan kode verifikasi email\"",
+      "submitLabel": "\"Verifikasi kode\"",
+      "text": "<Field name=\"otp\" label=\"Kode OTP enam digit\" maxLength={6} /> <p className=\"text-sm\"> Maksimal lima percobaan. Jika halaman dimuat ulang, minta kode baru setelah 60 detik. </p>"
+    },
+    {
+      "file": "src/features/auth/account-lifecycle.tsx",
+      "line": 321,
+      "component": "ActionForm",
+      "title": "\"Pertanyaan keamanan tambahan\"",
+      "text": "<p className=\"text-sm\"> Pertanyaan saat ini: {profile.question || \"belum diatur\"}. </p> <Field name=\"question\" label=\"Pertanyaan yang jawabannya hanya Anda ketahui\" maxLength={300} /> <Field name=\"answer\" label=\"Jawaban keamanan\" type=\"password\" autoComplete=\"new-password\" /> <Field name=\"currentPassword\" label=\"Kata sandi saat ini\" type=\"password\" />"
+    },
+    {
+      "file": "src/features/auth/account-lifecycle.tsx",
+      "line": 351,
+      "component": "ActionForm",
+      "title": "\"Selesaikan pengamanan akun\"",
+      "submitLabel": "\"Selesaikan dan lanjutkan\"",
+      "text": "<p className=\"text-sm leading-7\"> Pastikan kata sandi permanen, email terverifikasi dan pertanyaan keamanan sudah lengkap. Sesi baru akan diterbitkan; sesi onboarding lama diakhiri. </p>"
+    },
+    {
+      "file": "src/features/auth/account-lifecycle.tsx",
+      "line": 366,
+      "component": "ActionForm",
+      "title": "\"Ubah profil\"",
+      "text": "<Field name=\"username\" label=\"Username\" value={profile.username} maxLength={64} /> <Field name=\"fullName\" label=\"Nama lengkap\" value={profile.fullName} maxLength={200} /> <Field name=\"nip\" label=\"NIP (opsional)\" value={profile.nip} required={false} maxLength={64} /> <Field name=\"phone\" label=\"Nomor telepon (opsional)\" type=\"tel\" value={profile.phone} required={false} maxLength={25} /> <Field name=\"address\" label=\"Alamat (opsional)\" value={profile.address} required={false} maxLength={500} /> <Field name=\"photoUrl\" label=\"URL foto HTTPS (opsional)\" type=\"url\" value={profile.photoUrl} required={false} maxLength={2048} /> <Field name=\"currentPassword\" label=\"Konfirmasi kata sandi saat ini\" type=\"password\" />"
+    },
+    {
+      "file": "src/features/auth/recovery-form.tsx",
+      "line": 22,
+      "component": "ActionForm",
+      "title": "\"Ajukan pemulihan\"",
+      "submitLabel": "\"Ajukan\"",
+      "text": "<Field name=\"username\" label=\"Username\" maxLength={64} /> <label className=\"block space-y-2 text-sm\"> <span>Metode pemulihan</span> <select name=\"method\" className=\"h-11 w-full rounded-lg border bg-background px-3\" > <option value=\"email\">OTP email terverifikasi</option> <option value=\"admin\">Verifikasi identitas oleh admin</option> <option value=\"security\"> Jawaban keamanan, dilanjutkan verifikasi admin </option> </select> </label> <Field name=\"answer\" label=\"Jawaban keamanan (untuk metode jawaban)\" type=\"password\" required={false} /> <Field name=\"reason\" label=\"Keterangan permintaan (opsional, minimal 5 karakter)\" required={false} maxLength={500} />"
+    },
+    {
+      "file": "src/features/auth/recovery-form.tsx",
+      "line": 67,
+      "component": "ActionForm",
+      "title": "\"Verifikasi OTP pemulihan\"",
+      "submitLabel": "\"Verifikasi kode\"",
+      "text": "<Field name=\"otp\" label=\"Kode OTP enam digit\" maxLength={6} /> <p className=\"text-sm\"> Kode berlaku sepuluh menit, maksimal lima percobaan. Jangan bagikan kode Anda. </p>"
+    },
+    {
+      "file": "src/features/auth/recovery-form.tsx",
+      "line": 87,
+      "component": "ActionForm",
+      "title": "\"Atur kata sandi baru\"",
+      "submitLabel": "\"Reset kata sandi\"",
+      "text": "<PasswordHelp /> <Field name=\"newPassword\" label=\"Kata sandi baru\" type=\"password\" autoComplete=\"new-password\" /> <Field name=\"confirmation\" label=\"Ulangi kata sandi baru\" type=\"password\" autoComplete=\"new-password\" /> <p className=\"text-sm\"> Semua sesi lama akan diakhiri. Memuat ulang halaman menghapus proses reset ini. </p>"
+    },
+    {
+      "file": "src/features/auth/recovery-form.tsx",
+      "line": 148,
+      "component": "ActionForm",
+      "title": "\"Aktifkan akun\"",
+      "submitLabel": "\"Aktivasi dan simpan kata sandi\"",
+      "text": "<PasswordHelp /> <Field name=\"newPassword\" label=\"Kata sandi baru\" type=\"password\" autoComplete=\"new-password\" /> <Field name=\"confirmation\" label=\"Ulangi kata sandi baru\" type=\"password\" autoComplete=\"new-password\" /> <p className=\"text-sm\"> Tautan hanya berlaku sekali selama 24 jam. Setelah aktivasi, masuk dan selesaikan pertanyaan keamanan. </p>"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 285,
+      "component": "Button",
+      "type": "\"button\"",
+      "text": "Pilihan sebelumnya"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 294,
+      "component": "Button",
+      "type": "\"button\"",
+      "text": "Pilihan berikutnya"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 404,
+      "component": "Button",
+      "type": "\"submit\"",
+      "text": "{busy ? \"Menyimpan…\" : \"Simpan data\"}"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 609,
+      "component": "Button",
+      "text": "{labels[k]}"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 627,
+      "component": "Button",
+      "text": "Tambah {labels[kind].toLowerCase()}"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 665,
+      "component": "Button",
+      "text": "Muat ulang"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 748,
+      "component": "Button",
+      "text": "Ubah"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 761,
+      "component": "Button",
+      "text": "Arsipkan"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 772,
+      "component": "Button",
+      "text": "Riwayat"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 782,
+      "component": "Button",
+      "text": "Buka {\" \"} {kind === \"academic-years\" ? \"semester\" : \"kelas\"}"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 811,
+      "component": "Button",
+      "text": "Sebelumnya"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 819,
+      "component": "Button",
+      "text": "Hapus filter relasi"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 829,
+      "component": "Button",
+      "text": "Berikutnya"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 869,
+      "component": "Button",
+      "text": "Tutup"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 923,
+      "component": "Button",
+      "type": "\"button\"",
+      "text": "Batal"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 930,
+      "component": "Button",
+      "type": "\"submit\"",
+      "text": "{busy ? \"Memproses…\" : \"Ya, arsipkan\"}"
+    },
+    {
+      "file": "src/features/masters/master-manager.tsx",
+      "line": 949,
+      "component": "Button",
+      "text": "Tutup"
+    },
+    {
+      "file": "src/features/calendar/day-context-card.tsx",
+      "line": 69,
+      "component": "button",
+      "text": "Muat ulang konteks"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 367,
+      "component": "Button",
+      "text": "Muat ulang"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 401,
+      "component": "Button",
+      "text": "Buka tanggal"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 416,
+      "component": "Button",
+      "text": "Sebelumnya"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 423,
+      "component": "Button",
+      "text": "Berikutnya"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 460,
+      "component": "Button",
+      "text": "{v === \"entry\" ? \"Catatan tanggal\" : v === \"range\" ? \"Tambah rentang\" : \"Atur konteks\"}"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 567,
+      "component": "Button",
+      "type": "\"button\"",
+      "text": "Pilihan sebelumnya"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 576,
+      "component": "Button",
+      "type": "\"button\"",
+      "text": "Pilihan berikutnya"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 620,
+      "component": "Button",
+      "type": "\"submit\"",
+      "text": "{busy ? \"Memeriksa…\" : \"Lihat pratinjau perubahan\"}"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 634,
+      "component": "Button",
+      "type": "\"submit\"",
+      "text": "Pratinjau penghapusan catatan"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 651,
+      "component": "Button",
+      "type": "\"submit\"",
+      "text": "Pratinjau hapus konteks khusus"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 658,
+      "component": "Button",
+      "text": "Riwayat catatan tanggal"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 664,
+      "component": "Button",
+      "text": "Riwayat konteks khusus"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 728,
+      "component": "Button",
+      "text": "Batal"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 735,
+      "component": "Button",
+      "text": "{busy ? \"Menyimpan…\" : \"Ya, simpan perubahan ini\"}"
+    },
+    {
+      "file": "src/features/calendar/calendar-manager.tsx",
+      "line": 752,
+      "component": "Button",
+      "text": "Tutup"
+    },
+    {
+      "file": "src/features/finance/teacher-picker.tsx",
+      "line": 84,
+      "component": "button",
+      "type": "\"button\"",
+      "text": "Pilihan sebelumnya"
+    },
+    {
+      "file": "src/features/finance/teacher-picker.tsx",
+      "line": 93,
+      "component": "button",
+      "type": "\"button\"",
+      "text": "Pilihan berikutnya"
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 292,
+      "component": "button",
+      "type": "\"button\"",
+      "text": "{hidden ? \"Tampilkan nominal\" : \"Sembunyikan nominal\"}"
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 353,
+      "component": "DataForm",
+      "label": "\"Tinjau finalisasi honorarium\"",
+      "submitLabel": "\"Buat pratinjau finalisasi\""
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 410,
+      "component": "button",
+      "text": "Buka slip"
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 425,
+      "component": "button",
+      "text": "Sebelumnya"
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 433,
+      "component": "button",
+      "text": "Berikutnya"
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 468,
+      "component": "button",
+      "text": "Unduh PDF terverifikasi"
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 475,
+      "component": "button",
+      "text": "Cetak slip honorarium"
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 478,
+      "component": "button",
+      "text": "Buat tautan verifikasi"
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 494,
+      "component": "button",
+      "text": "Tutup slip"
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 498,
+      "component": "DataForm",
+      "label": "\"Ajukan koreksi honorarium\"",
+      "submitLabel": "\"Kirim permintaan koreksi\""
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 517,
+      "component": "DataForm",
+      "label": "\"Tinjau koreksi honorarium\"",
+      "submitLabel": "\"Buat pratinjau koreksi\""
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 576,
+      "component": "DataForm",
+      "label": "\"Atur honorarium hari libur\"",
+      "submitLabel": "\"Jalankan tindakan hari libur\""
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 649,
+      "component": "DataForm",
+      "label": "\"Tinjau pembatalan penerbitan\"",
+      "submitLabel": "\"Buat pratinjau pembatalan\""
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 679,
+      "component": "DataForm",
+      "label": "\"Tambah blok transportasi\"",
+      "submitLabel": "\"Simpan blok transportasi\""
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 706,
+      "component": "DataForm",
+      "label": "\"Nonaktifkan blok transportasi\"",
+      "submitLabel": "\"Konfirmasi penonaktifan blok\""
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 729,
+      "component": "button",
+      "text": "Tinjau slip sumber"
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 790,
+      "component": "button",
+      "text": "Konfirmasi perubahan honorarium"
+    },
+    {
+      "file": "src/features/finance/finance-manager.tsx",
+      "line": 809,
+      "component": "button",
+      "text": "Batal"
+    },
+    {
+      "file": "src/features/dashboard/dashboard-view.tsx",
+      "line": 41,
+      "component": "Button",
+      "text": "<Link href=\"/akun\"> Kelola akun <ArrowRight aria-hidden=\"true\" /> </Link>"
+    },
+    {
+      "file": "src/features/dashboard/dashboard-view.tsx",
+      "line": 55,
+      "component": "Button",
+      "text": "<Link href=\"/admin/pemulihan\"> Buka pemulihan <ArrowRight aria-hidden=\"true\" /> </Link>"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 423,
+      "component": "button",
+      "text": "Muat ulang"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 460,
+      "component": "button",
+      "text": "Ajukan klaim kehadiran"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 475,
+      "component": "button",
+      "text": "{o.confirmed ? \"Cabut konfirmasi\" : \"Konfirmasi KBM\"}"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 538,
+      "component": "button",
+      "text": "Catat masuk sekarang"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 553,
+      "component": "button",
+      "text": "Catat pulang"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 567,
+      "component": "button",
+      "text": "Ajukan izin keluar"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 577,
+      "component": "button",
+      "text": "Koreksi kehadiran"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 597,
+      "component": "button",
+      "text": "Hapus izin"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 621,
+      "component": "FormDialog",
+      "title": "\"Izin keluar sementara\"",
+      "text": "<form className={panel} onSubmit={(e) => { e.preventDefault(); if (selectedAttendance) void run(\"leave\", { attendanceId: selectedAttendance.id, version: selectedAttendance.version, leaveTime, returnTime, reason, }); }} > <h2 className=\"font-semibold\">Izin keluar sementara</h2> <Select label=\"Catatan kehadiran\" value={attendanceId} set={setAttendanceId} items={attendanceRows.map((d) => ({ id: d.id, name: d.teacherName + \" · \" + d.date, }))} /> <div className=\"grid gap-3 sm:grid-cols-2\"> <Text label=\"Jam keluar\" value={leaveTime} set={setLeaveTime} type=\"time\" required /> <Text label=\"Jam kembali\" value={returnTime} set={setReturnTime} type=\"time\" required /> </div> <Text label=\"Alasan\" value={reason} set={setReason} required /> <button className={buttonClass} disabled={busy || !selectedAttendance} > Simpan izin </button> </form>"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 676,
+      "component": "button",
+      "text": "Simpan izin"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 686,
+      "component": "FormDialog",
+      "title": "\"Kehadiran harian\"",
+      "text": "<form className={panel} onSubmit={(e) => { e.preventDefault(); void run(\"manual\", { userId: teacher, date, scheduledIn: scheduledIn || null, scheduledOut: scheduledOut || null, actualIn: actualIn || null, actualOut: actualOut || null, extra, version: currentManual?.version ?? \"0\", reason, }); }} > <h2 className=\"font-semibold\"> Jadwal, peserta tambahan dan koreksi manual admin </h2> <Select label=\"Guru\" value={teacher} set={setTeacher} items={options.teachers} /> <div className=\"grid gap-3 sm:grid-cols-2\"> <Text label=\"Jadwal masuk\" value={scheduledIn} set={setScheduledIn} type=\"time\" /> <Text label=\"Jadwal pulang\" value={scheduledOut} set={setScheduledOut} type=\"time\" /> <Text label=\"Aktual masuk (boleh kosong)\" value={actualIn} set={setActualIn} type=\"time\" /> <Text label=\"Aktual pulang (boleh kosong)\" value={actualOut} set={setActualOut} type=\"time\" /> </div> <label className=\"flex gap-2\"> <input type=\"checkbox\" checked={extra} onChange={(e) => setExtra(e.target.checked)} /> Peserta tambahan tanpa penugasan </label> <Text label=\"Alasan perubahan / peserta tambahan\" value={reason} set={setReason} required /> <button className={buttonClass} disabled={busy || !teacher || loading} > Simpan kehadiran manual </button> </form>"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 766,
+      "component": "button",
+      "text": "Simpan kehadiran manual"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 774,
+      "component": "FormDialog",
+      "title": "\"Pola jam kehadiran\"",
+      "text": "<form className={panel} onSubmit={(e) => { e.preventDefault(); void run(\"template-save\", { dayIndex: Number(day), type, timeIn, timeOut, version: selectedTemplate?.version ?? \"0\", reason, }); }} > <h2 className=\"font-semibold\">Pola jam kehadiran</h2> <p className=\"text-sm\"> Pilih konteks KBM atau ujian dan rentang jam. Tinjau peserta pada tanggal tujuan sebelum menerapkan pola kehadiran. </p> <div className=\"grid gap-3 sm:grid-cols-2\"> <Select label=\"Hari\" value={day} set={setDay} items={[ \"Minggu\", \"Senin\", \"Selasa\", \"Rabu\", \"Kamis\", \"Jumat\", \"Sabtu\", ].map((name, i) => ({ id: String(i), name }))} /> <Select label=\"Konteks\" value={type} set={setType} items={[ { id: \"KBM\", name: \"KBM\" }, { id: \"UJIAN\", name: \"Ujian\" }, ]} /> <Text label=\"Jam masuk\" value={timeIn} set={setTimeIn} type=\"time\" required /> <Text label=\"Jam pulang\" value={timeOut} set={setTimeOut} type=\"time\" required /> </div> <Text label=\"Alasan perubahan pola\" value={reason} set={setReason} required /> <div className=\"flex gap-2\"> <button className={buttonClass} disabled={busy}> Simpan pola kehadiran </button> {selectedTemplate && ( <button className={smallButton} type=\"button\" disabled={busy} onClick={() => { if ( window.confirm( \"Hapus pola kehadiran? Pola yang sudah digunakan tetap dilindungi sebagai riwayat.\", ) ) void run(\"template-delete\", { dayIndex: Number(day), type, version: selectedTemplate.version, reason, }); }} > Hapus pola kehadiran </button> )} </div> </form>"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 854,
+      "component": "button",
+      "text": "Simpan pola kehadiran"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 858,
+      "component": "button",
+      "type": "\"button\"",
+      "text": "Hapus pola kehadiran"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 898,
+      "component": "button",
+      "text": "Tinjau penerapan pola"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 930,
+      "component": "button",
+      "text": "Terapkan pola kehadiran"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 970,
+      "component": "FormDialog",
+      "title": "\"Rekap absensi siswa\"",
+      "text": "<form className={panel} onSubmit={(e) => { e.preventDefault(); void run(\"students-save\", { classId, date, hadir, sakit, izin, alpa, version: currentStudent?.version ?? \"0\", reason, }); }} > <h2 className=\"font-semibold\"> Input / perbarui rekap hari ini </h2> <Select label=\"Kelas\" value={classId} set={(v) => { setClassId(v); const r = (rows as StudentRecap[]).find( (x) => x.class_id === v && x.date === date, ); setHadir(r?.hadir ?? 0); setSakit(r?.sakit ?? 0); setIzin(r?.izin ?? 0); setAlpa(r?.alpa ?? 0); }} items={options.classes} /> <div className=\"grid gap-3 sm:grid-cols-4\"> <Count label=\"Hadir\" value={hadir} set={setHadir} /> <Count label=\"Sakit\" value={sakit} set={setSakit} /> <Count label=\"Izin\" value={izin} set={setIzin} /> <Count label=\"Alpa\" value={alpa} set={setAlpa} /> </div> <Text label=\"Alasan pencatatan\" value={reason} set={setReason} required /> <button className={buttonClass} disabled={busy || loading || !classId} > Simpan rekap siswa </button> </form>"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 1030,
+      "component": "button",
+      "text": "Simpan rekap siswa"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 1061,
+      "component": "FormDialog",
+      "title": "\"Jurnal pembelajaran\"",
+      "text": "<form className={panel} onSubmit={async (e) => { e.preventDefault(); const r = await run( editing ? \"journal-edit\" : \"journal-create\", editing ? { journalId: editing.id, version: editing.version, material, present, absent, notes, reason, } : { occurrenceId, material, present, absent, notes, reason, }, ); if (r) { setEditing(null); setMaterial(\"\"); setNotes(\"\"); setOccurrenceId(\"\"); } }} > <h2 className=\"font-semibold\"> {editing ? \"Ubah jurnal \" + editing.date : \"Input jurnal tanggal \" + date} </h2> {!editing && ( <> <p className=\"text-sm\"> H-1:{\" \"} {options.h1Enabled ? \"aktif, bobot 80% dibulatkan satu desimal\" : \"belum aktif\"} . Rekap siswa yang tersedia wajib cocok dengan jurnal. </p> <Select label=\"Kegiatan\" value={occurrenceId} set={(v) => { setOccurrenceId(v); const o = eligible.find((x) => x.id === v); setPresent(o?.expectedStudents ?? 0); setAbsent(0); }} items={eligible .filter((o) => !o.journalId && !o.eligibilityError) .map((o) => ({ id: o.id, name: `${o.subjectName} · ${o.className} · ${o.timeStart}–${o.timeEnd}`, }))} /> {eligible .filter((o) => o.eligibilityError) .map((o) => ( <p className=\"text-sm text-amber-800\" key={o.id}> {o.subjectName} · {o.className}:{\" \"} {eligibilityText(o.eligibilityError)} </p> ))} </> )} <Field label=\"Materi pembelajaran\"> <textarea className={inputClass} maxLength={2000} required value={material} onChange={(e) => setMaterial(e.target.value)} /> </Field> <div className=\"grid gap-3 sm:grid-cols-2\"> <Count label=\"Siswa hadir\" value={present} set={setPresent} /> <Count label=\"Siswa absen\" value={absent} set={setAbsent} /> </div> <Field label=\"Catatan\"> <textarea className={inputClass} maxLength={2000} value={notes} onChange={(e) => setNotes(e.target.value)} /> </Field> <Text label=\"Alasan penyimpanan\" value={reason} set={setReason} required /> <div className=\"flex gap-2\"> <button className={buttonClass} disabled={busy || (!editing && !occurrenceId)} > Simpan jurnal </button> {editing && ( <button type=\"button\" className={smallButton} onClick={() => { setEditing(null); setMaterial(\"\"); setNotes(\"\"); }} > Batal edit </button> )} </div> </form>"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 1178,
+      "component": "button",
+      "text": "Simpan jurnal"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 1185,
+      "component": "button",
+      "type": "\"button\"",
+      "text": "Batal edit"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 1236,
+      "component": "button",
+      "text": "Ubah jurnal"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 1249,
+      "component": "button",
+      "text": "Hapus jurnal dan batalkan JTM"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 1282,
+      "component": "button",
+      "text": "{options.h1Enabled ? \"Nonaktifkan\" : \"Aktifkan\"} jurnal H-1"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 1291,
+      "component": "FormDialog",
+      "title": "\"Blok pengisian jurnal\"",
+      "text": "<form className=\"space-y-3\" onSubmit={(e) => { e.preventDefault(); void run(\"block\", { subjectId, dateStart: blockFrom, dateEnd: blockTo, message: blockMessage, active: true, version: \"0\", reason, }); }} > <Select label=\"Mata pelajaran\" value={subjectId} set={setSubjectId} items={options.subjects} /> <div className=\"grid gap-3 sm:grid-cols-2\"> <Text label=\"Blok mulai\" value={blockFrom} set={setBlockFrom} type=\"date\" required /> <Text label=\"Blok sampai\" value={blockTo} set={setBlockTo} type=\"date\" required /> </div> <Text label=\"Pesan pemblokiran\" value={blockMessage} set={setBlockMessage} required /> <button className={buttonClass} disabled={busy || !subjectId || reason.trim().length < 5} > Simpan blok jurnal </button> </form>"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 1345,
+      "component": "button",
+      "text": "Simpan blok jurnal"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 1358,
+      "component": "button",
+      "text": "{b.active ? \"Nonaktifkan\" : \"Aktifkan\"}"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 1384,
+      "component": "button",
+      "text": "Sebelumnya"
+    },
+    {
+      "file": "src/features/activities/workspace.tsx",
+      "line": 1394,
+      "component": "button",
+      "text": "Berikutnya"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 248,
+      "component": "Button",
+      "type": "\"submit\"",
+      "text": "{busy ? \"Menyimpan…\" : user ? \"Simpan perubahan\" : \"Buat akun\"}"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 427,
+      "component": "Button",
+      "text": "Tambah pengguna"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 453,
+      "component": "Button",
+      "text": "Sembunyikan kata sandi sementara"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 507,
+      "component": "Button",
+      "type": "\"submit\"",
+      "text": "Terapkan filter"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 518,
+      "component": "Button",
+      "text": "Muat ulang daftar"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 529,
+      "component": "Button",
+      "text": "Muat ulang"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 596,
+      "component": "Button",
+      "text": "Ubah pengguna"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 610,
+      "component": "Button",
+      "text": "Antrekan ulang email aktivasi"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 626,
+      "component": "Button",
+      "text": "{user.status === \"active\" ? \"Nonaktifkan\" : \"Aktifkan\"}"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 646,
+      "component": "Button",
+      "text": "Arsipkan"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 666,
+      "component": "Button",
+      "text": "Sebelumnya"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 673,
+      "component": "Button",
+      "text": "Berikutnya"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 705,
+      "component": "Button",
+      "text": "Tutup"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 775,
+      "component": "Button",
+      "type": "\"button\"",
+      "text": "Batal"
+    },
+    {
+      "file": "src/features/users/user-manager.tsx",
+      "line": 782,
+      "component": "Button",
+      "type": "\"submit\"",
+      "text": "{busy ? \"Memproses…\" : confirmation.action === \"activation\" ? \"Antrekan ulang email aktivasi\" : confirmation.action === \"archived\" ? \"Arsipkan pengguna\" : confirmation.action === \"disabled\" ? \"Nonaktifkan pengguna\" : \"Aktifkan pengguna\"}"
+    },
+    {
+      "file": "src/features/migration/manager.tsx",
+      "line": 133,
+      "component": "button",
+      "text": "Periksa temuan dan bukti"
+    },
+    {
+      "file": "src/features/migration/manager.tsx",
+      "line": 165,
+      "component": "DataForm",
+      "label": "\"Tinjau data migrasi\"",
+      "submitLabel": "\"Simpan hasil peninjauan\""
+    },
+    {
+      "file": "src/features/migration/manager.tsx",
+      "line": 206,
+      "component": "DataForm",
+      "label": "\"Tinjau bukti migrasi\"",
+      "submitLabel": "\"Simpan keputusan bukti\""
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 140,
+      "component": "Button",
+      "type": "\"button\"",
+      "text": "Sebelumnya"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 149,
+      "component": "Button",
+      "type": "\"button\"",
+      "text": "Berikutnya"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 414,
+      "component": "Button",
+      "type": "\"submit\"",
+      "text": "Periksa bentrok jadwal"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 423,
+      "component": "Button",
+      "type": "\"submit\"",
+      "text": "{busy ? \"Memproses…\" : \"Simpan jadwal\"}"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 820,
+      "component": "Button",
+      "text": "Cetak seluruh hasil filter"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 827,
+      "component": "Button",
+      "text": "Muat ulang"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 831,
+      "component": "Button",
+      "text": "Tambah jadwal"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 965,
+      "component": "Button",
+      "text": "Tinjau penghentian jadwal terpilih"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 974,
+      "component": "Button",
+      "text": "Kosongkan pilihan"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 1060,
+      "component": "Button",
+      "text": "Ubah jadwal"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 1071,
+      "component": "Button",
+      "text": "Hentikan jadwal"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 1083,
+      "component": "Button",
+      "text": "Riwayat"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 1091,
+      "component": "Button",
+      "text": "Riwayat sebelumnya"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 1111,
+      "component": "Button",
+      "text": "Sebelumnya"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 1118,
+      "component": "Button",
+      "text": "Berikutnya"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 1148,
+      "component": "Button",
+      "text": "Tutup"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 1181,
+      "component": "Button",
+      "text": "Tutup"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 1211,
+      "component": "Button",
+      "text": "{busy ? \"Memproses…\" : \"Konfirmasi penghentian jadwal\"}"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 1245,
+      "component": "Button",
+      "type": "\"submit\"",
+      "text": "{busy ? \"Memeriksa…\" : \"Lihat pratinjau dampak\"}"
+    },
+    {
+      "file": "src/features/schedules/schedule-manager.tsx",
+      "line": 1267,
+      "component": "Button",
+      "text": "Tutup"
+    },
+    {
+      "file": "src/features/programs/event-manager.tsx",
+      "line": 214,
+      "component": "DataForm",
+      "label": "\"Catat kehadiran peserta\"",
+      "submitLabel": "\"Simpan kehadiran\""
+    },
+    {
+      "file": "src/features/programs/event-manager.tsx",
+      "line": 266,
+      "component": "DataForm",
+      "label": "\"Tulis jurnal acara\"",
+      "submitLabel": "\"Kirim jurnal acara\""
+    },
+    {
+      "file": "src/features/programs/event-manager.tsx",
+      "line": 293,
+      "component": "button",
+      "text": "Batalkan kehadiran"
+    },
+    {
+      "file": "src/features/programs/event-manager.tsx",
+      "line": 331,
+      "component": "button",
+      "text": "Batal mengubah acara"
+    },
+    {
+      "file": "src/features/programs/event-manager.tsx",
+      "line": 335,
+      "component": "DataForm",
+      "label": "{edit ? \"Ubah acara\" : \"Tambah acara\"}",
+      "submitLabel": "\"Simpan acara\""
+    },
+    {
+      "file": "src/features/programs/event-manager.tsx",
+      "line": 375,
+      "component": "button",
+      "text": "Ubah acara"
+    },
+    {
+      "file": "src/features/programs/event-manager.tsx",
+      "line": 384,
+      "component": "button",
+      "text": "Tinjau penghapusan acara"
+    },
+    {
+      "file": "src/features/programs/event-manager.tsx",
+      "line": 424,
+      "component": "DataForm",
+      "label": "\"Tambah blokir jurnal acara\"",
+      "submitLabel": "\"Aktifkan blokir jurnal\""
+    },
+    {
+      "file": "src/features/programs/event-manager.tsx",
+      "line": 463,
+      "component": "button",
+      "text": "{b.active ? \"Nonaktifkan\" : \"Aktifkan\"}"
+    },
+    {
+      "file": "src/features/programs/exam-manager.tsx",
+      "line": 409,
+      "component": "DataForm",
+      "label": "\"Atur perubahan penugasan\"",
+      "submitLabel": "\"Buat pratinjau perubahan\""
+    },
+    {
+      "file": "src/features/programs/exam-manager.tsx",
+      "line": 498,
+      "component": "button",
+      "text": "Batal mengubah data"
+    },
+    {
+      "file": "src/features/programs/exam-manager.tsx",
+      "line": 502,
+      "component": "DataForm",
+      "label": "{edit ? \"Ubah data ujian\" : \"Tambah data ujian\"}",
+      "submitLabel": "\"Simpan data ujian\""
+    },
+    {
+      "file": "src/features/programs/exam-manager.tsx",
+      "line": 549,
+      "component": "button",
+      "text": "Ubah periode"
+    },
+    {
+      "file": "src/features/programs/exam-manager.tsx",
+      "line": 563,
+      "component": "button",
+      "text": "Tinjau penghapusan periode"
+    },
+    {
+      "file": "src/features/programs/exam-manager.tsx",
+      "line": 580,
+      "component": "button",
+      "text": "Ubah sesi"
+    },
+    {
+      "file": "src/features/programs/exam-manager.tsx",
+      "line": 595,
+      "component": "button",
+      "text": "Tinjau penghapusan sesi"
+    },
+    {
+      "file": "src/features/programs/exam-manager.tsx",
+      "line": 616,
+      "component": "button",
+      "text": "Ubah ruang"
+    },
+    {
+      "file": "src/features/programs/exam-manager.tsx",
+      "line": 630,
+      "component": "button",
+      "text": "Tinjau penghapusan ruang"
+    },
+    {
+      "file": "src/features/programs/exam-manager.tsx",
+      "line": 648,
+      "component": "button",
+      "text": "Tinjau penghapusan penugasan"
+    },
+    {
+      "file": "src/features/programs/exam-manager.tsx",
+      "line": 661,
+      "component": "button",
+      "text": "Ubah pengawas"
+    },
+    {
+      "file": "src/features/programs/exam-manager.tsx",
+      "line": 733,
+      "component": "DataForm",
+      "label": "{o.bap ? \"Ubah BAP\" : \"Isi BAP\"}",
+      "submitLabel": "{o.bap ? \"Simpan perubahan BAP\" : \"Kirim BAP\"}"
+    },
+    {
+      "file": "src/features/programs/forms.tsx",
+      "line": 322,
+      "component": "button",
+      "text": "{busy || saving ? \"Memproses…\" : submitLabel}"
+    },
+    {
+      "file": "src/features/programs/forms.tsx",
+      "line": 332,
+      "component": "FormDialog",
+      "title": "{label}",
+      "trigger": "{label}",
+      "text": "{form}"
+    },
+    {
+      "file": "src/features/programs/forms.tsx",
+      "line": 337,
+      "component": "button",
+      "type": "\"submit\"",
+      "text": "{busy || saving ? \"Memproses…\" : submitLabel}"
+    },
+    {
+      "file": "src/features/programs/forms.tsx",
+      "line": 431,
+      "component": "button",
+      "text": "Saya konfirmasi perubahan ini"
+    },
+    {
+      "file": "src/features/programs/forms.tsx",
+      "line": 434,
+      "component": "button",
+      "text": "Batal"
+    },
+    {
+      "file": "src/app/not-found.tsx",
+      "line": 21,
+      "component": "Button",
+      "text": "<Link href=\"/\">Kembali ke beranda</Link>"
+    },
+    {
+      "file": "src/app/page.tsx",
+      "line": 63,
+      "component": "Button",
+      "text": "<Link href=\"/login\"> Masuk ke SiM-Guru <ArrowRight aria-hidden=\"true\" /> </Link>"
+    },
+    {
+      "file": "src/app/kesiapan/page.tsx",
+      "line": 41,
+      "component": "Button",
+      "text": "<Link href=\"/login\">Masuk ke SiM-Guru</Link>"
+    },
+    {
+      "file": "src/app/kesiapan/page.tsx",
+      "line": 58,
+      "component": "Button",
+      "text": "<Link href=\"/lupa-password\">Buka pemulihan akun</Link>"
+    },
+    {
+      "file": "src/features/operations/announcements.tsx",
+      "line": 42,
+      "component": "button",
+      "text": "Tutup pengumuman"
+    },
+    {
+      "file": "src/features/operations/recipient-picker.tsx",
+      "line": 68,
+      "component": "button",
+      "text": "{names[id] ?? known[id] ?? `Pengguna terpilih ${i + 1}`} · Hapus"
+    },
+    {
+      "file": "src/features/operations/recipient-picker.tsx",
+      "line": 96,
+      "component": "button",
+      "text": "Sebelumnya"
+    },
+    {
+      "file": "src/features/operations/recipient-picker.tsx",
+      "line": 104,
+      "component": "button",
+      "text": "Berikutnya"
+    },
+    {
+      "file": "src/features/operations/managers.tsx",
+      "line": 158,
+      "component": "DataForm",
+      "label": "\"Simpan pengumuman\""
+    },
+    {
+      "file": "src/features/operations/managers.tsx",
+      "line": 186,
+      "component": "button",
+      "text": "Batal mengubah"
+    },
+    {
+      "file": "src/features/operations/managers.tsx",
+      "line": 198,
+      "component": "button",
+      "text": "Ubah pengumuman"
+    },
+    {
+      "file": "src/features/operations/managers.tsx",
+      "line": 256,
+      "component": "DataForm",
+      "label": "\"Atur operasional aplikasi\"",
+      "submitLabel": "\"Simpan pengaturan operasional\""
+    },
+    {
+      "file": "src/features/operations/managers.tsx",
+      "line": 335,
+      "component": "DataForm",
+      "label": "{\n                  o.state === \"failed\"\n                    ? \"Tinjau pengiriman ulang\"\n                    : \"Tinjau status pengiriman\"\n                }",
+      "submitLabel": "{\n                  o.state === \"failed\"\n                    ? \"Jadwalkan pengiriman ulang\"\n                    : \"Simpan hasil pemeriksaan\"\n                }"
+    },
+    {
+      "file": "src/features/operations/managers.tsx",
+      "line": 389,
+      "component": "DataForm",
+      "label": "\"Tinjau pengulangan pekerjaan\"",
+      "submitLabel": "\"Jadwalkan ulang pekerjaan\""
+    },
+    {
+      "file": "src/features/duties/duty-manager.tsx",
+      "line": 243,
+      "component": "button",
+      "text": "Muat ulang"
+    },
+    {
+      "file": "src/features/duties/duty-manager.tsx",
+      "line": 294,
+      "component": "button",
+      "text": "Kelola kegiatan"
+    },
+    {
+      "file": "src/features/duties/duty-manager.tsx",
+      "line": 419,
+      "component": "button",
+      "text": "Tinjau dampak perubahan"
+    },
+    {
+      "file": "src/features/duties/duty-manager.tsx",
+      "line": 440,
+      "component": "button",
+      "type": "\"button\"",
+      "text": "{labels[preview.request.operation ?? \"\"] ?? \"Konfirmasi perubahan tugas\"}"
+    },
+    {
+      "file": "src/features/duties/duty-manager.tsx",
+      "line": 461,
+      "component": "button",
+      "type": "\"button\"",
+      "text": "Batal"
+    },
+    {
+      "file": "src/features/duties/duty-manager.tsx",
+      "line": 475,
+      "component": "FormDialog",
+      "title": "\"Jadwal piket dan upacara\"",
+      "text": "<form className={panel} onSubmit={async (e) => { e.preventDefault(); const result = await submit(\"schedule\", { ...(editing ? { id: editing.id } : {}), version: editing?.version ?? \"0\", kind, userId: teacher, academicPeriodId: period, dayIndex: kind === \"UPACARA\" ? 1 : Number(day), date: kind === \"UPACARA\" ? from : null, validFrom: from, validTo: kind === \"UPACARA\" ? from : to, timeStart, timeEnd, active, reason: scheduleReason, }); if (result) { setEditing(null); setLoading(true); setRevision((v) => v + 1); setMessage(\"Jadwal tugas tersimpan.\"); } }} > <h2 className=\"font-semibold\"> {editing ? \"Ubah jadwal tugas\" : \"Tambah jadwal piket / pembina upacara\"} </h2> <div className=\"grid gap-3 sm:grid-cols-2\"> <Choice label=\"Jenis tugas\" value={kind} set={(v) => { setKind(v as typeof kind); setTimeEnd(v === \"UPACARA\" ? \"07:30\" : \"14:00\"); }} items={[ { id: \"PIKET\", name: \"Piket mingguan\" }, { id: \"UPACARA\", name: \"Pembina upacara Senin\" }, ]} /> <Choice label=\"Guru\" value={teacher} set={setTeacher} items={board?.teachers ?? []} /> <Choice label=\"Periode akademik\" value={period} set={setPeriod} items={board?.periods ?? []} /> {kind === \"PIKET\" && ( <Choice label=\"Hari\" value={day} set={setDay} items={days.map((name, i) => ({ id: String(i), name }))} /> )} <Field label={kind === \"UPACARA\" ? \"Tanggal Senin\" : \"Berlaku mulai\"} > <input className={input} type=\"date\" required value={from} onChange={(e) => setFrom(e.target.value)} /> </Field> {kind === \"PIKET\" && ( <Field label=\"Berlaku sampai\"> <input className={input} type=\"date\" required value={to} onChange={(e) => setTo(e.target.value)} /> </Field> )} <Field label=\"Jam mulai\"> <input className={input} type=\"time\" required value={timeStart} onChange={(e) => setTimeStart(e.target.value)} /> </Field> <Field label=\"Jam selesai\"> <input className={input} type=\"time\" required value={timeEnd} onChange={(e) => setTimeEnd(e.target.value)} /> </Field> </div> <p className=\"text-sm\"> Piket merupakan pengawasan umum dan tidak otomatis melarang jadwal mengajar pada jam yang sama. Upacara dan kegiatan KBM diperiksa bentroknya. </p> <label className=\"flex gap-2 text-sm\"> <input type=\"checkbox\" checked={active} onChange={(e) => setActive(e.target.checked)} /> Jadwal aktif </label> <Field label=\"Alasan perubahan jadwal\"> <textarea className={input} minLength={5} maxLength={500} required value={scheduleReason} onChange={(e) => setScheduleReason(e.target.value)} /> </Field> <div className=\"flex gap-2\"> <button className={button} disabled={busy || loading}> Simpan jadwal tugas </button> {editing && ( <button type=\"button\" className={secondary} onClick={() => setEditing(null)} > Batal edit </button> )} </div> </form>"
+    },
+    {
+      "file": "src/features/duties/duty-manager.tsx",
+      "line": 618,
+      "component": "button",
+      "text": "Simpan jadwal tugas"
+    },
+    {
+      "file": "src/features/duties/duty-manager.tsx",
+      "line": 622,
+      "component": "button",
+      "type": "\"button\"",
+      "text": "Batal edit"
+    },
+    {
+      "file": "src/features/duties/duty-manager.tsx",
+      "line": 652,
+      "component": "button",
+      "text": "Ubah jadwal tugas"
+    }
+  ]
+}

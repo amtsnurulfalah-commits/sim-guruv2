@@ -57,6 +57,7 @@ try {
   const adminViews = [
     "dashboard",
     "home",
+    "guide",
     "login",
     "lab",
     "masters",
@@ -109,6 +110,7 @@ try {
       operations: "/admin/operasional",
       migration: "/admin/migrasi",
       home: "/",
+      guide: "/kesiapan",
       login: "/login",
     };
     await page.goto(
@@ -589,15 +591,13 @@ try {
   await editor
     .getByLabel("Alasan perubahan", { exact: false })
     .fill("Pengujian CRUD antarmuka");
-  await editor
-    .getByRole("button", { name: "Simpan dan catat perubahan" })
-    .click();
+  await editor.getByRole("button", { name: "Simpan data" }).click();
   await editor.waitFor({ state: "hidden" });
   let row = page.getByRole("row").filter({ hasText: "Subjek CRUD sintetis" });
   await row.waitFor();
-  await row.getByRole("button", { name: "Edit", exact: true }).click();
+  await row.getByRole("button", { name: "Ubah", exact: true }).click();
   editor = page.getByRole("dialog", {
-    name: "Edit Mata pelajaran",
+    name: "Ubah Mata pelajaran",
     exact: true,
   });
   await editor
@@ -606,9 +606,7 @@ try {
   await editor
     .getByLabel("Alasan perubahan", { exact: false })
     .fill("Pembaruan CRUD sintetis");
-  await editor
-    .getByRole("button", { name: "Simpan dan catat perubahan" })
-    .click();
+  await editor.getByRole("button", { name: "Simpan data" }).click();
   await editor.waitFor({ state: "hidden" });
   row = page.getByRole("row").filter({ hasText: "Subjek CRUD diperbarui" });
   await row.waitFor();
@@ -628,6 +626,157 @@ try {
     create: true,
     update: true,
     archive: true,
+  });
+  // Opening a form must not be mistaken for committing data.
+  await go("lab");
+  await page
+    .getByRole("button", { name: "Tambah catatan uji", exact: true })
+    .click();
+  const noteDialog = page.getByRole("dialog", {
+    name: "Tambah catatan uji",
+    exact: true,
+  });
+  await noteDialog.waitFor();
+  assert.equal(
+    await page
+      .getByRole("status", { includeHidden: true })
+      .filter({ hasText: "Jumlah penyimpanan: 0" })
+      .count(),
+    1,
+  );
+  await noteDialog
+    .getByLabel("Catatan uji", { exact: false })
+    .fill("Catatan sintetis");
+  await noteDialog
+    .getByRole("button", { name: "Simpan catatan uji", exact: true })
+    .click();
+  await noteDialog.waitFor({ state: "hidden" });
+  assert.equal(
+    await page
+      .getByRole("status")
+      .filter({ hasText: "Jumlah penyimpanan: 1" })
+      .count(),
+    1,
+  );
+  interactions.push({
+    scenario: "distinct-form-trigger-submit",
+    openingDoesNotSave: true,
+    saveCount: 1,
+  });
+  // A previously selected attendance row can reopen its leave editor.
+  await go("attendance");
+  const leaveAction = page
+    .getByRole("button", { name: "Ajukan izin keluar", exact: true })
+    .first();
+  assert.ok(
+    await leaveAction.count(),
+    "attendance fixture must contain a leave action",
+  );
+  for (let repeat = 0; repeat < 2; repeat++) {
+    await leaveAction.click();
+    const leaveDialog = page.getByRole("dialog", {
+      name: "Izin keluar sementara",
+      exact: true,
+    });
+    await leaveDialog.waitFor();
+    await page.keyboard.press("Escape");
+    await leaveDialog.waitFor({ state: "hidden" });
+  }
+  interactions.push({ scenario: "reopen-same-attendance-leave", openings: 2 });
+  await go("guide");
+  assert.equal(
+    await page
+      .getByRole("heading", { name: "Panduan aplikasi", exact: true })
+      .count(),
+    1,
+  );
+  assert.equal(
+    await page
+      .getByRole("link", { name: "Buka pemulihan akun", exact: true })
+      .getAttribute("href"),
+    "/lupa-password",
+  );
+  assert.doesNotMatch(
+    await page.locator("main").innerText(),
+    /Status pengembangan|Tahap \d|worker|scheduler/i,
+  );
+  interactions.push({
+    scenario: "public-user-guide",
+    recoveryRoute: true,
+    developmentCopyAbsent: true,
+  });
+  for (const width of [320, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await go("operations");
+    assert.equal(
+      await page
+        .getByRole("definition")
+        .filter({ hasText: "Nonaktif" })
+        .count(),
+      3,
+    );
+    await page
+      .getByRole("button", { name: "Atur operasional aplikasi", exact: true })
+      .click();
+    const settings = page.getByRole("dialog", {
+      name: "Atur operasional aplikasi",
+      exact: true,
+    });
+    await settings.waitFor();
+    assert.equal(
+      await settings
+        .getByRole("button", {
+          name: "Simpan pengaturan operasional",
+          exact: true,
+        })
+        .count(),
+      1,
+    );
+    await page.keyboard.press("Escape");
+    await settings.waitFor({ state: "hidden" });
+    for (const view of [
+      "attendance",
+      "financeOperations",
+      "masters",
+      "guide",
+    ]) {
+      await go(view);
+      assert.ok(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth + 1,
+        ),
+        view + " final copy overflow",
+      );
+      assert.equal(await page.getByRole("alert").count(), 0);
+    }
+    await go("financeOperations");
+    await page
+      .getByRole("button", { name: "Atur honorarium hari libur", exact: true })
+      .click();
+    const holiday = page.getByRole("dialog", {
+      name: "Atur honorarium hari libur",
+      exact: true,
+    });
+    await holiday.waitFor();
+    assert.equal(
+      await holiday
+        .getByRole("button", {
+          name: "Jalankan tindakan hari libur",
+          exact: true,
+        })
+        .count(),
+      1,
+    );
+    await page.keyboard.press("Escape");
+    await holiday.waitFor({ state: "hidden" });
+  }
+  interactions.push({
+    scenario: "final-operational-and-copy-review",
+    viewports: [320, 1440],
+    inactiveFlagsVisible: true,
+    distinctSettingsSubmit: true,
+    holidayActionLabel: true,
+    changedViewsDoNotOverflow: true,
   });
   assert.deepEqual(errors, []);
   assert.deepEqual(consoleErrors, []);

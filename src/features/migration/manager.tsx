@@ -9,13 +9,13 @@ const labels: Record<string, string> = {
   source_backup: "Backup sumber",
   restore_drill: "Uji pemulihan",
   reconciliation: "Rekonsiliasi",
-  parallel_run: "Parallel run",
-  uat_admin: "UAT admin",
-  uat_guru: "UAT guru",
-  legacy_freeze: "Penghentian write/trigger lama",
-  delta_reconciliation: "Rekonsiliasi delta",
-  rollback_plan: "Rencana rollback",
-  cutover_approval: "Persetujuan cutover",
+  parallel_run: "Uji berjalan berdampingan",
+  uat_admin: "Uji penerimaan administrator",
+  uat_guru: "Uji penerimaan guru",
+  legacy_freeze: "Penghentian pencatatan pada sistem lama",
+  delta_reconciliation: "Pencocokan perubahan data terakhir",
+  rollback_plan: "Rencana pemulihan layanan",
+  cutover_approval: "Persetujuan pemindahan layanan",
 };
 type Report = {
   issues: {
@@ -80,14 +80,14 @@ export function MigrationManager() {
   }
   return (
     <div className="min-w-0 space-y-5 [overflow-wrap:anywhere]">
-      <h1 className="text-2xl font-bold">Migrasi dan kesiapan peluncuran</h1>
+      <h1 className="text-2xl font-bold">Migrasi data</h1>
       <p>
-        Unggahan masuk ke staging privat. Pengisian staging tidak memindahkan
-        transaksi ke aplikasi dan tidak mengaktifkan email atau cutover.
+        Berkas diunggah ke area pemeriksaan privat. Mengunggah berkas tidak
+        otomatis memindahkan transaksi, mengirim email, atau mengganti layanan.
       </p>
       {error && <p role="alert">{error}</p>}
       <section className={panel}>
-        <h2 className="font-semibold">Periksa ekspor legacy</h2>
+        <h2 className="font-semibold">Periksa berkas data lama</h2>
         <label className="block">
           File JSON ekspor (maksimum 2 MiB)
           <input
@@ -164,7 +164,8 @@ export function MigrationManager() {
                   {i.severity === "review" && !i.resolution && (
                     <DataForm
                       busy={busy}
-                      label="Catat hasil peninjauan"
+                      label="Tinjau data migrasi"
+                      submitLabel="Simpan hasil peninjauan"
                       fields={[
                         {
                           key: "evidence",
@@ -204,7 +205,8 @@ export function MigrationManager() {
               ))}
               <DataForm
                 busy={busy}
-                label="Simpan keputusan bukti"
+                label="Tinjau bukti migrasi"
+                submitLabel="Simpan keputusan bukti"
                 fields={[
                   {
                     key: "gate",
@@ -243,9 +245,9 @@ export function MigrationManager() {
               />
               <p className="text-sm">
                 Kesalahan data tidak dapat diabaikan. Unggah ekspor yang
-                diperbaiki. Persetujuan cutover memerlukan seluruh pemeriksaan
-                sebelumnya dan tidak menjalankan pemindahan layanan secara
-                otomatis.
+                diperbaiki. Persetujuan pemindahan layanan memerlukan seluruh
+                pemeriksaan sebelumnya dan tidak menjalankan pemindahan layanan
+                secara otomatis.
               </p>
             </>
           )}

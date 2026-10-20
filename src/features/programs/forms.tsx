@@ -38,6 +38,7 @@ export type Field = {
 export function DataForm({
   fields,
   label,
+  submitLabel = label,
   onSave,
   busy,
   inline = false,
@@ -51,6 +52,7 @@ export function DataForm({
   description?: string;
   fields: Field[];
   label: string;
+  submitLabel?: string;
   onSave: (data: Record<string, unknown>) => Promise<void>;
   busy: boolean;
 }) {
@@ -318,7 +320,7 @@ export function DataForm({
         <div className="flex flex-wrap items-center gap-3 border-t pt-4 sm:col-span-2">
           {inline && (
             <button className={button} disabled={busy || saving}>
-              {busy || saving ? "Menyimpan…" : label}
+              {busy || saving ? "Memproses…" : submitLabel}
             </button>
           )}
         </div>
@@ -338,7 +340,7 @@ export function DataForm({
           form={prefix + "-form"}
           disabled={busy || saving}
         >
-          {busy || saving ? "Menyimpan…" : label}
+          {busy || saving ? "Memproses…" : submitLabel}
         </button>
       }
       open={open}

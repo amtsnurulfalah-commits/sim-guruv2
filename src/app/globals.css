@@ -252,6 +252,19 @@
   .ui-panel {
     @apply min-w-0 rounded-2xl border bg-card p-4 shadow-xs sm:p-6;
   }
+  .ui-panel > h2,
+  .ui-panel > h3,
+  .ui-panel > header,
+  .page-section > h2,
+  .page-section > header,
+  .page-section > div:first-child:has(> h2) {
+    @apply border-b pb-3;
+  }
+  .ui-panel:has(> h2),
+  .page-section {
+    border-top-width: 3px;
+    border-top-color: var(--primary);
+  }
   .workspace-content {
     overflow-wrap: anywhere;
   }

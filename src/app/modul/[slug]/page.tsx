@@ -33,7 +33,7 @@ export default async function ModulePage({
     <AuthenticatedWorkspace>
       <div className="max-w-2xl space-y-6">
         <p className="text-xs font-semibold tracking-widest text-primary uppercase">
-          {entry.group} · Tahap {entry.stage}
+          {entry.group}
         </p>
         <h1 className="text-3xl font-bold">{entry.title}</h1>
         <section className="space-y-4 rounded-2xl border bg-card p-6">
@@ -42,8 +42,9 @@ export default async function ModulePage({
             {entry.description}
           </p>
           <p className="text-sm leading-7">
-            Pencatatan, rekap dan ekspor belum dapat digunakan. Data kegiatan
-            serta nominal tidak ditampilkan sebelum modul ini selesai dan diuji.
+            Pencatatan, rekap, dan ekspor pada modul ini belum dapat digunakan.
+            Hubungi administrator jika modul ini diperlukan untuk pekerjaan
+            Anda.
           </p>
           <p className="text-sm leading-7 text-muted-foreground">
             Tidak ada perubahan data yang dilakukan dari halaman status ini.

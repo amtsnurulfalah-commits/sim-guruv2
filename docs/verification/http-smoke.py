@@ -24,7 +24,7 @@ try:
  checks.append('Beranda200, bahasa Indonesia, status fitur jujur')
  assert headers['x-content-type-options']=='nosniff' and headers['x-frame-options']=='DENY' and headers['referrer-policy']=='no-referrer'
  checks.append('Header keamanan dasar')
- status,_,body=request('/kesiapan');assert status==200 and 'Status pengembangan' in body;checks.append('Kesiapan200')
+ status,_,body=request('/kesiapan');assert status==200 and 'Panduan aplikasi' in body;checks.append('Kesiapan200')
  status,_,body=request('/alamat-tidak-ada');assert status==404 and 'Halaman tidak ditemukan' in body;checks.append('404 Indonesia')
  status,headers,body=request('/api/health');data=json.loads(body)
  assert status==200 and data['ok'] and data['data']=={'service':'sim-guru','status':'alive','phase':'8.5'}

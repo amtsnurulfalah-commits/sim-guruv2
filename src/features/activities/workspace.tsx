@@ -126,7 +126,8 @@ export function ActivityWorkspace({
   mode: Mode;
 }) {
   const [manualEditor, setManualEditor] = useState(0),
-    [journalEditor, setJournalEditor] = useState(0);
+    [journalEditor, setJournalEditor] = useState(0),
+    [leaveEditor, setLeaveEditor] = useState(0);
   const [date, setDate] = useState(wibDate()),
     [from, setFrom] = useState(wibDate().slice(0, 7) + "-01"),
     [to, setTo] = useState(wibDate()),
@@ -361,13 +362,10 @@ export function ActivityWorkspace({
           Jurnal KBM
         </a>
       </nav>
-      <div role="alert" aria-live="polite">
-        {error && <p className="rounded bg-red-50 p-3 text-red-800">{error}</p>}
-        {message && (
-          <p className="rounded bg-green-50 p-3 text-green-800">{message}</p>
-        )}
-      </div>
+      {error && <p role="alert">{error}</p>}
+      {message && <p role="status">{message}</p>}
       <section className={panel}>
+        <h2 className="font-semibold">Tanggal dan filter kegiatan</h2>
         <div className="grid gap-3 sm:grid-cols-3">
           <Text
             label="Tanggal kegiatan / input"
@@ -470,7 +468,7 @@ export function ActivityWorkspace({
                       })
                     }
                   >
-                    Klaim hadir
+                    Ajukan klaim kehadiran
                   </button>
                 )}
                 {admin && (
@@ -568,9 +566,12 @@ export function ActivityWorkspace({
                   )}
                   <button
                     className={smallButton}
-                    onClick={() => setAttendanceId(d.id)}
+                    onClick={() => {
+                      setAttendanceId(d.id);
+                      setLeaveEditor((value) => value + 1);
+                    }}
                   >
-                    Pilih untuk izin
+                    Ajukan izin keluar
                   </button>
                   {admin && (
                     <button
@@ -586,7 +587,7 @@ export function ActivityWorkspace({
                         setManualEditor((v) => v + 1);
                       }}
                     >
-                      Koreksi manual
+                      Koreksi kehadiran
                     </button>
                   )}
                 </div>
@@ -624,7 +625,9 @@ export function ActivityWorkspace({
               setReturnTime("");
               setReason("");
             }}
-            revealKey={attendanceId}
+            revealKey={
+              leaveEditor ? attendanceId + ":" + leaveEditor : undefined
+            }
             busy={busy}
             success={message}
             error={error}
@@ -769,7 +772,7 @@ export function ActivityWorkspace({
                 </form>
               </FormDialog>
               <FormDialog
-                title="Template jam kehadiran"
+                title="Pola jam kehadiran"
                 onDiscard={() => {
                   setTemplateId("");
                   setTimeIn("07:30");
@@ -797,10 +800,10 @@ export function ActivityWorkspace({
                     });
                   }}
                 >
-                  <h2 className="font-semibold">Template jam kehadiran</h2>
+                  <h2 className="font-semibold">Pola jam kehadiran</h2>
                   <p className="text-sm">
-                    Template ujian dapat disimpan; penerapannya tersedia setelah
-                    modul penugasan ujian dibuat.
+                    Pilih konteks KBM atau ujian dan rentang jam. Tinjau peserta
+                    pada tanggal tujuan sebelum menerapkan pola kehadiran.
                   </p>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <Select
@@ -842,14 +845,14 @@ export function ActivityWorkspace({
                     />
                   </div>
                   <Text
-                    label="Alasan perubahan template"
+                    label="Alasan perubahan pola"
                     value={reason}
                     set={setReason}
                     required
                   />
                   <div className="flex gap-2">
                     <button className={buttonClass} disabled={busy}>
-                      Simpan template
+                      Simpan pola kehadiran
                     </button>
                     {selectedTemplate && (
                       <button
@@ -859,7 +862,7 @@ export function ActivityWorkspace({
                         onClick={() => {
                           if (
                             window.confirm(
-                              "Hapus template? Template yang sudah digunakan tetap dilindungi sebagai riwayat.",
+                              "Hapus pola kehadiran? Pola yang sudah digunakan tetap dilindungi sebagai riwayat.",
                             )
                           )
                             void run("template-delete", {
@@ -870,7 +873,7 @@ export function ActivityWorkspace({
                             });
                         }}
                       >
-                        Hapus template
+                        Hapus pola kehadiran
                       </button>
                     )}
                   </div>
@@ -878,10 +881,10 @@ export function ActivityWorkspace({
               </FormDialog>
               <section className={panel}>
                 <h2 className="font-semibold">
-                  Terapkan template ke tanggal {date}
+                  Terapkan pola kehadiran ke tanggal {date}
                 </h2>
                 <Select
-                  label="Template"
+                  label="Pola kehadiran"
                   value={templateId}
                   set={(v) => {
                     setTemplateId(v);
@@ -904,7 +907,7 @@ export function ActivityWorkspace({
                     if (p) setPreview(p as NonNullable<typeof preview>);
                   }}
                 >
-                  Buat pratinjau
+                  Tinjau penerapan pola
                 </button>
                 {preview && (
                   <div className="space-y-3 rounded bg-blue-50 p-4">
@@ -937,7 +940,7 @@ export function ActivityWorkspace({
                           setPreview(null);
                       }}
                     >
-                      Konfirmasi terapkan template
+                      Terapkan pola kehadiran
                     </button>
                   </div>
                 )}
@@ -1106,7 +1109,7 @@ export function ActivityWorkspace({
             >
               <h2 className="font-semibold">
                 {editing
-                  ? "Edit jurnal " + editing.date
+                  ? "Ubah jurnal " + editing.date
                   : "Input jurnal tanggal " + date}
               </h2>
               {!editing && (
@@ -1241,7 +1244,7 @@ export function ActivityWorkspace({
                       setNotes(j.notes);
                     }}
                   >
-                    Edit jurnal
+                    Ubah jurnal
                   </button>
                   <button
                     className={smallButton}
@@ -1259,7 +1262,7 @@ export function ActivityWorkspace({
                         });
                     }}
                   >
-                    Hapus dan balik kredit
+                    Hapus jurnal dan batalkan JTM
                   </button>
                 </div>
               </article>

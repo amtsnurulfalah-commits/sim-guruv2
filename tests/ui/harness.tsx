@@ -5,6 +5,7 @@ import { modulesFor } from "../../src/lib/navigation/modules";
 import { AuthLayout } from "../../src/components/shell/auth-layout";
 import { ActionForm, Field } from "../../src/features/auth/account-lifecycle";
 import { LoginForm } from "../../src/features/auth/login-form";
+import GuidePage from "../../src/app/kesiapan/page";
 import HomePage from "../../src/app/page";
 import { Workspace } from "../../src/components/shell/workspace";
 import { DataForm } from "../../src/features/programs/forms";
@@ -107,6 +108,15 @@ function Lab() {
           }
         }}
       />
+      <DataForm
+        label="Tambah catatan uji"
+        submitLabel="Simpan catatan uji"
+        busy={busy}
+        fields={[{ key: "note", label: "Catatan uji" }]}
+        onSave={async () => {
+          setCount((value) => value + 1);
+        }}
+      />
       <FormDialog title="Formulir kontekstual" busy={busy} success={message}>
         <form
           onSubmit={async (e) => {
@@ -196,6 +206,8 @@ createRoot(document.getElementById("root")!).render(
       >
         <LoginForm />
       </AuthLayout>
+    ) : view === "guide" ? (
+      <GuidePage />
     ) : view === "home" ? (
       <HomePage />
     ) : (

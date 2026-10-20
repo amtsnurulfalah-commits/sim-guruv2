@@ -18,11 +18,6 @@ export function ModuleCards({
         >
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <Badge>{module.available ? "Tersedia" : "Belum tersedia"}</Badge>
-            {!linked && (
-              <span className="text-xs text-muted-foreground">
-                Tahap {module.stage}
-              </span>
-            )}
           </div>
           <h3 className="font-semibold">{module.title}</h3>
           <p className="mt-2 flex-1 text-sm leading-7 text-muted-foreground">

@@ -401,9 +401,7 @@ function Editor({
           mengganti semester aktif sebelumnya. Tarif dan tunjangan menjadi versi
           tetap; buat rentang baru untuk perubahan nominal.
         </p>
-        <Button type="submit">
-          {busy ? "Menyimpan…" : "Simpan dan catat perubahan"}
-        </Button>
+        <Button type="submit">{busy ? "Menyimpan…" : "Simpan data"}</Button>
       </fieldset>
     </form>
   );
@@ -602,9 +600,8 @@ export function MasterManager() {
         </p>
         <h1 className="mt-2 text-3xl font-bold">Master sekolah dan akademik</h1>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
-          Kelola identitas, struktur akademik serta versi tarif dan tunjangan.
-          Tidak ada data sekolah atau nominal yang diisi otomatis. Isi identitas
-          sekolah, tahun pelajaran, semester, lalu kelas.
+          Kelola identitas madrasah, struktur akademik, tarif, dan tunjangan.
+          Lengkapi identitas sekolah, tahun pelajaran, semester, lalu kelas.
         </p>
       </header>
       <nav aria-label="Kelompok master" className="flex flex-wrap gap-2">
@@ -624,7 +621,7 @@ export function MasterManager() {
           </Button>
         ))}
       </nav>
-      <section className="space-y-4 rounded-2xl border bg-card p-5">
+      <section className="page-section space-y-4 rounded-2xl border bg-card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-bold">{labels[kind]}</h2>
           <Button
@@ -757,7 +754,7 @@ export function MasterManager() {
                                       setOpened(true);
                                     }}
                                   >
-                                    Edit
+                                    Ubah
                                   </Button>
                                 )}
                               {!row.archivedAt && kind !== "school" && (
@@ -841,13 +838,18 @@ export function MasterManager() {
           )
         )}
       </section>
-      <p className="text-sm leading-7">
-        Kebijakan rombel aplikasi: SD/MI maksimal 28, SMP/MTs 32, SMA/MA dan
-        SMK/MAK 36 siswa. Kelas paralel yang terisi minimal 15 siswa; 0
-        diperbolehkan. Ini kebijakan aplikasi, bukan pernyataan regulasi
-        terbaru. Tanggal tarif/tunjangan baru paling awal hari ini (WIB), tanpa
-        rentang tumpang tindih.
-      </p>
+      <details className="ui-panel text-sm leading-7">
+        <summary className="min-h-11 cursor-pointer font-semibold">
+          Ketentuan pengisian data master
+        </summary>
+        <p className="mt-3">
+          Kebijakan rombel aplikasi: SD/MI maksimal 28, SMP/MTs 32, SMA/MA dan
+          SMK/MAK 36 siswa. Kelas paralel yang terisi minimal 15 siswa; 0
+          diperbolehkan. Ini kebijakan aplikasi, bukan pernyataan regulasi
+          terbaru. Tanggal tarif/tunjangan baru paling awal hari ini (WIB),
+          tanpa rentang tumpang tindih.
+        </p>
+      </details>
       <ManagedDialog
         ref={dialog}
         aria-labelledby="master-editor-title"
@@ -862,7 +864,7 @@ export function MasterManager() {
       >
         <div className="mb-5 flex items-center justify-between gap-3">
           <h2 id="master-editor-title" className="text-xl font-bold">
-            {editing ? "Edit" : "Tambah"} {labels[kind]}
+            {editing ? "Ubah" : "Tambah"} {labels[kind]}
           </h2>
           <Button
             variant="outline"

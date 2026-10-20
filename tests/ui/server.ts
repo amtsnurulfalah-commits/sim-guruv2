@@ -90,6 +90,14 @@ async function main() {
     reason: "Fikstur antarmuka sintetis",
     data: { name: "Mata Pelajaran Pengujian Responsivitas" },
   });
+  // A real disposable attendance row exercises repeated leave-editor selection.
+  const fixtureDate = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Jakarta",
+  }).format(new Date());
+  await db.query(
+    "insert into app.daily_attendance(user_id,date,sched_time_in,sched_time_out,actual_time_in,time_in_recorded_by,time_in_source) values($1,$2,'07:00','14:00','07:00',$3,'admin')",
+    [guru, fixtureDate, id],
+  );
   const server = createServer(async (req, res) => {
     try {
       const url = new URL(req.url ?? "/", "http://localhost"),

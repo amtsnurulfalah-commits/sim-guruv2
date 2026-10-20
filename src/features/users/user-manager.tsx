@@ -440,7 +440,7 @@ export function UserManager() {
         </p>
       )}
       {secret && (
-        <section className="space-y-3 rounded-2xl border bg-card p-5">
+        <section className="page-section space-y-3 rounded-2xl border bg-card p-5">
           <h2 className="font-semibold">Serah terima kata sandi sementara</h2>
           <p className="text-sm leading-7">
             Berlaku 24 jam, ditampilkan satu kali untuk diserahkan secara aman
@@ -451,7 +451,7 @@ export function UserManager() {
             {secret}
           </output>
           <Button variant="outline" onClick={() => setSecret("")}>
-            Sudah diserahkan, sembunyikan
+            Sembunyikan kata sandi sementara
           </Button>
         </section>
       )}
@@ -604,7 +604,7 @@ export function UserManager() {
                                 setEditorOpen(true);
                               }}
                             >
-                              Edit
+                              Ubah pengguna
                             </Button>
                             {user.status === "pending_activation" && (
                               <Button
@@ -618,7 +618,7 @@ export function UserManager() {
                                   });
                                 }}
                               >
-                                Antrekan ulang aktivasi
+                                Antrekan ulang email aktivasi
                               </Button>
                             )}
                             {(user.status === "active" ||
@@ -700,7 +700,7 @@ export function UserManager() {
       >
         <div className="mb-6 flex items-center justify-between gap-4">
           <h2 id="user-editor-title" className="text-xl font-bold">
-            {editing ? "Edit pengguna" : "Tambah pengguna"}
+            {editing ? "Ubah pengguna" : "Tambah pengguna"}
           </h2>
           <Button
             variant="outline"
@@ -735,7 +735,7 @@ export function UserManager() {
           <form onSubmit={(e) => void confirmAction(e)} className="space-y-5">
             <h2 id="user-confirm-title" className="text-xl font-bold">
               {confirmation.action === "activation"
-                ? "Antrekan ulang aktivasi"
+                ? "Antrekan ulang email aktivasi"
                 : confirmation.action === "archived"
                   ? "Arsipkan pengguna"
                   : confirmation.action === "disabled"
@@ -780,7 +780,15 @@ export function UserManager() {
                   Batal
                 </Button>
                 <Button type="submit">
-                  {busy ? "Memproses…" : "Ya, lanjutkan"}
+                  {busy
+                    ? "Memproses…"
+                    : confirmation.action === "activation"
+                      ? "Antrekan ulang email aktivasi"
+                      : confirmation.action === "archived"
+                        ? "Arsipkan pengguna"
+                        : confirmation.action === "disabled"
+                          ? "Nonaktifkan pengguna"
+                          : "Aktifkan pengguna"}
                 </Button>
               </div>
             </fieldset>

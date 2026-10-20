@@ -220,7 +220,7 @@ export function Workspace({
           );
         })}
         <div className="border-t pt-2">
-          {item("/kesiapan", "Status pengembangan", CircleHelp)}
+          {item("/kesiapan", "Panduan aplikasi", CircleHelp)}
         </div>
       </nav>
     );
@@ -293,7 +293,7 @@ export function Workspace({
                   : "SiM-Guru"}
               </p>
               <p className="max-w-40 truncate sm:max-w-56 text-xs text-muted-foreground">
-                {session?.user.fullName ?? "Status pengembangan aplikasi"}
+                {session?.user.fullName ?? "Panduan penggunaan SiM-Guru"}
               </p>
             </div>
           </div>

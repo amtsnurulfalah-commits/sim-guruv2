@@ -71,3 +71,28 @@ Topbar tidak sticky pada layar ≤767px agar tidak menutup ruang kerja pendek/la
 ### Quality gates adaptasi
 
 Jalankan `npm run check`, matriks browser dan skenario Pro Max dalam `tests/ui/verify.mjs`: password visibility, pencarian sesuai role, ringkasan error/fokus/tautan field, keyboard scroll tabel, lanskap/reduced motion, pembesaran teks 200%, dan drawer melalui pointer sentuh emulasi. Bedakan hasil emulasi dari perangkat fisik serta pembaca layar. Panduan dataset Next 16.2/React 19.2 dipakai hanya pada pola yang sesuai stack aktual Next 16.4.2/React 19.3.1.
+
+## Bahasa tindakan dan batas bagian
+
+Teks antarmuka menjelaskan pekerjaan pengguna; nomor tahap, status implementasi,
+serta catatan integrasi berada di dokumentasi pengembangan. `/kesiapan` tetap
+kompatibel sebagai URL lama, dengan isi **Panduan aplikasi** dan tautan pemulihan
+ke `/lupa-password`. Panduan publik tidak menyatakan kesehatan layanan secara langsung.
+
+Bedakan pembuka formulir, pembuatan pratinjau, dan perubahan final. `DataForm`
+menggunakan `label` untuk pembuka/judul dan `submitLabel` untuk tombol pengiriman;
+nilai bawaan tetap `label` agar pemanggil lama kompatibel. Contoh: **Tambah acara**
+→ **Simpan acara**, **Tinjau finalisasi honorarium** → **Buat pratinjau finalisasi**.
+Tombol konfirmasi pengguna mengikuti tindakan sebenarnya (arsip/nonaktif/aktivasi),
+bukan “Ya, lanjutkan”. Status antrean tidak boleh dinyatakan sebagai email diterima.
+
+Gunakan `surface`/`.ui-panel` yang sudah ada untuk bagian fitur. Judul langsung
+`h2`/`h3` memiliki garis bawah; panel dengan `h2` memiliki aksen batas atas. Bagian
+khusus pada master, jadwal, serah terima akun, panduan, dan modul dashboard memakai
+`.page-section` dengan batas yang sama. Pertahankan jarak antarbagian dan hindari
+menambah panel di setiap baris tabel. Informasi aturan panjang yang tidak selalu
+diperlukan dapat memakai `<details>` native dengan ringkasan yang jelas.
+
+Keberhasilan memakai `role="status"`, kegagalan memakai `role="alert"`. Peringatan
+finalisasi honorarium, pembalikan JTM, perubahan kalender, dan pengiriman email
+harus dipertahankan karena menjelaskan akibat tindakan.

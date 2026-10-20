@@ -418,7 +418,7 @@ function Editor({
             variant="outline"
             formNoValidate
           >
-            Periksa bentrok di server
+            Periksa bentrok jadwal
           </Button>
           <Button type="submit" name="intent" value="save">
             {busy ? "Memproses…" : "Simpan jadwal"}
@@ -431,8 +431,8 @@ function Editor({
             {collision.conflicts.length
               ? collision.conflicts.length + " bentrok ditemukan."
               : "Tidak ada bentrok pada pemeriksaan ini."}{" "}
-            Pemeriksaan tidak memberi izin menyimpan; server memeriksa ulang
-            saat simpan.
+            Hasil pemeriksaan ini belum menyimpan jadwal. Kelayakan diperiksa
+            ulang saat simpan.
           </p>
           {collision.conflicts.map((v) => (
             <p key={v.id}>
@@ -646,9 +646,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
     editor.current?.close();
     setRevision((v) => v + 1);
     setSelected({});
-    setMessage(
-      "Jadwal tersimpan. Riwayat dan pemeriksaan bentrok diterapkan server.",
-    );
+    setMessage("Jadwal tersimpan dan riwayat perubahan telah dicatat.");
   }
   async function stopPreview(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -757,15 +755,16 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
       )}
       <header>
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-          Tahap 2.4 · {admin ? "Administrasi" : "Ruang guru"}
+          {admin ? "Administrasi" : "Ruang guru"}
         </p>
         <h1 className="mt-2 text-3xl font-bold">Jadwal KBM</h1>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
-          Jadwal mingguan, rentang berlaku dan konteks hari diperiksa server.
-          Jadwal bukan konfirmasi, jurnal, realisasi JTM atau hak honorarium.
+          Kelola jadwal mingguan, rentang berlaku, dan penugasan sesuai
+          kalender. Jadwal bukan konfirmasi, jurnal, realisasi JTM atau hak
+          honorarium.
         </p>
       </header>
-      <section className="space-y-4 rounded-2xl border bg-card p-5">
+      <section className="page-section space-y-4 rounded-2xl border bg-card p-5">
         <h2 className="text-xl font-bold">Jadwal pribadi pada tanggal</h2>
         <label className="block max-w-xs space-y-2 text-sm">
           <span>Tanggal (WIB)</span>
@@ -812,7 +811,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
           kredit. Substitusi menyusul pada modul piket.
         </p>
       </section>
-      <section className="space-y-5 rounded-2xl border bg-card p-5">
+      <section className="page-section space-y-5 rounded-2xl border bg-card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-bold">
             {admin ? "Pengelolaan jadwal mingguan" : "Jadwal mingguan saya"}
@@ -970,7 +969,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                 setTargets(Object.values(selected));
               }}
             >
-              Pratinjau hentikan pilihan
+              Tinjau penghentian jadwal terpilih
             </Button>
             <Button variant="outline" onClick={() => setSelected({})}>
               Kosongkan pilihan
@@ -1067,7 +1066,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                                         setOpen(true);
                                       }}
                                     >
-                                      Edit / revisi
+                                      Ubah jadwal
                                     </Button>
                                     <Button
                                       size="sm"
@@ -1077,7 +1076,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                                         setTargets([r]);
                                       }}
                                     >
-                                      Hentikan
+                                      Hentikan jadwal
                                     </Button>
                                   </>
                                 )}
@@ -1144,7 +1143,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
       >
         <div className="mb-5 flex justify-between gap-3">
           <h2 id="schedule-editor-title" className="text-xl font-bold">
-            {editing ? "Edit / revisi jadwal" : "Tambah jadwal"}
+            {editing ? "Ubah jadwal jadwal" : "Tambah jadwal"}
           </h2>
           <Button
             variant="outline"
@@ -1210,7 +1209,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
               </article>
             ))}
             <Button disabled={busy} onClick={() => void commit()}>
-              {busy ? "Memproses…" : "Ya, hentikan sesuai pratinjau"}
+              {busy ? "Memproses…" : "Konfirmasi penghentian jadwal"}
             </Button>
           </div>
         ) : (
@@ -1218,8 +1217,8 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             <p className="text-sm leading-6">
               Riwayat tidak dihapus. Jadwal yang belum dimulai dapat diarsipkan;
               jadwal berjalan ditutup sebelum tanggal batas. Perubahan yang
-              sudah final/terpakai memerlukan integrasi koreksi pada tahap
-              terkait.
+              sudah digunakan atau difinalisasi dilindungi. Jika perubahan
+              ditolak, hubungi administrator untuk meninjau data terkait.
             </p>
             <fieldset disabled={busy} className="space-y-4">
               <label className="block text-sm">

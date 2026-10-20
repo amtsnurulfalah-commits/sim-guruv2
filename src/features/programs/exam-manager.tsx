@@ -409,7 +409,8 @@ export function ExamManager({
             <DataForm
               key={operation + selected + occ.version}
               busy={busy}
-              label="Pratinjau perubahan"
+              label="Atur perubahan penugasan"
+              submitLabel="Buat pratinjau perubahan"
               fields={[
                 ...(["substitute", "replace", "allocate"].includes(operation)
                   ? [
@@ -476,7 +477,7 @@ export function ExamManager({
       {admin && (
         <section className={panel}>
           <h2 className="font-semibold">
-            {edit ? "Edit" : "Tambah"} master ujian
+            {edit ? "Ubah" : "Tambah"} master ujian
           </h2>
           <select
             aria-label="Jenis master ujian"
@@ -495,7 +496,7 @@ export function ExamManager({
           </select>
           {edit && (
             <button className={secondary} onClick={() => setEdit(null)}>
-              Batal edit
+              Batal mengubah data
             </button>
           )}
           <DataForm
@@ -516,7 +517,8 @@ export function ExamManager({
             onDismiss={() => setEdit(null)}
             key={entity + (edit?.id ?? "new")}
             busy={busy}
-            label="Simpan master"
+            label={edit ? "Ubah data ujian" : "Tambah data ujian"}
+            submitLabel="Simpan data ujian"
             fields={[
               ...fields[entity].map((f) => ({
                 ...f,
@@ -556,14 +558,14 @@ export function ExamManager({
                     })
                   }
                 >
-                  Edit periode
+                  Ubah periode
                 </button>
                 <button
                   disabled={busy}
                   className={secondary}
                   onClick={() => void remove("period", p.id)}
                 >
-                  Hapus periode…
+                  Tinjau penghapusan periode
                 </button>
               </div>
               {board.sessions
@@ -588,14 +590,14 @@ export function ExamManager({
                           })
                         }
                       >
-                        Edit sesi
+                        Ubah sesi
                       </button>
                       <button
                         disabled={busy}
                         className={secondary}
                         onClick={() => void remove("session", s.id)}
                       >
-                        Hapus sesi…
+                        Tinjau penghapusan sesi
                       </button>
                     </div>
                     {board.rooms
@@ -623,14 +625,14 @@ export function ExamManager({
                               })
                             }
                           >
-                            Edit ruang
+                            Ubah ruang
                           </button>{" "}
                           <button
                             disabled={busy}
                             className={secondary}
                             onClick={() => void remove("room", r.id)}
                           >
-                            Hapus ruang…
+                            Tinjau penghapusan ruang
                           </button>
                         </div>
                       ))}
@@ -653,7 +655,7 @@ export function ExamManager({
                   )
                 }
               >
-                Hapus penugasan…
+                Tinjau penghapusan penugasan
               </button>
               {o.kind === "EXAM_SUPERVISOR" && (
                 <button
@@ -666,7 +668,7 @@ export function ExamManager({
                     })
                   }
                 >
-                  Edit pengawas
+                  Ubah pengawas
                 </button>
               )}
             </div>
@@ -726,11 +728,12 @@ function BapForm({
   return (
     <details>
       <summary className="cursor-pointer text-primary">
-        {o.bap ? "Edit BAP" : "Isi BAP"} (total siswa: {o.expectedStudents})
+        {o.bap ? "Ubah BAP" : "Isi BAP"} (total siswa: {o.expectedStudents})
       </summary>
       <DataForm
         busy={busy}
-        label={o.bap ? "Simpan edit BAP" : "Kirim BAP"}
+        label={o.bap ? "Ubah BAP" : "Isi BAP"}
+        submitLabel={o.bap ? "Simpan perubahan BAP" : "Kirim BAP"}
         description={
           "Total siswa pada penugasan ini: " +
           o.expectedStudents +
