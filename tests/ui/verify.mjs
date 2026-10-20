@@ -270,6 +270,18 @@ try {
     name: "Ganti kata sandi",
     exact: true,
   });
+  const accountInput = accountDialog.getByLabel("Input akun sintetis", {
+    exact: true,
+  });
+  await accountInput.fill("Synthetic9!account");
+  await accountDialog
+    .getByRole("button", { name: "Tampilkan isian rahasia", exact: true })
+    .click();
+  assert.equal(await accountInput.inputValue(), "Synthetic9!account");
+  await accountDialog
+    .getByRole("button", { name: "Sembunyikan isian rahasia", exact: true })
+    .click();
+  assert.equal(await accountInput.getAttribute("type"), "password");
   await accountDialog.locator("form").evaluate((form) => {
     form.requestSubmit();
     form.requestSubmit();

@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { DashboardView } from "../../src/features/dashboard/dashboard-view";
 import { modulesFor } from "../../src/lib/navigation/modules";
 import { AuthLayout } from "../../src/components/shell/auth-layout";
-import { ActionForm } from "../../src/features/auth/account-lifecycle";
+import { ActionForm, Field } from "../../src/features/auth/account-lifecycle";
 import { LoginForm } from "../../src/features/auth/login-form";
 import HomePage from "../../src/app/page";
 import { Workspace } from "../../src/components/shell/workspace";
@@ -71,10 +71,12 @@ function Lab() {
           setAccountSaves((value) => value + 1);
         }}
       >
-        <label>
-          Input akun sintetis
-          <input name="account" />
-        </label>
+        <Field
+          name="account"
+          label="Input akun sintetis"
+          type="password"
+          required={false}
+        />
       </ActionForm>
       <DataForm
         label="Simpan contoh"

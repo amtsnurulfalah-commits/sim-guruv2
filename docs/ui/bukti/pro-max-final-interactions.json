@@ -1,0 +1,88 @@
+{
+  "fixture": true,
+  "realProductionCredentials": false,
+  "matrix": [],
+  "interactions": [
+    {
+      "width": 320,
+      "focus": true,
+      "failedSubmission": true,
+      "dirtyClose": true,
+      "checkboxes": true,
+      "nativeEditor": true,
+      "navigation": true
+    },
+    {
+      "width": 375,
+      "focus": true,
+      "failedSubmission": true,
+      "dirtyClose": true,
+      "checkboxes": true,
+      "nativeEditor": true,
+      "navigation": true
+    },
+    {
+      "width": 768,
+      "focus": true,
+      "failedSubmission": true,
+      "dirtyClose": true,
+      "checkboxes": true,
+      "nativeEditor": true,
+      "navigation": true
+    },
+    {
+      "width": 1440,
+      "focus": true,
+      "failedSubmission": true,
+      "dirtyClose": true,
+      "checkboxes": true,
+      "nativeEditor": true,
+      "navigation": true
+    },
+    {
+      "regression": "account-synchronous-double-submit",
+      "passed": true
+    },
+    {
+      "regression": "migration-report-batch-binding",
+      "passed": true
+    },
+    {
+      "proMax": "password-visibility",
+      "passed": true
+    },
+    {
+      "proMax": "role-scoped-menu-search",
+      "passed": true
+    },
+    {
+      "proMax": "linked-field-errors-and-focus",
+      "passed": true
+    },
+    {
+      "proMax": "keyboard-table-scroll",
+      "passed": true
+    },
+    {
+      "proMax": "landscape-reduced-motion",
+      "passed": true
+    },
+    {
+      "proMax": "text-scale-200-percent",
+      "passed": true
+    },
+    {
+      "proMax": "touch-navigation",
+      "passed": true
+    },
+    {
+      "crud": "master-subject",
+      "create": true,
+      "update": true,
+      "archive": true
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "serverErrors": ""
+}
