@@ -1,4 +1,8 @@
 "use client";
+import {
+  ManagedDialog,
+  requestDialogClose,
+} from "@/components/ui/managed-dialog";
 import Link from "next/link";
 import {
   useEffect,
@@ -410,7 +414,7 @@ export function UserManager() {
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold tracking-widest text-primary uppercase">
-            Administrasi · Tahap 2.1
+            Administrasi madrasah
           </p>
           <h1 className="mt-2 text-3xl font-bold">Manajemen pengguna</h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
@@ -681,7 +685,7 @@ export function UserManager() {
           Tinjau permintaan pemulihan akun
         </Link>
       </p>
-      <dialog
+      <ManagedDialog
         ref={editor}
         aria-labelledby="user-editor-title"
         className="m-auto max-h-[90svh] w-[min(48rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-6 text-foreground shadow-xl backdrop:bg-black/45"
@@ -700,7 +704,7 @@ export function UserManager() {
           <Button
             variant="outline"
             disabled={busy}
-            onClick={() => editor.current?.close()}
+            onClick={() => requestDialogClose(editor.current)}
           >
             Tutup
           </Button>
@@ -713,8 +717,8 @@ export function UserManager() {
             onBusy={setBusy}
           />
         )}
-      </dialog>
-      <dialog
+      </ManagedDialog>
+      <ManagedDialog
         ref={confirm}
         aria-labelledby="user-confirm-title"
         className="m-auto w-[min(32rem,calc(100%_-_2rem))] rounded-2xl border bg-card p-6 text-foreground shadow-xl backdrop:bg-black/45"
@@ -770,7 +774,7 @@ export function UserManager() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => confirm.current?.close()}
+                  onClick={() => requestDialogClose(confirm.current)}
                 >
                   Batal
                 </Button>
@@ -786,7 +790,7 @@ export function UserManager() {
             )}
           </form>
         )}
-      </dialog>
+      </ManagedDialog>
     </div>
   );
 }

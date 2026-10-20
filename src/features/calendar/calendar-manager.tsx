@@ -1,4 +1,5 @@
 "use client";
+import { EmptyState } from "@/components/feedback/feature-state";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { masterRequest } from "@/features/masters/api";
@@ -310,7 +311,7 @@ export function CalendarManager() {
     <div className="space-y-6">
       <header>
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-          Administrasi · Tahap 2.3
+          Administrasi madrasah
         </p>
         <h1 className="mt-2 text-3xl font-bold">Kalender dan konteks hari</h1>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
@@ -375,7 +376,7 @@ export function CalendarManager() {
                 {list.total} entri · halaman {page}
               </p>
               {list.items.length === 0 ? (
-                <p>Belum ada entri pada filter ini.</p>
+                <EmptyState title="Belum ada entri pada filter ini." />
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[520px] text-left text-sm">
@@ -754,7 +755,7 @@ export function CalendarManager() {
           </Button>
         </div>
         {history?.length === 0 ? (
-          <p>Belum ada riwayat.</p>
+          <EmptyState title="Belum ada riwayat." />
         ) : (
           history?.map((v, i) => (
             <article key={i} className="mb-4 space-y-2 rounded border p-4">

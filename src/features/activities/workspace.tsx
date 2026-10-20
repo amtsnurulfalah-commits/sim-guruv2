@@ -1,4 +1,5 @@
 "use client";
+import { FormDialog } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { masterRequest } from "../masters/api";
 import { wibDate } from "../../lib/calendar/schemas";
@@ -10,12 +11,12 @@ import type {
   Options,
   StudentRecap,
 } from "../../lib/activities/schemas";
-const inputClass =
-  "w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900";
-const buttonClass =
-  "rounded-md bg-blue-800 px-4 py-2 text-sm font-medium text-white disabled:opacity-50";
-const smallButton = "rounded border px-3 py-1 text-sm disabled:opacity-50";
-const panel = "space-y-4 rounded-xl border bg-white p-5 shadow-sm";
+import {
+  control as inputClass,
+  primaryAction as buttonClass,
+  secondaryAction as smallButton,
+  surface as panel,
+} from "@/components/ui/styles";
 function Field({
   label,
   children,
@@ -124,6 +125,8 @@ export function ActivityWorkspace({
   userId: string;
   mode: Mode;
 }) {
+  const [manualEditor, setManualEditor] = useState(0),
+    [journalEditor, setJournalEditor] = useState(0);
   const [date, setDate] = useState(wibDate()),
     [from, setFrom] = useState(wibDate().slice(0, 7) + "-01"),
     [to, setTo] = useState(wibDate()),
@@ -580,6 +583,7 @@ export function ActivityWorkspace({
                         setActualIn(d.actualIn ?? "");
                         setActualOut(d.actualOut ?? "");
                         setExtra(d.extra);
+                        setManualEditor((v) => v + 1);
                       }}
                     >
                       Koreksi manual
@@ -613,221 +617,265 @@ export function ActivityWorkspace({
               </article>
             ))}
           </section>
-          <form
-            className={panel}
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (selectedAttendance)
-                void run("leave", {
-                  attendanceId: selectedAttendance.id,
-                  version: selectedAttendance.version,
-                  leaveTime,
-                  returnTime,
-                  reason,
-                });
+          <FormDialog
+            title="Izin keluar sementara"
+            onDiscard={() => {
+              setLeaveTime("");
+              setReturnTime("");
+              setReason("");
             }}
+            revealKey={attendanceId}
+            busy={busy}
+            success={message}
+            error={error}
           >
-            <h2 className="font-semibold">Izin keluar sementara</h2>
-            <Select
-              label="Catatan kehadiran"
-              value={attendanceId}
-              set={setAttendanceId}
-              items={attendanceRows.map((d) => ({
-                id: d.id,
-                name: d.teacherName + " · " + d.date,
-              }))}
-            />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Text
-                label="Jam keluar"
-                value={leaveTime}
-                set={setLeaveTime}
-                type="time"
-                required
-              />
-              <Text
-                label="Jam kembali"
-                value={returnTime}
-                set={setReturnTime}
-                type="time"
-                required
-              />
-            </div>
-            <Text label="Alasan" value={reason} set={setReason} required />
-            <button
-              className={buttonClass}
-              disabled={busy || !selectedAttendance}
+            <form
+              className={panel}
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (selectedAttendance)
+                  void run("leave", {
+                    attendanceId: selectedAttendance.id,
+                    version: selectedAttendance.version,
+                    leaveTime,
+                    returnTime,
+                    reason,
+                  });
+              }}
             >
-              Simpan izin
-            </button>
-          </form>
+              <h2 className="font-semibold">Izin keluar sementara</h2>
+              <Select
+                label="Catatan kehadiran"
+                value={attendanceId}
+                set={setAttendanceId}
+                items={attendanceRows.map((d) => ({
+                  id: d.id,
+                  name: d.teacherName + " · " + d.date,
+                }))}
+              />
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Text
+                  label="Jam keluar"
+                  value={leaveTime}
+                  set={setLeaveTime}
+                  type="time"
+                  required
+                />
+                <Text
+                  label="Jam kembali"
+                  value={returnTime}
+                  set={setReturnTime}
+                  type="time"
+                  required
+                />
+              </div>
+              <Text label="Alasan" value={reason} set={setReason} required />
+              <button
+                className={buttonClass}
+                disabled={busy || !selectedAttendance}
+              >
+                Simpan izin
+              </button>
+            </form>
+          </FormDialog>
           {admin && (
             <>
-              <form
-                className={panel}
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void run("manual", {
-                    userId: teacher,
-                    date,
-                    scheduledIn: scheduledIn || null,
-                    scheduledOut: scheduledOut || null,
-                    actualIn: actualIn || null,
-                    actualOut: actualOut || null,
-                    extra,
-                    version: currentManual?.version ?? "0",
-                    reason,
-                  });
+              <FormDialog
+                title="Kehadiran harian"
+                onDiscard={() => {
+                  setTeacher("");
+                  setActualIn("");
+                  setActualOut("");
+                  setExtra(false);
+                  setReason("");
                 }}
+                busy={busy}
+                success={message}
+                error={error}
+                revealKey={manualEditor ? String(manualEditor) : undefined}
               >
-                <h2 className="font-semibold">
-                  Jadwal, peserta tambahan dan koreksi manual admin
-                </h2>
-                <Select
-                  label="Guru"
-                  value={teacher}
-                  set={setTeacher}
-                  items={options.teachers}
-                />
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Text
-                    label="Jadwal masuk"
-                    value={scheduledIn}
-                    set={setScheduledIn}
-                    type="time"
-                  />
-                  <Text
-                    label="Jadwal pulang"
-                    value={scheduledOut}
-                    set={setScheduledOut}
-                    type="time"
-                  />
-                  <Text
-                    label="Aktual masuk (boleh kosong)"
-                    value={actualIn}
-                    set={setActualIn}
-                    type="time"
-                  />
-                  <Text
-                    label="Aktual pulang (boleh kosong)"
-                    value={actualOut}
-                    set={setActualOut}
-                    type="time"
-                  />
-                </div>
-                <label className="flex gap-2">
-                  <input
-                    type="checkbox"
-                    checked={extra}
-                    onChange={(e) => setExtra(e.target.checked)}
-                  />
-                  Peserta tambahan tanpa penugasan
-                </label>
-                <Text
-                  label="Alasan perubahan / peserta tambahan"
-                  value={reason}
-                  set={setReason}
-                  required
-                />
-                <button
-                  className={buttonClass}
-                  disabled={busy || !teacher || loading}
+                <form
+                  className={panel}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    void run("manual", {
+                      userId: teacher,
+                      date,
+                      scheduledIn: scheduledIn || null,
+                      scheduledOut: scheduledOut || null,
+                      actualIn: actualIn || null,
+                      actualOut: actualOut || null,
+                      extra,
+                      version: currentManual?.version ?? "0",
+                      reason,
+                    });
+                  }}
                 >
-                  Simpan kehadiran manual
-                </button>
-              </form>
-              <form
-                className={panel}
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void run("template-save", {
-                    dayIndex: Number(day),
-                    type,
-                    timeIn,
-                    timeOut,
-                    version: selectedTemplate?.version ?? "0",
-                    reason,
-                  });
-                }}
-              >
-                <h2 className="font-semibold">Template jam kehadiran</h2>
-                <p className="text-sm">
-                  Template ujian dapat disimpan; penerapannya tersedia setelah
-                  modul penugasan ujian dibuat.
-                </p>
-                <div className="grid gap-3 sm:grid-cols-2">
+                  <h2 className="font-semibold">
+                    Jadwal, peserta tambahan dan koreksi manual admin
+                  </h2>
                   <Select
-                    label="Hari"
-                    value={day}
-                    set={setDay}
-                    items={[
-                      "Minggu",
-                      "Senin",
-                      "Selasa",
-                      "Rabu",
-                      "Kamis",
-                      "Jumat",
-                      "Sabtu",
-                    ].map((name, i) => ({ id: String(i), name }))}
+                    label="Guru"
+                    value={teacher}
+                    set={setTeacher}
+                    items={options.teachers}
                   />
-                  <Select
-                    label="Konteks"
-                    value={type}
-                    set={setType}
-                    items={[
-                      { id: "KBM", name: "KBM" },
-                      { id: "UJIAN", name: "Ujian" },
-                    ]}
-                  />
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Text
+                      label="Jadwal masuk"
+                      value={scheduledIn}
+                      set={setScheduledIn}
+                      type="time"
+                    />
+                    <Text
+                      label="Jadwal pulang"
+                      value={scheduledOut}
+                      set={setScheduledOut}
+                      type="time"
+                    />
+                    <Text
+                      label="Aktual masuk (boleh kosong)"
+                      value={actualIn}
+                      set={setActualIn}
+                      type="time"
+                    />
+                    <Text
+                      label="Aktual pulang (boleh kosong)"
+                      value={actualOut}
+                      set={setActualOut}
+                      type="time"
+                    />
+                  </div>
+                  <label className="flex gap-2">
+                    <input
+                      type="checkbox"
+                      checked={extra}
+                      onChange={(e) => setExtra(e.target.checked)}
+                    />
+                    Peserta tambahan tanpa penugasan
+                  </label>
                   <Text
-                    label="Jam masuk"
-                    value={timeIn}
-                    set={setTimeIn}
-                    type="time"
+                    label="Alasan perubahan / peserta tambahan"
+                    value={reason}
+                    set={setReason}
                     required
                   />
-                  <Text
-                    label="Jam pulang"
-                    value={timeOut}
-                    set={setTimeOut}
-                    type="time"
-                    required
-                  />
-                </div>
-                <Text
-                  label="Alasan perubahan template"
-                  value={reason}
-                  set={setReason}
-                  required
-                />
-                <div className="flex gap-2">
-                  <button className={buttonClass} disabled={busy}>
-                    Simpan template
+                  <button
+                    className={buttonClass}
+                    disabled={busy || !teacher || loading}
+                  >
+                    Simpan kehadiran manual
                   </button>
-                  {selectedTemplate && (
-                    <button
-                      className={smallButton}
-                      type="button"
-                      disabled={busy}
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "Hapus template? Template yang sudah digunakan tetap dilindungi sebagai riwayat.",
-                          )
-                        )
-                          void run("template-delete", {
-                            dayIndex: Number(day),
-                            type,
-                            version: selectedTemplate.version,
-                            reason,
-                          });
-                      }}
-                    >
-                      Hapus template
+                </form>
+              </FormDialog>
+              <FormDialog
+                title="Template jam kehadiran"
+                onDiscard={() => {
+                  setTemplateId("");
+                  setTimeIn("07:30");
+                  setTimeOut("14:00");
+                  setDay("1");
+                  setType("KBM");
+                  setReason("");
+                }}
+                busy={busy}
+                success={message}
+                error={error}
+                revealKey={templateId}
+              >
+                <form
+                  className={panel}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    void run("template-save", {
+                      dayIndex: Number(day),
+                      type,
+                      timeIn,
+                      timeOut,
+                      version: selectedTemplate?.version ?? "0",
+                      reason,
+                    });
+                  }}
+                >
+                  <h2 className="font-semibold">Template jam kehadiran</h2>
+                  <p className="text-sm">
+                    Template ujian dapat disimpan; penerapannya tersedia setelah
+                    modul penugasan ujian dibuat.
+                  </p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Select
+                      label="Hari"
+                      value={day}
+                      set={setDay}
+                      items={[
+                        "Minggu",
+                        "Senin",
+                        "Selasa",
+                        "Rabu",
+                        "Kamis",
+                        "Jumat",
+                        "Sabtu",
+                      ].map((name, i) => ({ id: String(i), name }))}
+                    />
+                    <Select
+                      label="Konteks"
+                      value={type}
+                      set={setType}
+                      items={[
+                        { id: "KBM", name: "KBM" },
+                        { id: "UJIAN", name: "Ujian" },
+                      ]}
+                    />
+                    <Text
+                      label="Jam masuk"
+                      value={timeIn}
+                      set={setTimeIn}
+                      type="time"
+                      required
+                    />
+                    <Text
+                      label="Jam pulang"
+                      value={timeOut}
+                      set={setTimeOut}
+                      type="time"
+                      required
+                    />
+                  </div>
+                  <Text
+                    label="Alasan perubahan template"
+                    value={reason}
+                    set={setReason}
+                    required
+                  />
+                  <div className="flex gap-2">
+                    <button className={buttonClass} disabled={busy}>
+                      Simpan template
                     </button>
-                  )}
-                </div>
-              </form>
+                    {selectedTemplate && (
+                      <button
+                        className={smallButton}
+                        type="button"
+                        disabled={busy}
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              "Hapus template? Template yang sudah digunakan tetap dilindungi sebagai riwayat.",
+                            )
+                          )
+                            void run("template-delete", {
+                              dayIndex: Number(day),
+                              type,
+                              version: selectedTemplate.version,
+                              reason,
+                            });
+                        }}
+                      >
+                        Hapus template
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </FormDialog>
               <section className={panel}>
                 <h2 className="font-semibold">
                   Terapkan template ke tanggal {date}
@@ -916,59 +964,74 @@ export function ActivityWorkspace({
                   ))}
                 </ul>
               </section>
-              <form
-                className={panel}
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void run("students-save", {
-                    classId,
-                    date,
-                    hadir,
-                    sakit,
-                    izin,
-                    alpa,
-                    version: currentStudent?.version ?? "0",
-                    reason,
-                  });
+              <FormDialog
+                title="Rekap absensi siswa"
+                onDiscard={() => {
+                  setClassId("");
+                  setHadir(0);
+                  setSakit(0);
+                  setIzin(0);
+                  setAlpa(0);
+                  setReason("");
                 }}
+                busy={busy}
+                success={message}
+                error={error}
               >
-                <h2 className="font-semibold">
-                  Input / perbarui rekap hari ini
-                </h2>
-                <Select
-                  label="Kelas"
-                  value={classId}
-                  set={(v) => {
-                    setClassId(v);
-                    const r = (rows as StudentRecap[]).find(
-                      (x) => x.class_id === v && x.date === date,
-                    );
-                    setHadir(r?.hadir ?? 0);
-                    setSakit(r?.sakit ?? 0);
-                    setIzin(r?.izin ?? 0);
-                    setAlpa(r?.alpa ?? 0);
+                <form
+                  className={panel}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    void run("students-save", {
+                      classId,
+                      date,
+                      hadir,
+                      sakit,
+                      izin,
+                      alpa,
+                      version: currentStudent?.version ?? "0",
+                      reason,
+                    });
                   }}
-                  items={options.classes}
-                />
-                <div className="grid gap-3 sm:grid-cols-4">
-                  <Count label="Hadir" value={hadir} set={setHadir} />
-                  <Count label="Sakit" value={sakit} set={setSakit} />
-                  <Count label="Izin" value={izin} set={setIzin} />
-                  <Count label="Alpa" value={alpa} set={setAlpa} />
-                </div>
-                <Text
-                  label="Alasan pencatatan"
-                  value={reason}
-                  set={setReason}
-                  required
-                />
-                <button
-                  className={buttonClass}
-                  disabled={busy || loading || !classId}
                 >
-                  Simpan rekap siswa
-                </button>
-              </form>
+                  <h2 className="font-semibold">
+                    Input / perbarui rekap hari ini
+                  </h2>
+                  <Select
+                    label="Kelas"
+                    value={classId}
+                    set={(v) => {
+                      setClassId(v);
+                      const r = (rows as StudentRecap[]).find(
+                        (x) => x.class_id === v && x.date === date,
+                      );
+                      setHadir(r?.hadir ?? 0);
+                      setSakit(r?.sakit ?? 0);
+                      setIzin(r?.izin ?? 0);
+                      setAlpa(r?.alpa ?? 0);
+                    }}
+                    items={options.classes}
+                  />
+                  <div className="grid gap-3 sm:grid-cols-4">
+                    <Count label="Hadir" value={hadir} set={setHadir} />
+                    <Count label="Sakit" value={sakit} set={setSakit} />
+                    <Count label="Izin" value={izin} set={setIzin} />
+                    <Count label="Alpa" value={alpa} set={setAlpa} />
+                  </div>
+                  <Text
+                    label="Alasan pencatatan"
+                    value={reason}
+                    set={setReason}
+                    required
+                  />
+                  <button
+                    className={buttonClass}
+                    disabled={busy || loading || !classId}
+                  >
+                    Simpan rekap siswa
+                  </button>
+                </form>
+              </FormDialog>
             </>
           )}
           <section className={panel}>
@@ -992,121 +1055,145 @@ export function ActivityWorkspace({
       )}
       {mode === "journals" && (
         <>
-          <form
-            className={panel}
-            onSubmit={async (e) => {
-              e.preventDefault();
-              const r = await run(
-                editing ? "journal-edit" : "journal-create",
-                editing
-                  ? {
-                      journalId: editing.id,
-                      version: editing.version,
-                      material,
-                      present,
-                      absent,
-                      notes,
-                      reason,
-                    }
-                  : { occurrenceId, material, present, absent, notes, reason },
-              );
-              if (r) {
-                setEditing(null);
-                setMaterial("");
-                setNotes("");
-                setOccurrenceId("");
-              }
+          <FormDialog
+            title="Jurnal pembelajaran"
+            onDiscard={() => {
+              setEditing(null);
+              setMaterial("");
+              setNotes("");
+              setOccurrenceId("");
+              setPresent(0);
+              setAbsent(0);
+              setReason("");
             }}
+            busy={busy}
+            success={message}
+            error={error}
+            revealKey={editing ? editing.id + ":" + journalEditor : undefined}
           >
-            <h2 className="font-semibold">
-              {editing
-                ? "Edit jurnal " + editing.date
-                : "Input jurnal tanggal " + date}
-            </h2>
-            {!editing && (
-              <>
-                <p className="text-sm">
-                  H-1:{" "}
-                  {options.h1Enabled
-                    ? "aktif, bobot 80% dibulatkan satu desimal"
-                    : "belum aktif"}
-                  . Rekap siswa yang tersedia wajib cocok dengan jurnal.
-                </p>
-                <Select
-                  label="Kegiatan"
-                  value={occurrenceId}
-                  set={(v) => {
-                    setOccurrenceId(v);
-                    const o = eligible.find((x) => x.id === v);
-                    setPresent(o?.expectedStudents ?? 0);
-                    setAbsent(0);
-                  }}
-                  items={eligible
-                    .filter((o) => !o.journalId && !o.eligibilityError)
-                    .map((o) => ({
-                      id: o.id,
-                      name: `${o.subjectName} · ${o.className} · ${o.timeStart}–${o.timeEnd}`,
-                    }))}
-                />
-                {eligible
-                  .filter((o) => o.eligibilityError)
-                  .map((o) => (
-                    <p className="text-sm text-amber-800" key={o.id}>
-                      {o.subjectName} · {o.className}:{" "}
-                      {eligibilityText(o.eligibilityError)}
-                    </p>
-                  ))}
-              </>
-            )}
-            <Field label="Materi pembelajaran">
-              <textarea
-                className={inputClass}
-                maxLength={2000}
-                required
-                value={material}
-                onChange={(e) => setMaterial(e.target.value)}
-              />
-            </Field>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Count label="Siswa hadir" value={present} set={setPresent} />
-              <Count label="Siswa absen" value={absent} set={setAbsent} />
-            </div>
-            <Field label="Catatan">
-              <textarea
-                className={inputClass}
-                maxLength={2000}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </Field>
-            <Text
-              label="Alasan penyimpanan"
-              value={reason}
-              set={setReason}
-              required
-            />
-            <div className="flex gap-2">
-              <button
-                className={buttonClass}
-                disabled={busy || (!editing && !occurrenceId)}
-              >
-                Simpan jurnal
-              </button>
-              {editing && (
-                <button
-                  type="button"
-                  className={smallButton}
-                  onClick={() => {
-                    setEditing(null);
-                    setMaterial("");
-                    setNotes("");
-                  }}
-                >
-                  Batal edit
-                </button>
+            <form
+              className={panel}
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const r = await run(
+                  editing ? "journal-edit" : "journal-create",
+                  editing
+                    ? {
+                        journalId: editing.id,
+                        version: editing.version,
+                        material,
+                        present,
+                        absent,
+                        notes,
+                        reason,
+                      }
+                    : {
+                        occurrenceId,
+                        material,
+                        present,
+                        absent,
+                        notes,
+                        reason,
+                      },
+                );
+                if (r) {
+                  setEditing(null);
+                  setMaterial("");
+                  setNotes("");
+                  setOccurrenceId("");
+                }
+              }}
+            >
+              <h2 className="font-semibold">
+                {editing
+                  ? "Edit jurnal " + editing.date
+                  : "Input jurnal tanggal " + date}
+              </h2>
+              {!editing && (
+                <>
+                  <p className="text-sm">
+                    H-1:{" "}
+                    {options.h1Enabled
+                      ? "aktif, bobot 80% dibulatkan satu desimal"
+                      : "belum aktif"}
+                    . Rekap siswa yang tersedia wajib cocok dengan jurnal.
+                  </p>
+                  <Select
+                    label="Kegiatan"
+                    value={occurrenceId}
+                    set={(v) => {
+                      setOccurrenceId(v);
+                      const o = eligible.find((x) => x.id === v);
+                      setPresent(o?.expectedStudents ?? 0);
+                      setAbsent(0);
+                    }}
+                    items={eligible
+                      .filter((o) => !o.journalId && !o.eligibilityError)
+                      .map((o) => ({
+                        id: o.id,
+                        name: `${o.subjectName} · ${o.className} · ${o.timeStart}–${o.timeEnd}`,
+                      }))}
+                  />
+                  {eligible
+                    .filter((o) => o.eligibilityError)
+                    .map((o) => (
+                      <p className="text-sm text-amber-800" key={o.id}>
+                        {o.subjectName} · {o.className}:{" "}
+                        {eligibilityText(o.eligibilityError)}
+                      </p>
+                    ))}
+                </>
               )}
-            </div>
-          </form>
+              <Field label="Materi pembelajaran">
+                <textarea
+                  className={inputClass}
+                  maxLength={2000}
+                  required
+                  value={material}
+                  onChange={(e) => setMaterial(e.target.value)}
+                />
+              </Field>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Count label="Siswa hadir" value={present} set={setPresent} />
+                <Count label="Siswa absen" value={absent} set={setAbsent} />
+              </div>
+              <Field label="Catatan">
+                <textarea
+                  className={inputClass}
+                  maxLength={2000}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                />
+              </Field>
+              <Text
+                label="Alasan penyimpanan"
+                value={reason}
+                set={setReason}
+                required
+              />
+              <div className="flex gap-2">
+                <button
+                  className={buttonClass}
+                  disabled={busy || (!editing && !occurrenceId)}
+                >
+                  Simpan jurnal
+                </button>
+                {editing && (
+                  <button
+                    type="button"
+                    className={smallButton}
+                    onClick={() => {
+                      setEditing(null);
+                      setMaterial("");
+                      setNotes("");
+                    }}
+                  >
+                    Batal edit
+                  </button>
+                )}
+              </div>
+            </form>
+          </FormDialog>
           <section className={panel}>
             <h2 className="font-semibold">Riwayat dan detail jurnal</h2>
             <div className="flex gap-4 text-sm">
@@ -1147,11 +1234,11 @@ export function ActivityWorkspace({
                     className={smallButton}
                     onClick={() => {
                       setEditing(j);
+                      setJournalEditor((v) => v + 1);
                       setMaterial(j.material);
                       setPresent(j.present);
                       setAbsent(j.absent);
                       setNotes(j.notes);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
                   >
                     Edit jurnal
@@ -1198,56 +1285,68 @@ export function ActivityWorkspace({
               >
                 {options.h1Enabled ? "Nonaktifkan" : "Aktifkan"} jurnal H-1
               </button>
-              <form
-                className="space-y-3"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void run("block", {
-                    subjectId,
-                    dateStart: blockFrom,
-                    dateEnd: blockTo,
-                    message: blockMessage,
-                    active: true,
-                    version: "0",
-                    reason,
-                  });
+              <FormDialog
+                title="Blok pengisian jurnal"
+                onDiscard={() => {
+                  setSubjectId("");
+                  setBlockMessage("");
+                  setReason("");
                 }}
+                busy={busy}
+                success={message}
+                error={error}
               >
-                <Select
-                  label="Mata pelajaran"
-                  value={subjectId}
-                  set={setSubjectId}
-                  items={options.subjects}
-                />
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Text
-                    label="Blok mulai"
-                    value={blockFrom}
-                    set={setBlockFrom}
-                    type="date"
-                    required
-                  />
-                  <Text
-                    label="Blok sampai"
-                    value={blockTo}
-                    set={setBlockTo}
-                    type="date"
-                    required
-                  />
-                </div>
-                <Text
-                  label="Pesan pemblokiran"
-                  value={blockMessage}
-                  set={setBlockMessage}
-                  required
-                />
-                <button
-                  className={buttonClass}
-                  disabled={busy || !subjectId || reason.trim().length < 5}
+                <form
+                  className="space-y-3"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    void run("block", {
+                      subjectId,
+                      dateStart: blockFrom,
+                      dateEnd: blockTo,
+                      message: blockMessage,
+                      active: true,
+                      version: "0",
+                      reason,
+                    });
+                  }}
                 >
-                  Simpan blok jurnal
-                </button>
-              </form>
+                  <Select
+                    label="Mata pelajaran"
+                    value={subjectId}
+                    set={setSubjectId}
+                    items={options.subjects}
+                  />
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Text
+                      label="Blok mulai"
+                      value={blockFrom}
+                      set={setBlockFrom}
+                      type="date"
+                      required
+                    />
+                    <Text
+                      label="Blok sampai"
+                      value={blockTo}
+                      set={setBlockTo}
+                      type="date"
+                      required
+                    />
+                  </div>
+                  <Text
+                    label="Pesan pemblokiran"
+                    value={blockMessage}
+                    set={setBlockMessage}
+                    required
+                  />
+                  <button
+                    className={buttonClass}
+                    disabled={busy || !subjectId || reason.trim().length < 5}
+                  >
+                    Simpan blok jurnal
+                  </button>
+                </form>
+              </FormDialog>
               {blocks.map((b) => (
                 <p className="text-sm" key={b.id}>
                   {options.subjects.find((s) => s.id === b.subject_id)?.name} ·{" "}

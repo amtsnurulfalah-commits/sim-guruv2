@@ -1,4 +1,5 @@
 "use client";
+import { EmptyState } from "@/components/feedback/feature-state";
 import Link from "next/link";
 import { TeacherPicker, type TeacherChoice } from "./teacher-picker";
 import { useEffect, useRef, useState } from "react";
@@ -163,7 +164,11 @@ export function FinanceManager({
       return () => modal?.close();
     }
   }, [preview]);
-  async function run(work: () => Promise<unknown>, refresh = true) {
+  async function run(
+    work: () => Promise<unknown>,
+    refresh = true,
+    propagate = false,
+  ) {
     setBusy(true);
     setError("");
     setMessage("");
@@ -175,10 +180,13 @@ export function FinanceManager({
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Permintaan gagal.");
+      if (propagate) throw e;
     } finally {
       setBusy(false);
     }
   }
+  const formRun = (work: () => Promise<unknown>, refresh = true) =>
+    run(work, refresh, true);
   const post = <T,>(action: string, data: unknown) =>
     masterRequest<T>("/api/honorarium/" + action, "POST", data);
   async function downloadPdf(id: string) {
@@ -346,7 +354,7 @@ export function FinanceManager({
                 label="Pratinjau finalisasi"
                 busy={busy}
                 onSave={(data) =>
-                  run(
+                  formRun(
                     async () =>
                       setPreview(
                         await post<FinancePreview>("preview", {
@@ -410,7 +418,7 @@ export function FinanceManager({
               </tbody>
             </table>
           </div>
-          {history?.total === 0 && <p>Belum ada slip final.</p>}
+          {history?.total === 0 && <EmptyState title="Belum ada slip final." />}
           <div className="flex items-center gap-3">
             <button
               className={secondary}
@@ -488,9 +496,12 @@ export function FinanceManager({
           <DataForm
             fields={[reason]}
             label="Ajukan koreksi"
+            description={
+              "Slip " + slip.trxId + ". Jelaskan alasan permintaan koreksi."
+            }
             busy={busy}
             onSave={(data) =>
-              run(() => post("request", { ...data, statementId: slip.id }))
+              formRun(() => post("request", { ...data, statementId: slip.id }))
             }
           />
           {admin && (
@@ -529,7 +540,7 @@ export function FinanceManager({
                 label="Pratinjau koreksi"
                 busy={busy}
                 onSave={(data) =>
-                  run(
+                  formRun(
                     async () =>
                       setPreview(
                         await post<FinancePreview>("preview", {
@@ -578,7 +589,7 @@ export function FinanceManager({
               busy={busy}
               onSave={(data) =>
                 data.operation === "waive"
-                  ? run(
+                  ? formRun(
                       async () =>
                         setPreview(
                           await post<FinancePreview>("preview", {
@@ -588,7 +599,7 @@ export function FinanceManager({
                         ),
                       false,
                     )
-                  : run(() => post("holiday", data))
+                  : formRun(() => post("holiday", data))
               }
             />
             <div className="overflow-x-auto">
@@ -634,7 +645,7 @@ export function FinanceManager({
                     label="Pratinjau pembatalan run"
                     busy={busy}
                     onSave={(data) =>
-                      run(
+                      formRun(
                         async () =>
                           setPreview(
                             await post<FinancePreview>("preview", {
@@ -651,8 +662,8 @@ export function FinanceManager({
                 </details>
               ))}
             <p className="text-sm text-slate-600">
-              Penjadwalan otomatis dan pengiriman notifikasi honor dilanjutkan
-              pada Tahap 7. Tombol ini menjalankan tindakan manual yang sama.
+              Penjadwalan dan pengiriman mengikuti pengaturan administrator.
+              Tindakan di bagian ini dijalankan secara manual.
             </p>
           </section>
           <section className={panel}>
@@ -665,9 +676,14 @@ export function FinanceManager({
                 reason,
               ]}
               label="Simpan blok transportasi"
+              description={
+                "Sasaran: " +
+                (blockTeacher?.name ?? "semua guru") +
+                ". Periksa penerima dan rentang tanggal sebelum menyimpan."
+              }
               busy={busy}
               onSave={(data) =>
-                run(() =>
+                formRun(() =>
                   post("block", { ...data, userId: blockTeacher?.id ?? null }),
                 )
               }
@@ -684,7 +700,7 @@ export function FinanceManager({
                     label="Nonaktifkan blok"
                     busy={busy}
                     onSave={(data) =>
-                      run(() =>
+                      formRun(() =>
                         post("block", {
                           ...data,
                           id: b.id,

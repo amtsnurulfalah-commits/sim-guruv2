@@ -1,42 +1,267 @@
 @import "tailwindcss";
 
 :root {
-  --background: oklch(0.98 0.006 160); --foreground: oklch(0.24 0.028 165);
-  --card: oklch(1 0 0); --card-foreground: var(--foreground);
-  --primary: oklch(0.43 0.095 166); --primary-foreground: oklch(0.99 0 0);
-  --muted: oklch(0.95 0.01 160); --muted-foreground: oklch(0.45 0.018 165);
-  --accent: oklch(0.94 0.027 165); --accent-foreground: var(--primary);
-  --border: oklch(0.9 0.012 160); --input: var(--border); --ring: var(--primary);
-  --radius: 0.75rem;
+  color-scheme: light;
+  --background: #f4f7f9;
+  --foreground: #172c36;
+  --card: #fff;
+  --card-foreground: var(--foreground);
+  --primary: #126656;
+  --primary-foreground: #fff;
+  --muted: #edf2f5;
+  --muted-foreground: #526773;
+  --accent: #e7f3ee;
+  --accent-foreground: #115747;
+  --border: #dce5e9;
+  --input: #bdcdd4;
+  --ring: #16806a;
+  --destructive: #b42332;
+  --success: #176548;
+  --warning: #865509;
+  --radius: 1rem;
 }
 @theme inline {
-  --color-background: var(--background); --color-foreground: var(--foreground);
-  --color-card: var(--card); --color-card-foreground: var(--card-foreground);
-  --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground);
-  --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent); --color-accent-foreground: var(--accent-foreground);
-  --color-border: var(--border); --color-input: var(--input); --color-ring: var(--ring);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
   --radius-lg: var(--radius);
-  --font-sans: Arial, Helvetica, sans-serif;
+  --font-sans: "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif;
 }
 @layer base {
-  * { @apply border-border; }
-  body { @apply bg-background text-foreground font-sans antialiased; }
-  a, button { -webkit-tap-highlight-color: transparent; }
-  ::selection { @apply bg-primary/15; }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    margin: 0;
+  }
+  h1 {
+    @apply text-2xl leading-tight font-bold tracking-tight sm:text-3xl;
+    overflow-wrap: anywhere;
+  }
+  h2 {
+    @apply leading-snug font-semibold tracking-tight;
+  }
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  :focus-visible {
+    outline: 3px solid var(--ring);
+    outline-offset: 3px;
+  }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  select,
+  textarea {
+    min-width: 0;
+    max-width: 100%;
+    min-height: 2.75rem;
+    border-radius: 0.65rem;
+    border-color: var(--input);
+    background-color: var(--card);
+    color: var(--foreground);
+  }
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: var(--primary);
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+  }
+  textarea {
+    min-height: 7rem;
+    resize: vertical;
+  }
+  input:disabled,
+  select:disabled,
+  textarea:disabled {
+    opacity: 0.65;
+  }
+  label {
+    min-width: 0;
+  }
+  th {
+    @apply bg-muted/70 text-xs font-semibold text-muted-foreground;
+    white-space: nowrap;
+  }
+  tbody tr {
+    transition: background-color 0.15s ease;
+  }
+  tbody tr:hover {
+    background: #f6faf8;
+  }
+  td,
+  th {
+    border-color: var(--border);
+  }
+  summary {
+    cursor: pointer;
+  }
+  ::selection {
+    @apply bg-primary/15;
+  }
 }
-
-/* Native modal mengurung fokus; cegah scroll halaman saat drawer terbuka. */
-body:has(#mobile-navigation[open]) { overflow: hidden; }
+@layer components {
+  .ui-control {
+    @apply min-h-11 w-full min-w-0 rounded-lg border border-input bg-card px-3 py-2.5 text-sm text-foreground shadow-xs transition-colors focus-visible:border-ring focus-visible:outline-2 focus-visible:outline-ring;
+  }
+  .ui-action {
+    @apply inline-flex min-h-11 max-w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm leading-5 font-semibold shadow-xs transition-colors disabled:pointer-events-none disabled:opacity-50;
+    overflow-wrap: anywhere;
+  }
+  .ui-action-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+  .ui-action-secondary {
+    @apply border border-input bg-card text-foreground hover:bg-accent hover:text-accent-foreground;
+  }
+  .ui-panel {
+    @apply min-w-0 rounded-2xl border bg-card p-4 shadow-xs sm:p-6;
+  }
+  .workspace-content {
+    overflow-wrap: anywhere;
+  }
+  .workspace-content > div {
+    min-width: 0;
+  }
+  .workspace-content header:has(h1) {
+    @apply space-y-3 border-b pb-6;
+  }
+  .workspace-content [class*="overflow-x-auto"] {
+    max-width: 100%;
+    border-radius: 0.8rem;
+    border: 1px solid var(--border);
+  }
+  .workspace-content [role="alert"],
+  .form-feedback-error {
+    @apply rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-800;
+  }
+  .workspace-content p[role="status"]:not([aria-busy]),
+  .form-feedback-success {
+    @apply rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900;
+  }
+  .ui-form {
+    @apply grid min-w-0 gap-5 sm:grid-cols-2;
+  }
+  .ui-form label {
+    @apply grid content-start gap-2 text-sm font-medium;
+  }
+  .ui-modal-body {
+    @apply flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 py-5 sm:px-7;
+  }
+  .ui-modal-footer {
+    @apply flex flex-wrap justify-end gap-3 border-t bg-muted/40 px-5 py-4 sm:px-7;
+  }
+}
+dialog:not(#mobile-navigation) {
+  margin: auto;
+  max-height: calc(100dvh - 2rem);
+  max-width: calc(100vw - 2rem);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background: var(--card);
+  color: var(--foreground);
+  padding: 1.5rem;
+  box-shadow: 0 30px 100px #142b3840;
+}
+dialog::backdrop {
+  background: #0b243d85;
+  backdrop-filter: blur(3px);
+}
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+[data-slot="dialog-content"],
+dialog[open] {
+  animation: modal-enter 0.16s ease-out;
+}
+@media (max-width: 639px) {
+  dialog:not(#mobile-navigation) {
+    width: calc(100vw - 1rem);
+    max-width: calc(100vw - 1rem);
+    max-height: calc(100dvh - 1rem);
+    padding: 1.15rem;
+    border-radius: 1rem;
+  }
+  .workspace-content .flex.gap-2,
+  .workspace-content .flex.gap-3 {
+    flex-wrap: wrap;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .honor-print,
+  .honor-print * {
+    visibility: visible;
+  }
+  .honor-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: 0;
+  }
+  .honor-print .print\:hidden,
+  .honor-print .print\:hidden * {
+    display: none;
+  }
+  .honor-print form {
+    display: none;
+  }
+}
+/* Shared control ergonomics also cover bespoke account and filter forms. */
+@layer base {
+  button {
+    min-height: 2.75rem;
+  }
+  td {
+    overflow-wrap: anywhere;
+  }
 }
 
-body:has(dialog[open]) { overflow: hidden; }
-@media print {
-  body * { visibility: hidden; }
-  .honor-print, .honor-print * { visibility: visible; }
-  .honor-print { position: absolute; left: 0; top: 0; width: 100%; border: 0; }
-  .honor-print .print\:hidden, .honor-print .print\:hidden * { display: none; }
-  .honor-print form { display: none; }
+.workspace-content [role="alert"]:empty { display: none; }
+@media (max-width: 767px) {
+  /* Keep mobile browsers from zooming small text inputs on focus. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea { font-size: 1rem; }
 }

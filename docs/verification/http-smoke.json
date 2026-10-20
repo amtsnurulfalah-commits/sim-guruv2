@@ -1,13 +1,13 @@
 {
   "kind": "HTTP smoke against next start production build",
-  "phase": "1.4",
+  "phase": "8.5",
   "result": "passed",
   "checks": [
     "Beranda200, bahasa Indonesia, status fitur jujur",
     "Header keamanan dasar",
     "Kesiapan200",
     "404 Indonesia",
-    "Liveness200 no-store, phase1.4",
+    "Liveness200 no-store, phase8.5",
     "Login200 form nyata dan password autocomplete",
     "Akun anonim redirect login, termasuk streaming redirect Next.js",
     "Prelogin CSRF dan secure cookie tanpa database",

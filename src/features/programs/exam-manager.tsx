@@ -1,4 +1,5 @@
 "use client";
+import { FeatureState } from "@/components/feedback/feature-state";
 import { useEffect, useState } from "react";
 import { masterRequest } from "../masters/api";
 import { wibDate } from "../../lib/calendar/schemas";
@@ -77,7 +78,11 @@ export function ExamManager({
       });
     return () => c.abort();
   }, [date, period, revision]);
-  async function run(work: () => Promise<unknown>, refresh = true) {
+  async function run(
+    work: () => Promise<unknown>,
+    refresh = true,
+    propagate = false,
+  ) {
     setBusy(true);
     setError("");
     setMessage("");
@@ -89,13 +94,23 @@ export function ExamManager({
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Permintaan gagal.");
+      if (propagate) throw e;
     } finally {
       setBusy(false);
     }
   }
+  const formRun = (work: () => Promise<unknown>, refresh = true) =>
+    run(work, refresh, true);
   const post = <T,>(action: string, data: unknown) =>
     masterRequest<T>("/api/programs/" + action, "POST", data);
-  if (!board) return <p role="status">{error || "Memuat ujian…"}</p>;
+  if (!board)
+    return (
+      <FeatureState
+        error={error}
+        label="Memuat ujian…"
+        retry={() => setRevision((v) => v + 1)}
+      />
+    );
   const fields: Record<Entity, Field[]> = {
     period: [
       {
@@ -243,7 +258,7 @@ export function ExamManager({
         Konfirmasi pengawas belum menghasilkan JTM. Isi BAP setelah sesi selesai
         +5 menit, paling lambat pada tanggal akhir periode.
       </p>
-      <nav className="flex flex-wrap gap-3 text-blue-800">
+      <nav className="flex flex-wrap gap-3 text-primary">
         <a href="/kehadiran">Jam kehadiran</a>
         <a href="/absensi-siswa/input">Rekap siswa</a>
       </nav>
@@ -351,7 +366,7 @@ export function ExamManager({
                 key={o.id + ":" + o.bap?.version}
                 occurrence={o}
                 busy={busy}
-                save={(data) => run(() => post("bap", data))}
+                save={(data) => formRun(() => post("bap", data))}
               />
             )}
           </article>
@@ -439,7 +454,7 @@ export function ExamManager({
                 reason,
               ]}
               onSave={async (data) => {
-                await run(
+                await formRun(
                   async () =>
                     setPreview({
                       impact: await post<Impact>("preview", {
@@ -483,6 +498,9 @@ export function ExamManager({
             </button>
           )}
           <DataForm
+            description={"Jenis data: " + ({period:"periode ujian",session:"sesi ujian",room:"ruang ujian",supervisor:"pengawas ujian",committee:"panitia ujian"} as const)[entity] + ". Periksa relasi sebelum menyimpan."}
+            openOnMount={Boolean(edit)}
+            onDismiss={() => setEdit(null)}
             key={entity + (edit?.id ?? "new")}
             busy={busy}
             label="Simpan master"
@@ -495,7 +513,7 @@ export function ExamManager({
             ]}
             onSave={async (values) => {
               const { reason, ...data } = values;
-              await run(async () => {
+              await formRun(async () => {
                 await post("exam-save", {
                   entity,
                   id: edit?.id,
@@ -694,12 +712,13 @@ function BapForm({
 }) {
   return (
     <details>
-      <summary className="cursor-pointer text-blue-800">
+      <summary className="cursor-pointer text-primary">
         {o.bap ? "Edit BAP" : "Isi BAP"} (total siswa: {o.expectedStudents})
       </summary>
       <DataForm
         busy={busy}
         label={o.bap ? "Simpan edit BAP" : "Kirim BAP"}
+        description={"Total siswa pada penugasan ini: " + o.expectedStudents + ". Periksa jumlah hadir dan tidak hadir."}
         fields={[
           {
             key: "present",

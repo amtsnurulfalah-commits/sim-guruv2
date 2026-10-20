@@ -1,4 +1,8 @@
 "use client";
+import {
+  ManagedDialog,
+  requestDialogClose,
+} from "@/components/ui/managed-dialog";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { masterRequest } from "@/features/masters/api";
@@ -1125,7 +1129,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
       </section>
       {message && <p role="status">{message}</p>}
       {error && !open && !targets && <p role="alert">{error}</p>}
-      <dialog
+      <ManagedDialog
         ref={editor}
         aria-labelledby="schedule-editor-title"
         className="m-auto max-h-[90svh] w-[min(48rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-6 text-foreground backdrop:bg-black/45"
@@ -1144,7 +1148,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
           <Button
             variant="outline"
             disabled={busy}
-            onClick={() => editor.current?.close()}
+            onClick={() => requestDialogClose(editor.current)}
           >
             Tutup
           </Button>
@@ -1157,8 +1161,8 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             onBusy={setBusy}
           />
         )}
-      </dialog>
-      <dialog
+      </ManagedDialog>
+      <ManagedDialog
         ref={stop}
         aria-labelledby="schedule-stop-title"
         className="m-auto max-h-[90svh] w-[min(42rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-6 text-foreground backdrop:bg-black/45"
@@ -1177,7 +1181,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
           <Button
             variant="outline"
             disabled={busy}
-            onClick={() => stop.current?.close()}
+            onClick={() => requestDialogClose(stop.current)}
           >
             Tutup
           </Button>
@@ -1249,8 +1253,8 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             {error} Tutup dan muat ulang bila versi telah berubah.
           </p>
         )}
-      </dialog>
-      <dialog
+      </ManagedDialog>
+      <ManagedDialog
         ref={historyDialog}
         aria-labelledby="schedule-history-title"
         className="m-auto max-h-[90svh] w-[min(42rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-6 text-foreground backdrop:bg-black/45"
@@ -1262,7 +1266,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
           </h2>
           <Button
             variant="outline"
-            onClick={() => historyDialog.current?.close()}
+            onClick={() => requestDialogClose(historyDialog.current)}
           >
             Tutup
           </Button>
@@ -1299,7 +1303,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             );
           })
         )}
-      </dialog>
+      </ManagedDialog>
     </div>
   );
 }

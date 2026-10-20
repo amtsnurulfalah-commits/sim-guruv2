@@ -1,4 +1,5 @@
 "use client";
+import { FormDialog } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { masterRequest } from "../masters/api";
 import { wibDate } from "../../lib/calendar/schemas";
@@ -8,12 +9,12 @@ import type {
   DutyPreview,
   DutySchedule,
 } from "../../lib/duties/schemas";
-const input =
-    "w-full rounded-md border bg-white px-3 py-2 text-sm text-slate-900",
-  button =
-    "rounded-md bg-blue-800 px-4 py-2 text-sm font-medium text-white disabled:opacity-50",
-  secondary = "rounded border px-3 py-2 text-sm disabled:opacity-50",
-  panel = "space-y-4 rounded-xl border bg-white p-5 shadow-sm";
+import {
+  control as input,
+  primaryAction as button,
+  secondaryAction as secondary,
+  surface as panel,
+} from "@/components/ui/styles";
 const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 const labels: Record<string, string> = {
   PIKET: "Piket",
@@ -81,6 +82,7 @@ export function DutyManager({
   userId: string;
   initialKind?: "PIKET" | "UPACARA";
 }) {
+  const [editorSignal, setEditorSignal] = useState(0);
   const [date, setDate] = useState(wibDate()),
     [board, setBoard] = useState<DutyBoard | null>(null),
     [revision, setRevision] = useState(0),
@@ -155,6 +157,7 @@ export function DutyManager({
     canOperate = admin || board?.canOperate;
   function edit(s: DutySchedule) {
     setEditing(s);
+    setEditorSignal((v) => v + 1);
     setKind(s.kind);
     setTeacher(s.user_id);
     setPeriod(s.academic_period_id);
@@ -468,150 +471,164 @@ export function DutyManager({
       )}
       {admin && (
         <>
-          <form
-            className={panel}
-            onSubmit={async (e) => {
-              e.preventDefault();
-              const result = await submit("schedule", {
-                ...(editing ? { id: editing.id } : {}),
-                version: editing?.version ?? "0",
-                kind,
-                userId: teacher,
-                academicPeriodId: period,
-                dayIndex: kind === "UPACARA" ? 1 : Number(day),
-                date: kind === "UPACARA" ? from : null,
-                validFrom: from,
-                validTo: kind === "UPACARA" ? from : to,
-                timeStart,
-                timeEnd,
-                active,
-                reason: scheduleReason,
-              });
-              if (result) {
-                setEditing(null);
-                setLoading(true);
-                setRevision((v) => v + 1);
-                setMessage("Jadwal tugas tersimpan.");
-              }
+          <FormDialog
+            title="Jadwal piket dan upacara"
+            onDiscard={() => {
+              setEditing(null);
+              setTeacher("");
+              setPeriod("");
+              setScheduleReason("");
             }}
+            busy={busy}
+            success={message}
+            error={error}
+            revealKey={editing ? editing.id + ":" + editorSignal : undefined}
           >
-            <h2 className="font-semibold">
-              {editing
-                ? "Edit jadwal tugas"
-                : "Tambah jadwal piket / pembina upacara"}
-            </h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Choice
-                label="Jenis tugas"
-                value={kind}
-                set={(v) => {
-                  setKind(v as typeof kind);
-                  setTimeEnd(v === "UPACARA" ? "07:30" : "14:00");
-                }}
-                items={[
-                  { id: "PIKET", name: "Piket mingguan" },
-                  { id: "UPACARA", name: "Pembina upacara Senin" },
-                ]}
-              />
-              <Choice
-                label="Guru"
-                value={teacher}
-                set={setTeacher}
-                items={board?.teachers ?? []}
-              />
-              <Choice
-                label="Periode akademik"
-                value={period}
-                set={setPeriod}
-                items={board?.periods ?? []}
-              />
-              {kind === "PIKET" && (
+            <form
+              className={panel}
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const result = await submit("schedule", {
+                  ...(editing ? { id: editing.id } : {}),
+                  version: editing?.version ?? "0",
+                  kind,
+                  userId: teacher,
+                  academicPeriodId: period,
+                  dayIndex: kind === "UPACARA" ? 1 : Number(day),
+                  date: kind === "UPACARA" ? from : null,
+                  validFrom: from,
+                  validTo: kind === "UPACARA" ? from : to,
+                  timeStart,
+                  timeEnd,
+                  active,
+                  reason: scheduleReason,
+                });
+                if (result) {
+                  setEditing(null);
+                  setLoading(true);
+                  setRevision((v) => v + 1);
+                  setMessage("Jadwal tugas tersimpan.");
+                }
+              }}
+            >
+              <h2 className="font-semibold">
+                {editing
+                  ? "Edit jadwal tugas"
+                  : "Tambah jadwal piket / pembina upacara"}
+              </h2>
+              <div className="grid gap-3 sm:grid-cols-2">
                 <Choice
-                  label="Hari"
-                  value={day}
-                  set={setDay}
-                  items={days.map((name, i) => ({ id: String(i), name }))}
+                  label="Jenis tugas"
+                  value={kind}
+                  set={(v) => {
+                    setKind(v as typeof kind);
+                    setTimeEnd(v === "UPACARA" ? "07:30" : "14:00");
+                  }}
+                  items={[
+                    { id: "PIKET", name: "Piket mingguan" },
+                    { id: "UPACARA", name: "Pembina upacara Senin" },
+                  ]}
                 />
-              )}
-              <Field
-                label={kind === "UPACARA" ? "Tanggal Senin" : "Berlaku mulai"}
-              >
-                <input
-                  className={input}
-                  type="date"
-                  required
-                  value={from}
-                  onChange={(e) => setFrom(e.target.value)}
+                <Choice
+                  label="Guru"
+                  value={teacher}
+                  set={setTeacher}
+                  items={board?.teachers ?? []}
                 />
-              </Field>
-              {kind === "PIKET" && (
-                <Field label="Berlaku sampai">
+                <Choice
+                  label="Periode akademik"
+                  value={period}
+                  set={setPeriod}
+                  items={board?.periods ?? []}
+                />
+                {kind === "PIKET" && (
+                  <Choice
+                    label="Hari"
+                    value={day}
+                    set={setDay}
+                    items={days.map((name, i) => ({ id: String(i), name }))}
+                  />
+                )}
+                <Field
+                  label={kind === "UPACARA" ? "Tanggal Senin" : "Berlaku mulai"}
+                >
                   <input
                     className={input}
                     type="date"
                     required
-                    value={to}
-                    onChange={(e) => setTo(e.target.value)}
+                    value={from}
+                    onChange={(e) => setFrom(e.target.value)}
                   />
                 </Field>
-              )}
-              <Field label="Jam mulai">
+                {kind === "PIKET" && (
+                  <Field label="Berlaku sampai">
+                    <input
+                      className={input}
+                      type="date"
+                      required
+                      value={to}
+                      onChange={(e) => setTo(e.target.value)}
+                    />
+                  </Field>
+                )}
+                <Field label="Jam mulai">
+                  <input
+                    className={input}
+                    type="time"
+                    required
+                    value={timeStart}
+                    onChange={(e) => setTimeStart(e.target.value)}
+                  />
+                </Field>
+                <Field label="Jam selesai">
+                  <input
+                    className={input}
+                    type="time"
+                    required
+                    value={timeEnd}
+                    onChange={(e) => setTimeEnd(e.target.value)}
+                  />
+                </Field>
+              </div>
+              <p className="text-sm">
+                Piket merupakan pengawasan umum dan tidak otomatis melarang
+                jadwal mengajar pada jam yang sama. Upacara dan kegiatan KBM
+                diperiksa bentroknya.
+              </p>
+              <label className="flex gap-2 text-sm">
                 <input
+                  type="checkbox"
+                  checked={active}
+                  onChange={(e) => setActive(e.target.checked)}
+                />
+                Jadwal aktif
+              </label>
+              <Field label="Alasan perubahan jadwal">
+                <textarea
                   className={input}
-                  type="time"
+                  minLength={5}
+                  maxLength={500}
                   required
-                  value={timeStart}
-                  onChange={(e) => setTimeStart(e.target.value)}
+                  value={scheduleReason}
+                  onChange={(e) => setScheduleReason(e.target.value)}
                 />
               </Field>
-              <Field label="Jam selesai">
-                <input
-                  className={input}
-                  type="time"
-                  required
-                  value={timeEnd}
-                  onChange={(e) => setTimeEnd(e.target.value)}
-                />
-              </Field>
-            </div>
-            <p className="text-sm">
-              Piket merupakan pengawasan umum dan tidak otomatis melarang jadwal
-              mengajar pada jam yang sama. Upacara dan kegiatan KBM diperiksa
-              bentroknya.
-            </p>
-            <label className="flex gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={active}
-                onChange={(e) => setActive(e.target.checked)}
-              />
-              Jadwal aktif
-            </label>
-            <Field label="Alasan perubahan jadwal">
-              <textarea
-                className={input}
-                minLength={5}
-                maxLength={500}
-                required
-                value={scheduleReason}
-                onChange={(e) => setScheduleReason(e.target.value)}
-              />
-            </Field>
-            <div className="flex gap-2">
-              <button className={button} disabled={busy || loading}>
-                Simpan jadwal tugas
-              </button>
-              {editing && (
-                <button
-                  type="button"
-                  className={secondary}
-                  onClick={() => setEditing(null)}
-                >
-                  Batal edit
+              <div className="flex gap-2">
+                <button className={button} disabled={busy || loading}>
+                  Simpan jadwal tugas
                 </button>
-              )}
-            </div>
-          </form>
+                {editing && (
+                  <button
+                    type="button"
+                    className={secondary}
+                    onClick={() => setEditing(null)}
+                  >
+                    Batal edit
+                  </button>
+                )}
+              </div>
+            </form>
+          </FormDialog>
           <section className={panel}>
             <h2 className="font-semibold">
               Jadwal dalam rentang tanggal yang dipilih

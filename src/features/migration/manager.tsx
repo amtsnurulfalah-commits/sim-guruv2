@@ -1,4 +1,6 @@
 "use client";
+import { statusLabel } from "@/lib/ui-status";
+import { EmptyState } from "@/components/feedback/feature-state";
 import { useCallback, useEffect, useState } from "react";
 import { masterRequest } from "@/features/masters/api";
 import { DataForm, button, input, panel } from "@/features/programs/forms";
@@ -117,13 +119,15 @@ export function MigrationManager() {
         </p>
       </section>
       {!board && <p role="status">Memuat daftar batch…</p>}
-      {board?.batches.length === 0 && <p>Belum ada ekspor yang diperiksa.</p>}
+      {board?.batches.length === 0 && (
+        <EmptyState title="Belum ada ekspor yang diperiksa." />
+      )}
       {board?.batches.map((b) => (
         <section className={panel} key={b.id}>
           <h2 className="font-bold break-words">{b.source}</h2>
           <p>
-            {b.state} · {b.summary.rows} baris · {b.summary.errors} kesalahan ·{" "}
-            {b.summary.review} temuan peninjauan awal ·{" "}
+            {statusLabel(b.state)} · {b.summary.rows} baris · {b.summary.errors}{" "}
+            kesalahan · {b.summary.review} temuan peninjauan awal ·{" "}
             {b.summary.redactedFields} kolom/nilai rahasia dikeluarkan
           </p>
           <button

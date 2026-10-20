@@ -4,6 +4,15 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   BookOpen,
+  ClipboardCheck,
+  ClipboardList,
+  Wallet,
+  Users,
+  Database,
+  Megaphone,
+  ArrowLeftRight,
+  NotebookPen,
+  GraduationCap,
   CalendarDays,
   ChevronDown,
   ChevronLeft,
@@ -17,11 +26,29 @@ import {
   UserRound,
   X,
 } from "lucide-react";
+import { Breadcrumbs } from "./breadcrumbs";
 import { Brand } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 import { modulesFor } from "@/lib/navigation/modules";
 import { cn } from "@/lib/utils";
 import type { SessionDto } from "@/types/auth";
+const moduleIcons: Record<string, typeof LayoutDashboard> = {
+  jadwal: CalendarDays,
+  jurnal: NotebookPen,
+  kegiatan: ClipboardCheck,
+  "absensi-siswa": Users,
+  piket: ClipboardList,
+  ujian: GraduationCap,
+  kehadiran: ClipboardCheck,
+  acara: CalendarDays,
+  honorarium: Wallet,
+  pengguna: Users,
+  master: Database,
+  kalender: CalendarDays,
+  pengumuman: Megaphone,
+  operasional: Settings2,
+  migrasi: ArrowLeftRight,
+};
 export function Workspace({
   children,
   session,
@@ -72,6 +99,15 @@ export function Workspace({
   const role = session?.user.role,
     ready = session?.scope === "business";
   const links = role && ready ? modulesFor(role) : [];
+  const activeHref = [
+    "/dashboard",
+    "/akun",
+    "/admin/pemulihan",
+    "/kesiapan",
+    ...links.map((m) => m.href ?? "/modul/" + m.slug),
+  ]
+    .filter((href) => pathname === href || pathname.startsWith(href + "/"))
+    .sort((a, b) => b.length - a.length)[0];
   function nav(compact = false) {
     const item = (
       href: string,
@@ -84,12 +120,14 @@ export function Workspace({
         onClick={() => {
           if (drawer.current?.open) closeDrawer();
         }}
-        aria-current={pathname === href ? "page" : undefined}
+        aria-current={
+          pathname === href || activeHref === href ? "page" : undefined
+        }
         title={compact ? label : undefined}
         className={cn(
-          "flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring",
-          pathname === href
-            ? "bg-accent font-semibold text-primary"
+          "group flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring",
+          pathname === href || activeHref === href
+            ? "bg-primary font-semibold text-primary-foreground shadow-sm hover:bg-primary/90"
             : "text-muted-foreground",
           compact && "justify-center",
         )}
@@ -123,7 +161,7 @@ export function Workspace({
                 item(
                   m.href ?? "/modul/" + m.slug,
                   m.title,
-                  group === "Kegiatan" ? BookOpen : Settings2,
+                  moduleIcons[m.slug] ?? BookOpen,
                 ),
               )}
             </div>
@@ -138,7 +176,7 @@ export function Workspace({
                   item(
                     m.href ?? "/modul/" + m.slug,
                     m.title,
-                    group === "Kegiatan" ? CalendarDays : Settings2,
+                    moduleIcons[m.slug] ?? Settings2,
                   ),
                 )}
               </div>
@@ -157,19 +195,19 @@ export function Workspace({
         aria-label="Sidebar desktop"
         className={cn(
           "sticky top-0 hidden h-svh shrink-0 flex-col border-r bg-card lg:flex",
-          collapsed ? "w-20" : "w-64",
+          collapsed ? "w-20" : "w-72",
         )}
       >
         <div className="flex h-20 shrink-0 items-center justify-center border-b px-4">
           {collapsed ? (
             <Link
-              href={session ? "/akun" : "/"}
+              href={ready ? "/dashboard" : session ? "/akun" : "/"}
               aria-label="SiM-Guru, halaman utama"
             >
               <BookOpen aria-hidden="true" className="size-7 text-primary" />
             </Link>
           ) : (
-            <Link href={session ? "/akun" : "/"}>
+            <Link href={ready ? "/dashboard" : session ? "/akun" : "/"}>
               <Brand />
             </Link>
           )}
@@ -197,7 +235,7 @@ export function Workspace({
         </div>
       </aside>
       <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-20 flex min-h-20 flex-wrap items-center justify-between gap-3 border-b bg-card/95 px-4 py-4 backdrop-blur-sm sm:px-8">
+        <header className="sticky top-0 z-20 flex min-h-20 flex-wrap items-center justify-between gap-3 border-b bg-card/95 px-4 py-3 backdrop-blur-md sm:px-8">
           <div className="flex min-w-0 items-center gap-3">
             <Button
               ref={mobileTrigger}
@@ -242,12 +280,13 @@ export function Workspace({
         <main
           id="konten-utama"
           tabIndex={-1}
-          className="mx-auto max-w-6xl px-4 py-8 outline-none sm:px-8 sm:py-10"
+          className="workspace-content mx-auto w-full max-w-[1440px] px-4 py-5 outline-none sm:px-8 sm:py-7 xl:px-10"
         >
+          <Breadcrumbs pathname={pathname} role={role} ready={ready} />
           {children}
         </main>
         <footer className="border-t px-5 py-6 text-xs leading-6 text-muted-foreground sm:px-8">
-          SiM-Guru · Sistem Informasi Guru · Modul dikembangkan secara bertahap.
+          SiM-Guru · Sistem Informasi Guru · Ruang kerja madrasah.
         </footer>
       </div>
       <dialog

@@ -1,4 +1,9 @@
 "use client";
+import { EmptyState } from "@/components/feedback/feature-state";
+import {
+  ManagedDialog,
+  requestDialogClose,
+} from "@/components/ui/managed-dialog";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -592,7 +597,7 @@ export function MasterManager() {
     <div className="space-y-6">
       <header>
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-          Administrasi · Tahap 2.2
+          Administrasi madrasah
         </p>
         <h1 className="mt-2 text-3xl font-bold">Master sekolah dan akademik</h1>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
@@ -682,7 +687,7 @@ export function MasterManager() {
                 {data.total} data · halaman {data.page}
               </p>
               {data.items.length === 0 ? (
-                <p>Belum ada data sesuai pencarian.</p>
+                <EmptyState title="Belum ada data sesuai pencarian." />
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[620px] text-left text-sm">
@@ -842,7 +847,7 @@ export function MasterManager() {
         terbaru. Tanggal tarif/tunjangan baru paling awal hari ini (WIB), tanpa
         rentang tumpang tindih.
       </p>
-      <dialog
+      <ManagedDialog
         ref={dialog}
         aria-labelledby="master-editor-title"
         className="m-auto max-h-[90svh] w-[min(42rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-6 text-foreground backdrop:bg-black/45"
@@ -861,7 +866,7 @@ export function MasterManager() {
           <Button
             variant="outline"
             disabled={busy}
-            onClick={() => dialog.current?.close()}
+            onClick={() => requestDialogClose(dialog.current)}
           >
             Tutup
           </Button>
@@ -881,8 +886,8 @@ export function MasterManager() {
             data.
           </p>
         )}
-      </dialog>
-      <dialog
+      </ManagedDialog>
+      <ManagedDialog
         ref={confirmation}
         aria-labelledby="master-archive-title"
         className="m-auto w-[min(32rem,calc(100%_-_2rem))] rounded-2xl border bg-card p-6 text-foreground backdrop:bg-black/45"
@@ -915,7 +920,7 @@ export function MasterManager() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => confirmation.current?.close()}
+                  onClick={() => requestDialogClose(confirmation.current)}
                 >
                   Batal
                 </Button>
@@ -927,8 +932,8 @@ export function MasterManager() {
             {error && <p role="alert">{error}</p>}
           </form>
         )}
-      </dialog>
-      <dialog
+      </ManagedDialog>
+      <ManagedDialog
         ref={historyDialog}
         aria-labelledby="master-history-title"
         className="m-auto max-h-[90svh] w-[min(42rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-6 text-foreground backdrop:bg-black/45"
@@ -940,13 +945,13 @@ export function MasterManager() {
           </h2>
           <Button
             variant="outline"
-            onClick={() => historyDialog.current?.close()}
+            onClick={() => requestDialogClose(historyDialog.current)}
           >
             Tutup
           </Button>
         </div>
         {history?.length === 0 ? (
-          <p>Belum ada riwayat.</p>
+          <EmptyState title="Belum ada riwayat." />
         ) : (
           history?.map((h, i) => (
             <article key={i} className="mb-4 rounded border p-4">
@@ -967,7 +972,7 @@ export function MasterManager() {
             </article>
           ))
         )}
-      </dialog>
+      </ManagedDialog>
     </div>
   );
 }
