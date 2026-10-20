@@ -13,12 +13,21 @@
   --accent: #e7f3ee;
   --accent-foreground: #115747;
   --border: #dce5e9;
-  --input: #bdcdd4;
+  --input: #7d909c;
   --ring: #16806a;
   --destructive: #b42332;
   --success: #176548;
   --warning: #865509;
   --radius: 1rem;
+  --surface-sidebar: #f9fbfc;
+  --surface-hover: #f0f7f4;
+  --success-surface: #edf7f1;
+  --success-border: #add5bd;
+  --error-surface: #fff1f2;
+  --error-border: #efb4bc;
+  --motion-fast: 160ms;
+  --motion-standard: 220ms;
+  --ease-ui: cubic-bezier(0.2, 0, 0, 1);
 }
 @theme inline {
   --color-background: var(--background);
@@ -42,13 +51,22 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-padding-top: 7rem;
+  }
   body {
     @apply bg-background text-foreground font-sans antialiased;
     margin: 0;
+    line-height: 1.6;
   }
   h1 {
     @apply text-2xl leading-tight font-bold tracking-tight sm:text-3xl;
     overflow-wrap: anywhere;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
   }
   h2 {
     @apply leading-snug font-semibold tracking-tight;
@@ -62,6 +80,7 @@
   }
   button {
     cursor: pointer;
+    touch-action: manipulation;
   }
   button:disabled {
     cursor: not-allowed;
@@ -105,10 +124,11 @@
     white-space: nowrap;
   }
   tbody tr {
-    transition: background-color 0.15s ease;
+    transition: background-color var(--motion-fast) var(--ease-ui);
   }
-  tbody tr:hover {
-    background: #f6faf8;
+  tbody tr:hover,
+  tbody tr:focus-within {
+    background: var(--surface-hover);
   }
   td,
   th {
@@ -122,6 +142,100 @@
   }
 }
 @layer components {
+  .ui-sidebar {
+    background: var(--surface-sidebar);
+  }
+  .ui-nav-item {
+    transition:
+      background-color var(--motion-fast) var(--ease-ui),
+      color var(--motion-fast) var(--ease-ui);
+  }
+  .ui-topbar {
+    box-shadow: 0 1px 3px #172c3605;
+  }
+  .ui-table-region {
+    max-width: 100%;
+    max-height: 42rem;
+    border: 1px solid var(--border);
+    border-radius: 0.8rem;
+    scrollbar-gutter: stable;
+    scroll-padding-top: 3.5rem;
+    scroll-padding-bottom: 1rem;
+  }
+  .ui-table-region table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .ui-table-region thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+  .ui-table-region th {
+    background: var(--muted);
+    text-align: left;
+    padding: 0.875rem 1rem;
+  }
+  .ui-table-region td {
+    padding: 0.875rem 1rem;
+  }
+  .ui-table-region tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .ui-metric-value {
+    font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+  .ui-progress {
+    display: block;
+    width: 100%;
+    height: 0.5rem;
+    appearance: none;
+    border: 0;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--muted);
+    accent-color: var(--primary);
+  }
+  .ui-progress::-webkit-progress-bar {
+    background: var(--muted);
+  }
+  .ui-progress::-webkit-progress-value {
+    background: var(--primary);
+    border-radius: 999px;
+  }
+  .ui-progress::-moz-progress-bar {
+    background: var(--primary);
+  }
+  .ui-text-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--primary);
+    font-weight: 600;
+    text-underline-offset: 4px;
+  }
+  .ui-text-link:hover {
+    text-decoration: underline;
+  }
+  .ui-control[aria-invalid="true"] {
+    border-color: var(--destructive);
+  }
+  .ui-action,
+  [data-slot="button"] {
+    transition-duration: var(--motion-fast);
+    transition-timing-function: var(--ease-ui);
+  }
+  .ui-action:active:not(:disabled),
+  [data-slot="button"]:active:not(:disabled) {
+    filter: brightness(0.94);
+  }
+
   .ui-control {
     @apply min-h-11 w-full min-w-0 rounded-lg border border-input bg-card px-3 py-2.5 text-sm text-foreground shadow-xs transition-colors focus-visible:border-ring focus-visible:outline-2 focus-visible:outline-ring;
   }
@@ -154,11 +268,17 @@
   }
   .workspace-content [role="alert"],
   .form-feedback-error {
-    @apply rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-800;
+    @apply rounded-xl border px-4 py-3 text-sm leading-6;
+    color: var(--destructive);
+    border-color: var(--error-border);
+    background: var(--error-surface);
   }
   .workspace-content p[role="status"]:not([aria-busy]),
   .form-feedback-success {
-    @apply rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900;
+    @apply rounded-xl border px-4 py-3 text-sm leading-6;
+    color: var(--success);
+    border-color: var(--success-border);
+    background: var(--success-surface);
   }
   .ui-form {
     @apply grid min-w-0 gap-5 sm:grid-cols-2;
@@ -171,6 +291,7 @@
   }
   .ui-modal-footer {
     @apply flex flex-wrap justify-end gap-3 border-t bg-muted/40 px-5 py-4 sm:px-7;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 }
 dialog:not(#mobile-navigation) {
@@ -194,16 +315,14 @@ body:has(dialog[open]) {
 @keyframes modal-enter {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.985);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 [data-slot="dialog-content"],
 dialog[open] {
-  animation: modal-enter 0.16s ease-out;
+  animation: modal-enter var(--motion-standard) var(--ease-ui);
 }
 @media (max-width: 639px) {
   dialog:not(#mobile-navigation) {
@@ -260,8 +379,42 @@ dialog[open] {
   }
 }
 
-.workspace-content [role="alert"]:empty { display: none; }
+.workspace-content [role="alert"]:empty {
+  display: none;
+}
 @media (max-width: 767px) {
   /* Keep mobile browsers from zooming small text inputs on focus. */
-  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea { font-size: 1rem; }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  select,
+  textarea {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .ui-topbar {
+    position: relative;
+  }
+  .ui-metric-value {
+    font-size: 1.5rem;
+  }
+}
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 3px solid Highlight;
+  }
+  .ui-nav-item[aria-current="page"] {
+    outline: 2px solid Highlight;
+  }
+}
+
+@media print {
+  .ui-table-region {
+    max-height: none;
+    overflow: visible;
+    border: 0;
+  }
+  .ui-table-region thead {
+    position: static;
+  }
 }

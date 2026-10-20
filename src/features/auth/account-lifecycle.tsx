@@ -7,6 +7,7 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
+import { PasswordInput } from "@/components/ui/password-input";
 import { FormDialog } from "@/components/ui/dialog";
 import { notifySuccess } from "@/components/feedback/toast-region";
 import { Button } from "@/components/ui/button";
@@ -71,17 +72,27 @@ export function Field({
   return (
     <label className="block space-y-2 text-sm">
       <span>{label}</span>
-      <input
-        name={name}
-        type={type}
-        defaultValue={value}
-        required={required}
-        maxLength={maxLength}
-        autoComplete={
-          autoComplete ?? (type === "password" ? "current-password" : "off")
-        }
-        className="h-11 w-full rounded-lg border bg-background px-3"
-      />
+      {type === "password" ? (
+        <PasswordInput
+          name={name}
+          defaultValue={value}
+          required={required}
+          maxLength={maxLength}
+          autoComplete={autoComplete ?? "current-password"}
+        />
+      ) : (
+        <input
+          name={name}
+          type={type}
+          defaultValue={value}
+          required={required}
+          maxLength={maxLength}
+          autoComplete={
+            autoComplete ?? (type === "password" ? "current-password" : "off")
+          }
+          className="h-11 w-full rounded-lg border bg-background px-3"
+        />
+      )}
     </label>
   );
 }

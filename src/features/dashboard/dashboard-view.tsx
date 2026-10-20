@@ -27,40 +27,39 @@ export function DashboardView({
       </header>
       <DayContextCard />
       <LiveSummary />
-      <section className="grid gap-5" aria-label="Akses yang tersedia">
-        <div className="rounded-2xl border bg-primary p-6 text-primary-foreground">
+      <section
+        className="grid gap-5 lg:grid-cols-2"
+        aria-label="Akses yang tersedia"
+      >
+        <div className="rounded-2xl border bg-accent/60 p-6 text-accent-foreground">
           <ShieldCheck className="mb-5 size-7" aria-hidden="true" />
           <h2 className="text-lg font-bold">Akun sudah terlindungi</h2>
           <p className="mt-2 text-sm leading-7">
             Kata sandi permanen, email terverifikasi dan pertanyaan keamanan
             telah lengkap.
           </p>
-          <Button
-            asChild
-            variant="outline"
-            className="mt-5 border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white"
-          >
+          <Button asChild variant="outline" className="mt-5">
             <Link href="/akun">
               Kelola akun <ArrowRight aria-hidden="true" />
             </Link>
           </Button>
         </div>
+        {data.user.role === "admin" && (
+          <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border bg-card p-5">
+            <div>
+              <h2 className="font-semibold">Verifikasi pemulihan akun</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Tinjau permintaan sesuai bukti identitas pemilik akun.
+              </p>
+            </div>
+            <Button asChild variant="outline">
+              <Link href="/admin/pemulihan">
+                Buka pemulihan <ArrowRight aria-hidden="true" />
+              </Link>
+            </Button>
+          </section>
+        )}
       </section>
-      {data.user.role === "admin" && (
-        <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border bg-card p-5">
-          <div>
-            <h2 className="font-semibold">Verifikasi pemulihan akun</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Tinjau permintaan sesuai bukti identitas pemilik akun.
-            </p>
-          </div>
-          <Button asChild variant="outline">
-            <Link href="/admin/pemulihan">
-              Buka pemulihan <ArrowRight aria-hidden="true" />
-            </Link>
-          </Button>
-        </section>
-      )}
       <section aria-labelledby="module-heading">
         <div className="mb-5 space-y-2">
           <h2 id="module-heading" className="text-xl font-bold">

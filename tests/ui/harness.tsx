@@ -1,5 +1,7 @@
 import React, { useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { DashboardView } from "../../src/features/dashboard/dashboard-view";
+import { modulesFor } from "../../src/lib/navigation/modules";
 import { AuthLayout } from "../../src/components/shell/auth-layout";
 import { ActionForm } from "../../src/features/auth/account-lifecycle";
 import { LoginForm } from "../../src/features/auth/login-form";
@@ -152,6 +154,17 @@ function Lab() {
 }
 const components: Record<string, React.ReactNode> = {
   lab: <Lab />,
+  dashboard: (
+    <DashboardView
+      data={{
+        user: { fullName: session.user.fullName, role: session.user.role },
+        dateLabel: "Selasa, 20 Oktober 2026",
+        modules: modulesFor(session.user.role),
+        activitySummaryAvailable: false,
+        financeSummaryAvailable: false,
+      }}
+    />
+  ),
   masters: <MasterManager />,
   users: <UserManager />,
   calendar: <CalendarManager />,

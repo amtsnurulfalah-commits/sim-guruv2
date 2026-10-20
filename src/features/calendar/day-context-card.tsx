@@ -67,7 +67,7 @@ export function DayContextCard() {
         </p>
       )}
       <button
-        className="text-sm underline"
+        className="ui-text-link"
         onClick={() => setRevision((v) => v + 1)}
       >
         Muat ulang konteks

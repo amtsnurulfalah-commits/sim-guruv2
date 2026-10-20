@@ -1,4 +1,5 @@
 "use client";
+import { TableRegion } from "@/components/ui/table-region";
 import { EmptyState } from "@/components/feedback/feature-state";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
@@ -322,7 +323,7 @@ export function CalendarManager() {
       </header>
       <section className="space-y-4 rounded-2xl border bg-card p-5">
         <h2 className="text-xl font-bold">Daftar kalender</h2>
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap items-end gap-4">
           <label className="text-sm">
             Bulan
             <input
@@ -378,7 +379,7 @@ export function CalendarManager() {
               {list.items.length === 0 ? (
                 <EmptyState title="Belum ada entri pada filter ini." />
               ) : (
-                <div className="overflow-x-auto">
+                <TableRegion label="Kalender akademik">
                   <table className="w-full min-w-[520px] text-left text-sm">
                     <thead>
                       <tr className="border-b">
@@ -409,7 +410,7 @@ export function CalendarManager() {
                       ))}
                     </tbody>
                   </table>
-                </div>
+                </TableRegion>
               )}
               <div className="flex justify-between">
                 <Button

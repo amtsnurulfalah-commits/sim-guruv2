@@ -24,15 +24,18 @@ export function FeatureState({
   error,
   label,
   retry,
+  headingLevel = 1,
 }: {
   error: string;
   label: string;
   retry: () => void;
+  headingLevel?: 1 | 2;
 }) {
+  const Heading = headingLevel === 1 ? "h1" : "h2";
   if (error)
     return (
       <section className="ui-panel space-y-4">
-        <h1 className="text-xl">Data belum dapat dimuat</h1>
+        <Heading className="text-xl">Data belum dapat dimuat</Heading>
         <p role="alert" className="form-feedback-error">
           {error}
         </p>
@@ -44,7 +47,11 @@ export function FeatureState({
     );
   return (
     <section aria-busy="true" aria-label={label} className="space-y-5">
-      <p role="status" className="text-sm text-muted-foreground">
+      <p
+        role="status"
+        aria-busy="true"
+        className="text-sm text-muted-foreground"
+      >
         {label}
       </p>
       <div className="h-9 w-2/3 rounded-lg bg-muted motion-safe:animate-pulse" />

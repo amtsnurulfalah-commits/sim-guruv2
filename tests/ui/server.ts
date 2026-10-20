@@ -124,6 +124,17 @@ async function main() {
       for await (const b of req) body += b;
       const input = body ? JSON.parse(body) : {};
       if (path === "/api/auth/csrf") data = { csrfToken: "fixture-csrf" };
+      else if (path === "/api/dashboard")
+        data = {
+          summary: (
+            await db.query<{ value: unknown }>(
+              "select app.dashboard_summary($1) as value",
+              [createHash("sha256").update(token).digest("hex")],
+            )
+          ).rows[0]!.value,
+        };
+      else if (path === "/api/day-context")
+        data = await calendar.context(token, q);
       else if (path.startsWith("/api/activities/")) {
         const kind = path.split("/").at(-1)!;
         data =

@@ -14,6 +14,7 @@ import {
   secondaryAction as secondary,
   surface as panel,
 } from "@/components/ui/styles";
+import { FormFeedback } from "@/components/ui/form-feedback";
 import { FormDialog } from "@/components/ui/dialog";
 export type Field = {
   key: string;
@@ -54,19 +55,56 @@ export function DataForm({
   busy: boolean;
 }) {
   const [error, setError] = useState(""),
+    [fieldErrors, setFieldErrors] = useState<Record<string, string>>({}),
     [open, setOpen] = useState(openOnMount),
     [saving, setSaving] = useState(false);
   const pending = useRef(false);
+  const feedback = useRef<HTMLDivElement>(null);
+  const focusFeedback = () =>
+    requestAnimationFrame(() => feedback.current?.focus());
   const prefix = useId();
   const form = (
     <form
       id={prefix + "-form"}
       className="ui-form"
       aria-busy={saving || busy}
+      onInvalid={(event) => {
+        event.preventDefault();
+        const control: EventTarget = event.target;
+        if (!(
+          control instanceof HTMLInputElement ||
+          control instanceof HTMLSelectElement ||
+          control instanceof HTMLTextAreaElement
+        ))
+          return;
+        const field = fields.find((field) => field.key === control.name);
+        if (!field) return;
+        const message = control.validity.valueMissing
+          ? field.label + " wajib diisi."
+          : "Periksa nilai " + field.label.toLowerCase() + ".";
+        setFieldErrors((previous) => ({ ...previous, [field.key]: message }));
+        setError("Periksa isian yang ditandai sebelum menyimpan.");
+        focusFeedback();
+      }}
+      onChangeCapture={(event) => {
+        const control: EventTarget = event.target;
+        if (!(
+          control instanceof HTMLInputElement ||
+          control instanceof HTMLSelectElement ||
+          control instanceof HTMLTextAreaElement
+        ))
+          return;
+        const key = control.name;
+        if (!fieldErrors[key]) return;
+        setFieldErrors((previous) => {
+          const next = { ...previous };
+          delete next[key];
+          return next;
+        });
+      }}
       onSubmit={async (e) => {
         e.preventDefault();
         if (pending.current || busy) return;
-        const element = e.currentTarget;
         const f = new FormData(e.currentTarget);
         const data: Record<string, unknown> = {};
         for (const x of fields) {
@@ -85,6 +123,7 @@ export function DataForm({
                       : v;
         }
         setError("");
+        setFieldErrors({});
         try {
           z.record(z.string(), z.unknown())
             .superRefine((value, ctx) => {
@@ -138,15 +177,33 @@ export function DataForm({
                 ? e.message
                 : "Gagal menyimpan.",
           );
-          const key = e instanceof z.ZodError ? e.issues[0]?.path[0] : null;
-          const invalid = key ? element.elements.namedItem(String(key)) : null;
-          if (invalid instanceof HTMLElement) invalid.focus();
+          if (e instanceof z.ZodError) {
+            const errors: Record<string, string> = {};
+            for (const issue of e.issues) {
+              const key = String(issue.path[0] ?? "");
+              if (fields.some((field) => field.key === key))
+                errors[key] ??= issue.message;
+            }
+            setFieldErrors(errors);
+          }
+          focusFeedback();
         } finally {
           pending.current = false;
           setSaving(false);
         }
       }}
     >
+      <FormFeedback
+        ref={feedback}
+        message={error}
+        fields={fields
+          .filter((field) => fieldErrors[field.key])
+          .map((field) => ({
+            id: prefix + field.key,
+            label: field.label,
+            message: fieldErrors[field.key]!,
+          }))}
+      />
       <fieldset disabled={busy || saving} className="contents">
         {fields.map((x) => (
           <div
@@ -165,6 +222,12 @@ export function DataForm({
             </label>
             {x.type === "multi" || x.type === "days" ? (
               <fieldset
+                id={prefix + x.key}
+                tabIndex={-1}
+                aria-invalid={Boolean(fieldErrors[x.key])}
+                aria-describedby={
+                  fieldErrors[x.key] ? prefix + x.key + "-error" : undefined
+                }
                 aria-labelledby={prefix + x.key + "-label"}
                 className="grid max-h-52 gap-1 overflow-y-auto rounded-lg border bg-muted/30 p-2"
               >
@@ -189,6 +252,10 @@ export function DataForm({
               <select
                 name={x.key}
                 id={prefix + x.key}
+                aria-invalid={Boolean(fieldErrors[x.key])}
+                aria-describedby={
+                  fieldErrors[x.key] ? prefix + x.key + "-error" : undefined
+                }
                 className={input}
                 required={!x.optional}
                 defaultValue={String(x.value ?? "")}
@@ -204,6 +271,10 @@ export function DataForm({
               <textarea
                 name={x.key}
                 id={prefix + x.key}
+                aria-invalid={Boolean(fieldErrors[x.key])}
+                aria-describedby={
+                  fieldErrors[x.key] ? prefix + x.key + "-error" : undefined
+                }
                 className={input}
                 maxLength={x.type === "dates" ? 5000 : 1000}
                 required={!x.optional}
@@ -215,6 +286,10 @@ export function DataForm({
               <input
                 name={x.key}
                 id={prefix + x.key}
+                aria-invalid={Boolean(fieldErrors[x.key])}
+                aria-describedby={
+                  fieldErrors[x.key] ? prefix + x.key + "-error" : undefined
+                }
                 className={input}
                 type={x.type ?? "text"}
                 required={!x.optional}
@@ -224,6 +299,14 @@ export function DataForm({
                 maxLength={x.key === "reason" ? 500 : 120}
                 defaultValue={x.value as string | number | undefined}
               />
+            )}
+            {fieldErrors[x.key] && (
+              <p
+                id={prefix + x.key + "-error"}
+                className="text-sm font-normal text-destructive"
+              >
+                {fieldErrors[x.key]}
+              </p>
             )}
             {x.type === "multi" || x.type === "days" ? (
               <span className="font-normal text-slate-500">
@@ -237,11 +320,6 @@ export function DataForm({
             <button className={button} disabled={busy || saving}>
               {busy || saving ? "Menyimpan…" : label}
             </button>
-          )}
-          {error && (
-            <p role="alert" className="mt-2 text-red-700">
-              {error}
-            </p>
           )}
         </div>
       </fieldset>
@@ -266,8 +344,10 @@ export function DataForm({
       open={open}
       onOpenChange={(next) => {
         setOpen(next);
-        if (next) setError("");
-        else onDismiss?.();
+        if (next) {
+          setError("");
+          setFieldErrors({});
+        } else onDismiss?.();
       }}
       busy={busy || saving}
     >

@@ -1,4 +1,5 @@
 "use client";
+import { TableRegion } from "@/components/ui/table-region";
 import {
   ManagedDialog,
   requestDialogClose,
@@ -987,7 +988,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
               {list.items.length === 0 ? (
                 <p>Belum ada jadwal sesuai filter.</p>
               ) : (
-                <div className="overflow-x-auto">
+                <TableRegion label="Jadwal mengajar">
                   <table className="w-full min-w-[800px] text-left text-sm">
                     <thead>
                       <tr className="border-b">
@@ -1105,7 +1106,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                       ))}
                     </tbody>
                   </table>
-                </div>
+                </TableRegion>
               )}
               <div className="flex justify-between">
                 <Button

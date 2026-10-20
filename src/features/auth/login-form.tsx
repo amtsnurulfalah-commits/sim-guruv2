@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 import type { ApiResult } from "@/types/api";
 export function LoginForm() {
@@ -143,10 +144,9 @@ export function LoginForm() {
         <label htmlFor="password" className="text-sm font-semibold">
           Kata sandi
         </label>
-        <input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           autoComplete="current-password"
           required
           className="h-11 w-full rounded-lg border bg-background px-3 focus-visible:outline-2 focus-visible:outline-ring"
