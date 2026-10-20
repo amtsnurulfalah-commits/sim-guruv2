@@ -11,7 +11,7 @@ export default function ReadinessPage() {
     <Workspace>
       <header className="mb-8 space-y-3">
         <p className="text-xs font-semibold tracking-widest uppercase text-primary">
-          Catatan rilis · Tahap 2.4
+          Catatan rilis · Tahap 8
         </p>
         <h1 className="text-3xl font-bold tracking-tight">
           Status pengembangan
@@ -43,12 +43,13 @@ export default function ReadinessPage() {
         <div className="rounded-2xl border bg-card p-6">
           <Clock3 aria-hidden="true" className="mb-4 size-6 text-primary" />
           <h2 className="text-lg font-bold">
-            Pengiriman email menunggu konfigurasi
+            Pengiriman dan migrasi dikendalikan admin
           </h2>
           <p className="mt-3 text-sm leading-7 text-muted-foreground">
-            Antrean dan adapter tersedia. Pengiriman nyata belum diaktifkan
-            karena konfigurasi penyedia email, pengirim terverifikasi dan akun
-            worker belum lengkap. Akun tanpa email terverifikasi tetap dibatasi.
+            Gmail SMTP, worker dan scheduler tersedia. Pengiriman antrean
+            mengikuti pengaturan admin. Migrasi data dan cutover memerlukan
+            ekspor legacy, rekonsiliasi, bukti pemulihan dan persetujuan
+            operasional.
           </p>
         </div>
       </section>

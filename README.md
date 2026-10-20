@@ -1,6 +1,6 @@
 # SiM-Guru — Pembangunan Ulang
 
-Tahap saat ini **2.4: jadwal KBM**. Stack: Next.js App Router, TypeScript strict, Tailwind CSS, shadcn/ui source components, Zod, Postgres.js dan Argon2id. Vercel untuk hosting; Supabase PostgreSQL/Storage untuk data. Autentikasi dikelola SiM-Guru sendiri, tanpa Central SSO dan tanpa Supabase Auth.
+Tahap implementasi saat ini **8.1–8.5: kesiapan migrasi dan cutover**. Migrasi data nyata, restore native dan UAT/cutover masih memerlukan bukti operasional. Stack: Next.js App Router, TypeScript strict, Tailwind CSS, shadcn/ui source components, Zod, Postgres.js dan Argon2id. Vercel untuk hosting; Supabase PostgreSQL/Storage untuk data. Autentikasi dikelola SiM-Guru sendiri, tanpa Central SSO dan tanpa Supabase Auth.
 
 ## Menjalankan
 
@@ -24,7 +24,7 @@ npm run env:check -- core
 npm run env:check -- all
 ```
 
-`check` mencakup lint, typecheck, unit, crypto, integrasi SQL/HTTP handler dan build. `db:migrate` tanpa --apply hanya menampilkan rencana. `env:check -- all` sengaja gagal sampai layanan opsional yang terkait tahap berikutnya juga diisi. Detail hasil dan batas pengujian: [Tahap 2.4](docs/verification/Tahap_2_4.md).
+`check` mencakup lint, typecheck, unit, crypto, integrasi SQL/HTTP handler dan build. `db:migrate` tanpa --apply hanya menampilkan rencana. `env:check -- all` sengaja gagal sampai layanan opsional yang terkait tahap berikutnya juga diisi. Detail hasil dan batas pengujian terbaru: [Tahap 8](docs/verification/Tahap_8.md).
 
 ## Konfigurasi
 
@@ -36,9 +36,9 @@ Cookie sesi HttpOnly, Secure production, SameSite=Lax; tidak ada token/role pada
 
 ## Database dan deployment
 
-Sebelas migrasi domain tercatat dengan checksum pada ledger aplikasi. CLI apply memakai MIGRATION_DATABASE_URL terpisah, flag --apply dan --allow-remote untuk target remote. Bootstrap admin memakai koneksi operator tersendiri dan input password tersembunyi; tidak ada akun/password default atau seed finansial dummy.
+Dua puluh tiga migrasi domain tersedia dengan checksum pada ledger aplikasi. CLI apply memakai MIGRATION_DATABASE_URL terpisah, flag --apply dan --allow-remote untuk target remote. Bootstrap admin memakai koneksi operator tersendiri dan input password tersembunyi; tidak ada akun/password default atau seed finansial dummy.
 
-Proyek Supabase dan Vercel telah dibuat. Sebelas migrasi SQL remote sudah diterapkan. Koneksi Vercel→Transaction pooler terverifikasi dengan dua LOGIN terpisah dan verifikasi sertifikat TLS. Bukti runtime dan batas penerimaan ada di docs/verification/Pooler_Production.md. Onboarding, profil, OTP dan pemulihan tersedia pada Tahap1.5; pengiriman nyata menunggu provider email terkonfigurasi. Detail operasional:
+Proyek Supabase dan Vercel telah dibuat. Penerapan remote setiap rilis harus diperiksa terhadap ledger migrasi. Koneksi Vercel→Transaction pooler terverifikasi dengan dua LOGIN terpisah dan verifikasi sertifikat TLS. Bukti runtime dan batas penerimaan ada di docs/verification/Pooler_Production.md. Onboarding, profil, OTP dan pemulihan tersedia pada Tahap1.5; pengiriman nyata menunggu provider email terkonfigurasi. Detail operasional:
 
 - [Deployment Vercel/Supabase](docs/operations/Deployment_Vercel_Supabase.md)
 - [Pengiriman OTP dan konfigurasi email](docs/operations/Pengiriman_OTP.md)
@@ -57,7 +57,7 @@ Vercel memakai root proyek ini, Next.js, Node24, install npm ci, build npm run b
 
 Tersedia: autentikasi internal, akun/onboarding/OTP dan Gmail SMTP, pengguna, master akademik/tarif/tunjangan, kalender/DayContext, jadwal KBM, kehadiran/izin, rekap siswa, jurnal/ledger, piket/upacara/substitusi/JTM, ujian/BAP dan acara. Tahap6 menambahkan bonus libur, transport, engine honor tunggal, finalisasi/snapshot immutable, koreksi, riwayat/slip/PDF/cetak/XLSX dan verifikasi dokumen publik. Baca [runbook Tahap6](docs/operations/Honorarium_Tahap_6.md).
 
-Berikutnya: pengumuman, pengaturan operasional lengkap, worker/reminder/cron termasuk notifikasi honor (Tahap7), integrasi Storage dan UAT/cutover lengkap. Posting libur dan finalisasi honor Tahap6 dijalankan manual melalui UI; antrean notifikasi tersedia, belum ada pengiriman honor otomatis.
+Tahap7 menyediakan pengumuman, pengaturan, worker/reminder dan scheduler dengan switch pengiriman terpisah. Tahap8 menyediakan staging admin, normalisasi/impor/reconciliation operator, backup terenkripsi dan gate cutover. Baca [runbook migrasi/cutover](docs/operations/Migrasi_Cutover_Tahap_8.md). Data operasional lama, restore native, UAT bisnis dan cutover nyata belum diverifikasi; jangan mengaktifkan seluruh pengiriman sebelum antrean dan penerima ditinjau.
 
 Acuan desain ada di docs/reference; kemajuan aktual di docs/parity/IMPLEMENTATION_STATUS.md. `npm run test:db` memakai PGlite in-memory. `npm run test:db:native` khusus database lokal disposable kosong berakhiran _test; tidak dijalankan otomatis terhadap proyek produksi. Pengujian MCP remote tidak menggantikan uji TCP/pooler dan browser produksi.
 
