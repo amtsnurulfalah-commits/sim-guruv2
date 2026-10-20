@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { TeacherPicker, type TeacherChoice } from "./teacher-picker";
 import { useEffect, useRef, useState } from "react";
 import { masterRequest } from "../masters/api";
 import { wibDate } from "../../lib/calendar/schemas";
@@ -126,6 +127,7 @@ export function FinanceManager({
     [error, setError] = useState(""),
     [message, setMessage] = useState(""),
     [verifyLink, setVerifyLink] = useState("");
+  const [blockTeacher, setBlockTeacher] = useState<TeacherChoice | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const c = new AbortController();
@@ -655,20 +657,20 @@ export function FinanceManager({
           </section>
           <section className={panel}>
             <h2 className="font-semibold">Blok transportasi</h2>
+            <TeacherPicker value={blockTeacher} onChange={setBlockTeacher} />
             <DataForm
               fields={[
-                {
-                  key: "userId",
-                  label: "ID guru (kosong untuk semua guru)",
-                  optional: true,
-                },
                 { key: "from", label: "Dari tanggal", type: "date" },
                 { key: "to", label: "Sampai tanggal", type: "date" },
                 reason,
               ]}
               label="Simpan blok transportasi"
               busy={busy}
-              onSave={(data) => run(() => post("block", data))}
+              onSave={(data) =>
+                run(() =>
+                  post("block", { ...data, userId: blockTeacher?.id ?? null }),
+                )
+              }
             />
             {operations?.blocks
               .filter((b) => b.active)
