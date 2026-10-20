@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { LiveSummary } from "./live-summary";
 import { DayContextCard } from "@/features/calendar/day-context-card";
-import { ArrowRight, BookOpenCheck, ShieldCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModuleCards } from "./module-cards";
 import type { dashboardDto } from "@/server/dashboard/query";
@@ -25,6 +26,7 @@ export function DashboardView({
         </p>
       </header>
       <DayContextCard />
+      <LiveSummary />
       <section
         className="grid gap-5 md:grid-cols-2"
         aria-label="Akses yang tersedia"
@@ -45,22 +47,6 @@ export function DashboardView({
               Kelola akun <ArrowRight aria-hidden="true" />
             </Link>
           </Button>
-        </div>
-        <div className="rounded-2xl border bg-card p-6">
-          <BookOpenCheck
-            className="mb-5 size-7 text-primary"
-            aria-hidden="true"
-          />
-          <h2 className="text-lg font-bold">Kegiatan belum dapat dicatat</h2>
-          <p className="mt-2 text-sm leading-7 text-muted-foreground">
-            Jadwal, kehadiran, jurnal dan honorarium belum diaktifkan. Ringkasan
-            kegiatan serta nominal akan muncul setelah modul sumber datanya
-            tersedia.
-          </p>
-          <p className="mt-4 text-xs leading-6 text-muted-foreground">
-            Belum tersedia bukan berarti jumlah kegiatan atau honorarium
-            bernilai nol.
-          </p>
         </div>
       </section>
       {data.user.role === "admin" && (

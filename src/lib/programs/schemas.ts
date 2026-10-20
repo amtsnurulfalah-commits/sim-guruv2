@@ -204,6 +204,7 @@ export const eventBlockSchema = z
   .object({
     ...base,
     eventId: uuid.nullable(),
+    eventType: z.enum(["rutin", "insidental"]).nullable().default(null),
     dateStart: date,
     dateEnd: date,
     message: z.string().trim().min(5).max(500),
@@ -318,6 +319,7 @@ export type EventBoard = {
   blocks: {
     id: string;
     event_id: string | null;
+    event_type: "rutin" | "insidental" | null;
     date_start: string;
     date_end: string;
     message: string;
