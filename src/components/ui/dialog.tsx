@@ -7,7 +7,7 @@ import { Button } from "./button";
 /** Source-owned shadcn pattern: Radix supplies modal focus, inertness and restoration. */
 export function FormDialog({
   title,
-  description = "Lengkapi isian, lalu simpan perubahan. Isian bertanda * wajib diisi.",
+  description = "Lengkapi isian yang diperlukan dan periksa kembali sebelum melanjutkan. Isian bertanda * wajib diisi.",
   trigger,
   children,
   busy = false,

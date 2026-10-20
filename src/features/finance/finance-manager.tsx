@@ -312,7 +312,7 @@ export function FinanceManager({
             Tarif per JTM dan tunjangan memakai versi yang berlaku pada akhir
             bulan; tunjangan tidak diprorata. Proyeksi mencakup hak libur
             mendatang, sedangkan transport hanya memakai bukti kehadiran aktual.
-            Nilai final berasal dari snapshot penerbitan.
+            Nilai final mengikuti rincian saat honorarium diterbitkan.
           </p>
           {!bundle ? (
             <p role="status">Memuat perhitungan…</p>
@@ -352,7 +352,8 @@ export function FinanceManager({
               </p>
               <DataForm
                 fields={[reason]}
-                label="Pratinjau finalisasi"
+                label="Tinjau finalisasi honorarium"
+                submitLabel="Buat pratinjau finalisasi"
                 busy={busy}
                 onSave={(data) =>
                   formRun(
@@ -449,7 +450,7 @@ export function FinanceManager({
           <p className="text-sm">{slip.trxId}</p>
           {slip.corrected && (
             <p className="text-amber-800">
-              Dokumen ini memiliki koreksi terkait; snapshot asli tetap
+              Dokumen ini memiliki koreksi terkait; rincian dokumen asli tetap
               tersimpan.
             </p>
           )}
@@ -472,7 +473,7 @@ export function FinanceManager({
               Unduh PDF terverifikasi
             </button>
             <button className={secondary} onClick={() => window.print()}>
-              Cetak
+              Cetak slip honorarium
             </button>
             <button
               className={secondary}
@@ -496,7 +497,8 @@ export function FinanceManager({
           </div>
           <DataForm
             fields={[reason]}
-            label="Ajukan koreksi"
+            label="Ajukan koreksi honorarium"
+            submitLabel="Kirim permintaan koreksi"
             description={
               "Slip " + slip.trxId + ". Jelaskan alasan permintaan koreksi."
             }
@@ -509,8 +511,8 @@ export function FinanceManager({
             <details className="print:hidden">
               <summary>Koreksi administratif ke periode berikutnya</summary>
               <p className="my-2 text-sm">
-                Isi seluruh basis yang benar. Sistem memakai tarif snapshot asli
-                dan menghitung selisih terhadap koreksi terakhir.
+                Isi seluruh basis yang benar. Sistem memakai tarif saat
+                penerbitan dan menghitung selisih terhadap koreksi terakhir.
               </p>
               <DataForm
                 key={slip.id}
@@ -538,7 +540,8 @@ export function FinanceManager({
                   },
                   reason,
                 ]}
-                label="Pratinjau koreksi"
+                label="Tinjau koreksi honorarium"
+                submitLabel="Buat pratinjau koreksi"
                 busy={busy}
                 onSave={(data) =>
                   formRun(
@@ -566,8 +569,9 @@ export function FinanceManager({
             </h2>
             <p className="text-sm">
               Posting hari ini mulai 16.00 WIB. Pengecualian beralasan hanya
-              untuk hak belum diposting; pembatalan run mengembalikannya menjadi
-              tertunda.
+              untuk hak belum diposting; pembatalan penerbitan mengembalikannya
+              menjadi tertunda. Posting langsung mencatat hak yang memenuhi
+              syarat. Pengecualian menampilkan pratinjau untuk dikonfirmasi.
             </p>
             <DataForm
               fields={[
@@ -586,7 +590,8 @@ export function FinanceManager({
                 },
                 reason,
               ]}
-              label="Jalankan tindakan libur"
+              label="Atur honorarium hari libur"
+              submitLabel="Jalankan tindakan hari libur"
               busy={busy}
               onSave={(data) =>
                 data.operation === "waive"
@@ -643,7 +648,8 @@ export function FinanceManager({
                   </summary>
                   <DataForm
                     fields={[reason]}
-                    label="Pratinjau pembatalan run"
+                    label="Tinjau pembatalan penerbitan"
+                    submitLabel="Buat pratinjau pembatalan"
                     busy={busy}
                     onSave={(data) =>
                       formRun(
@@ -676,7 +682,8 @@ export function FinanceManager({
                 { key: "to", label: "Sampai tanggal", type: "date" },
                 reason,
               ]}
-              label="Simpan blok transportasi"
+              label="Tambah blok transportasi"
+              submitLabel="Simpan blok transportasi"
               description={
                 "Sasaran: " +
                 (blockTeacher?.name ?? "semua guru") +
@@ -698,7 +705,8 @@ export function FinanceManager({
                   </summary>
                   <DataForm
                     fields={[reason]}
-                    label="Nonaktifkan blok"
+                    label="Nonaktifkan blok transportasi"
+                    submitLabel="Konfirmasi penonaktifan blok"
                     busy={busy}
                     onSave={(data) =>
                       formRun(() =>
@@ -796,7 +804,7 @@ export function FinanceManager({
               })
             }
           >
-            Konfirmasi dan simpan
+            Konfirmasi perubahan honorarium
           </button>
           <button
             className={secondary}

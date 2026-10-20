@@ -8,21 +8,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const steps = [
   {
     number: "01",
-    title: "Kegiatan pembelajaran",
+    title: "Periksa jadwal",
     description: "Jadwal, kehadiran, dan jurnal dalam satu ruang kerja.",
-    state: "Tersedia",
   },
   {
     number: "02",
-    title: "Akun dan akses",
-    description: "Login internal, aktivasi akun, dan kewenangan pengguna.",
-    state: "Tersedia",
+    title: "Catat kegiatan",
+    description:
+      "Lengkapi kehadiran, rekap siswa, dan jurnal sesuai penugasan.",
   },
   {
     number: "03",
-    title: "Kegiatan dan administrasi",
-    description: "Jadwal, kehadiran, jurnal, ujian, dan honorarium.",
-    state: "Tersedia",
+    title: "Pantau administrasi",
+    description: "Tinjau riwayat kegiatan dan rincian honorarium Anda.",
   },
 ];
 export default function HomePage() {
@@ -72,7 +70,7 @@ export default function HomePage() {
                 href="/kesiapan"
                 className="font-semibold text-primary underline underline-offset-4"
               >
-                Lihat status pengembangan
+                Panduan penggunaan SiM-Guru
               </Link>
             </p>
             <div className="mt-8 flex items-center gap-2 text-xs text-muted-foreground">
@@ -83,10 +81,10 @@ export default function HomePage() {
           <Card className="overflow-hidden self-start shadow-sm">
             <CardHeader className="border-b bg-muted/40 p-6">
               <p className="mb-2 text-xs tracking-widest text-muted-foreground uppercase">
-                Langkah pembangunan
+                Alur kerja SiM-Guru
               </p>
               <CardTitle className="text-xl">
-                Dibangun secara bertahap
+                Mulai dari kegiatan harian
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-7 p-6">
@@ -101,11 +99,6 @@ export default function HomePage() {
                     <h3 className="font-semibold">{step.title}</h3>
                     <p className="mt-1 text-sm leading-6 text-muted-foreground">
                       {step.description}
-                    </p>
-                    <p
-                      className={`mt-2 text-xs font-medium ${index === 0 ? "text-primary" : "text-muted-foreground"}`}
-                    >
-                      {step.state}
                     </p>
                   </div>
                 </div>

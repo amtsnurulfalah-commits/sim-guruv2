@@ -149,8 +149,9 @@ export const modules: readonly AppModule[] = [
     slug: "migrasi",
     href: "/admin/migrasi",
     available: true,
-    title: "Migrasi dan kesiapan",
-    description: "Staging privat, rekonsiliasi dan bukti kesiapan peluncuran.",
+    title: "Migrasi data",
+    description:
+      "Periksa data lama, selesaikan perbedaan, dan tinjau bukti migrasi.",
     group: "Administrasi",
     stage: "8.1–8.5",
     adminOnly: true,

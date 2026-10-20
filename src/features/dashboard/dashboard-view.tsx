@@ -60,7 +60,10 @@ export function DashboardView({
           </section>
         )}
       </section>
-      <section aria-labelledby="module-heading">
+      <section
+        className="page-section rounded-2xl border bg-card p-5"
+        aria-labelledby="module-heading"
+      >
         <div className="mb-5 space-y-2">
           <h2 id="module-heading" className="text-xl font-bold">
             Modul ruang kerja

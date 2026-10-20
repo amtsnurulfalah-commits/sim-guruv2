@@ -718,9 +718,10 @@ export function CalendarManager() {
               ))}
             </div>
             <p className="text-sm leading-6">
-              Jadwal KBM telah terhubung. Tidak ada bonus/jurnal yang dihasilkan
-              tahap ini. Jika modul penugasan/keuangan dipasang tanpa integrasi
-              pemeriksaan, perubahan ditolak oleh server.
+              Periksa perubahan konteks dan dampak pada kegiatan sebelum
+              mengonfirmasi. Perubahan kalender tidak otomatis membuat jurnal
+              atau bonus. Data yang sudah digunakan atau difinalisasi tetap
+              dilindungi; perubahan yang tidak memenuhi aturan akan ditolak.
             </p>
             {error && <p role="alert">{error}</p>}
             <div className="flex justify-end gap-3">

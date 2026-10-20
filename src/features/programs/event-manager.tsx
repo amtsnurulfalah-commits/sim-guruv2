@@ -214,7 +214,8 @@ export function EventManager({
           <DataForm
             key={date + revision}
             busy={busy}
-            label="Simpan kehadiran"
+            label="Catat kehadiran peserta"
+            submitLabel="Simpan kehadiran"
             fields={[
               {
                 key: "eventId",
@@ -265,7 +266,8 @@ export function EventManager({
               <DataForm
                 key={a.id + a.version}
                 busy={busy}
-                label="Kirim jurnal sekali"
+                label="Tulis jurnal acara"
+                submitLabel="Kirim jurnal acara"
                 fields={[
                   {
                     key: "description",
@@ -312,7 +314,7 @@ export function EventManager({
         <>
           <section className={panel}>
             <h2 className="font-semibold">
-              {edit ? "Edit" : "Tambah"} definisi acara
+              {edit ? "Ubah" : "Tambah"} definisi acara
             </h2>
             <label>
               Jenis acara
@@ -327,16 +329,21 @@ export function EventManager({
             </label>
             {edit && (
               <button className={secondary} onClick={() => setEdit(null)}>
-                Batal edit
+                Batal mengubah acara
               </button>
             )}
             <DataForm
-              description={"Acara " + type + ". Periksa tanggal, waktu, dan sasaran sebelum menyimpan."}
+              description={
+                "Acara " +
+                type +
+                ". Periksa tanggal, waktu, dan sasaran sebelum menyimpan."
+              }
               openOnMount={Boolean(edit)}
               onDismiss={() => setEdit(null)}
               key={(edit?.id ?? "new") + type}
               busy={busy}
-              label="Simpan acara"
+              label={edit ? "Ubah acara" : "Tambah acara"}
+              submitLabel="Simpan acara"
               fields={masterFields}
               onSave={async (values) => {
                 const { reason, ...data } = values;
@@ -372,7 +379,7 @@ export function EventManager({
                     setType(e.type);
                   }}
                 >
-                  Edit
+                  Ubah acara
                 </button>
                 <button
                   disabled={busy}
@@ -392,7 +399,7 @@ export function EventManager({
                     )
                   }
                 >
-                  Pratinjau hapus…
+                  Tinjau penghapusan acara
                 </button>
               </article>
             ))}
@@ -417,7 +424,8 @@ export function EventManager({
             <DataForm
               key={date + revision}
               busy={busy}
-              label="Aktifkan blok"
+              label="Tambah blokir jurnal acara"
+              submitLabel="Aktifkan blokir jurnal"
               fields={[
                 {
                   key: "eventType",

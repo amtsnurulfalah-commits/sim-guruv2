@@ -9,7 +9,7 @@ const pages: Record<string, string> = {
   profil: "Profil",
   onboarding: "Pengamanan akun",
   dashboard: "Dashboard",
-  kesiapan: "Status pengembangan",
+  kesiapan: "Panduan aplikasi",
   pemulihan: "Pemulihan akun",
   input: "Input data",
   riwayat: "Riwayat",

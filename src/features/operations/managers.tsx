@@ -196,7 +196,7 @@ export function AnnouncementManager() {
           </p>
           <p className="whitespace-pre-wrap">{a.body}</p>
           <button className={button} onClick={() => selectEdit(a)}>
-            Ubah / nonaktifkan
+            Ubah pengumuman
           </button>
         </section>
       ))}
@@ -229,33 +229,53 @@ export function OperationsManager() {
       <h1 className="text-2xl font-bold">Pengaturan operasional</h1>
       {error && <p role="alert">{error}</p>}
       <section className={panel}>
-        <h2>Maintenance {data.maintenanceActive ? "aktif" : "tidak aktif"}</h2>
+        <h2>
+          Pemeliharaan aplikasi{" "}
+          {data.maintenanceActive ? "aktif" : "tidak aktif"}
+        </h2>
         <p>
           Admin dan pemulihan akun tetap tersedia. Waktu terjadwal memakai ISO
           8601 dengan zona, contoh 2026-11-01T20:00:00+07:00.
         </p>
+        <dl className="grid gap-3 rounded-xl border bg-muted/40 p-4 sm:grid-cols-3">
+          {(
+            [
+              ["Email pengumuman dan kegiatan", c.mailEnabled],
+              ["Email aktivasi dan pengamanan akun", c.securityMailEnabled],
+              ["Pekerjaan otomatis", c.jobsEnabled],
+            ] as const
+          ).map(([name, enabled]) => (
+            <div key={String(name)}>
+              <dt className="text-sm text-muted-foreground">{name}</dt>
+              <dd className="font-semibold">
+                {enabled ? "Aktif" : "Nonaktif"}
+              </dd>
+            </div>
+          ))}
+        </dl>
         <DataForm
           key={data.config.version}
           busy={busy}
-          label="Simpan pengaturan"
+          label="Atur operasional aplikasi"
+          submitLabel="Simpan pengaturan operasional"
           fields={[
-            bool("mailEnabled", "Pengiriman email domain", c.mailEnabled),
+            bool("mailEnabled", "Email pengumuman dan kegiatan", c.mailEnabled),
             bool("jobsEnabled", "Pekerjaan otomatis", c.jobsEnabled),
             bool(
               "securityMailEnabled",
-              "Pengiriman antrean email keamanan",
+              "Email aktivasi dan pengamanan akun",
               c.securityMailEnabled,
             ),
-            bool("maintenance", "Maintenance segera", c.maintenance),
+            bool("maintenance", "Aktifkan pemeliharaan", c.maintenance),
             {
               key: "maintenanceStart",
-              label: "Mulai maintenance",
+              label: "Mulai pemeliharaan",
               optional: true,
               value: c.maintenanceStart ?? undefined,
             },
             {
               key: "maintenanceEnd",
-              label: "Selesai maintenance",
+              label: "Selesai pemeliharaan",
               optional: true,
               value: c.maintenanceEnd ?? undefined,
             },
@@ -284,7 +304,7 @@ export function OperationsManager() {
         />
       </section>
       <section className={panel}>
-        <h2 className="font-bold">Blok operasional</h2>
+        <h2 className="font-bold">Pembatasan kegiatan</h2>
         <p>
           <a className="underline" href="/admin/jurnal">
             Blok jurnal mata pelajaran
@@ -302,8 +322,8 @@ export function OperationsManager() {
       <section className={panel}>
         <h2 className="font-bold">Antrean email (100 terbaru)</h2>
         <p>
-          Status unknown memerlukan pemeriksaan penerimaan; tidak dikirim ulang
-          otomatis.
+          Status pengiriman tidak pasti memerlukan pemeriksaan penerimaan; tidak
+          dikirim ulang otomatis.
         </p>
         {data.outbox.length === 0 && <EmptyState title="Belum ada antrean." />}
         {data.outbox.map((o) => (
@@ -316,8 +336,13 @@ export function OperationsManager() {
                 busy={busy}
                 label={
                   o.state === "failed"
-                    ? "Coba ulang kegagalan"
-                    : "Simpan rekonsiliasi"
+                    ? "Tinjau pengiriman ulang"
+                    : "Tinjau status pengiriman"
+                }
+                submitLabel={
+                  o.state === "failed"
+                    ? "Jadwalkan pengiriman ulang"
+                    : "Simpan hasil pemeriksaan"
                 }
                 fields={[
                   { key: "reason", label: "Alasan / bukti pemeriksaan" },
@@ -351,7 +376,10 @@ export function OperationsManager() {
       </section>
       <section className={panel}>
         <h2 className="font-bold">Pekerjaan terjadwal (100 terbaru)</h2>
-        <p>Worker terakhir: {data.lastWorkerAt ?? "Belum ada eksekusi"}</p>
+        <p>
+          Pemrosesan otomatis terakhir:{" "}
+          {data.lastWorkerAt ?? "Belum ada eksekusi"}
+        </p>
         {data.jobs.map((j) => (
           <div key={j.business_key}>
             <p>
@@ -360,7 +388,8 @@ export function OperationsManager() {
             {j.state === "failed" && (
               <DataForm
                 busy={busy}
-                label="Coba ulang pekerjaan"
+                label="Tinjau pengulangan pekerjaan"
+                submitLabel="Jadwalkan ulang pekerjaan"
                 fields={[{ key: "reason", label: "Alasan percobaan ulang" }]}
                 onSave={async (d) => {
                   setBusy(true);
