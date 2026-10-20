@@ -17,7 +17,7 @@ def check(path, expected, *, method="GET", headers=None, data=None):
     if path == "/api/health":
         assert json.loads(body)["data"]["phase"] == "7.5"
     if path.startswith("/admin/") or path == "/dashboard":
-        assert "/login" in url
+        assert "/login" in url or b"NEXT_REDIRECT;replace;/login;307;" in body
     results.append({"path": path, "method": method, "status": status, "passed": True})
 
 check("/api/health", 200)

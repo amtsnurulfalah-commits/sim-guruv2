@@ -1,3 +1,4 @@
+import { deliverBatch } from "@/server/operations/batch";
 import { getWorkerDatabase } from "@/server/auth/runtime";
 import { requireEnvironment } from "@/server/env";
 import { DomainOutboxWorker } from "@/server/operations/worker";
@@ -7,6 +8,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 export async function GET(request: Request) {
+  const deadline = Date.now() + 25000;
   const token =
     request.headers.get("authorization")?.replace(/^Bearer /, "") ?? "";
   if (!/^[a-f0-9]{96}$/.test(token))
@@ -39,13 +41,11 @@ export async function GET(request: Request) {
     requireEnvironment("core").APP_URL,
   );
   const domain = new DomainOutboxWorker(db, mail);
-  // Separate bounded batches: security remains available during maintenance.
-  const [secured, business] = await Promise.all([
-    policy.securityMailEnabled
-      ? Promise.all(Array.from({ length: 3 }, () => security.deliverOne()))
-      : Promise.resolve([]),
-    Promise.all(Array.from({ length: 5 }, () => domain.deliverOne())),
-  ]);
+  // max=1 database pool: never overlap claim queries. Leave time for SMTP completion.
+  const secured = policy.securityMailEnabled
+    ? await deliverBatch(security, 3, deadline)
+    : [];
+  const business = await deliverBatch(domain, 5, deadline);
   return Response.json(
     { jobs, security: secured, domain: business },
     { headers: { "Cache-Control": "no-store" } },
