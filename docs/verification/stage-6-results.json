@@ -1,0 +1,38 @@
+{
+  "phase": "6.1\u20136.5",
+  "implementation": true,
+  "local": {
+    "lint": "passed",
+    "typecheck": "passed",
+    "unitTests": 22,
+    "cryptoExportTests": 13,
+    "databaseRunnerTests": 296,
+    "runnerTestsIncludingParentSuites": 331,
+    "substantiveTests": 316,
+    "financeRunnerTests": 25,
+    "financeSubstantiveTests": 24,
+    "build": "passed",
+    "cleanInstallAndUpgrade": "passed",
+    "xlsxZipXmlOpenpyxl": "passed"
+  },
+  "database": {
+    "migrated": true,
+    "domainMigrationCount": 19,
+    "forcedRlsTables": 69,
+    "securityAdvisorFindings": 0,
+    "nativeRollbackChecks": 9,
+    "remainingProbeUsers": 0
+  },
+  "limits": {
+    "browserRealAccountCrudVerified": false,
+    "nativeTwoConnectionRaceVerified": false,
+    "automatedHolidayFinalization": "stage7",
+    "honorNotificationDelivery": "queued; worker_stage7"
+  },
+  "sendsEmail": false,
+  "production": {
+    "released": false,
+    "pending": "Vercel deployment and public HTTP verification"
+  },
+  "formulaVersion": "honor-v1.1"
+}

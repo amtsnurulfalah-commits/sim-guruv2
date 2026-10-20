@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const config: NextConfig = {
   outputFileTracingIncludes: {
+    "/api/honorarium/[action]": ["./src/server/activities/assets/DejaVuSans.ttf"],
     "/api/activities/export": ["./src/server/activities/assets/DejaVuSans.ttf"],
   },
   poweredByHeader: false,

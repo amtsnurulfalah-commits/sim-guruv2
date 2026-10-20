@@ -1,0 +1,34 @@
+▶ Tahap 6 — holiday, transport, canonical honor and immutable final
+  ✔ F01 upgrade preserves users, idempotent migration and all69 tables FORCE RLS (75.285642ms)
+  ✔ F02 roles, onboarding, strict payload and period shape are enforced (42.967613ms)
+  ✔ F03 transport exact 333.34/666.67 boundaries and no per-day rounding (3.068381ms)
+  ✔ F03b exact monthly rational boundary: 1000/3 + .02/3 settles to500, not0 (4.231355ms)
+  ✔ F04 two holiday schedules sum 2+3; projection never duplicates realized (46.075252ms)
+  ✔ F05 holiday generate is idempotent by occurrence and run effects (42.893543ms)
+  ✔ F06 cancel preview reverses only selected run; pending remains visible then regenerate (70.514297ms)
+  ✔ F07 durable transport uses actual minutes, clipped leave, caps ratio, no event-only pay (21.90068ms)
+  ✔ F08 missing ordinary schedule is zero; explicit extra attendee uses actual denominator (17.824244ms)
+  ✔ F09 transport block inclusive global scope and stale removal version (30.994787ms)
+  ✔ F09b event H-1 3×0.8=2.4 flows into the same monthly engine (46.890631ms)
+  ✔ F09c exception is previewed, audited and never silently included in projection (45.955464ms)
+  ✔ F10 current month finalization is blocked atomically (18.986258ms)
+  ✔ F11 stale preview detects source changes and actor ownership (30.649936ms)
+  ✔ F11b failure on the second slip rolls back every slip, period and outbox row (20.35651ms)
+  ✔ F12 finalize all recipients including zero; recap equals immutable slip and idempotent replay (36.740288ms)
+  ✔ F13 final guard covers old journal/attendance, transport, ledger and immutable snapshots (9.764702ms)
+  ✔ F14 public verification masks identity, excludes money, hashes token only and marks corrections later (10.362648ms)
+  ✔ F15 correction uses previous corrected basis: +10001 then -2000, original immutable (26.89088ms)
+  ✔ F16 competing correction previews reject stale sequence and final target (15.815675ms)
+  ✔ F17 correction request scoped to own statement and history filters do not leak (18.217708ms)
+  ✔ F18 negative correction excess blocks target finalization, never negative payout (17.641843ms)
+  ✔ F19 zero entire month still creates final period and zero statements (26.966592ms)
+  ✔ F20 real HTTP guards, no-store, PDF ownership and persistent verify rate limit (309.758692ms)
+✔ Tahap 6 — holiday, transport, canonical honor and immutable final (3466.175092ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4244.402957

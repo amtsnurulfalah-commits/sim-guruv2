@@ -1,4 +1,4 @@
-# Status implementasi pada Tahap 4.4
+# Status implementasi pada Tahap 6.5
 
 | Lingkup | Status | Bukti/batas |
 |---|---|---|
@@ -16,7 +16,11 @@
 | Tahap3.5–3.6 ledger dan jurnal | Tersedia | KBM/reversal append-only, H/H-1/konfirmasi, versi/edit/hapus, pemblokiran, riwayat/filter/CSV/PDF; native race dan browser nyata belum dibuktikan |
 | Tahap4.1–4.2 piket/upacara | Tersedia | Jadwal, konfirmasi/cabut, kredit4/5, panel operasional dan precedence waktu; hak piket memerlukan konfirmasi+time-in |
 | Tahap4.3–4.4 substitusi/JTM | Tersedia | Preview/commit atomik, replace gagal mempertahankan penugasan lama, pembatalan scoped, multi-alokasi4dp, conservation/reversal; native race dan browser nyata belum dibuktikan |
-| F10–F19 fitur bisnis berikutnya | Bertahap | Ujian/BAP, acara, honor/slip/otomasi menyusul; tidak ada transaksi dummy |
+| Tahap5 ujian/BAP/acara | Tersedia | Hierarki ujian, konfirmasi/pengganti/BAP, kredit, acara dan jurnal; lihat verifikasi Tahap5 |
+| Tahap6.1 bonus libur | Tersedia manual | Entitlement per occurrence, projection/post/cancel/reversal/waive; scheduler Tahap7 |
+| Tahap6.2 transport | Tersedia | Durasi/izin/extra, blok, presisi dan pembulatan bulanan |
+| Tahap6.3–6.4 honor/final | Tersedia | Engine tunggal, semua slip atomik, snapshot/lines immutable, periode nol dan guard lintas mutasi |
+| Tahap6.5 dokumen/koreksi | Tersedia | Riwayat scoped, PDF/cetak/XLSX, verifikasi token, koreksi selisih bertahap; worker honor Tahap7 |
 | F20 otomasi/UX | Dikerjakan | Shell responsif, sidebar/disclosure/mobile dialog, session/logout bersama dan feedback tersedia; email produksi/job/export menunggu tahap terkait |
 | X01 fondasi lintas domain | Dikerjakan | Metadata migrasi, settings dan audit; master akademik tersedia, kalender/DayContext tersedia; snapshot honor/adapter penugasan menyusul |
 | Native PostgreSQL/Supabase | Fondasi remote terpasang | Dua belas migrasi dan privilege diverifikasi; dua LOGIN melalui pooler Vercel teruji dengan TLS, adapter auth, rollback dan Argon2id; REST acceptance dan browser interaktif masih tertunda |
@@ -28,3 +32,6 @@ Tahap1.6: lihat docs/verification/Tahap_1_6.md. Tahap2.1: lihat docs/verificatio
 Tahap3: lihat docs/verification/Tahap_3.md dan docs/operations/Kehadiran_Jurnal_Tahap_3.md. Gmail SMTP sudah terautentikasi dari Vercel; penerimaan inbox nyata bukan bagian verifikasi ini.
 
 Tahap4: lihat docs/verification/Tahap_4.md dan docs/operations/Piket_Upacara_JTM_Tahap_4.md. Tiga belas migrasi, 45 tabel FORCE RLS dan probe native rollback telah diverifikasi.
+
+
+Tahap6: lihat docs/verification/Tahap_6.md dan docs/operations/Honorarium_Tahap_6.md. Sembilan pemeriksaan native rollback lulus;19migrasi dan69tabel FORCE RLS.316skenario substantif lokal lulus. Browser CRUD produksi dan race native dua koneksi belum terverifikasi; notifikasi honor diantrekan untuk worker Tahap7.

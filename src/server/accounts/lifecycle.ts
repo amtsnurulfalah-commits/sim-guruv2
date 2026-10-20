@@ -69,6 +69,18 @@ export class AccountLifecycleService {
       if (wait > 0) throw new AuthError("RATE_LIMITED", 429, wait);
     }
   }
+  async documentVerifyRate(source: string) {
+    const digest = createHmac("sha256", this.config.hmac)
+      .update("sim-guru:document-verify:v1:" + source)
+      .digest("hex");
+    const wait = (
+      await this.db.query<{ wait: number }>(
+        "select auth_private.consume_document_verify($1) as wait",
+        [digest],
+      )
+    ).rows[0]!.wait;
+    if (wait > 0) throw new AuthError("RATE_LIMITED", 429, wait);
+  }
   async activityRate(source: string, key: string, exporting = false) {
     for (const [scope, value] of [
       ["activity_ip", source],

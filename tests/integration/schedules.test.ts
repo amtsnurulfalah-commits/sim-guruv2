@@ -87,7 +87,7 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
   ]);
   await fixture("schedule.onboard", "admin", false);
   await t.test(
-    "SC01 incremental upgrade preserves identity and all53 RLS tables",
+    "SC01 incremental upgrade preserves identity and all54 RLS tables",
     async () => {
       assert.equal((await applyMigrations(db, migrations)).length, 1);
       assert.equal((await applyMigrations(db, migrations)).length, 0);
@@ -102,7 +102,7 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
             "select count(*)::int as n from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in('app','auth_private','ops') and c.relkind='r' and c.relrowsecurity and c.relforcerowsecurity",
           )
         ).rows[0]!.n,
-        53,
+        54,
       );
     },
   );
@@ -963,7 +963,7 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
   await t.test(
     "SC30 new unsupported finance modules fail closed until adapter integrated",
     async () => {
-      await db.exec("create table finance.honor_periods(id uuid)");
+      await db.exec("alter table finance.honor_periods rename to honor_periods_installed; create table finance.honor_periods(id uuid)");
       await assert.rejects(
         () => create(data({ timeStart: "20:00" })),
         /CONTEXT_DEPENDENCY_UNAVAILABLE/,
@@ -972,7 +972,7 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
         () => schedules.today(guruA, monday),
         /CONTEXT_DEPENDENCY_UNAVAILABLE/,
       );
-      await db.exec("drop table finance.honor_periods");
+      await db.exec("drop table finance.honor_periods; alter table finance.honor_periods_installed rename to honor_periods");
     },
   );
 });
