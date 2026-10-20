@@ -145,6 +145,16 @@ export const modules: readonly AppModule[] = [
     stage: "7.2–7.4",
     adminOnly: true,
   },
+  {
+    slug: "migrasi",
+    href: "/admin/migrasi",
+    available: true,
+    title: "Migrasi dan kesiapan",
+    description: "Staging privat, rekonsiliasi dan bukti kesiapan peluncuran.",
+    group: "Administrasi",
+    stage: "8.1–8.5",
+    adminOnly: true,
+  },
 ];
 export function modulesFor(role: AppRole) {
   return modules.filter((module) => !module.adminOnly || role === "admin");

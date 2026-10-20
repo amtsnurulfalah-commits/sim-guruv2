@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 export const input =
-  "w-full rounded border border-slate-300 bg-white p-2 text-sm text-slate-900";
+  "min-h-11 w-full min-w-0 rounded border border-slate-300 bg-white p-2 text-sm text-slate-900";
 export const button =
-  "rounded bg-blue-800 px-3 py-2 text-sm font-medium text-white disabled:opacity-50";
-export const secondary = "rounded border px-3 py-2 text-sm disabled:opacity-50";
+  "min-h-11 rounded bg-blue-800 px-3 py-2 text-sm font-medium text-white disabled:opacity-50";
+export const secondary =
+  "min-h-11 rounded border px-3 py-2 text-sm disabled:opacity-50";
 export const panel = "space-y-4 rounded-xl border bg-white p-5";
 export type Field = {
   key: string;
@@ -157,6 +158,22 @@ export function ImpactDialog({
   onCancel: () => void;
   busy: boolean;
 }) {
+  const dialog = useRef<HTMLDialogElement>(null),
+    cancel = useRef<HTMLButtonElement>(null),
+    titleId = useId();
+  useEffect(() => {
+    const previous =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const el = dialog.current;
+    if (!el?.open) el?.showModal();
+    cancel.current?.focus();
+    return () => {
+      el?.close();
+      if (previous?.isConnected) previous.focus();
+    };
+  }, []);
   const labels: Record<string, string> = {
     assignments: "Penugasan terdampak",
     baps: "BAP tersimpan",
@@ -170,13 +187,19 @@ export function ImpactDialog({
     operation: "Operasi",
   };
   return (
-    <section
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="impact-title"
-      className={panel + " border-amber-500 bg-amber-50"}
+    <dialog
+      ref={dialog}
+      aria-labelledby={titleId}
+      onCancel={(e) => {
+        e.preventDefault();
+        if (!busy) onCancel();
+      }}
+      className={
+        panel +
+        " m-auto max-h-[calc(100svh-2rem)] w-[min(40rem,calc(100%-2rem))] overflow-y-auto border-amber-500 bg-amber-50 text-slate-900 shadow-xl backdrop:bg-black/45"
+      }
     >
-      <h2 id="impact-title" className="font-semibold">
+      <h2 id={titleId} className="font-semibold">
         Konfirmasi dampak perubahan
       </h2>
       <p>
@@ -198,10 +221,15 @@ export function ImpactDialog({
         <button disabled={busy} className={button} onClick={onConfirm}>
           Saya konfirmasi perubahan ini
         </button>
-        <button disabled={busy} className={secondary} onClick={onCancel}>
+        <button
+          ref={cancel}
+          disabled={busy}
+          className={secondary}
+          onClick={onCancel}
+        >
           Batal
         </button>
       </div>
-    </section>
+    </dialog>
   );
 }

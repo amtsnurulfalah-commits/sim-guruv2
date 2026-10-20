@@ -218,14 +218,14 @@ export function Workspace({
                     : "Ruang guru"
                   : "SiM-Guru"}
               </p>
-              <p className="max-w-56 truncate text-xs text-muted-foreground">
+              <p className="max-w-40 truncate sm:max-w-56 text-xs text-muted-foreground">
                 {session?.user.fullName ?? "Status pengembangan aplikasi"}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden rounded-full border bg-muted px-3 py-1 text-xs sm:inline">
-              Tahap 2.4
+              SiM-Guru
             </span>
             {onLogout ? (
               <Button variant="outline" onClick={onLogout}>

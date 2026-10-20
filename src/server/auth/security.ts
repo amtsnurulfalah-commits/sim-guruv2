@@ -56,7 +56,7 @@ export function sourceIp(request: Request, config: HttpAuthConfig) {
         return ip.slice(7);
     return isIP(ip) === 6 ? new URL(`http://[${ip}]/`).hostname.toLowerCase() : ip;
 }
-export async function boundedJson(request: Request) {
+export async function boundedJson(request: Request, maxBytes = 8192) {
     if (request.headers.get("content-type")?.split(";")[0]?.trim() !== "application/json")
         throw new AuthError("VALIDATION_ERROR", 422);
     const reader = request.body?.getReader();
@@ -70,7 +70,7 @@ export async function boundedJson(request: Request) {
             if (part.done)
                 break;
             size += part.value.byteLength;
-            if (size > 8192) {
+            if (size > maxBytes) {
                 await reader.cancel();
                 throw new AuthError("VALIDATION_ERROR", 422);
             }

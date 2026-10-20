@@ -1,0 +1,17 @@
+import "server-only";
+import { getAuthService, getBusinessDatabase } from "../auth/runtime";
+import { getLifecycleService } from "../accounts/runtime";
+import { requireEnvironment } from "../env";
+import { MigrationService } from "./service";
+import { createMigrationHandler } from "./http";
+export const migrationHandler = createMigrationHandler({
+  auth: getAuthService,
+  rate: getLifecycleService,
+  service: async () => new MigrationService(getBusinessDatabase()),
+  config: () => ({
+    appUrl: requireEnvironment("core").APP_URL,
+    sessionSecret: requireEnvironment("auth").SESSION_SECRET,
+    production: process.env.NODE_ENV === "production",
+    vercel: process.env.VERCEL === "1",
+  }),
+});

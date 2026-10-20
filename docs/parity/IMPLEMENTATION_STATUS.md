@@ -1,4 +1,4 @@
-# Status implementasi pada Tahap 6.5
+# Status implementasi pada Tahap 8.5
 
 | Lingkup | Status | Bukti/batas |
 |---|---|---|
@@ -37,3 +37,8 @@ Tahap4: lihat docs/verification/Tahap_4.md dan docs/operations/Piket_Upacara_JTM
 Tahap6: lihat docs/verification/Tahap_6.md dan docs/operations/Honorarium_Tahap_6.md. Sembilan pemeriksaan native rollback lulus;19migrasi dan69tabel FORCE RLS.316skenario substantif lokal lulus. Browser CRUD produksi dan race native dua koneksi belum terverifikasi; notifikasi honor diantrekan untuk worker Tahap7.
 
 Rilis produksi Tahap6 READY;23pemeriksaan HTTP publik lulus. Lihat stage-6-results.json untuk batas verifikasi dan pekerjaan Tahap7.
+
+
+Tahap7: pengumuman, pengaturan, worker dan scheduler tersedia; pengiriman dikendalikan switch terpisah.
+
+Tahap8.1–8.5: perangkat staging admin, normalisasi/validasi, rencana impor atomik/idempotent, peta ID, rekonsiliasi native typed, backup terenkripsi/restore lokal dan sepuluh gate berbukti tersedia. Migrasi baru menambah lima tabel FORCE RLS (total79 dalam23migrasi). QA lokal sintetis tidak menggantikan ekspor sumber asli, native restore, UAT admin/guru pada perangkat nyata, parallel run dan cutover. Lihat docs/operations/Migrasi_Cutover_Tahap_8.md dan docs/verification/Tahap_8.md; baris historis di atas merekam batas pada tahap asal.
