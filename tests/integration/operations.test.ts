@@ -1,4 +1,5 @@
 import test from "node:test";
+import { deliverBatch } from "../../src/server/operations/batch";
 import assert from "node:assert/strict";
 import { randomBytes, randomUUID } from "node:crypto";
 import { openPgliteDatabase } from "../helpers/pglite-database";
@@ -491,6 +492,58 @@ test("Tahap 7 announcements, maintenance, fenced worker and scheduler", async (t
       ).rows[0]!.value;
       assert.equal(second.announcements, 0);
       assert.equal(second.honor, 0);
+    },
+  );
+  await t.test(
+    "OP16 batches serialize one-connection work, stop empty and respect time budget",
+    async () => {
+      let active = 0,
+        max = 0,
+        calls = 0;
+      const batch = await deliverBatch(
+        {
+          deliverOne: async () => {
+            active++;
+            max = Math.max(max, active);
+            await new Promise((r) => setTimeout(r, 1));
+            active--;
+            calls++;
+            return { processed: 1 };
+          },
+        },
+        5,
+        100,
+        () => 0,
+      );
+      assert.equal(batch.length, 5);
+      assert.equal(calls, 5);
+      assert.equal(max, 1);
+      calls = 0;
+      await deliverBatch(
+        {
+          deliverOne: async () => {
+            calls++;
+            return { processed: 0 };
+          },
+        },
+        5,
+        100,
+        () => 0,
+      );
+      assert.equal(calls, 1);
+      calls = 0;
+      await deliverBatch(
+        {
+          deliverOne: async () => {
+            calls++;
+            return { processed: 1 };
+          },
+        },
+        5,
+        100,
+        () => 100,
+      );
+      assert.equal(calls, 0);
     },
   );
   void adminId;
