@@ -2,8 +2,14 @@
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+  type ReactNode,
+} from "react";
 import {
   BookOpen,
   ClipboardCheck,
@@ -28,8 +34,10 @@ import {
   UserRound,
   X,
   Search,
+  LoaderCircle,
 } from "lucide-react";
 import { Breadcrumbs } from "./breadcrumbs";
+import { NavigationLoading } from "./navigation-loading";
 import { Brand } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 import { modulesFor } from "@/lib/navigation/modules";
@@ -61,6 +69,24 @@ export function Workspace({
   session?: SessionDto;
   onLogout?: () => void;
 }) {
+  const router = useRouter();
+  const [navigating, startNavigation] = useTransition();
+  const [destination, setDestination] = useState<{
+    href: string;
+    label: string;
+  } | null>(null);
+  const [intent, setIntent] = useState<string | null>(null);
+  function navigate(
+    event: { preventDefault: () => void },
+    href: string,
+    label: string,
+  ) {
+    event.preventDefault();
+    if (drawer.current?.open) closeDrawer();
+    if (href === pathname && !navigating) return;
+    setDestination({ href, label });
+    startNavigation(() => router.push(href));
+  }
   const pathname = usePathname(),
     [collapsed, setCollapsed] = useState(false),
     [query, setQuery] = useState(""),
@@ -125,12 +151,14 @@ export function Workspace({
       !matches(label) &&
       !filteredLinks.some((module) => module.title === label) ? null : (
         <Link
-          prefetch={false}
+          prefetch={intent === href ? "auto" : false}
           key={href}
           href={href}
-          onClick={() => {
-            if (drawer.current?.open) closeDrawer();
-          }}
+          onMouseEnter={() => setIntent(href)}
+          onFocus={() => setIntent(href)}
+          onTouchStart={() => setIntent(href)}
+          onNavigate={(event) => navigate(event, href, label)}
+          aria-busy={navigating && destination?.href === href}
           aria-current={
             pathname === href || activeHref === href ? "page" : undefined
           }
@@ -143,7 +171,14 @@ export function Workspace({
             compact && "justify-center",
           )}
         >
-          <Icon className="size-5 shrink-0" aria-hidden="true" />
+          {navigating && destination?.href === href ? (
+            <LoaderCircle
+              className="size-5 shrink-0 motion-safe:animate-spin"
+              aria-hidden="true"
+            />
+          ) : (
+            <Icon className="size-5 shrink-0" aria-hidden="true" />
+          )}
           <span className={compact ? "sr-only" : ""}>{label}</span>
         </Link>
       );
@@ -333,8 +368,17 @@ export function Workspace({
           tabIndex={-1}
           className="workspace-content mx-auto w-full max-w-[1440px] px-4 py-5 outline-none sm:px-8 sm:py-7 xl:px-10"
         >
-          <Breadcrumbs pathname={pathname} role={role} ready={ready} />
-          {children}
+          <Breadcrumbs
+            pathname={navigating && destination ? destination.href : pathname}
+            role={role}
+            ready={ready}
+          />
+          {navigating && destination && (
+            <div data-slot="navigation-pending">
+              <NavigationLoading title={destination.label} />
+            </div>
+          )}
+          <div hidden={navigating}>{children}</div>
         </main>
         <footer className="border-t px-5 py-6 text-xs leading-6 text-muted-foreground sm:px-8">
           SiM-Guru · Sistem Informasi Guru · Ruang kerja madrasah.
