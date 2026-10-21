@@ -25,7 +25,13 @@ dalam DOM panel yang mounted, tidak dipersistenkan ke storage atau URL.
 - Lint dan TypeScript lulus.
 - Unit 30, crypto/adapter/API/export 24, SQL integration 325: seluruh 379 lulus.
 - Build produksi lulus setelah mengganti cache Turbopack lama yang tidak kompatibel.
-- Hasil browser akhir dicatat setelah suite selesai.
+- Suite browser lulus: 252 kombinasi halaman/role/viewport pada 320, 375, 767,
+  768, 1024, 1440, dan 1920px; 4 ukuran interaksi dan 1 CRUD existing.
+- Empat skenario tab akun lulus: keyboard/roving tabIndex, satu panel terlihat,
+  retensi draf, dan tab awal onboarding pada 320/768/1440px; ditambah satu
+  alur OTP sintetis yang mempertahankan challenge setelah berpindah tab.
+- Tidak ada page error, console error tak terduga, atau overflow halaman.
+- Modal pemanggil ActionForm lama dan pengujian double submit tetap lulus.
 
 Pengujian UI memakai fixture localhost disposable. Permintaan email diintersep
 sebagai respons sintetis dan tidak mengirim email/OTP nyata. Pemeriksaan perangkat
