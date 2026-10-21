@@ -134,3 +134,6 @@ export const emailDispatchSchema = z.discriminatedUnion("queued", [
   z.object({queued:z.literal(false),retryAfter:z.number().positive().optional()}),
   z.object({queued:z.literal(true),challengeId:z.uuid(),delivery:z.enum(["accepted","pending","failed","unknown","queued"]).optional()}),
 ]);
+
+export const recoveryAcceptedSchema = z.object({accepted:z.literal(true), challengeId:z.uuid()});
+export const resetProofSchema = z.object({challengeId:z.uuid(), token:z.string().regex(/^[A-Za-z0-9_-]{43}$/)});
