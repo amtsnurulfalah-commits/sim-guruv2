@@ -29,7 +29,15 @@ serta reduced motion tetap mengikuti sistem desain. Tidak ada dependensi aplikas
 - Unit 30, crypto/adapter/API/export 24, integrasi SQL 325: seluruh 379 lulus.
 - Build produksi lulus setelah membuang cache Turbopack lama yang tidak kompatibel.
 - Build dan TypeScript diulang setelah penyesuaian akhir dan lulus.
-- Hasil browser dicatat setelah proses selesai.
+- Browser lokal: 224 kombinasi halaman/role/viewport (320, 375, 767, 768,
+  1024, 1440, 1920px), 4 lebar skenario interaksi, dan 1 skenario CRUD lulus.
+- Tidak ditemukan page error, console error, atau overflow halaman pada matriks.
+- Suite existing mencakup keyboard, drawer sentuh emulasi, fokus modal, dirty guard,
+  validasi/simpan gagal, CRUD master, dan pemulihan fokus.
+- Percobaan awal terhambat binary lama yang tidak tersedia dan ekstraksi arsip.
+  Mode single-process kemudian menutup browser saat tab sentuh ditutup.
+  Pengulangan dengan konfigurasi multiprocess standar menyelesaikan seluruh suite.
+- Pengujian memakai fixture localhost disposable, bukan database atau akun produksi.
 - UAT perangkat fisik dan pembaca layar belum dilakukan.
 
 ## File dan alasan perubahan
