@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { TableRegion } from "@/components/ui/table-region";
 import { EmptyState } from "@/components/feedback/feature-state";
 import { useEffect, useRef, useState, type FormEvent } from "react";
@@ -365,6 +367,7 @@ export function CalendarManager() {
             </select>
           </label>
           <Button variant="outline" onClick={() => setRevision((v) => v + 1)}>
+            <ActionIcon action="refresh" />
             Muat ulang
           </Button>
         </div>
@@ -403,6 +406,7 @@ export function CalendarManager() {
                               variant="outline"
                               onClick={() => selectRow(row)}
                             >
+                              <ActionIcon action="open" />
                               Buka tanggal
                             </Button>
                           </td>
@@ -418,6 +422,7 @@ export function CalendarManager() {
                   disabled={page === 1}
                   onClick={() => setPage((v) => v - 1)}
                 >
+                  <ActionIcon action="previous" />
                   Sebelumnya
                 </Button>
                 <Button
@@ -425,6 +430,7 @@ export function CalendarManager() {
                   disabled={page * 20 >= list.total}
                   onClick={() => setPage((v) => v + 1)}
                 >
+                  <ActionIcon action="next" />
                   Berikutnya
                 </Button>
               </div>
@@ -462,6 +468,7 @@ export function CalendarManager() {
               variant={tab === v ? "default" : "outline"}
               onClick={() => setTab(v)}
             >
+              <ActionIcon action="add" />
               {v === "entry"
                 ? "Catatan tanggal"
                 : v === "range"
@@ -571,6 +578,7 @@ export function CalendarManager() {
                       disabled={periodPage === 1}
                       onClick={() => setPeriodPage((v) => v - 1)}
                     >
+                      <ActionIcon action="previous" />
                       Pilihan sebelumnya
                     </Button>
                     <Button
@@ -580,6 +588,7 @@ export function CalendarManager() {
                       disabled={!periods || periodPage * 20 >= periods.total}
                       onClick={() => setPeriodPage((v) => v + 1)}
                     >
+                      <ActionIcon action="next" />
                       Pilihan berikutnya
                     </Button>
                   </div>
@@ -618,6 +627,7 @@ export function CalendarManager() {
                 label="Alasan perubahan (minimal 5 karakter)"
               />
               <Button type="submit">
+                <ActionIcon action="preview" />
                 {busy ? "Memeriksa…" : "Lihat pratinjau perubahan"}
               </Button>
             </fieldset>
@@ -632,6 +642,7 @@ export function CalendarManager() {
               <input type="hidden" name="action" value="delete" />
               <Field name="reason" label="Alasan menghapus entri tanggal" />
               <Button className="mt-3" type="submit" variant="outline">
+                <ActionIcon action="preview" />
                 Pratinjau penghapusan catatan
               </Button>
             </fieldset>
@@ -649,6 +660,7 @@ export function CalendarManager() {
                 label="Alasan mengembalikan konteks standar"
               />
               <Button className="mt-3" type="submit" variant="outline">
+                <ActionIcon action="preview" />
                 Pratinjau hapus konteks khusus
               </Button>
             </fieldset>
@@ -659,12 +671,14 @@ export function CalendarManager() {
             variant="outline"
             onClick={() => void showHistory("calendar")}
           >
+            <ActionIcon action="history" />
             Riwayat catatan tanggal
           </Button>
           <Button
             variant="outline"
             onClick={() => void showHistory("day-context")}
           >
+            <ActionIcon action="history" />
             Riwayat konteks khusus
           </Button>
         </div>
@@ -730,10 +744,12 @@ export function CalendarManager() {
                 disabled={busy}
                 onClick={() => dialog.current?.close()}
               >
+                <ActionIcon action="close" />
                 Batal
               </Button>
               <Button disabled={busy} onClick={() => void commit()}>
-                {busy ? "Menyimpan…" : "Ya, simpan perubahan ini"}
+                <ActionIcon action="save" />
+                {busy ? "Menyimpan…" : "Simpan perubahan kalender"}
               </Button>
             </div>
           </div>
@@ -753,6 +769,7 @@ export function CalendarManager() {
             variant="outline"
             onClick={() => historyDialog.current?.close()}
           >
+            <ActionIcon action="close" />
             Tutup
           </Button>
         </div>

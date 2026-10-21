@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import Link from "next/link";
 import {
   useEffect,
@@ -160,6 +162,7 @@ export function ActionForm({
       <fieldset disabled={busy} className="space-y-4">
         {children}
         <Button type="submit" disabled={busy}>
+          <ActionIcon action="submit" />
           {busy ? "Memproses…" : submitLabel}
         </Button>
       </fieldset>

@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { statusLabel } from "@/lib/ui-status";
 import { EmptyState } from "@/components/feedback/feature-state";
 import { useCallback, useEffect, useState } from "react";
@@ -184,6 +186,7 @@ export function AnnouncementManager() {
         />
         {edit && (
           <button className={secondary} onClick={() => selectEdit(null)}>
+            <ActionIcon action="close" />
             Batal mengubah
           </button>
         )}
@@ -196,6 +199,7 @@ export function AnnouncementManager() {
           </p>
           <p className="whitespace-pre-wrap">{a.body}</p>
           <button className={button} onClick={() => selectEdit(a)}>
+            <ActionIcon action="edit" />
             Ubah pengumuman
           </button>
         </section>

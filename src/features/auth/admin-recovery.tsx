@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ActionForm, Field } from "./account-lifecycle";
@@ -37,6 +39,7 @@ export function AdminRecovery() {
         disetujui.
       </p>
       <Button variant="outline" onClick={() => setRevision((v) => v + 1)}>
+        <ActionIcon action="refresh" />
         Muat ulang permintaan
       </Button>
       {message && <p role="status">{message}</p>}
@@ -51,6 +54,7 @@ export function AdminRecovery() {
             {secret}
           </output>
           <Button onClick={() => setSecret("")}>
+            <ActionIcon action="visibility" />
             Sudah diserahkan, sembunyikan
           </Button>
         </section>

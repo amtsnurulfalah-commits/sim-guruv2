@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { useEffect, useState } from "react";
 import { masterRequest } from "@/features/masters/api";
 import { wibDate, type DayContext } from "@/lib/calendar/schemas";
@@ -67,9 +69,10 @@ export function DayContextCard() {
         </p>
       )}
       <button
-        className="ui-text-link"
+        className="ui-action ui-action-secondary"
         onClick={() => setRevision((v) => v + 1)}
       >
+        <ActionIcon action="refresh" />
         Muat ulang konteks
       </button>
     </section>

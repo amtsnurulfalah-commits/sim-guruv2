@@ -243,6 +243,12 @@
     @apply inline-flex min-h-11 max-w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm leading-5 font-semibold shadow-xs transition-colors disabled:pointer-events-none disabled:opacity-50;
     overflow-wrap: anywhere;
   }
+  .ui-action > svg {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    pointer-events: none;
+  }
   .ui-action-primary {
     @apply bg-primary text-primary-foreground hover:bg-primary/90;
   }

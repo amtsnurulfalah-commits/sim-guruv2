@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { TableRegion } from "@/components/ui/table-region";
 import {
   ManagedDialog,
@@ -144,6 +146,7 @@ function Picker({
           disabled={disabled || page === 1}
           onClick={() => setPage((p) => p - 1)}
         >
+          <ActionIcon action="previous" />
           Sebelumnya
         </Button>
         <Button
@@ -153,6 +156,7 @@ function Picker({
           disabled={disabled || page * 20 >= total}
           onClick={() => setPage((p) => p + 1)}
         >
+          <ActionIcon action="next" />
           Berikutnya
         </Button>
       </div>
@@ -418,9 +422,11 @@ function Editor({
             variant="outline"
             formNoValidate
           >
+            <ActionIcon action="preview" />
             Periksa bentrok jadwal
           </Button>
           <Button type="submit" name="intent" value="save">
+            <ActionIcon action="save" />
             {busy ? "Memproses…" : "Simpan jadwal"}
           </Button>
         </div>
@@ -822,9 +828,11 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
               disabled={busy || loading}
               onClick={printAll}
             >
+              <ActionIcon action="print" />
               Cetak seluruh hasil filter
             </Button>
             <Button variant="outline" onClick={() => setRevision((v) => v + 1)}>
+              <ActionIcon action="refresh" />
               Muat ulang
             </Button>
             {admin && (
@@ -835,6 +843,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   setOpen(true);
                 }}
               >
+                <ActionIcon action="add" />
                 Tambah jadwal
               </Button>
             )}
@@ -969,9 +978,11 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                 setTargets(Object.values(selected));
               }}
             >
+              <ActionIcon action="preview" />
               Tinjau penghentian jadwal terpilih
             </Button>
             <Button variant="outline" onClick={() => setSelected({})}>
+              <ActionIcon action="close" />
               Kosongkan pilihan
             </Button>
           </div>
@@ -1066,6 +1077,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                                         setOpen(true);
                                       }}
                                     >
+                                      <ActionIcon action="edit" />
                                       Ubah jadwal
                                     </Button>
                                     <Button
@@ -1076,6 +1088,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                                         setTargets([r]);
                                       }}
                                     >
+                                      <ActionIcon action="stop" />
                                       Hentikan jadwal
                                     </Button>
                                   </>
@@ -1085,6 +1098,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                                   variant="outline"
                                   onClick={() => void showHistory(r.id)}
                                 >
+                                  <ActionIcon action="history" />
                                   Riwayat
                                 </Button>
                                 {r.replacesId && (
@@ -1095,6 +1109,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                                       void showHistory(r.replacesId!)
                                     }
                                   >
+                                    <ActionIcon action="previous" />
                                     Riwayat sebelumnya
                                   </Button>
                                 )}
@@ -1113,6 +1128,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   disabled={page === 1}
                   onClick={() => setPage((v) => v - 1)}
                 >
+                  <ActionIcon action="previous" />
                   Sebelumnya
                 </Button>
                 <Button
@@ -1120,6 +1136,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   disabled={page * 20 >= list.total}
                   onClick={() => setPage((v) => v + 1)}
                 >
+                  <ActionIcon action="next" />
                   Berikutnya
                 </Button>
               </div>
@@ -1150,6 +1167,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             disabled={busy}
             onClick={() => requestDialogClose(editor.current)}
           >
+            <ActionIcon action="close" />
             Tutup
           </Button>
         </div>
@@ -1183,6 +1201,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             disabled={busy}
             onClick={() => requestDialogClose(stop.current)}
           >
+            <ActionIcon action="close" />
             Tutup
           </Button>
         </div>
@@ -1209,6 +1228,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
               </article>
             ))}
             <Button disabled={busy} onClick={() => void commit()}>
+              <ActionIcon action="confirm" />
               {busy ? "Memproses…" : "Konfirmasi penghentian jadwal"}
             </Button>
           </div>
@@ -1243,6 +1263,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                 />
               </label>
               <Button type="submit">
+                <ActionIcon action="preview" />
                 {busy ? "Memeriksa…" : "Lihat pratinjau dampak"}
               </Button>
             </fieldset>
@@ -1268,6 +1289,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             variant="outline"
             onClick={() => requestDialogClose(historyDialog.current)}
           >
+            <ActionIcon action="close" />
             Tutup
           </Button>
         </div>

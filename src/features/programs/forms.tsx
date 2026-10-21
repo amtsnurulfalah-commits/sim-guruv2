@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { useEffect, useId, useRef, useState } from "react";
 import { z } from "zod";
 import { notifySuccess } from "@/components/feedback/toast-region";
@@ -320,6 +322,7 @@ export function DataForm({
         <div className="flex flex-wrap items-center gap-3 border-t pt-4 sm:col-span-2">
           {inline && (
             <button className={button} disabled={busy || saving}>
+              <ActionIcon action="submit" />
               {busy || saving ? "Memproses…" : submitLabel}
             </button>
           )}
@@ -340,6 +343,7 @@ export function DataForm({
           form={prefix + "-form"}
           disabled={busy || saving}
         >
+          <ActionIcon action="submit" />
           {busy || saving ? "Memproses…" : submitLabel}
         </button>
       }
@@ -429,7 +433,8 @@ export function ImpactDialog({
       </dl>
       <div className="flex gap-2">
         <button disabled={busy} className={button} onClick={onConfirm}>
-          Saya konfirmasi perubahan ini
+          <ActionIcon action="confirm" />
+          Konfirmasi perubahan
         </button>
         <button
           ref={cancel}
@@ -437,6 +442,7 @@ export function ImpactDialog({
           className={secondary}
           onClick={onCancel}
         >
+          <ActionIcon action="close" />
           Batal
         </button>
       </div>

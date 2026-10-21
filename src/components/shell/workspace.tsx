@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -167,9 +169,10 @@ export function Workspace({
             {filteredLinks.length} modul sesuai pencarian.{" "}
             <button
               type="button"
-              className="min-h-11 underline"
+              className="ui-action ui-action-secondary mt-1"
               onClick={() => setQuery("")}
             >
+              <ActionIcon action="close" />
               Hapus pencarian
             </button>
           </p>
@@ -312,7 +315,10 @@ export function Workspace({
               </Button>
             ) : (
               <Button asChild variant="outline">
-                <Link href="/login">Masuk</Link>
+                <Link href="/login">
+                  <ActionIcon action="access" />
+                  Masuk
+                </Link>
               </Button>
             )}
           </div>

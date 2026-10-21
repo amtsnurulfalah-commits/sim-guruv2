@@ -1,3 +1,4 @@
+import { ActionIcon } from "@/components/ui/action-icon";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { moduleBySlug, canViewModule } from "@/lib/navigation/modules";
@@ -51,7 +52,10 @@ export default async function ModulePage({
           </p>
         </section>
         <Button asChild variant="outline">
-          <Link href="/dashboard">Kembali ke dashboard</Link>
+          <Link href="/dashboard">
+            <ActionIcon action="open" />
+            Kembali ke dashboard
+          </Link>
         </Button>
       </div>
     </AuthenticatedWorkspace>

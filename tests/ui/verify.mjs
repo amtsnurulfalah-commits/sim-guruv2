@@ -595,7 +595,7 @@ try {
   await editor.waitFor({ state: "hidden" });
   let row = page.getByRole("row").filter({ hasText: "Subjek CRUD sintetis" });
   await row.waitFor();
-  await row.getByRole("button", { name: "Ubah", exact: true }).click();
+  await row.getByRole("button", { name: "Ubah data", exact: true }).click();
   editor = page.getByRole("dialog", {
     name: "Ubah Mata pelajaran",
     exact: true,
@@ -618,7 +618,7 @@ try {
   await archive
     .getByLabel("Alasan pengarsipan")
     .fill("Arsip data pengujian sintetis");
-  await archive.getByRole("button", { name: "Ya, arsipkan" }).click();
+  await archive.getByRole("button", { name: "Arsipkan data" }).click();
   await archive.waitFor({ state: "hidden" });
   await row.waitFor({ state: "hidden" });
   interactions.push({

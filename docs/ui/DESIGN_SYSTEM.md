@@ -96,3 +96,20 @@ diperlukan dapat memakai `<details>` native dengan ringkasan yang jelas.
 Keberhasilan memakai `role="status"`, kegagalan memakai `role="alert"`. Peringatan
 finalisasi honorarium, pembalikan JTM, perubahan kalender, dan pengiriman email
 harus dipertahankan karena menjelaskan akibat tindakan.
+
+## Tombol dan ikon tindakan
+
+Tombol selalu memiliki label berbahasa Indonesia yang menjelaskan tindakan.
+Gunakan `ActionIcon` dengan `action` eksplisit bersama `Button` atau token
+`ui-action`; jangan menebak ikon dari teks saat runtime. Ikon dekoratif memiliki
+`aria-hidden`, tidak dapat menerima fokus, dan tidak mengecil ketika label membungkus.
+Tombol `asChild` menempatkan ikon di dalam tautan agar kontrak Radix Slot tetap valid.
+
+Gunakan tambah untuk pembuka pembuatan data, simpan untuk penyimpanan, pratinjau
+untuk pemeriksaan dampak, arsip untuk pengarsipan, dan hentikan untuk penghentian
+jadwal. Tombol konfirmasi dinamis harus memilih ikon sesuai tindakan yang dipilih.
+Tautan ekspor memakai gaya tombol sekunder dan ikon unduh. Tautan navigasi di
+paragraf tetap berupa tautan; tidak semua teks tautan harus menjadi tombol.
+Target sentuh minimal 44px, focus ring, disabled state, serta reduced motion
+mengikuti token yang sudah ada. Hindari animasi dekoratif dan tombol tanpa label
+kecuali kontrol ikon yang sudah memiliki nama aksesibel, seperti tutup dialog.

@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { TableRegion } from "@/components/ui/table-region";
 import { FeatureState } from "@/components/feedback/feature-state";
 import { useEffect, useState } from "react";
@@ -496,6 +498,7 @@ export function ExamManager({
           </select>
           {edit && (
             <button className={secondary} onClick={() => setEdit(null)}>
+              <ActionIcon action="close" />
               Batal mengubah data
             </button>
           )}
@@ -558,6 +561,7 @@ export function ExamManager({
                     })
                   }
                 >
+                  <ActionIcon action="edit" />
                   Ubah periode
                 </button>
                 <button
@@ -565,6 +569,7 @@ export function ExamManager({
                   className={secondary}
                   onClick={() => void remove("period", p.id)}
                 >
+                  <ActionIcon action="preview" />
                   Tinjau penghapusan periode
                 </button>
               </div>
@@ -590,6 +595,7 @@ export function ExamManager({
                           })
                         }
                       >
+                        <ActionIcon action="edit" />
                         Ubah sesi
                       </button>
                       <button
@@ -597,6 +603,7 @@ export function ExamManager({
                         className={secondary}
                         onClick={() => void remove("session", s.id)}
                       >
+                        <ActionIcon action="preview" />
                         Tinjau penghapusan sesi
                       </button>
                     </div>
@@ -625,6 +632,7 @@ export function ExamManager({
                               })
                             }
                           >
+                            <ActionIcon action="edit" />
                             Ubah ruang
                           </button>{" "}
                           <button
@@ -632,6 +640,7 @@ export function ExamManager({
                             className={secondary}
                             onClick={() => void remove("room", r.id)}
                           >
+                            <ActionIcon action="preview" />
                             Tinjau penghapusan ruang
                           </button>
                         </div>
@@ -655,6 +664,7 @@ export function ExamManager({
                   )
                 }
               >
+                <ActionIcon action="preview" />
                 Tinjau penghapusan penugasan
               </button>
               {o.kind === "EXAM_SUPERVISOR" && (
@@ -668,6 +678,7 @@ export function ExamManager({
                     })
                   }
                 >
+                  <ActionIcon action="edit" />
                   Ubah pengawas
                 </button>
               )}

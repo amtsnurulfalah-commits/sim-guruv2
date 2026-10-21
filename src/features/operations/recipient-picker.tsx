@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { useEffect, useState } from "react";
 import { masterRequest } from "@/features/masters/api";
 import type { UserList } from "@/lib/users/schemas";
@@ -70,6 +72,7 @@ export function RecipientPicker({
             key={id}
             onClick={() => onChange(value.filter((x) => x !== id))}
           >
+            <ActionIcon action="close" />
             {names[id] ?? known[id] ?? `Pengguna terpilih ${i + 1}`} · Hapus
           </button>
         ))}
@@ -98,6 +101,7 @@ export function RecipientPicker({
           disabled={page <= 1}
           onClick={() => setPage((p) => p - 1)}
         >
+          <ActionIcon action="previous" />
           Sebelumnya
         </button>
         <span>Halaman {page}</span>
@@ -106,6 +110,7 @@ export function RecipientPicker({
           disabled={!users || page * 20 >= users.total}
           onClick={() => setPage((p) => p + 1)}
         >
+          <ActionIcon action="next" />
           Berikutnya
         </button>
       </div>

@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { FormDialog } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { masterRequest } from "../masters/api";
@@ -425,6 +427,7 @@ export function ActivityWorkspace({
           onClick={() => setRevision((v) => v + 1)}
           disabled={loading}
         >
+          <ActionIcon action="refresh" />
           Muat ulang
         </button>
         {loading && <p role="status">Memuat data…</p>}
@@ -468,6 +471,7 @@ export function ActivityWorkspace({
                       })
                     }
                   >
+                    <ActionIcon action="submit" />
                     Ajukan klaim kehadiran
                   </button>
                 )}
@@ -490,6 +494,7 @@ export function ActivityWorkspace({
                       });
                     }}
                   >
+                    <ActionIcon action="confirm" />
                     {o.confirmed ? "Cabut konfirmasi" : "Konfirmasi KBM"}
                   </button>
                 )}
@@ -504,15 +509,17 @@ export function ActivityWorkspace({
             <h2 className="font-semibold">Riwayat kehadiran</h2>
             <div className="flex gap-4 text-sm">
               <a
-                className="underline"
+                className="ui-action ui-action-secondary"
                 href={`/api/activities/export?${exportQuery}&format=csv`}
               >
+                <ActionIcon action="download" />
                 Unduh CSV
               </a>
               <a
-                className="underline"
+                className="ui-action ui-action-secondary"
                 href={`/api/activities/export?${exportQuery}&format=pdf`}
               >
+                <ActionIcon action="download" />
                 Unduh PDF
               </a>
             </div>
@@ -546,6 +553,7 @@ export function ActivityWorkspace({
                         })
                       }
                     >
+                      <ActionIcon action="access" />
                       Catat masuk sekarang
                     </button>
                   )}
@@ -561,6 +569,7 @@ export function ActivityWorkspace({
                         })
                       }
                     >
+                      <ActionIcon action="submit" />
                       Catat pulang
                     </button>
                   )}
@@ -571,6 +580,7 @@ export function ActivityWorkspace({
                       setLeaveEditor((value) => value + 1);
                     }}
                   >
+                    <ActionIcon action="access" />
                     Ajukan izin keluar
                   </button>
                   {admin && (
@@ -587,6 +597,7 @@ export function ActivityWorkspace({
                         setManualEditor((v) => v + 1);
                       }}
                     >
+                      <ActionIcon action="edit" />
                       Koreksi kehadiran
                     </button>
                   )}
@@ -595,7 +606,7 @@ export function ActivityWorkspace({
                   <p key={l.id} className="text-sm">
                     Izin {l.leaveTime}–{l.returnTime}: {l.reason}{" "}
                     <button
-                      className="underline"
+                      className="ui-action ui-action-secondary"
                       disabled={busy}
                       onClick={() => {
                         if (
@@ -611,6 +622,7 @@ export function ActivityWorkspace({
                           });
                       }}
                     >
+                      <ActionIcon action="delete" />
                       Hapus izin
                     </button>
                   </p>
@@ -677,6 +689,7 @@ export function ActivityWorkspace({
                 className={buttonClass}
                 disabled={busy || !selectedAttendance}
               >
+                <ActionIcon action="save" />
                 Simpan izin
               </button>
             </form>
@@ -767,6 +780,7 @@ export function ActivityWorkspace({
                     className={buttonClass}
                     disabled={busy || !teacher || loading}
                   >
+                    <ActionIcon action="save" />
                     Simpan kehadiran manual
                   </button>
                 </form>
@@ -852,6 +866,7 @@ export function ActivityWorkspace({
                   />
                   <div className="flex gap-2">
                     <button className={buttonClass} disabled={busy}>
+                      <ActionIcon action="save" />
                       Simpan pola kehadiran
                     </button>
                     {selectedTemplate && (
@@ -873,6 +888,7 @@ export function ActivityWorkspace({
                             });
                         }}
                       >
+                        <ActionIcon action="delete" />
                         Hapus pola kehadiran
                       </button>
                     )}
@@ -907,6 +923,7 @@ export function ActivityWorkspace({
                     if (p) setPreview(p as NonNullable<typeof preview>);
                   }}
                 >
+                  <ActionIcon action="preview" />
                   Tinjau penerapan pola
                 </button>
                 {preview && (
@@ -940,6 +957,7 @@ export function ActivityWorkspace({
                           setPreview(null);
                       }}
                     >
+                      <ActionIcon action="submit" />
                       Terapkan pola kehadiran
                     </button>
                   </div>
@@ -1031,6 +1049,7 @@ export function ActivityWorkspace({
                     className={buttonClass}
                     disabled={busy || loading || !classId}
                   >
+                    <ActionIcon action="save" />
                     Simpan rekap siswa
                   </button>
                 </form>
@@ -1179,6 +1198,7 @@ export function ActivityWorkspace({
                   className={buttonClass}
                   disabled={busy || (!editing && !occurrenceId)}
                 >
+                  <ActionIcon action="save" />
                   Simpan jurnal
                 </button>
                 {editing && (
@@ -1191,6 +1211,7 @@ export function ActivityWorkspace({
                       setNotes("");
                     }}
                   >
+                    <ActionIcon action="close" />
                     Batal edit
                   </button>
                 )}
@@ -1201,15 +1222,17 @@ export function ActivityWorkspace({
             <h2 className="font-semibold">Riwayat dan detail jurnal</h2>
             <div className="flex gap-4 text-sm">
               <a
-                className="underline"
+                className="ui-action ui-action-secondary"
                 href={`/api/activities/export?${exportQuery}&format=csv`}
               >
+                <ActionIcon action="download" />
                 Unduh CSV
               </a>
               <a
-                className="underline"
+                className="ui-action ui-action-secondary"
                 href={`/api/activities/export?${exportQuery}&format=pdf`}
               >
+                <ActionIcon action="download" />
                 Unduh PDF
               </a>
             </div>
@@ -1244,6 +1267,7 @@ export function ActivityWorkspace({
                       setNotes(j.notes);
                     }}
                   >
+                    <ActionIcon action="edit" />
                     Ubah jurnal
                   </button>
                   <button
@@ -1262,6 +1286,7 @@ export function ActivityWorkspace({
                         });
                     }}
                   >
+                    <ActionIcon action="delete" />
                     Hapus jurnal dan batalkan JTM
                   </button>
                 </div>
@@ -1286,6 +1311,7 @@ export function ActivityWorkspace({
                   run("h1", { enabled: !options.h1Enabled, reason })
                 }
               >
+                <ActionIcon action="toggle" />
                 {options.h1Enabled ? "Nonaktifkan" : "Aktifkan"} jurnal H-1
               </button>
               <FormDialog
@@ -1346,6 +1372,7 @@ export function ActivityWorkspace({
                     className={buttonClass}
                     disabled={busy || !subjectId || reason.trim().length < 5}
                   >
+                    <ActionIcon action="save" />
                     Simpan blok jurnal
                   </button>
                 </form>
@@ -1356,7 +1383,7 @@ export function ActivityWorkspace({
                   {b.date_start}–{b.date_end}: {b.message} (
                   {b.active ? "Aktif" : "Nonaktif"}){" "}
                   <button
-                    className="underline"
+                    className="ui-action ui-action-secondary"
                     disabled={busy || reason.trim().length < 5}
                     onClick={() =>
                       run("block", {
@@ -1371,7 +1398,10 @@ export function ActivityWorkspace({
                       })
                     }
                   >
-                    {b.active ? "Nonaktifkan" : "Aktifkan"}
+                    <ActionIcon action="toggle" />
+                    {b.active
+                      ? "Nonaktifkan blok jurnal"
+                      : "Aktifkan blok jurnal"}
                   </button>
                 </p>
               ))}
@@ -1386,6 +1416,7 @@ export function ActivityWorkspace({
             disabled={page <= 1 || loading}
             onClick={() => setPage((p) => p - 1)}
           >
+            <ActionIcon action="previous" />
             Sebelumnya
           </button>
           <span className="text-sm">
@@ -1396,6 +1427,7 @@ export function ActivityWorkspace({
             disabled={page * 25 >= total || loading}
             onClick={() => setPage((p) => p + 1)}
           >
+            <ActionIcon action="next" />
             Berikutnya
           </button>
         </div>

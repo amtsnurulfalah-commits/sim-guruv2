@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { TableRegion } from "@/components/ui/table-region";
 import { EmptyState } from "@/components/feedback/feature-state";
 import Link from "next/link";
@@ -294,6 +296,7 @@ export function FinanceManager({
           className={secondary}
           onClick={() => setHidden((v) => !v)}
         >
+          <ActionIcon action="visibility" />
           {hidden ? "Tampilkan nominal" : "Sembunyikan nominal"}
         </button>
       </div>
@@ -385,6 +388,7 @@ export function FinanceManager({
                 "/api/honorarium/excel?" + new URLSearchParams({ period, q })
               }
             >
+              <ActionIcon action="download" />
               Ekspor Excel (semua hasil filter)
             </a>
           </div>
@@ -412,6 +416,7 @@ export function FinanceManager({
                         disabled={busy}
                         onClick={() => void showSlip(r.id)}
                       >
+                        <ActionIcon action="open" />
                         Buka slip
                       </button>
                     </td>
@@ -427,6 +432,7 @@ export function FinanceManager({
               disabled={page === 1 || busy}
               onClick={() => setPage((v) => v - 1)}
             >
+              <ActionIcon action="previous" />
               Sebelumnya
             </button>
             <span>Halaman {page}</span>
@@ -437,6 +443,7 @@ export function FinanceManager({
               }
               onClick={() => setPage((v) => v + 1)}
             >
+              <ActionIcon action="next" />
               Berikutnya
             </button>
           </div>
@@ -470,9 +477,11 @@ export function FinanceManager({
               disabled={busy}
               onClick={() => void downloadPdf(slip.id)}
             >
+              <ActionIcon action="download" />
               Unduh PDF terverifikasi
             </button>
             <button className={secondary} onClick={() => window.print()}>
+              <ActionIcon action="print" />
               Cetak slip honorarium
             </button>
             <button
@@ -489,9 +498,11 @@ export function FinanceManager({
                 }, false)
               }
             >
+              <ActionIcon action="link" />
               Buat tautan verifikasi
             </button>
             <button className={secondary} onClick={() => setSlip(null)}>
+              <ActionIcon action="close" />
               Tutup slip
             </button>
           </div>
@@ -730,6 +741,7 @@ export function FinanceManager({
                   className={secondary}
                   onClick={() => void showSlip(r.statement_id)}
                 >
+                  <ActionIcon action="preview" />
                   Tinjau slip sumber
                 </button>
               </div>
@@ -804,6 +816,7 @@ export function FinanceManager({
               })
             }
           >
+            <ActionIcon action="confirm" />
             Konfirmasi perubahan honorarium
           </button>
           <button
@@ -811,6 +824,7 @@ export function FinanceManager({
             disabled={busy}
             onClick={() => setPreview(null)}
           >
+            <ActionIcon action="close" />
             Batal
           </button>
         </div>

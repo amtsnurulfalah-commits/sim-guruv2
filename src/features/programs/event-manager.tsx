@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { EmptyState } from "@/components/feedback/feature-state";
 import { FeatureState } from "@/components/feedback/feature-state";
 import { useEffect, useState } from "react";
@@ -304,6 +306,7 @@ export function EventManager({
                     )
                   }
                 >
+                  <ActionIcon action="close" />
                   Batalkan kehadiran
                 </button>
               )}
@@ -329,6 +332,7 @@ export function EventManager({
             </label>
             {edit && (
               <button className={secondary} onClick={() => setEdit(null)}>
+                <ActionIcon action="close" />
                 Batal mengubah acara
               </button>
             )}
@@ -379,6 +383,7 @@ export function EventManager({
                     setType(e.type);
                   }}
                 >
+                  <ActionIcon action="edit" />
                   Ubah acara
                 </button>
                 <button
@@ -399,6 +404,7 @@ export function EventManager({
                     )
                   }
                 >
+                  <ActionIcon action="preview" />
                   Tinjau penghapusan acara
                 </button>
               </article>
@@ -479,7 +485,10 @@ export function EventManager({
                     )
                   }
                 >
-                  {b.active ? "Nonaktifkan" : "Aktifkan"}
+                  <ActionIcon action="toggle" />
+                  {b.active
+                    ? "Nonaktifkan blok jurnal"
+                    : "Aktifkan blok jurnal"}
                 </button>
               </div>
             ))}
