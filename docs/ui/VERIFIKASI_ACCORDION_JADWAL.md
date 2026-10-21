@@ -23,7 +23,12 @@ keyboard terlihat. Buka/tutup tidak menghapus isian atau memicu mutasi data.
 - Lint dan TypeScript lulus.
 - 30 unit test lulus.
 - Production build lulus.
-- Hasil akhir suite browser dicatat setelah proses selesai.
+- Suite browser lulus pada 252 kombinasi halaman/role/viewport (320, 375, 767,
+  768, 1024, 1440, 1920px), 4 ukuran interaksi dan 1 CRUD existing.
+- Enam skenario accordion (admin/guru × 320/768/1440px) lulus, termasuk
+  Enter/Spasi, retensi tanggal dan pencarian, serta respons 200 dari service
+  fixture untuk perubahan tanggal dan query filter.
+- Tidak ada page error, console error tak terduga, atau overflow halaman.
 
 Browser memakai fixture localhost disposable, tidak mengakses akun atau data
 produksi. UAT perangkat fisik dan pembaca layar belum dilakukan.
