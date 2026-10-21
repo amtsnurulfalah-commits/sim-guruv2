@@ -2,20 +2,23 @@
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import Link from "next/link";
+import { useState } from "react";
+import type { ProfileDto } from "@/lib/accounts/schemas";
 import { AccountLifecycle } from "./account-lifecycle";
 import { useWorkspaceSession } from "@/components/shell/authenticated-workspace";
 import { Button } from "@/components/ui/button";
 export function SessionPanel() {
   const session = useWorkspaceSession();
+  const [profile, setProfile] = useState<ProfileDto | null>(null);
   return (
     <>
-      <header className="mb-8 space-y-3">
+      <header className="mb-6 min-w-0 space-y-3 [overflow-wrap:anywhere]">
         <p className="text-xs font-semibold tracking-widest uppercase text-primary">
           Pengaturan pribadi
         </p>
         <h1 className="text-3xl font-bold">Akun dan profil</h1>
         <p className="text-sm leading-7 text-muted-foreground">
-          {session.user.fullName} · {session.user.username}
+          Kelola identitas profil, kata sandi, verifikasi email, dan pertanyaan keamanan Anda.
         </p>
       </header>
       {session.scope === "onboarding" ? (
@@ -34,11 +37,11 @@ export function SessionPanel() {
             </li>
             <li>
               Email terverifikasi:{" "}
-              {session.onboarding.emailVerified ? "selesai" : "belum selesai"}
+              {(profile?.emailVerified ?? session.onboarding.emailVerified) ? "selesai" : "belum selesai"}
             </li>
             <li>
               Pertanyaan keamanan:{" "}
-              {session.onboarding.securityQuestionReady
+              {(profile ? Boolean(profile.question) : session.onboarding.securityQuestionReady)
                 ? "selesai"
                 : "belum selesai"}
             </li>
@@ -63,6 +66,7 @@ export function SessionPanel() {
       <AccountLifecycle
         isAdmin={session.user.role === "admin" && session.scope === "business"}
         onboarding={session.scope === "onboarding"}
+        onProfileChange={setProfile}
       />
     </>
   );

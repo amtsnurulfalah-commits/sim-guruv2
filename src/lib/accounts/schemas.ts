@@ -122,3 +122,15 @@ export type ProfileDto = {
   question: string;
   version: string;
 };
+
+/** Public profile contract only; reject malformed data before rendering account controls. */
+export const profileDtoSchema = z.object({
+  id: z.uuid(), username: z.string(), fullName: z.string(), nip: z.string(),
+  phone: z.string(), address: z.string(), photoUrl: z.string(), email: z.string(),
+  emailVerified: z.boolean(), question: z.string(), version: z.string().regex(/^[1-9]\d{0,17}$/),
+});
+
+export const emailDispatchSchema = z.discriminatedUnion("queued", [
+  z.object({queued:z.literal(false),retryAfter:z.number().positive().optional()}),
+  z.object({queued:z.literal(true),challengeId:z.uuid(),delivery:z.enum(["accepted","pending","failed","unknown","queued"]).optional()}),
+]);
