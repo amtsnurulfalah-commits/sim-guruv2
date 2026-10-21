@@ -128,3 +128,23 @@ catatan kalender, semester dan rentang tanggal, pengaturan khusus, status kegiat
 dan alasan status dari respons API yang sudah ada. Kode versi internal tidak ditampilkan.
 Saat muat ulang, data lama dibersihkan, status loading ditampilkan, dan tombol
 retry dinonaktifkan selama permintaan berjalan.
+
+## Tabulasi akun dan profil
+
+Gunakan `Tabs` source-owned dengan empat tab Ubah Profil, Ganti Kata Sandi,
+Verifikasi Email, dan Pertanyaan Keamanan. Desktop menampilkan empat kolom;
+layar kecil dua kolom dengan label tetap terlihat dan target sentuh minimal 48px.
+Setiap tab mempunyai ikon dekoratif, status aktif, focus ring, dan hubungan
+`tab`/`tabpanel` melalui `aria-controls` dan `aria-labelledby`.
+
+Navigasi memakai roving tabIndex; panah kiri/kanan, Home, dan End memindahkan
+fokus serta panel aktif. Satu panel saja terlihat dan dapat dijangkau keyboard.
+Panel lain tetap mounted agar draf dan challenge OTP tidak hilang saat berpindah
+tab. Tidak menyimpan draf, kata sandi, jawaban, atau kode ke storage browser/URL.
+
+Form profil dan kata sandi memakai `ActionForm inline`; pemanggil lama tanpa
+prop inline mempertahankan modal dan dirty guard yang sudah ada. Validasi native,
+server, konfirmasi kata sandi, CAS versi profil, CSRF, pengakhiran sesi, dan
+verifikasi email tetap mengikuti handler existing. Tab awal akun bisnis adalah
+Ubah Profil; onboarding memakai Ganti Kata Sandi. Aksi Selesaikan dan lanjutkan
+berada di luar panel agar selalu tersedia dan tetap divalidasi server.

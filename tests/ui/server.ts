@@ -132,6 +132,20 @@ async function main() {
       for await (const b of req) body += b;
       const input = body ? JSON.parse(body) : {};
       if (path === "/api/auth/csrf") data = { csrfToken: "fixture-csrf" };
+      else if (path === "/api/auth/profile" && req.method === "GET")
+        data = {
+          id,
+          username: "fixture.account",
+          fullName: "Pengguna Akun Sintetis",
+          nip: "",
+          phone: "",
+          address: "",
+          photoUrl: "",
+          email: "account@example.test",
+          emailVerified: true,
+          question: "Pertanyaan sintetis",
+          version: "1",
+        };
       else if (path === "/api/dashboard")
         data = {
           summary: (

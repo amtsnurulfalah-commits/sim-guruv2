@@ -2,6 +2,8 @@
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import Link from "next/link";
+import { UserRound, KeyRound, MailCheck, ShieldQuestion } from "lucide-react";
+import { Tabs } from "@/components/ui/tabs";
 import {
   useEffect,
   useId,
@@ -108,11 +110,13 @@ export function ActionForm({
   title,
   children,
   submitLabel = "Simpan",
+  inline = false,
   onSubmit,
 }: {
   title: string;
   children: ReactNode;
   submitLabel?: string;
+  inline?: boolean;
   onSubmit: (
     data: Record<string, string>,
     form: HTMLFormElement,
@@ -177,7 +181,8 @@ export function ActionForm({
       )}
     </form>
   );
-  if (title !== "Ganti kata sandi" && title !== "Ubah profil") return content;
+  if (inline || (title !== "Ganti kata sandi" && title !== "Ubah profil"))
+    return content;
   return (
     <FormDialog
       title={title}
@@ -231,125 +236,240 @@ export function AccountLifecycle({
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">Profil dan pengamanan akun</h2>
-      <ActionForm
-        title="Ganti kata sandi"
-        onSubmit={async (data, form) => {
-          await accountRequest("change-password", data);
-          form.reset();
-          endLocalSession();
-        }}
-      >
-        <PasswordHelp />
-        <Field
-          name="currentPassword"
-          label="Kata sandi saat ini"
-          type="password"
-        />
-        <Field
-          name="newPassword"
-          label="Kata sandi baru"
-          type="password"
-          autoComplete="new-password"
-        />
-        <Field
-          name="confirmation"
-          label="Ulangi kata sandi baru"
-          type="password"
-          autoComplete="new-password"
-        />
-        <p className="text-sm">
-          Setelah berhasil, seluruh sesi diakhiri. Silakan masuk kembali.
-        </p>
-      </ActionForm>
-      <ActionForm
-        title="Verifikasi email"
-        submitLabel="Kirim kode OTP"
-        onSubmit={async (data, form) => {
-          const result = await accountRequest<{
-            queued: boolean;
-            challengeId?: string;
-            delivery?: "accepted" | "pending" | "failed" | "unknown";
-          }>("email-request", data);
-          (
-            form.elements.namedItem("currentPassword") as HTMLInputElement
-          ).value = "";
-          if (result.challengeId) setChallenge(result.challengeId);
-          if (!result.queued)
-            return "Tunggu setidaknya 60 detik sebelum meminta kode lagi.";
-          if (result.delivery === "accepted")
-            return "Permintaan pengiriman kode diterima layanan email. Periksa kotak masuk dan folder Spam. Kode berlaku 10 menit.";
-          if (result.delivery === "failed")
-            return "Kode belum berhasil dikirim. Hubungi administrator, lalu minta kode baru.";
-          return "Kode tersimpan, tetapi pengiriman belum terkonfirmasi. Tunggu 60 detik lalu minta kode baru; gunakan kode dari permintaan terbaru.";
-        }}
-      >
-        <p className="text-sm leading-7">
-          Email: {profile.email || "belum diisi"} (
-          {profile.emailVerified ? "terverifikasi" : "belum terverifikasi"}).
-          Email lama tetap berlaku sampai OTP alamat baru terbukti. Setelah
-          verifikasi, Anda diminta masuk kembali.
-        </p>
-        <Field
-          name="email"
-          label="Alamat email milik Anda"
-          type="email"
-          value={profile.email}
-          maxLength={254}
-        />
-        <Field
-          name="currentPassword"
-          label="Kata sandi saat ini"
-          type="password"
-        />
-      </ActionForm>
-      {challenge && (
-        <ActionForm
-          title="Masukkan kode verifikasi email"
-          submitLabel="Verifikasi kode"
-          onSubmit={async (data) => {
-            await accountRequest("email-verify", {
-              challengeId: challenge,
-              otp: data.otp,
-            });
-            endLocalSession();
-          }}
-        >
-          <Field name="otp" label="Kode OTP enam digit" maxLength={6} />
-          <p className="text-sm">
-            Maksimal lima percobaan. Jika halaman dimuat ulang, minta kode baru
-            setelah 60 detik.
-          </p>
-        </ActionForm>
-      )}
-      <ActionForm
-        title="Pertanyaan keamanan tambahan"
-        onSubmit={async (data, form) => {
-          await accountRequest("security-question", data);
-          form.reset();
-          setRevision((v) => v + 1);
-          return "Pertanyaan dan hash jawaban tersimpan. Jawaban tetap memerlukan OTP email atau verifikasi admin untuk pemulihan.";
-        }}
-      >
-        <p className="text-sm">
-          Pertanyaan saat ini: {profile.question || "belum diatur"}.
-        </p>
-        <Field
-          name="question"
-          label="Pertanyaan yang jawabannya hanya Anda ketahui"
-          maxLength={300}
-        />
-        <Field
-          name="answer"
-          label="Jawaban keamanan"
-          type="password"
-          autoComplete="new-password"
-        />
-        <Field
-          name="currentPassword"
-          label="Kata sandi saat ini"
-          type="password"
-        />
-      </ActionForm>
+      <Tabs
+        label="Pengaturan akun dan profil"
+        defaultValue={onboarding ? "password" : "profile"}
+        items={[
+          {
+            value: "profile",
+            label: "Ubah Profil",
+            icon: <UserRound aria-hidden="true" />,
+            content: (
+              <ActionForm
+                key={profile.version}
+                inline
+                title="Ubah profil"
+                submitLabel="Simpan perubahan profil"
+                onSubmit={async (data, form) => {
+                  await accountRequest("profile", {
+                    ...data,
+                    version: profile.version,
+                  });
+                  (
+                    form.elements.namedItem(
+                      "currentPassword",
+                    ) as HTMLInputElement
+                  ).value = "";
+                  setRevision((v) => v + 1);
+                  return "Profil berhasil diperbarui.";
+                }}
+              >
+                <Field
+                  name="username"
+                  label="Username"
+                  value={profile.username}
+                  maxLength={64}
+                />
+                <Field
+                  name="fullName"
+                  label="Nama lengkap"
+                  value={profile.fullName}
+                  maxLength={200}
+                />
+                <Field
+                  name="nip"
+                  label="NIP (opsional)"
+                  value={profile.nip}
+                  required={false}
+                  maxLength={64}
+                />
+                <Field
+                  name="phone"
+                  label="Nomor telepon (opsional)"
+                  type="tel"
+                  value={profile.phone}
+                  required={false}
+                  maxLength={25}
+                />
+                <Field
+                  name="address"
+                  label="Alamat (opsional)"
+                  value={profile.address}
+                  required={false}
+                  maxLength={500}
+                />
+                <Field
+                  name="photoUrl"
+                  label="URL foto HTTPS (opsional)"
+                  type="url"
+                  value={profile.photoUrl}
+                  required={false}
+                  maxLength={2048}
+                />
+                <Field
+                  name="currentPassword"
+                  label="Konfirmasi kata sandi saat ini"
+                  type="password"
+                />
+              </ActionForm>
+            ),
+          },
+          {
+            value: "password",
+            label: "Ganti Kata Sandi",
+            icon: <KeyRound aria-hidden="true" />,
+            content: (
+              <ActionForm
+                inline
+                title="Ganti kata sandi"
+                submitLabel="Simpan kata sandi baru"
+                onSubmit={async (data, form) => {
+                  await accountRequest("change-password", data);
+                  form.reset();
+                  endLocalSession();
+                }}
+              >
+                <PasswordHelp />
+                <Field
+                  name="currentPassword"
+                  label="Kata sandi saat ini"
+                  type="password"
+                />
+                <Field
+                  name="newPassword"
+                  label="Kata sandi baru"
+                  type="password"
+                  autoComplete="new-password"
+                />
+                <Field
+                  name="confirmation"
+                  label="Ulangi kata sandi baru"
+                  type="password"
+                  autoComplete="new-password"
+                />
+                <p className="text-sm">
+                  Setelah berhasil, seluruh sesi diakhiri. Silakan masuk
+                  kembali.
+                </p>
+              </ActionForm>
+            ),
+          },
+          {
+            value: "email",
+            label: "Verifikasi Email",
+            icon: <MailCheck aria-hidden="true" />,
+            content: (
+              <>
+                <ActionForm
+                  title="Verifikasi email"
+                  submitLabel="Kirim kode OTP"
+                  onSubmit={async (data, form) => {
+                    const result = await accountRequest<{
+                      queued: boolean;
+                      challengeId?: string;
+                      delivery?: "accepted" | "pending" | "failed" | "unknown";
+                    }>("email-request", data);
+                    (
+                      form.elements.namedItem(
+                        "currentPassword",
+                      ) as HTMLInputElement
+                    ).value = "";
+                    if (result.challengeId) setChallenge(result.challengeId);
+                    if (!result.queued)
+                      return "Tunggu setidaknya 60 detik sebelum meminta kode lagi.";
+                    if (result.delivery === "accepted")
+                      return "Permintaan pengiriman kode diterima layanan email. Periksa kotak masuk dan folder Spam. Kode berlaku 10 menit.";
+                    if (result.delivery === "failed")
+                      return "Kode belum berhasil dikirim. Hubungi administrator, lalu minta kode baru.";
+                    return "Kode tersimpan, tetapi pengiriman belum terkonfirmasi. Tunggu 60 detik lalu minta kode baru; gunakan kode dari permintaan terbaru.";
+                  }}
+                >
+                  <p className="text-sm leading-7">
+                    Email: {profile.email || "belum diisi"} (
+                    {profile.emailVerified
+                      ? "terverifikasi"
+                      : "belum terverifikasi"}
+                    ). Email lama tetap berlaku sampai OTP alamat baru terbukti.
+                    Setelah verifikasi, Anda diminta masuk kembali.
+                  </p>
+                  <Field
+                    name="email"
+                    label="Alamat email milik Anda"
+                    type="email"
+                    value={profile.email}
+                    maxLength={254}
+                  />
+                  <Field
+                    name="currentPassword"
+                    label="Kata sandi saat ini"
+                    type="password"
+                  />
+                </ActionForm>
+                {challenge && (
+                  <ActionForm
+                    title="Masukkan kode verifikasi email"
+                    submitLabel="Verifikasi kode"
+                    onSubmit={async (data) => {
+                      await accountRequest("email-verify", {
+                        challengeId: challenge,
+                        otp: data.otp,
+                      });
+                      endLocalSession();
+                    }}
+                  >
+                    <Field
+                      name="otp"
+                      label="Kode OTP enam digit"
+                      maxLength={6}
+                    />
+                    <p className="text-sm">
+                      Maksimal lima percobaan. Jika halaman dimuat ulang, minta
+                      kode baru setelah 60 detik.
+                    </p>
+                  </ActionForm>
+                )}
+              </>
+            ),
+          },
+          {
+            value: "security",
+            label: "Pertanyaan Keamanan",
+            icon: <ShieldQuestion aria-hidden="true" />,
+            content: (
+              <ActionForm
+                title="Pertanyaan keamanan"
+                submitLabel="Simpan pertanyaan keamanan"
+                onSubmit={async (data, form) => {
+                  await accountRequest("security-question", data);
+                  form.reset();
+                  setRevision((v) => v + 1);
+                  return "Pertanyaan keamanan berhasil diperbarui. Pemulihan akun tetap memerlukan OTP email atau verifikasi administrator.";
+                }}
+              >
+                <p className="text-sm">
+                  Pertanyaan saat ini: {profile.question || "belum diatur"}.
+                </p>
+                <Field
+                  name="question"
+                  label="Pertanyaan yang jawabannya hanya Anda ketahui"
+                  maxLength={300}
+                />
+                <Field
+                  name="answer"
+                  label="Jawaban keamanan"
+                  type="password"
+                  autoComplete="new-password"
+                />
+                <Field
+                  name="currentPassword"
+                  label="Kata sandi saat ini"
+                  type="password"
+                />
+              </ActionForm>
+            ),
+          },
+        ]}
+      />
       {onboarding && (
         <ActionForm
           title="Selesaikan pengamanan akun"
@@ -366,69 +486,6 @@ export function AccountLifecycle({
           </p>
         </ActionForm>
       )}
-      <ActionForm
-        key={profile.version}
-        title="Ubah profil"
-        onSubmit={async (data, form) => {
-          await accountRequest("profile", {
-            ...data,
-            version: profile.version,
-          });
-          (
-            form.elements.namedItem("currentPassword") as HTMLInputElement
-          ).value = "";
-          setRevision((v) => v + 1);
-          return "Profil berhasil diperbarui.";
-        }}
-      >
-        <Field
-          name="username"
-          label="Username"
-          value={profile.username}
-          maxLength={64}
-        />
-        <Field
-          name="fullName"
-          label="Nama lengkap"
-          value={profile.fullName}
-          maxLength={200}
-        />
-        <Field
-          name="nip"
-          label="NIP (opsional)"
-          value={profile.nip}
-          required={false}
-          maxLength={64}
-        />
-        <Field
-          name="phone"
-          label="Nomor telepon (opsional)"
-          type="tel"
-          value={profile.phone}
-          required={false}
-          maxLength={25}
-        />
-        <Field
-          name="address"
-          label="Alamat (opsional)"
-          value={profile.address}
-          required={false}
-          maxLength={500}
-        />
-        <Field
-          name="photoUrl"
-          label="URL foto HTTPS (opsional)"
-          type="url"
-          value={profile.photoUrl}
-          required={false}
-          maxLength={2048}
-        />
-        <Field
-          name="currentPassword"
-          label="Konfirmasi kata sandi saat ini"
-          type="password"
-        />
-      </ActionForm>
       {isAdmin && (
         <p>
           <Link href="/admin/pemulihan" className="underline">

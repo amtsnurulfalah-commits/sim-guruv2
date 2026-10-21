@@ -13,9 +13,9 @@ export function SessionPanel() {
         <Workspace session={session} onLogout={logout}>
           <header className="mb-8 space-y-3">
             <p className="text-xs font-semibold tracking-widest uppercase text-primary">
-              Akun dan profil
+              Pengaturan pribadi
             </p>
-            <h1 className="text-3xl font-bold">Pengamanan akun</h1>
+            <h1 className="text-3xl font-bold">Akun dan profil</h1>
             <p className="text-sm leading-7 text-muted-foreground">
               {session.user.fullName} · {session.user.username}
             </p>
