@@ -28,7 +28,14 @@ Accordion tidak memicu permintaan jaringan baru ketika dibuka/ditutup.
 - TypeScript lulus.
 - 30 pengujian unit lulus.
 - Production build lulus.
-- Hasil akhir suite browser dicatat setelah proses selesai.
+- Suite UI lulus pada 224 kombinasi halaman/role/viewport (320, 375, 767, 768,
+  1024, 1440, 1920px), 4 ukuran skenario interaksi, dan 1 skenario CRUD existing.
+- Tujuh skenario Dashboard lulus: 2 role × 3 viewport (320, 768, 1440px)
+  untuk urutan bagian, accordion keyboard, dan overflow rincian terbuka;
+  ditambah 1 skenario kegagalan pemuatan dan retry berhasil.
+- Tidak ada page error, console error tak terduga, atau overflow halaman.
+- Satu respons 503 sintetis pada uji retry diperiksa secara eksplisit, bukan
+  dianggap sebagai keberhasilan layanan produksi.
 
 Pengujian browser memakai fixture localhost disposable, bukan akun atau database
 produksi. UAT perangkat fisik dan pembaca layar belum dilakukan.
