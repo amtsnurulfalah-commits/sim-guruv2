@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { FormDialog } from "@/components/ui/dialog";
@@ -202,24 +201,6 @@ export function DutyManager({
           dikonfirmasi kembali. Klaim pribadi tidak memberi kredit.
         </p>
       </header>
-      <nav className="flex flex-wrap gap-3 text-sm">
-        <Link prefetch={false} className="underline" href="/kehadiran">
-          Kehadiran dan izin
-        </Link>
-        <Link
-          prefetch={false}
-          className="underline"
-          href="/absensi-siswa/input"
-        >
-          Rekap siswa
-        </Link>
-        <Link prefetch={false} className="underline" href="/kegiatan">
-          Konfirmasi KBM
-        </Link>
-        <Link prefetch={false} className="underline" href="/jurnal">
-          Jurnal KBM
-        </Link>
-      </nav>
       <div role="alert" aria-live="polite">
         {error && <p className="rounded bg-red-50 p-3 text-red-800">{error}</p>}
         {message && (
