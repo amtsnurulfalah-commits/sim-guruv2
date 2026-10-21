@@ -301,7 +301,15 @@ test("Tahap 4 — duties, substitution and JTM conservation", async (t) => {
           validTo: "2090-01-03",
         }),
       );
-      await duties.schedule(admin, dutyData("PIKET", piketId));
+      const createdDuty = await duties.schedule(admin, dutyData("PIKET", piketId)) as {id:string;version:string};
+      { // Regression: editing piket works; FINAL_PERIOD remains enforced.
+        const changed = await duties.schedule(admin, {...dutyData("PIKET",piketId),id:createdDuty.id,version:createdDuty.version,timeStart:"07:20"}) as {id:string;version:string;time_start:string};
+        assert.equal(changed.time_start,"07:20:00");
+        await db.exec("insert into finance.period_guards(period_start,finalized_at) values('2090-01-01',clock_timestamp()) on conflict(period_start) do update set finalized_at=excluded.finalized_at");
+        await assert.rejects(() => duties.schedule(admin,{...dutyData("PIKET",piketId),id:changed.id,version:changed.version}),/FINAL_PERIOD/);
+        await db.exec("update finance.period_guards set finalized_at=null where period_start='2090-01-01'");
+        await duties.schedule(admin,{...dutyData("PIKET",piketId),id:changed.id,version:changed.version});
+      }
       await duties.schedule(admin, dutyData("UPACARA", ceremonyId));
       await assert.rejects(
         () => duties.schedule(admin, dutyData("UPACARA", subId)),
