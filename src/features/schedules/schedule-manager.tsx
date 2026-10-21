@@ -1,5 +1,6 @@
 "use client";
 import { ActionIcon } from "@/components/ui/action-icon";
+import { ChevronDown } from "lucide-react";
 
 import { TableRegion } from "@/components/ui/table-region";
 import {
@@ -770,53 +771,66 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
           honorarium.
         </p>
       </header>
-      <section className="page-section space-y-4 rounded-2xl border bg-card p-5">
-        <h2 className="text-xl font-bold">Jadwal pribadi pada tanggal</h2>
-        <label className="block max-w-xs space-y-2 text-sm">
-          <span>Tanggal (WIB)</span>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => {
-              if (e.target.value) setDate(e.target.value);
-            }}
-            className="h-11 w-full rounded border bg-background px-3"
-          />
-        </label>
-        {daily ? (
-          <>
-            <p className="text-sm">
-              {daily.dayContext.isHoliday ? "Hari libur" : "Bukan hari libur"} ·
-              KBM {daily.dayContext.kbmEnabled ? "aktif" : "nonaktif"} ·{" "}
-              {daily.scheduledCount} baris jadwal pribadi sesuai hari/semester.
-            </p>
-            {daily.items.length ? (
-              daily.items.map((r) => (
-                <article key={r.id} className="rounded border p-4">
-                  <strong>
-                    {r.className} · {r.subjectName}
-                  </strong>
-                  <p className="mt-2 text-sm">
-                    {r.timeStart}–{r.timeEnd} WIB · {r.scheduledJtm} JTM
-                  </p>
-                </article>
-              ))
-            ) : (
-              <p>
-                Tidak ada kegiatan KBM pribadi yang aktif pada konteks tanggal
-                ini.
+      <details className="group rounded-2xl border bg-card">
+        <summary className="min-h-12 cursor-pointer list-none rounded-2xl p-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
+          <h2 className="flex items-center justify-between gap-3 text-xl font-bold">
+            Jadwal pribadi pada tanggal
+            <ChevronDown
+              aria-hidden="true"
+              className="size-5 shrink-0 transition-transform group-open:rotate-180 motion-reduce:transition-none"
+            />
+          </h2>
+        </summary>
+        <div className="space-y-4 border-t p-5">
+          <label className="block max-w-xs space-y-2 text-sm">
+            <span>Tanggal (WIB)</span>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => {
+                if (e.target.value) setDate(e.target.value);
+              }}
+              className="h-11 w-full rounded border bg-background px-3"
+            />
+          </label>
+          {daily ? (
+            <>
+              <p className="text-sm">
+                {daily.dayContext.isHoliday ? "Hari libur" : "Bukan hari libur"}{" "}
+                · KBM {daily.dayContext.kbmEnabled ? "aktif" : "nonaktif"} ·{" "}
+                {daily.scheduledCount} baris jadwal pribadi sesuai
+                hari/semester.
               </p>
-            )}
-          </>
-        ) : (
-          <p role="status">Jadwal harian belum tersedia atau sedang dimuat.</p>
-        )}
-        <p className="text-sm leading-6 text-muted-foreground">
-          Konfirmasi tersedia pada halaman Kegiatan KBM dan pengisian jurnal
-          tersedia pada halaman Jurnal. Jadwal sendiri tidak otomatis memberikan
-          kredit. Substitusi menyusul pada modul piket.
-        </p>
-      </section>
+              {daily.items.length ? (
+                daily.items.map((r) => (
+                  <article key={r.id} className="rounded border p-4">
+                    <strong>
+                      {r.className} · {r.subjectName}
+                    </strong>
+                    <p className="mt-2 text-sm">
+                      {r.timeStart}–{r.timeEnd} WIB · {r.scheduledJtm} JTM
+                    </p>
+                  </article>
+                ))
+              ) : (
+                <p>
+                  Tidak ada kegiatan KBM pribadi yang aktif pada konteks tanggal
+                  ini.
+                </p>
+              )}
+            </>
+          ) : (
+            <p role="status">
+              Jadwal harian belum tersedia atau sedang dimuat.
+            </p>
+          )}
+          <p className="text-sm leading-6 text-muted-foreground">
+            Konfirmasi tersedia pada halaman Kegiatan KBM dan pengisian jurnal
+            tersedia pada halaman Jurnal. Jadwal sendiri tidak otomatis
+            memberikan kredit. Substitusi menyusul pada modul piket.
+          </p>
+        </div>
+      </details>
       <section className="page-section space-y-5 rounded-2xl border bg-card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-bold">
@@ -849,115 +863,127 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             )}
           </div>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block space-y-2 text-sm">
-            <span>Cari guru / kelas / mata pelajaran / periode</span>
-            <input
-              value={filters.q}
-              onChange={(e) => filter("q", e.target.value)}
-              className="h-11 w-full rounded border bg-background px-3"
+        <details className="group/filter rounded-xl border bg-background">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
+            <ActionIcon action="filter" />
+            <span className="min-w-0 flex-1">Filter jadwal mingguan</span>
+            <ChevronDown
+              aria-hidden="true"
+              className="size-4 shrink-0 transition-transform group-open/filter:rotate-180 motion-reduce:transition-none"
             />
-          </label>
-          <label className="block space-y-2 text-sm">
-            <span>Hari</span>
-            <select
-              value={filters.dayIndex}
-              onChange={(e) => filter("dayIndex", e.target.value)}
-              className="h-11 w-full rounded border bg-background px-3"
-            >
-              <option value="">Semua hari</option>
-              {days.map((v, i) => (
-                <option key={v} value={String(i)}>
-                  {v}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block space-y-2 text-sm">
-            <span>Status jadwal</span>
-            <select
-              value={filters.state}
-              onChange={(e) => filter("state", e.target.value)}
-              className="h-11 w-full rounded border bg-background px-3"
-            >
-              <option value="active">Aktif</option>
-              <option value="closed">Ditutup pada batas tanggal</option>
-              <option value="archived">Diarsipkan</option>
-              <option value="">Semua termasuk riwayat</option>
-            </select>
-          </label>
-          <label className="block space-y-2 text-sm">
-            <span>Rentang mulai filter</span>
-            <input
-              type="date"
-              value={filters.validFrom}
-              onChange={(e) => filter("validFrom", e.target.value)}
-              className="h-11 w-full rounded border bg-background px-3"
-            />
-          </label>
-          <label className="block space-y-2 text-sm">
-            <span>Rentang akhir filter</span>
-            <input
-              type="date"
-              value={filters.validTo}
-              onChange={(e) => filter("validTo", e.target.value)}
-              className="h-11 w-full rounded border bg-background px-3"
-            />
-          </label>
-        </div>
-        {admin && (
-          <details className="space-y-4">
-            <summary className="cursor-pointer text-sm">
-              Filter relasi guru, semester, mapel dan kelas
-            </summary>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <Picker
-                target="academic-years"
-                label="Tahun ajaran"
-                optional
-                value={filters.academicYearId}
-                onChange={(id) => {
-                  filter("academicYearId", id);
-                  filter("academicPeriodId", "");
-                  filter("classId", "");
-                }}
-              />
-              <Picker
-                target="academic-periods"
-                label="Semester"
-                parentId={filters.academicYearId}
-                optional
-                value={filters.academicPeriodId}
-                onChange={(id) => {
-                  filter("academicPeriodId", id);
-                  filter("classId", "");
-                }}
-              />
-              <Picker
-                target="users"
-                label="Guru"
-                optional
-                value={filters.userId}
-                onChange={(id) => filter("userId", id)}
-              />
-              <Picker
-                target="subjects"
-                label="Mata pelajaran"
-                optional
-                value={filters.subjectId}
-                onChange={(id) => filter("subjectId", id)}
-              />
-              <Picker
-                target="classes"
-                label="Kelas"
-                optional
-                parentId={filters.academicPeriodId}
-                value={filters.classId}
-                onChange={(id) => filter("classId", id)}
-              />
+          </summary>
+          <div className="space-y-4 border-t p-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block space-y-2 text-sm">
+                <span>Cari guru / kelas / mata pelajaran / periode</span>
+                <input
+                  value={filters.q}
+                  onChange={(e) => filter("q", e.target.value)}
+                  className="h-11 w-full rounded border bg-background px-3"
+                />
+              </label>
+              <label className="block space-y-2 text-sm">
+                <span>Hari</span>
+                <select
+                  value={filters.dayIndex}
+                  onChange={(e) => filter("dayIndex", e.target.value)}
+                  className="h-11 w-full rounded border bg-background px-3"
+                >
+                  <option value="">Semua hari</option>
+                  {days.map((v, i) => (
+                    <option key={v} value={String(i)}>
+                      {v}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="block space-y-2 text-sm">
+                <span>Status jadwal</span>
+                <select
+                  value={filters.state}
+                  onChange={(e) => filter("state", e.target.value)}
+                  className="h-11 w-full rounded border bg-background px-3"
+                >
+                  <option value="active">Aktif</option>
+                  <option value="closed">Ditutup pada batas tanggal</option>
+                  <option value="archived">Diarsipkan</option>
+                  <option value="">Semua termasuk riwayat</option>
+                </select>
+              </label>
+              <label className="block space-y-2 text-sm">
+                <span>Rentang mulai filter</span>
+                <input
+                  type="date"
+                  value={filters.validFrom}
+                  onChange={(e) => filter("validFrom", e.target.value)}
+                  className="h-11 w-full rounded border bg-background px-3"
+                />
+              </label>
+              <label className="block space-y-2 text-sm">
+                <span>Rentang akhir filter</span>
+                <input
+                  type="date"
+                  value={filters.validTo}
+                  onChange={(e) => filter("validTo", e.target.value)}
+                  className="h-11 w-full rounded border bg-background px-3"
+                />
+              </label>
             </div>
-          </details>
-        )}
+            {admin && (
+              <details className="space-y-4">
+                <summary className="cursor-pointer text-sm">
+                  Filter relasi guru, semester, mapel dan kelas
+                </summary>
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <Picker
+                    target="academic-years"
+                    label="Tahun ajaran"
+                    optional
+                    value={filters.academicYearId}
+                    onChange={(id) => {
+                      filter("academicYearId", id);
+                      filter("academicPeriodId", "");
+                      filter("classId", "");
+                    }}
+                  />
+                  <Picker
+                    target="academic-periods"
+                    label="Semester"
+                    parentId={filters.academicYearId}
+                    optional
+                    value={filters.academicPeriodId}
+                    onChange={(id) => {
+                      filter("academicPeriodId", id);
+                      filter("classId", "");
+                    }}
+                  />
+                  <Picker
+                    target="users"
+                    label="Guru"
+                    optional
+                    value={filters.userId}
+                    onChange={(id) => filter("userId", id)}
+                  />
+                  <Picker
+                    target="subjects"
+                    label="Mata pelajaran"
+                    optional
+                    value={filters.subjectId}
+                    onChange={(id) => filter("subjectId", id)}
+                  />
+                  <Picker
+                    target="classes"
+                    label="Kelas"
+                    optional
+                    parentId={filters.academicPeriodId}
+                    value={filters.classId}
+                    onChange={(id) => filter("classId", id)}
+                  />
+                </div>
+              </details>
+            )}
+          </div>
+        </details>
         {recap && (
           <p className="text-sm">
             Rekap seluruh filter: {recap.rowCount} baris ·{" "}

@@ -124,6 +124,103 @@ try {
     );
     await page.waitForLoadState("networkidle");
   }
+  // Schedule accordions keep selected dates/filters and preserve server requests.
+  for (const role of ["admin", "guru"]) {
+    for (const width of [320, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await go("schedules", role);
+      const daily = page
+        .locator("details")
+        .filter({
+          has: page.getByRole("heading", {
+            name: "Jadwal pribadi pada tanggal",
+            exact: true,
+          }),
+        });
+      const dailyToggle = daily.locator("summary");
+      assert.equal(await daily.getAttribute("open"), null);
+      await dailyToggle.focus();
+      await page.keyboard.press("Enter");
+      assert.notEqual(await daily.getAttribute("open"), null);
+      const dateResponse = page.waitForResponse((response) => {
+        const url = new URL(response.url());
+        return (
+          url.pathname === "/api/schedules/today" &&
+          url.searchParams.get("date") === "2026-10-20"
+        );
+      });
+      await daily
+        .getByLabel("Tanggal (WIB)", { exact: true })
+        .fill("2026-10-20");
+      assert.equal((await dateResponse).status(), 200);
+      assert.ok(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth + 1,
+        ),
+      );
+      await dailyToggle.focus();
+      await page.keyboard.press("Space");
+      assert.equal(await daily.getAttribute("open"), null);
+      await dailyToggle.click();
+      assert.equal(
+        await daily.getByLabel("Tanggal (WIB)", { exact: true }).inputValue(),
+        "2026-10-20",
+      );
+      const filters = page
+        .locator("details")
+        .filter({
+          has: page.getByText("Filter jadwal mingguan", { exact: true }),
+        });
+      const filterToggle = filters.locator("summary").first();
+      assert.equal(await filters.getAttribute("open"), null);
+      await filterToggle.click();
+      const filterResponse = page.waitForResponse((response) => {
+        const url = new URL(response.url());
+        return (
+          url.pathname ===
+            (role === "admin" ? "/api/schedules" : "/api/schedules/mine") &&
+          url.searchParams.get("q") === "AccordionSintetis"
+        );
+      });
+      await filters
+        .getByLabel("Cari guru / kelas / mata pelajaran / periode", {
+          exact: true,
+        })
+        .fill("AccordionSintetis");
+      assert.equal((await filterResponse).status(), 200);
+      assert.ok(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth + 1,
+        ),
+      );
+      await filterToggle.focus();
+      await page.keyboard.press("Enter");
+      assert.equal(await filters.getAttribute("open"), null);
+      assert.ok(
+        await page
+          .getByRole("button", {
+            name: "Cetak seluruh hasil filter",
+            exact: true,
+          })
+          .isVisible(),
+      );
+      await filterToggle.click();
+      assert.equal(
+        await filters
+          .getByLabel("Cari guru / kelas / mata pelajaran / periode", {
+            exact: true,
+          })
+          .inputValue(),
+        "AccordionSintetis",
+      );
+      interactions.push({
+        scheduleAccordions: "keyboard-date-filter-retention",
+        role,
+        viewport: width,
+        passed: true,
+      });
+    }
+  }
   // Account tabs retain drafts and expose a single keyboard-focusable tab.
   for (const width of [320, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });

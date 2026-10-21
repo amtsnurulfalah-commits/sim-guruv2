@@ -148,3 +148,16 @@ server, konfirmasi kata sandi, CAS versi profil, CSRF, pengakhiran sesi, dan
 verifikasi email tetap mengikuti handler existing. Tab awal akun bisnis adalah
 Ubah Profil; onboarding memakai Ganti Kata Sandi. Aksi Selesaikan dan lanjutkan
 berada di luar panel agar selalu tersedia dan tetap divalidasi server.
+
+## Accordion jadwal mengajar
+
+Kartu Jadwal pribadi pada tanggal memakai details/summary native; judul kartu
+menjadi pemicu dan isi menampung tanggal, konteks hari, daftar jadwal, serta
+keterangan. Filter jadwal mingguan memakai accordion terpisah untuk pencarian,
+hari, status, rentang berlaku, dan filter relasi khusus administrator.
+
+Keduanya tertutup saat awal. Ringkasan hasil, tabel, pagination, tombol cetak,
+muat ulang, dan tambah jadwal tetap di luar accordion filter. Menutup accordion
+tidak mereset tanggal atau filter dan tidak mengubah query API. Enter/Spasi,
+focus ring, target minimum 48px, ikon panah dekoratif, dan reduced motion
+mengikuti pola accordion native yang sudah digunakan Dashboard.
