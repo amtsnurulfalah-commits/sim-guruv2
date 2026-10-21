@@ -5,6 +5,9 @@ import Link from "next/link";
 import { UserRound, KeyRound, MailCheck, ShieldQuestion } from "lucide-react";
 import { Tabs } from "@/components/ui/tabs";
 import {
+  createContext,
+  useContext,
+  useCallback,
   useEffect,
   useId,
   useRef,
@@ -16,21 +19,25 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { FormDialog } from "@/components/ui/dialog";
 import { notifySuccess } from "@/components/feedback/toast-region";
 import { Button } from "@/components/ui/button";
-import { requestJson, serverFieldErrors } from "@/lib/feedback/api-error";
+import { ApiRequestError, requestJson, serverFieldErrors } from "@/lib/feedback/api-error";
 import { applyFieldErrors } from "@/lib/feedback/form-fields";
 import { FeatureState } from "@/components/feedback/feature-state";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
-import type { ProfileDto } from "@/lib/accounts/schemas";
+import { emailDispatchSchema, profileDtoSchema, profileSchema, changePasswordSchema, questionSchema, emailRequestSchema, verifyOtpSchema, type ProfileDto } from "@/lib/accounts/schemas";
+import { validateAccount } from "@/lib/accounts/client-validation";
+const AccountActions = createContext<{busy:boolean; claim:()=>boolean; release:()=>void} | null>(null);
+type ActionResult = {message:string; tone:"success" | "info" | "error"};
 export async function accountRequest<T>(
   action: string,
   data?: unknown,
   publicForm = false,
+  signal?: AbortSignal,
 ): Promise<T> {
   const headers: Record<string, string> = {};
   if (data !== undefined) {
     const csrf = await requestJson<{ csrfToken: string }>(
       "/api/auth/csrf?intent=" + (publicForm ? "login" : "session"),
-      { signal: AbortSignal.timeout(15000) },
+      { signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(15000)]) : AbortSignal.timeout(15000) },
     );
     headers["Content-Type"] = "application/json";
     headers["X-CSRF-Token"] = csrf.csrfToken;
@@ -39,7 +46,7 @@ export async function accountRequest<T>(
     method: data === undefined ? "GET" : "POST",
     headers,
     ...(data === undefined ? {} : { body: JSON.stringify(data) }),
-    signal: AbortSignal.timeout(action === "email-request" ? 40000 : 20000),
+    signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(action === "email-request" ? 40000 : 20000)]) : AbortSignal.timeout(action === "email-request" ? 40000 : 20000),
   });
 }
 export function endLocalSession() {
@@ -60,6 +67,10 @@ export function Field({
   required = true,
   maxLength = 128,
   autoComplete,
+  minLength,
+  pattern,
+  inputMode,
+  multiline = false,
 }: {
   name: string;
   label: string;
@@ -68,19 +79,24 @@ export function Field({
   required?: boolean;
   maxLength?: number;
   autoComplete?: string;
+  minLength?: number;
+  pattern?: string;
+  inputMode?: "text" | "numeric" | "tel" | "email";
+  multiline?: boolean;
 }) {
   const id = useId();
   return (
     <div className="block min-w-0 space-y-2 text-sm">
-      <label htmlFor={id} className="block">
+      <label htmlFor={id} className="block font-medium">
         {label}
       </label>
-      {type === "password" ? (
+      {multiline ? <textarea id={id} name={name} defaultValue={value} required={required} minLength={minLength} maxLength={maxLength} autoComplete={autoComplete ?? "off"} rows={3} className="min-h-24 w-full min-w-0 resize-y rounded-lg border bg-background px-3 py-2" /> : type === "password" ? (
         <PasswordInput
           id={id}
           name={name}
           defaultValue={value}
           required={required}
+          minLength={minLength}
           maxLength={maxLength}
           autoComplete={autoComplete ?? "current-password"}
         />
@@ -91,11 +107,14 @@ export function Field({
           type={type}
           defaultValue={value}
           required={required}
+          minLength={minLength}
+          pattern={pattern}
+          inputMode={inputMode}
           maxLength={maxLength}
           autoComplete={
             autoComplete ?? (type === "password" ? "current-password" : "off")
           }
-          className="h-11 w-full rounded-lg border bg-background px-3"
+          className="min-h-11 min-w-0 w-full rounded-lg border bg-background px-3 py-2"
         />
       )}
     </div>
@@ -115,16 +134,19 @@ export function ActionForm({
   onSubmit: (
     data: Record<string, string>,
     form: HTMLFormElement,
-  ) => Promise<string | void>;
+  ) => Promise<string | ActionResult | void>;
 }) {
   const [busy, setBusy] = useState(false),
     [message, setMessage] = useState(""),
     [open, setOpen] = useState(false),
     [failed, setFailed] = useState(false);
+  const group = useContext(AccountActions);
+  const mounted = useRef(false);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
   const pending = useRef(false);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (pending.current) return;
+    if (pending.current || (group && !group.claim())) return;
     pending.current = true;
     const form = event.currentTarget;
     setBusy(true);
@@ -136,12 +158,19 @@ export function ActionForm({
         string
       >;
       const result = (await onSubmit(data, form)) ?? "Tersimpan.";
-      setMessage(result);
-      setOpen(false);
-      notifySuccess(result);
+      const notice = typeof result === "string" ? {message:result,tone:"success"} : result;
+      if (mounted.current) {
+        setMessage(notice.message);
+        setFailed(notice.tone === "error");
+        if (notice.tone === "success") setOpen(false);
+      }
+      if (notice.tone === "success") notifySuccess(notice.message);
     } catch (error) {
+      if (!mounted.current) return;
       setFailed(true);
-      applyFieldErrors(form, serverFieldErrors(error));
+      const fields = serverFieldErrors(error);
+      if (error instanceof ApiRequestError && error.code === "INVALID_CREDENTIALS" && form.elements.namedItem("currentPassword")) fields.currentPassword = "Kata sandi saat ini tidak sesuai. Periksa kembali isian ini.";
+      applyFieldErrors(form, fields);
       setMessage(
         error instanceof Error && error.name !== "TimeoutError"
           ? error.message
@@ -149,19 +178,20 @@ export function ActionForm({
       );
     } finally {
       pending.current = false;
-      setBusy(false);
+      group?.release();
+      if (mounted.current) setBusy(false);
     }
   }
   const content = (
     <form
-      aria-busy={busy}
-      className="ui-panel space-y-4"
+      aria-busy={busy || group?.busy}
+      className="ui-panel min-w-0 space-y-4 [overflow-wrap:anywhere]"
       onSubmit={(event) => void submit(event)}
     >
       <h3 className="text-lg font-semibold">{title}</h3>
-      <fieldset disabled={busy} className="space-y-4">
+      <fieldset disabled={busy || group?.busy} className="min-w-0 space-y-4">
         {children}
-        <Button type="submit" disabled={busy}>
+        <Button className="w-full sm:w-auto" type="submit" disabled={busy || group?.busy}>
           <ActionIcon action="submit" />
           {busy ? "Memproses…" : submitLabel}
         </Button>
@@ -208,35 +238,52 @@ export const PasswordHelp = () => (
 export function AccountLifecycle({
   isAdmin,
   onboarding,
+  onProfileChange,
 }: {
   isAdmin: boolean;
   onboarding: boolean;
+  onProfileChange?: (profile:ProfileDto)=>void;
 }) {
   const [profile, setProfile] = useState<ProfileDto | null>(null),
     [error, setError] = useState(""),
-    [challenge, setChallenge] = useState(""),
-    [revision, setRevision] = useState(0);
+    [challenge, setChallenge] = useState<{id:string;email:string} | null>(null),
+    [revision, setRevision] = useState(0),
+    [notice, setNotice] = useState(""),
+    [actionBusy, setActionBusy] = useState(false),
+    [profileLoading, setProfileLoading] = useState(true);
+  const profileRead = useRef(0);
+  const actionPending = useRef(false);
+  const accountMounted = useRef(false);
+  const claim = useCallback(() => {
+    if (actionPending.current || error || profileLoading) return false;
+    actionPending.current = true; setActionBusy(true); return true;
+  }, [error, profileLoading]);
+  const release = useCallback(() => { actionPending.current = false; if (accountMounted.current) setActionBusy(false); }, []);
+  const refreshProfile = useCallback(async (signal?:AbortSignal) => {
+    const readId = ++profileRead.current;
+    try {
+      const next = profileDtoSchema.safeParse(await accountRequest<unknown>("profile", undefined, false, signal));
+      if (!next.success) throw new Error("Data profil belum sesuai. Muat ulang atau hubungi administrator.");
+      if (accountMounted.current && !signal?.aborted && readId === profileRead.current) { setProfile(next.data); setError(""); onProfileChange?.(next.data); }
+    } finally {
+      if (accountMounted.current && !signal?.aborted && readId === profileRead.current) setProfileLoading(false);
+    }
+  }, [onProfileChange]);
+  async function refreshAfterSave(message:string) {
+    if (!accountMounted.current) return;
+    setNotice(message);
+    setProfileLoading(true);
+    try { await refreshProfile(); }
+    catch(e) { if (accountMounted.current) setError("Perubahan sudah tersimpan, tetapi profil terbaru belum dapat dimuat. Jangan kirim ulang perubahan. " + (e instanceof Error ? e.message : "Coba muat ulang profil.")); }
+  }
   useEffect(() => {
-    let active = true;
-    accountRequest<ProfileDto>("profile")
-      .then((data) => {
-        if (active) {
-          setProfile(data);
-          setError("");
-        }
-      })
-      .catch((error) => {
-        if (active)
-          setError(
-            error instanceof Error
-              ? error.message
-              : "Profil belum dapat dimuat. Coba muat ulang.",
-          );
-      });
-    return () => {
-      active = false;
-    };
-  }, [revision]);
+    accountMounted.current = true;
+    const controller = new AbortController();
+    void refreshProfile(controller.signal).catch(e => {
+      if (!controller.signal.aborted && accountMounted.current) setError(e instanceof Error ? e.message : "Profil belum dapat dimuat. Coba muat ulang.");
+    });
+    return () => { accountMounted.current = false; controller.abort(); };
+  }, [revision, refreshProfile]);
   if (!profile)
     return (
       <FeatureState
@@ -245,12 +292,25 @@ export function AccountLifecycle({
         label="Memuat pengamanan akun…"
         retry={() => {
           setError("");
+          setProfileLoading(true);
           setRevision((v) => v + 1);
         }}
       />
     );
   return (
-    <div className="space-y-6">
+    <AccountActions.Provider value={{busy:actionBusy || profileLoading || Boolean(error),claim,release}}>
+    <div className="min-w-0 space-y-6 [overflow-wrap:anywhere]">
+      {profileLoading && <p role="status" className="text-sm text-muted-foreground">Memuat ulang profil…</p>}
+      {notice && <p role="status" className="rounded-xl border bg-accent/40 p-4 text-sm">{notice}</p>}
+      {error && <div className="space-y-3"><ErrorFeedback message={error} /><Button variant="outline" disabled={actionBusy || profileLoading} onClick={() => {setError("");setProfileLoading(true);setRevision(v=>v+1);}}><ActionIcon action="refresh" />Muat ulang profil</Button></div>}
+      <section aria-label="Ringkasan profil" className="min-w-0 rounded-2xl border bg-accent/40 p-4 sm:p-5">
+        <h2 className="text-lg font-semibold">{profile.fullName}</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Username: {profile.username}</p>
+        <dl className="mt-4 grid min-w-0 gap-4 sm:grid-cols-2 [&>div]:min-w-0">
+          <div><dt className="flex items-center gap-2 text-sm font-semibold"><MailCheck aria-hidden="true" className="size-4 shrink-0" />Email</dt><dd className="mt-1 text-sm">{profile.email || "Belum diisi"} · {profile.emailVerified ? "Terverifikasi" : "Belum terverifikasi"}</dd></div>
+          <div><dt className="flex items-center gap-2 text-sm font-semibold"><ShieldQuestion aria-hidden="true" className="size-4 shrink-0" />Pertanyaan keamanan</dt><dd className="mt-1 text-sm">{profile.question ? "Sudah diatur" : "Belum diatur"}</dd></div>
+        </dl>
+      </section>
       <h2 className="text-xl font-semibold">Profil dan pengamanan akun</h2>
       <Tabs
         label="Pengaturan akun dan profil"
@@ -267,28 +327,28 @@ export function AccountLifecycle({
                 title="Ubah profil"
                 submitLabel="Simpan perubahan profil"
                 onSubmit={async (data, form) => {
-                  await accountRequest("profile", {
-                    ...data,
-                    version: profile.version,
-                  });
+                  await accountRequest("profile", validateAccount(profileSchema, {...data, version:profile.version}));
                   (
                     form.elements.namedItem(
                       "currentPassword",
                     ) as HTMLInputElement
                   ).value = "";
-                  setRevision((v) => v + 1);
+                  await refreshAfterSave("Profil berhasil diperbarui.");
                   return "Profil berhasil diperbarui.";
                 }}
               >
+                <div className="grid min-w-0 gap-4 md:grid-cols-2">
                 <Field
                   name="username"
                   label="Username"
+                  autoComplete="username"
                   value={profile.username}
                   maxLength={64}
                 />
                 <Field
                   name="fullName"
                   label="Nama lengkap"
+                  autoComplete="name"
                   value={profile.fullName}
                   maxLength={200}
                 />
@@ -302,6 +362,7 @@ export function AccountLifecycle({
                 <Field
                   name="phone"
                   label="Nomor telepon (opsional)"
+                  autoComplete="tel"
                   type="tel"
                   value={profile.phone}
                   required={false}
@@ -310,6 +371,8 @@ export function AccountLifecycle({
                 <Field
                   name="address"
                   label="Alamat (opsional)"
+                  multiline
+                  autoComplete="street-address"
                   value={profile.address}
                   required={false}
                   maxLength={500}
@@ -327,6 +390,7 @@ export function AccountLifecycle({
                   label="Konfirmasi kata sandi saat ini"
                   type="password"
                 />
+                </div>
               </ActionForm>
             ),
           },
@@ -340,7 +404,7 @@ export function AccountLifecycle({
                 title="Ganti kata sandi"
                 submitLabel="Simpan kata sandi baru"
                 onSubmit={async (data, form) => {
-                  await accountRequest("change-password", data);
+                  await accountRequest("change-password", validateAccount(changePasswordSchema, data));
                   form.reset();
                   endLocalSession();
                 }}
@@ -380,24 +444,22 @@ export function AccountLifecycle({
                   title="Verifikasi email"
                   submitLabel="Kirim kode OTP"
                   onSubmit={async (data, form) => {
-                    const result = await accountRequest<{
-                      queued: boolean;
-                      challengeId?: string;
-                      delivery?: "accepted" | "pending" | "failed" | "unknown";
-                    }>("email-request", data);
+                    const result = emailDispatchSchema.safeParse(await accountRequest<unknown>("email-request", validateAccount(emailRequestSchema, data)));
+                    if (!result.success) { setChallenge(null); throw new Error("Status permintaan OTP belum dapat dipastikan. Tunggu 60 detik lalu minta kode baru; gunakan kode dari permintaan terbaru."); }
+                    const dispatch = result.data;
                     (
                       form.elements.namedItem(
                         "currentPassword",
                       ) as HTMLInputElement
                     ).value = "";
-                    if (result.challengeId) setChallenge(result.challengeId);
-                    if (!result.queued)
-                      return "Tunggu setidaknya 60 detik sebelum meminta kode lagi.";
-                    if (result.delivery === "accepted")
+                    if (dispatch.queued) setChallenge({id:dispatch.challengeId,email:data.email!.toLowerCase()});
+                    if (!dispatch.queued)
+                      return {tone:"info", message:"Tunggu setidaknya 60 detik sebelum meminta kode lagi."};
+                    if (dispatch.delivery === "accepted")
                       return "Permintaan pengiriman kode diterima layanan email. Periksa kotak masuk dan folder Spam. Kode berlaku 10 menit.";
-                    if (result.delivery === "failed")
-                      return "Kode belum berhasil dikirim. Hubungi administrator, lalu minta kode baru.";
-                    return "Kode tersimpan, tetapi pengiriman belum terkonfirmasi. Tunggu 60 detik lalu minta kode baru; gunakan kode dari permintaan terbaru.";
+                    if (dispatch.delivery === "failed")
+                      return {tone:"error", message:"Kode belum berhasil dikirim. Hubungi administrator, lalu minta kode baru."};
+                    return {tone:"info",message:"Kode tersimpan, tetapi pengiriman belum terkonfirmasi. Tunggu 60 detik lalu minta kode baru; gunakan kode dari permintaan terbaru."};
                   }}
                 >
                   <p className="text-sm leading-7">
@@ -423,19 +485,22 @@ export function AccountLifecycle({
                 </ActionForm>
                 {challenge && (
                   <ActionForm
+                    key={challenge.id}
                     title="Masukkan kode verifikasi email"
                     submitLabel="Verifikasi kode"
                     onSubmit={async (data) => {
-                      await accountRequest("email-verify", {
-                        challengeId: challenge,
-                        otp: data.otp,
-                      });
+                      await accountRequest("email-verify", validateAccount(verifyOtpSchema, {challengeId:challenge.id,otp:data.otp}));
                       endLocalSession();
                     }}
                   >
+                    <p className="text-sm [overflow-wrap:anywhere]">Kode ini ditujukan ke <strong>{challenge.email}</strong>. Mengubah isian email di atas tidak mengubah tujuan kode yang sudah dikirim.</p>
                     <Field
                       name="otp"
                       label="Kode OTP enam digit"
+                      inputMode="numeric"
+                      pattern="[0-9]{6}"
+                      autoComplete="one-time-code"
+                      minLength={6}
                       maxLength={6}
                     />
                     <p className="text-sm">
@@ -456,9 +521,9 @@ export function AccountLifecycle({
                 title="Pertanyaan keamanan"
                 submitLabel="Simpan pertanyaan keamanan"
                 onSubmit={async (data, form) => {
-                  await accountRequest("security-question", data);
+                  await accountRequest("security-question", validateAccount(questionSchema, data));
                   form.reset();
-                  setRevision((v) => v + 1);
+                  await refreshAfterSave("Pertanyaan keamanan berhasil diperbarui.");
                   return "Pertanyaan keamanan berhasil diperbarui. Pemulihan akun tetap memerlukan OTP email atau verifikasi administrator.";
                 }}
               >
@@ -510,5 +575,6 @@ export function AccountLifecycle({
         </p>
       )}
     </div>
+    </AccountActions.Provider>
   );
 }

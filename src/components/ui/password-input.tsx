@@ -1,5 +1,5 @@
 "use client";
-import { useId, useState, type ComponentProps } from "react";
+import { useEffect, useId, useState, type ComponentProps } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 /** Keeps the value in the input and supports password managers, paste and keyboard use. */
@@ -11,6 +11,14 @@ export function PasswordInput({
   const [visible, setVisible] = useState(false);
   const generated = useId();
   const inputId = id ?? generated;
+  useEffect(() => {
+    const resetVisibility = (event:Event) => {
+      const input = document.getElementById(inputId);
+      if (input instanceof HTMLInputElement && input.form === event.target) setVisible(false);
+    };
+    document.addEventListener("reset", resetVisibility, true);
+    return () => document.removeEventListener("reset", resetVisibility, true);
+  }, [inputId]);
   const Icon = visible ? EyeOff : Eye;
   return (
     <div className="relative min-w-0">

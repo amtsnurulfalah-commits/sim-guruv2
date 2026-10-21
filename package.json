@@ -30,7 +30,8 @@
     "test:ui": "node tests/ui/verify.mjs",
     "test:navigation": "node tests/navigation/verify.mjs",
     "test:ui:support": "node tests/ui/support.mjs",
-    "test:ui:dashboard": "node tests/ui/dashboard.mjs"
+    "test:ui:dashboard": "node tests/ui/dashboard.mjs",
+    "test:ui:account": "node tests/ui/account.mjs"
   },
   "dependencies": {
     "@next/env": "16.4.2",
