@@ -15,8 +15,8 @@ export const scheduleData = z
     scheduledJtm: z
       .string()
       .regex(/^(0|[1-9]\d{0,7})(\.\d{1,4})?$/)
-      .refine((v) => new DomainDecimal(v).gt(0))
-      .transform((v) => new DomainDecimal(v).toFixed(4)),
+      .pipe(z.string().refine((v) => new DomainDecimal(v).gt(0))
+        .transform((v) => new DomainDecimal(v).toFixed(4))),
     restMinutes: z.number().int().min(0).max(600),
     validFrom: date,
     validTo: date,

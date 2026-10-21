@@ -13,154 +13,19 @@ import { Button } from "@/components/ui/button";
 import { masterRequest } from "@/features/masters/api";
 import {
   days,
-  endTime,
+  endTime, createSchedule, editSchedule, conflictSchedule, bulkSchedule, scheduleFilters,
   type ScheduleRow,
   type ScheduleList,
 } from "@/lib/schedules/schemas";
-import { wibDate, type DayContext } from "@/lib/calendar/schemas";
+import { wibDate } from "@/lib/calendar/schemas";
 import type { MasterList } from "@/lib/masters/schemas";
-import type { UserList } from "@/lib/users/schemas";
-type Choice = { id: string; label: string; raw: Record<string, unknown> };
-function Picker({
-  target,
-  label,
-  value,
-  onChange,
-  parentId = "",
-  optional = false,
-  disabled = false,
-}: {
-  target: string;
-  label: string;
-  value: string;
-  onChange: (id: string, item?: Choice) => void;
-  parentId?: string;
-  optional?: boolean;
-  disabled?: boolean;
-}) {
-  const [q, setQ] = useState(""),
-    [page, setPage] = useState(1),
-    [items, setItems] = useState<Choice[]>([]),
-    [total, setTotal] = useState(0),
-    [error, setError] = useState("");
-  useEffect(() => {
-    let active = true;
-    const c = new AbortController(),
-      url = target === "users" ? "/api/users" : "/api/settings/" + target;
-    masterRequest<MasterList | UserList>(
-      url +
-        "?" +
-        new URLSearchParams({
-          q,
-          page: String(page),
-          pageSize: "20",
-          ...(target === "users" ? { status: "active" } : { parentId }),
-        }),
-      "GET",
-      undefined,
-      c.signal,
-    )
-      .then((v) => {
-        if (active) {
-          setItems(
-            v.items.map((row) => ({
-              id: row.id,
-              label:
-                String(
-                  "fullName" in row
-                    ? row.fullName
-                    : (row.name ?? row.label ?? row.parentLabel ?? "Data"),
-                ) +
-                ("semester" in row
-                  ? " · Semester " + String(row.semester)
-                  : ""),
-              raw: row,
-            })),
-          );
-          setTotal(v.total);
-          setError("");
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setItems([]);
-          setError(
-            "Pilihan belum dapat dimuat. Ubah pencarian untuk mencoba lagi.",
-          );
-        }
-      });
-    return () => {
-      active = false;
-      c.abort();
-    };
-  }, [target, q, page, parentId]);
-  return (
-    <div className="space-y-2 rounded-lg border p-3">
-      <label className="block text-sm">
-        Cari {label.toLowerCase()}
-        <input
-          disabled={disabled}
-          value={q}
-          onChange={(e) => {
-            setQ(e.target.value);
-            setPage(1);
-          }}
-          className="mt-2 h-10 w-full rounded border bg-background px-3"
-        />
-      </label>
-      <label className="block text-sm">
-        {label}
-        <select
-          disabled={disabled}
-          value={value}
-          required={!optional}
-          onChange={(e) =>
-            onChange(
-              e.target.value,
-              items.find((v) => v.id === e.target.value),
-            )
-          }
-          className="mt-2 h-11 w-full rounded border bg-background px-3"
-        >
-          <option value="">
-            {optional ? "Semua / tidak dipilih" : "Pilih data"}
-          </option>
-          {value && !items.some((v) => v.id === value) && (
-            <option value={value}>Pilihan tersimpan</option>
-          )}
-          {items.map((v) => (
-            <option key={v.id} value={v.id}>
-              {v.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      {error && <ErrorFeedback message={error} />}
-      <div className="flex gap-2">
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          disabled={disabled || page === 1}
-          onClick={() => setPage((p) => p - 1)}
-        >
-          <ActionIcon action="previous" />
-          Sebelumnya
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          disabled={disabled || page * 20 >= total}
-          onClick={() => setPage((p) => p + 1)}
-        >
-          <ActionIcon action="next" />
-          Berikutnya
-        </Button>
-      </div>
-    </div>
-  );
-}
+import type { z } from "zod";
+import { ApiRequestError, serverFieldErrors } from "@/lib/feedback/api-error";
+import { applyFieldErrors } from "@/lib/feedback/form-fields";
+import { validateAccount as validateInput } from "@/lib/accounts/client-validation";
+import { EmptyState } from "@/components/feedback/feature-state";
+import { readScheduleResponse, scheduleListSchema, recapSchema, dailySchema, collisionSchema, bulkPreviewSchema, historySchema, canChangeSchedule } from "@/lib/schedules/contracts";
+import { SchedulePicker as Picker } from "./schedule-picker";
 function Editor({
   row,
   onSaved,
@@ -170,6 +35,10 @@ function Editor({
   onSaved: () => void;
   onBusy: (v: boolean) => void;
 }) {
+  const pending = useRef(false);
+  const checkedDuration = useRef(false);
+  const mounted = useRef(false);
+  useEffect(() => { mounted.current=true; return () => { mounted.current=false; }; }, []);
   const [period, setPeriod] = useState(row?.academicPeriodId ?? ""),
     [user, setUser] = useState(row?.userId ?? ""),
     [subject, setSubject] = useState(row?.subjectId ?? ""),
@@ -184,6 +53,7 @@ function Editor({
     [minutes, setMinutes] = useState(row?.minutesPerJtm ?? 40),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
+    [minutesError, setMinutesError] = useState(""),
     [collision, setCollision] = useState<{
       conflicts: {
         id: string;
@@ -202,16 +72,19 @@ function Editor({
     let active = true;
     masterRequest<MasterList>("/api/settings/school")
       .then((v) => {
-        if (active && v.items[0]) setMinutes(Number(v.items[0].minutesPerJtm));
+        const value=Number(v.items?.[0]?.minutesPerJtm);
+        if(!Number.isInteger(value)||value<1||value>180) throw new Error("Pengaturan durasi sekolah belum dapat dibaca.");
+        if(active && !checkedDuration.current)setMinutes(value);
       })
-      .catch(() => {});
+      .catch(e => {if(active && !checkedDuration.current)setMinutesError(e instanceof Error?e.message:"Pengaturan durasi sekolah belum dapat dimuat.");});
     return () => {
       active = false;
     };
   }, []);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy) return;
+    if (pending.current) return;
+    pending.current=true;
     const form = event.currentTarget,
       values = new FormData(form),
       intent =
@@ -234,40 +107,36 @@ function Editor({
     setError("");
     try {
       if (intent === "check") {
-        const v = await masterRequest<typeof collision>(
-          "/api/schedules/conflicts",
-          "POST",
-          { ...(row ? { id: row.id } : {}), data },
-        );
-        setCollision(v);
-        if (v) setMinutes(v.minutesPerJtm);
+        setCollision(null);
+        const payload=validateInput(conflictSchedule,{...(row?{id:row.id}:{}),data});
+        const v=readScheduleResponse(collisionSchema,await masterRequest<unknown>("/api/schedules/conflicts","POST",payload));
+        if(mounted.current){checkedDuration.current=true;setCollision(v);setMinutes(v.minutesPerJtm);setMinutesError("");}
       } else {
         await masterRequest(
           "/api/schedules" + (row ? "/" + row.id : ""),
           row ? "PATCH" : "POST",
-          {
-            data,
-            reason: values.get("reason"),
-            ...(row ? { version: row.version } : {}),
-          },
+          row ? validateInput(editSchedule,{data,reason:values.get("reason"),version:row.version}) : validateInput(createSchedule,{data,reason:values.get("reason")}),
         );
-        onSaved();
+        if(mounted.current) onSaved();
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Jadwal belum dapat disimpan.");
+      if(mounted.current){applyFieldErrors(form,serverFieldErrors(e));setError(e instanceof Error ? e.message : "Jadwal belum dapat disimpan.");}
     } finally {
-      setBusy(false);
+      pending.current=false;
+      if(mounted.current)setBusy(false);
       onBusy(false);
     }
   }
   return (
-    <form onSubmit={(e) => void submit(e)} className="space-y-4">
-      <fieldset disabled={busy} className="space-y-4">
+    <form onSubmit={(e) => void submit(e)} onChangeCapture={() => setCollision(null)} aria-busy={busy} className="min-w-0 space-y-4">
+      <fieldset disabled={busy} className="min-w-0 space-y-4">
+        <div className="grid min-w-0 gap-4 md:grid-cols-2">
         <Picker
           target="academic-periods"
           label="Semester"
           value={period}
           disabled={Boolean(row)}
+          selectedLabel={row?.periodLabel ?? ""}
           onChange={(id, item) => {
             setPeriod(id);
             setKlass("");
@@ -284,28 +153,34 @@ function Editor({
         <Picker
           target="users"
           label="Guru / pengajar aktif"
+          selectedLabel={row?.teacherName ?? ""}
           value={user}
           onChange={(id) => setUser(id)}
         />
         <Picker
           target="subjects"
           label="Mata pelajaran"
+          selectedLabel={row?.subjectName ?? ""}
           value={subject}
           onChange={(id) => setSubject(id)}
         />
         <Picker
           target="classes"
           label="Kelas pada semester terpilih"
+          key={period}
+          selectedLabel={row?.className ?? ""}
           value={klass}
           parentId={period}
           onChange={(id) => setKlass(id)}
         />
+        </div>
         <label className="block space-y-2 text-sm">
           <span>Hari</span>
           <select
             name="dayIndex"
+            aria-label="Hari"
             defaultValue={row?.dayIndex ?? 1}
-            className="h-11 w-full rounded border bg-background px-3"
+            className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
           >
             {days.map((d, i) => (
               <option key={d} value={i}>
@@ -320,12 +195,13 @@ function Editor({
             <input
               type="time"
               required
+              name="timeStart"
               value={start}
               onChange={(e) => {
                 setStart(e.target.value);
                 setCollision(null);
               }}
-              className="h-11 w-full rounded border bg-background px-3"
+              className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
             />
           </label>
           <label className="block space-y-2 text-sm">
@@ -333,13 +209,14 @@ function Editor({
             <input
               required
               inputMode="decimal"
+              name="scheduledJtm"
               value={jtm}
               maxLength={13}
               onChange={(e) => {
                 setJtm(e.target.value);
                 setCollision(null);
               }}
-              className="h-11 w-full rounded border bg-background px-3"
+              className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
             />
           </label>
           <label className="block space-y-2 text-sm">
@@ -350,12 +227,13 @@ function Editor({
               max={600}
               step={1}
               required
+              name="restMinutes"
               value={rest}
               onChange={(e) => {
                 setRest(Number(e.target.value));
                 setCollision(null);
               }}
-              className="h-11 w-full rounded border bg-background px-3"
+              className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
             />
           </label>
           <label className="block space-y-2 text-sm">
@@ -364,12 +242,13 @@ function Editor({
               type="date"
               min={wibDate()}
               required
+              name="validFrom"
               value={from}
               onChange={(e) => {
                 setFrom(e.target.value);
                 setCollision(null);
               }}
-              className="h-11 w-full rounded border bg-background px-3"
+              className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
             />
           </label>
           <label className="block space-y-2 text-sm">
@@ -377,12 +256,13 @@ function Editor({
             <input
               type="date"
               required
+              name="validTo"
               value={to}
               onChange={(e) => {
                 setTo(e.target.value);
                 setCollision(null);
               }}
-              className="h-11 w-full rounded border bg-background px-3"
+              className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
             />
           </label>
         </div>
@@ -392,9 +272,9 @@ function Editor({
             {endTime(start, jtm, minutes, rest) ??
               "Durasi belum valid / melewati tengah malam"}
           </strong>{" "}
-          WIB · {minutes} menit per JTM. Server memakai konfigurasi sekolah saat
-          penyimpanan. JTM bisnis disimpan terpisah dari menit/jam.
+          WIB · {minutes} menit per JTM. Durasi akhir mengikuti pengaturan sekolah saat jadwal disimpan.
         </p>
+        {minutesError && <p role="status" className="rounded-lg border bg-muted p-3 text-sm leading-6">Perkiraan durasi memakai nilai sebelumnya. {minutesError} Gunakan pemeriksaan bentrok untuk membaca durasi terbaru; server tetap memeriksa saat simpan.</p>}
         {row && row.validFrom < wibDate() && (
           <p className="text-sm leading-7">
             Jadwal sudah berjalan. Tanggal mulai baru menjadi batas revisi:
@@ -409,7 +289,7 @@ function Editor({
             required
             minLength={5}
             maxLength={500}
-            className="h-11 w-full rounded border bg-background px-3"
+            className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
           />
         </label>
         <div className="flex flex-wrap gap-3">
@@ -490,7 +370,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
     [daily, setDaily] = useState<{
       items: ScheduleRow[];
       scheduledCount: number;
-      dayContext: DayContext;
+      dayContext: z.infer<typeof dailySchema>["dayContext"];
     } | null>(null),
     [error, setError] = useState(""),
     [message, setMessage] = useState(""),
@@ -503,21 +383,31 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
     [preview, setPreview] = useState<BulkPreview | null>(null),
     [history, setHistory] = useState<
       | {
-          actor_name: string;
-          reason: string;
+          actor_name: string | null;
+          reason: string | null;
           created_at: string;
           new_data: unknown;
         }[]
       | null
     >(null);
+  const operation=useRef(false), mounted=useRef(false);
+  const historyController=useRef<AbortController|null>(null);
+  const [listError,setListError]=useState(""),[recapError,setRecapError]=useState("");
+  const [dailyError,setDailyError]=useState(""),[dailyLoading,setDailyLoading]=useState(true),[dailyRevision,setDailyRevision]=useState(0);
+  const [historyId,setHistoryId]=useState<string|null>(null),[historyError,setHistoryError]=useState(""),[historyLoading,setHistoryLoading]=useState(false);
+  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;historyController.current?.abort();};},[]);
+  function editorBusy(value:boolean){operation.current=value;if(mounted.current)setBusy(value);}
   const [printRows, setPrintRows] = useState<ScheduleRow[] | null>(null);
   useEffect(() => {
     if (!printRows) return;
+    const clear = () => setPrintRows(null);
+    window.addEventListener("afterprint",clear,{once:true});
     const frame = requestAnimationFrame(() => window.print());
-    return () => cancelAnimationFrame(frame);
+    return () => {cancelAnimationFrame(frame);window.removeEventListener("afterprint",clear);};
   }, [printRows]);
   async function printAll() {
-    if (busy || loading) return;
+    if (operation.current || loading || !list) return;
+    operation.current=true;
     setBusy(true);
     setError("");
     setPrintRows(null);
@@ -525,7 +415,8 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
       const rows: ScheduleRow[] = [];
       let total = -1;
       for (let page = 1; total < 0 || rows.length < total; page++) {
-        const result = await masterRequest<ScheduleList>(
+        if(page>100000)throw new Error("Hasil cetak terlalu banyak. Persempit filter lalu coba kembali.");
+        const result = readScheduleResponse(scheduleListSchema,await masterRequest<unknown>(
           (admin ? "/api/schedules" : "/api/schedules/mine") +
             "?" +
             new URLSearchParams({
@@ -533,7 +424,8 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
               page: String(page),
               pageSize: "100",
             }),
-        );
+        ));
+        if(!mounted.current)return;
         if (
           (total >= 0 && total !== result.total) ||
           (!result.items.length && rows.length < result.total)
@@ -548,11 +440,13 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
         throw new Error(
           "Data berubah saat menyiapkan cetak. Muat ulang dan coba lagi.",
         );
+      if(!rows.length){setMessage("Tidak ada jadwal untuk dicetak pada filter ini.");return;}
       setPrintRows(rows);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Cetak belum tersedia.");
+      if(mounted.current)setError(e instanceof Error ? e.message : "Cetak belum tersedia.");
     } finally {
-      setBusy(false);
+      operation.current=false;
+      if(mounted.current)setBusy(false);
     }
   }
   const editor = useRef<HTMLDialogElement>(null),
@@ -567,39 +461,29 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
         pageSize: "20",
       });
     async function load() {
-      setLoading(true);
-      setError("");
+      setLoading(true); setListError(""); setRecap(null); setRecapError("");
       try {
-        const [rows, summary] = await Promise.all([
-          masterRequest<ScheduleList>(
-            "/api/schedules" + (admin ? "" : "/mine") + "?" + params,
-            "GET",
-            undefined,
-            c.signal,
-          ),
-          admin
-            ? masterRequest<{ rowCount: number; totalScheduledJtm: string }>(
-                "/api/schedules/recaps?" + params,
-                "GET",
-                undefined,
-                c.signal,
-              )
-            : Promise.resolve(null),
+        const payload=validateInput(scheduleFilters,Object.fromEntries(params));
+        const [rows, summary] = await Promise.allSettled([
+          masterRequest<unknown>("/api/schedules"+(admin?"":"/mine")+"?"+new URLSearchParams({...filters,page:String(payload.page),pageSize:"20"}),"GET",undefined,c.signal),
+          admin?masterRequest<unknown>("/api/schedules/recaps?"+params,"GET",undefined,c.signal):Promise.resolve(null),
         ]);
-        if (active) {
-          setList(rows);
-          setRecap(summary);
+        if(!active)return;
+        if(rows.status==="rejected")throw rows.reason;
+        const result=readScheduleResponse(scheduleListSchema,rows.value);
+        const lastPage=Math.max(1,Math.ceil(result.total/20));
+        if(page>lastPage){setPage(lastPage);return;}
+        setList(result);
+        setSelected(previous=>Object.fromEntries(Object.entries(previous).filter(([id,row])=>{
+          const current=result.items.find(item=>item.id===id);
+          return !current || (current.version===row.version && canChangeSchedule(current,wibDate()));
+        })));
+        if(admin){
+          try { if(summary.status==="rejected")throw summary.reason;setRecap(readScheduleResponse(recapSchema,summary.value)); }
+          catch(e){setRecapError(e instanceof Error?e.message:"Rekap belum dapat dimuat.");}
         }
-      } catch (e) {
-        if (active) {
-          setList(null);
-          setError(
-            e instanceof Error ? e.message : "Jadwal belum dapat dimuat.",
-          );
-        }
-      } finally {
-        if (active) setLoading(false);
-      }
+      } catch(e){if(active){setList(null);setListError(e instanceof Error?e.message:"Jadwal belum dapat dimuat.");}}
+      finally{if(active)setLoading(false);}
     }
     void load();
     return () => {
@@ -608,25 +492,17 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
     };
   }, [filters, page, revision, admin]);
   useEffect(() => {
-    let active = true;
-    const c = new AbortController();
-    masterRequest<typeof daily>(
-      "/api/schedules/today?date=" + date,
-      "GET",
-      undefined,
-      c.signal,
-    )
-      .then((v) => {
-        if (active) setDaily(v);
-      })
-      .catch(() => {
-        if (active) setDaily(null);
-      });
-    return () => {
-      active = false;
-      c.abort();
-    };
-  }, [date, revision]);
+    let active=true;const c=new AbortController();
+    async function load(){
+      setDailyLoading(true);setDailyError("");setDaily(null);
+      try{
+        const value=readScheduleResponse(dailySchema,await masterRequest<unknown>("/api/schedules/today?date="+date,"GET",undefined,c.signal));
+        if(active)setDaily(value);
+      }catch(e){if(active)setDailyError(e instanceof Error?e.message:"Jadwal harian belum dapat dimuat.");}
+      finally{if(active)setDailyLoading(false);}
+    }
+    void load();return()=>{active=false;c.abort();};
+  },[date,revision,dailyRevision]);
   useEffect(() => {
     if (open) editor.current?.showModal();
   }, [open]);
@@ -634,45 +510,50 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
     if (targets) stop.current?.showModal();
   }, [targets]);
   useEffect(() => {
-    if (history) historyDialog.current?.showModal();
-  }, [history]);
+    if (historyId && !historyDialog.current?.open) historyDialog.current?.showModal();
+  }, [historyId]);
   function filter(key: string, value: string) {
     setFilters((v) => ({ ...v, [key]: value }));
     setPage(1);
     setSelected({});
+    setPrintRows(null);
   }
   function saved() {
     editor.current?.close();
     setRevision((v) => v + 1);
     setSelected({});
+    setPrintRows(null);
     setMessage("Jadwal tersimpan dan riwayat perubahan telah dicatat.");
   }
   async function stopPreview(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!targets || busy) return;
+    if (!targets || operation.current) return;
+    operation.current=true;
     setBusy(true);
     setError("");
-    const v = new FormData(event.currentTarget);
+    const form=event.currentTarget;
+    const v = new FormData(form);
     try {
       setPreview(
-        await masterRequest<BulkPreview>(
+        readScheduleResponse(bulkPreviewSchema,await masterRequest<unknown>(
           "/api/schedules/bulk-delete/preview",
           "POST",
-          {
+          validateInput(bulkSchedule,{
             items: targets.map((r) => ({ id: r.id, version: r.version })),
-            stopFrom: v.get("stopFrom"),
-            reason: v.get("reason"),
-          },
-        ),
+            stopFrom: v.get("stopFrom"),reason: v.get("reason"),
+          }),
+        )),
       );
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Pratinjau belum tersedia.");
+      if(mounted.current){applyFieldErrors(form,serverFieldErrors(e));setError(e instanceof Error ? e.message : "Pratinjau belum tersedia.");}
     } finally {
-      setBusy(false);
+      operation.current=false;
+      if(mounted.current)setBusy(false);
     }
   }
   async function commit() {
-    if (!preview || busy) return;
+    if (!preview || operation.current) return;
+    operation.current=true;
     setBusy(true);
     setError("");
     try {
@@ -686,24 +567,28 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
         "Jadwal dihentikan sesuai batas tanggal. Riwayat tidak dihapus.",
       );
     } catch (e) {
+      if(e instanceof ApiRequestError && ["CALENDAR_PREVIEW_INVALID","CALENDAR_PREVIEW_STALE","VERSION_CONFLICT"].includes(e.code)) setPreview(null);
       setError(e instanceof Error ? e.message : "Perubahan gagal.");
     } finally {
-      setBusy(false);
+      operation.current=false;
+      if(mounted.current)setBusy(false);
     }
   }
   async function showHistory(id: string) {
-    setError("");
-    try {
-      setHistory(await masterRequest("/api/schedules/" + id + "/history"));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Riwayat belum dapat dimuat.");
-    }
+    historyController.current?.abort();
+    const controller=new AbortController();historyController.current=controller;
+    setHistoryId(id);setHistory(null);setHistoryError("");setHistoryLoading(true);
+    try{
+      const value=readScheduleResponse(historySchema,await masterRequest<unknown>("/api/schedules/"+id+"/history","GET",undefined,controller.signal));
+      if(mounted.current&&!controller.signal.aborted)setHistory(value);
+    }catch(e){if(mounted.current&&!controller.signal.aborted)setHistoryError(e instanceof Error?e.message:"Riwayat belum dapat dimuat.");}
+    finally{if(mounted.current&&!controller.signal.aborted)setHistoryLoading(false);}
   }
   function rowLabel(r: ScheduleRow) {
     return r.teacherName + " · " + r.className + " · " + r.subjectName;
   }
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6 [overflow-wrap:anywhere]">
       {printRows && (
         <>
           <style>{`@media screen { #schedule-print { display:none; } } @media print { body * { visibility:hidden; } #schedule-print, #schedule-print * { visibility:visible; } #schedule-print { position:absolute; left:0; top:0; width:100%; background:white; color:black; padding:12mm; } #schedule-print table { width:100%; border-collapse:collapse; font-size:10pt; } #schedule-print td, #schedule-print th { border:1px solid #999; padding:5px; } #schedule-print tr { break-inside:avoid; } }`}</style>
@@ -765,7 +650,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
       </header>
       <details className="group rounded-2xl border bg-card">
         <summary className="min-h-12 cursor-pointer list-none rounded-2xl p-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
-          <h2 className="flex items-center justify-between gap-3 text-xl font-bold">
+          <h2 className="flex items-center justify-between gap-x-3 text-xl font-bold">
             Jadwal pribadi pada tanggal
             <ChevronDown
               aria-hidden="true"
@@ -780,12 +665,12 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
               type="date"
               value={date}
               onChange={(e) => {
-                if (e.target.value) setDate(e.target.value);
+                if (e.target.value) {setDate(e.target.value);setDaily(null);setDailyLoading(true);}
               }}
-              className="h-11 w-full rounded border bg-background px-3"
+              className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
             />
           </label>
-          {daily ? (
+          {dailyLoading ? <p role="status" aria-busy="true">Memuat jadwal harian…</p> : dailyError ? <div className="space-y-3"><ErrorFeedback message={dailyError}/><Button variant="outline" onClick={()=>{setDailyLoading(true);setDailyRevision(v=>v+1);}}>Coba muat jadwal harian</Button></div> : daily ? (
             <>
               <p className="text-sm">
                 {daily.dayContext.isHoliday ? "Hari libur" : "Bukan hari libur"}{" "}
@@ -813,7 +698,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             </>
           ) : (
             <p role="status">
-              Jadwal harian belum tersedia atau sedang dimuat.
+              Belum ada data jadwal harian.
             </p>
           )}
           <p className="text-sm leading-6 text-muted-foreground">
@@ -828,21 +713,22 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
           <h2 className="text-xl font-bold">
             {admin ? "Pengelolaan jadwal mingguan" : "Jadwal mingguan saya"}
           </h2>
-          <div className="flex gap-3">
+          <div className="flex w-full flex-wrap gap-3 sm:w-auto [&>button]:max-w-full">
             <Button
               variant="outline"
-              disabled={busy || loading}
+              disabled={busy || loading || !list}
               onClick={printAll}
             >
               <ActionIcon action="print" />
               Cetak seluruh hasil filter
             </Button>
-            <Button variant="outline" onClick={() => setRevision((v) => v + 1)}>
+            <Button variant="outline" disabled={busy || loading} onClick={() => setRevision((v) => v + 1)}>
               <ActionIcon action="refresh" />
               Muat ulang
             </Button>
             {admin && (
               <Button
+                disabled={busy}
                 onClick={() => {
                   setEditing(null);
                   setError("");
@@ -864,14 +750,16 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
               className="size-4 shrink-0 transition-transform group-open/filter:rotate-180 motion-reduce:transition-none"
             />
           </summary>
-          <div className="space-y-4 border-t p-4">
+          <fieldset disabled={busy} className="min-w-0 space-y-4 border-t p-4">
+            <Button type="button" variant="outline" onClick={()=>{setFilters(initial);setPage(1);setSelected({});setPrintRows(null);}}>Reset filter</Button>
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block space-y-2 text-sm">
                 <span>Cari guru / kelas / mata pelajaran / periode</span>
                 <input
                   value={filters.q}
+                  maxLength={100}
                   onChange={(e) => filter("q", e.target.value)}
-                  className="h-11 w-full rounded border bg-background px-3"
+                  className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
                 />
               </label>
               <label className="block space-y-2 text-sm">
@@ -879,7 +767,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                 <select
                   value={filters.dayIndex}
                   onChange={(e) => filter("dayIndex", e.target.value)}
-                  className="h-11 w-full rounded border bg-background px-3"
+                  className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
                 >
                   <option value="">Semua hari</option>
                   {days.map((v, i) => (
@@ -894,7 +782,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                 <select
                   value={filters.state}
                   onChange={(e) => filter("state", e.target.value)}
-                  className="h-11 w-full rounded border bg-background px-3"
+                  className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
                 >
                   <option value="active">Aktif</option>
                   <option value="closed">Ditutup pada batas tanggal</option>
@@ -908,7 +796,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   type="date"
                   value={filters.validFrom}
                   onChange={(e) => filter("validFrom", e.target.value)}
-                  className="h-11 w-full rounded border bg-background px-3"
+                  className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
                 />
               </label>
               <label className="block space-y-2 text-sm">
@@ -917,12 +805,12 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   type="date"
                   value={filters.validTo}
                   onChange={(e) => filter("validTo", e.target.value)}
-                  className="h-11 w-full rounded border bg-background px-3"
+                  className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
                 />
               </label>
             </div>
             {admin && (
-              <details className="space-y-4">
+              <details className="min-w-0 space-y-4">
                 <summary className="cursor-pointer text-sm">
                   Filter relasi guru, semester, mapel dan kelas
                 </summary>
@@ -940,6 +828,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   />
                   <Picker
                     target="academic-periods"
+                    key={filters.academicYearId}
                     label="Semester"
                     parentId={filters.academicYearId}
                     optional
@@ -965,6 +854,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   />
                   <Picker
                     target="classes"
+                    key={filters.academicPeriodId}
                     label="Kelas"
                     optional
                     parentId={filters.academicPeriodId}
@@ -974,7 +864,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                 </div>
               </details>
             )}
-          </div>
+          </fieldset>
         </details>
         {recap && (
           <p className="text-sm">
@@ -983,6 +873,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             kehadiran, realisasi mingguan/bulanan atau honor.
           </p>
         )}
+        {recapError && <div className="space-y-2"><p className="text-sm font-semibold">Rekap belum tersedia; daftar jadwal tetap dapat digunakan.</p><ErrorFeedback message={recapError}/></div>}
         {admin && Object.keys(selected).length > 0 && (
           <div className="flex flex-wrap items-center gap-3">
             <p className="text-sm">
@@ -991,6 +882,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             </p>
             <Button
               variant="outline"
+              disabled={busy || loading || !list}
               onClick={() => {
                 setError("");
                 setTargets(Object.values(selected));
@@ -999,14 +891,15 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
               <ActionIcon action="preview" />
               Tinjau penghentian jadwal terpilih
             </Button>
-            <Button variant="outline" onClick={() => setSelected({})}>
+            <Button variant="outline" disabled={busy} onClick={() => setSelected({})}>
               <ActionIcon action="close" />
               Kosongkan pilihan
             </Button>
           </div>
         )}
+        {listError && <div className="space-y-3"><ErrorFeedback message={listError}/><Button variant="outline" disabled={loading||busy} onClick={()=>setRevision(v=>v+1)}>Coba muat daftar jadwal</Button></div>}
         {loading ? (
-          <p role="status">Memuat jadwal…</p>
+          <p role="status" aria-busy="true">Memuat jadwal…</p>
         ) : (
           list && (
             <>
@@ -1014,10 +907,11 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                 {list.total} baris · halaman {page}
               </p>
               {list.items.length === 0 ? (
-                <p>Belum ada jadwal sesuai filter.</p>
+                <EmptyState title="Belum ada jadwal sesuai filter" description="Sesuaikan filter atau gunakan Reset filter untuk melihat jadwal lainnya." />
               ) : (
                 <TableRegion label="Jadwal mengajar">
-                  <table className="w-full min-w-[800px] text-left text-sm">
+                  <table className="w-full min-w-[900px] table-fixed text-left text-sm">
+                    <colgroup>{admin && <col className="w-14" />}<col className="w-56"/><col className="w-40"/><col className="w-48"/>{admin && <col className="w-64"/>}</colgroup>
                     <thead>
                       <tr className="border-b">
                         {admin && <th className="p-3">Pilih</th>}
@@ -1037,7 +931,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                                 aria-label={"Pilih " + rowLabel(r)}
                                 checked={Boolean(selected[r.id])}
                                 disabled={
-                                  r.state !== "active" ||
+                                  busy || !canChangeSchedule(r,wibDate()) ||
                                   (!selected[r.id] &&
                                     Object.keys(selected).length >= 100)
                                 }
@@ -1084,11 +978,12 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                           {admin && (
                             <td className="p-3">
                               <div className="flex flex-wrap gap-2">
-                                {r.state === "active" && (
+                                {canChangeSchedule(r,wibDate()) && (
                                   <>
                                     <Button
                                       size="sm"
                                       variant="outline"
+                                      disabled={busy}
                                       onClick={() => {
                                         setEditing(r);
                                         setError("");
@@ -1101,6 +996,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                                     <Button
                                       size="sm"
                                       variant="outline"
+                                      disabled={busy}
                                       onClick={() => {
                                         setError("");
                                         setTargets([r]);
@@ -1114,6 +1010,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                                 <Button
                                   size="sm"
                                   variant="outline"
+                                  disabled={busy}
                                   onClick={() => void showHistory(r.id)}
                                 >
                                   <ActionIcon action="history" />
@@ -1123,6 +1020,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                                   <Button
                                     size="sm"
                                     variant="outline"
+                                    disabled={busy}
                                     onClick={() =>
                                       void showHistory(r.replacesId!)
                                     }
@@ -1140,10 +1038,10 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   </table>
                 </TableRegion>
               )}
-              <div className="flex justify-between">
+              <nav aria-label="Halaman daftar jadwal" className="flex flex-wrap justify-between gap-3">
                 <Button
                   variant="outline"
-                  disabled={page === 1}
+                  disabled={busy || page === 1}
                   onClick={() => setPage((v) => v - 1)}
                 >
                   <ActionIcon action="previous" />
@@ -1151,23 +1049,23 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                 </Button>
                 <Button
                   variant="outline"
-                  disabled={page * 20 >= list.total}
+                  disabled={busy || page * 20 >= list.total}
                   onClick={() => setPage((v) => v + 1)}
                 >
                   <ActionIcon action="next" />
                   Berikutnya
                 </Button>
-              </div>
+              </nav>
             </>
           )
         )}
       </section>
-      {message && <p role="status">{message}</p>}
+      {message && <p role="status" className="rounded-xl border bg-accent/40 p-4 text-sm leading-6">{message}</p>}
       {error && !open && !targets && <ErrorFeedback message={error} />}
       <ManagedDialog
         ref={editor}
         aria-labelledby="schedule-editor-title"
-        className="m-auto max-h-[90svh] w-[min(48rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-6 text-foreground backdrop:bg-black/45"
+        className="m-auto max-h-[90svh] w-[min(48rem,calc(100%_-_2rem))] overflow-x-hidden overflow-y-auto rounded-2xl border bg-card p-4 sm:p-6 text-foreground [overflow-wrap:anywhere] backdrop:bg-black/45"
         onCancel={(e) => {
           if (busy) e.preventDefault();
         }}
@@ -1176,9 +1074,9 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
           setEditing(null);
         }}
       >
-        <div className="mb-5 flex justify-between gap-3">
+        <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
           <h2 id="schedule-editor-title" className="text-xl font-bold">
-            {editing ? "Ubah jadwal jadwal" : "Tambah jadwal"}
+            {editing ? "Ubah jadwal" : "Tambah jadwal"}
           </h2>
           <Button
             variant="outline"
@@ -1194,14 +1092,14 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             key={editing?.id ?? "create"}
             row={editing}
             onSaved={saved}
-            onBusy={setBusy}
+            onBusy={editorBusy}
           />
         )}
       </ManagedDialog>
       <ManagedDialog
         ref={stop}
         aria-labelledby="schedule-stop-title"
-        className="m-auto max-h-[90svh] w-[min(42rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-6 text-foreground backdrop:bg-black/45"
+        className="m-auto max-h-[90svh] w-[min(42rem,calc(100%_-_2rem))] overflow-x-hidden overflow-y-auto rounded-2xl border bg-card p-4 sm:p-6 text-foreground [overflow-wrap:anywhere] backdrop:bg-black/45"
         onCancel={(e) => {
           if (busy) e.preventDefault();
         }}
@@ -1210,7 +1108,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
           setPreview(null);
         }}
       >
-        <div className="mb-5 flex justify-between gap-3">
+        <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
           <h2 id="schedule-stop-title" className="text-xl font-bold">
             Hentikan {targets?.length ?? 0} jadwal
           </h2>
@@ -1224,7 +1122,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
           </Button>
         </div>
         {preview ? (
-          <div className="space-y-4">
+          <div className="min-w-0 space-y-4">
             <p className="text-sm">
               Pratinjau berlaku sampai{" "}
               {new Date(preview.expiresAt).toLocaleTimeString("id-ID", {
@@ -1245,20 +1143,21 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                 </p>
               </article>
             ))}
+            <div className="flex flex-wrap gap-3"><Button variant="outline" disabled={busy} onClick={()=>{setPreview(null);setError("");}}>Ubah tanggal atau alasan</Button>
             <Button disabled={busy} onClick={() => void commit()}>
               <ActionIcon action="confirm" />
               {busy ? "Memproses…" : "Konfirmasi penghentian jadwal"}
-            </Button>
+            </Button></div>
           </div>
         ) : (
-          <form onSubmit={(e) => void stopPreview(e)} className="space-y-4">
+          <form onSubmit={(e) => void stopPreview(e)} className="min-w-0 space-y-4">
             <p className="text-sm leading-6">
               Riwayat tidak dihapus. Jadwal yang belum dimulai dapat diarsipkan;
               jadwal berjalan ditutup sebelum tanggal batas. Perubahan yang
               sudah digunakan atau difinalisasi dilindungi. Jika perubahan
               ditolak, hubungi administrator untuk meninjau data terkait.
             </p>
-            <fieldset disabled={busy} className="space-y-4">
+            <fieldset disabled={busy} className="min-w-0 space-y-4">
               <label className="block text-sm">
                 Hentikan mulai tanggal
                 <input
@@ -1267,7 +1166,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   required
                   min={wibDate()}
                   defaultValue={wibDate()}
-                  className="mt-2 h-11 w-full rounded border bg-background px-3"
+                  className="mt-2 min-h-11 w-full min-w-0 rounded border bg-background px-3"
                 />
               </label>
               <label className="block text-sm">
@@ -1277,7 +1176,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   required
                   minLength={5}
                   maxLength={500}
-                  className="mt-2 h-11 w-full rounded border bg-background px-3"
+                  className="mt-2 min-h-11 w-full min-w-0 rounded border bg-background px-3"
                 />
               </label>
               <Button type="submit">
@@ -1292,10 +1191,10 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
       <ManagedDialog
         ref={historyDialog}
         aria-labelledby="schedule-history-title"
-        className="m-auto max-h-[90svh] w-[min(42rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-6 text-foreground backdrop:bg-black/45"
-        onClose={() => setHistory(null)}
+        className="m-auto max-h-[90svh] w-[min(42rem,calc(100%_-_2rem))] overflow-x-hidden overflow-y-auto rounded-2xl border bg-card p-4 sm:p-6 text-foreground [overflow-wrap:anywhere] backdrop:bg-black/45"
+        onClose={() => {historyController.current?.abort();setHistoryId(null);setHistory(null);setHistoryError("");}}
       >
-        <div className="mb-4 flex justify-between gap-3">
+        <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
           <h2 id="schedule-history-title" className="text-xl font-bold">
             Riwayat jadwal
           </h2>
@@ -1307,12 +1206,14 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             Tutup
           </Button>
         </div>
+        {historyLoading && <p role="status">Memuat riwayat jadwal…</p>}
+        {historyError && <div className="space-y-3"><ErrorFeedback message={historyError}/><Button variant="outline" onClick={()=>{if(historyId)void showHistory(historyId);}}>Coba muat riwayat</Button></div>}
         {history?.length === 0 ? (
           <p>Belum ada riwayat.</p>
         ) : (
           history?.map((h, i) => {
-            const v = h.new_data as Record<string, unknown>,
-              snap = v.snapshot as Record<string, unknown> | undefined;
+            const v = h.new_data && typeof h.new_data === "object" ? h.new_data as Record<string, unknown> : {},
+              snap = v.snapshot && typeof v.snapshot === "object" ? v.snapshot as Record<string, unknown> : undefined;
             return (
               <article
                 key={i}
@@ -1322,18 +1223,18 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   {new Date(h.created_at).toLocaleString("id-ID", {
                     timeZone: "Asia/Jakarta",
                   })}{" "}
-                  · {h.actor_name}
+                  · {h.actor_name || "Administrator"}
                 </p>
-                <p>{h.reason}</p>
+                <p>{h.reason || "Tidak ada keterangan tambahan."}</p>
                 <p>
                   {String(snap?.teacherName ?? "")} ·{" "}
                   {String(snap?.className ?? "")} ·{" "}
                   {String(snap?.subjectName ?? "")}
                 </p>
                 <p>
-                  {String(v.valid_from)}–{String(v.valid_to)} ·{" "}
-                  {String(v.time_start)}–{String(v.time_end)} ·{" "}
-                  {String(v.scheduled_jtm)} JTM
+                  {String(v.valid_from ?? "—")}–{String(v.valid_to ?? "—")} ·{" "}
+                  {String(v.time_start ?? "—")}–{String(v.time_end ?? "—")} ·{" "}
+                  {String(v.scheduled_jtm ?? "—")} JTM
                 </p>
               </article>
             );

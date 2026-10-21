@@ -32,7 +32,8 @@
     "test:ui:support": "node tests/ui/support.mjs",
     "test:ui:dashboard": "node tests/ui/dashboard.mjs",
     "test:ui:account": "node tests/ui/account.mjs",
-    "test:ui:recovery": "node tests/ui/recovery.mjs"
+    "test:ui:recovery": "node tests/ui/recovery.mjs",
+    "test:ui:schedules": "node tests/ui/schedules.mjs"
   },
   "dependencies": {
     "@next/env": "16.4.2",
