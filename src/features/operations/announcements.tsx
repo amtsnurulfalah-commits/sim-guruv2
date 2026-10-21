@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { useCallback, useEffect, useState } from "react";
 import { masterRequest } from "@/features/masters/api";
 import type { Announcement } from "@/lib/operations/schemas";
@@ -57,6 +59,7 @@ export function Announcements() {
                 }
               }}
             >
+              <ActionIcon action="close" />
               Tutup pengumuman
             </button>
           )}

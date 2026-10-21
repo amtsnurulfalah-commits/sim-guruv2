@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import Link from "next/link";
 import { Brand } from "@/components/brand";
 import { WifiOff } from "lucide-react";
@@ -28,10 +30,14 @@ export function ServiceState({
       </p>
       <div className="flex flex-wrap gap-3">
         <Button onClick={retry ?? (() => window.location.reload())}>
+          <ActionIcon action="refresh" />
           Coba kembali
         </Button>
         <Button asChild variant="outline">
-          <Link href="/akun">Ke akun</Link>
+          <Link href="/akun">
+            <ActionIcon action="open" />
+            Ke akun
+          </Link>
         </Button>
       </div>
     </main>

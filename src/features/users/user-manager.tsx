@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { TableRegion } from "@/components/ui/table-region";
 import {
   ManagedDialog,
@@ -246,6 +248,7 @@ function UserEditor({
           yang diarsipkan tidak dapat diubah; riwayat tetap disimpan.
         </p>
         <Button type="submit" disabled={busy}>
+          <ActionIcon action="save" />
           {busy ? "Menyimpan…" : user ? "Simpan perubahan" : "Buat akun"}
         </Button>
       </fieldset>
@@ -431,6 +434,7 @@ export function UserManager() {
             setEditorOpen(true);
           }}
         >
+          <ActionIcon action="add" />
           Tambah pengguna
         </Button>
       </header>
@@ -451,6 +455,7 @@ export function UserManager() {
             {secret}
           </output>
           <Button variant="outline" onClick={() => setSecret("")}>
+            <ActionIcon action="visibility" />
             Sembunyikan kata sandi sementara
           </Button>
         </section>
@@ -505,6 +510,7 @@ export function UserManager() {
           </select>
         </label>
         <Button type="submit" disabled={loading}>
+          <ActionIcon action="filter" />
           Terapkan filter
         </Button>
       </form>
@@ -516,6 +522,7 @@ export function UserManager() {
         <div role="alert" className="space-y-3 rounded-xl border p-5">
           <p>{error}</p>
           <Button variant="outline" onClick={() => setRevision((v) => v + 1)}>
+            <ActionIcon action="refresh" />
             Muat ulang daftar
           </Button>
         </div>
@@ -530,6 +537,7 @@ export function UserManager() {
                 variant="outline"
                 onClick={() => setRevision((v) => v + 1)}
               >
+                <ActionIcon action="refresh" />
                 Muat ulang
               </Button>
             </div>
@@ -604,6 +612,7 @@ export function UserManager() {
                                 setEditorOpen(true);
                               }}
                             >
+                              <ActionIcon action="edit" />
                               Ubah pengguna
                             </Button>
                             {user.status === "pending_activation" && (
@@ -618,6 +627,7 @@ export function UserManager() {
                                   });
                                 }}
                               >
+                                <ActionIcon action="mail" />
                                 Antrekan ulang email aktivasi
                               </Button>
                             )}
@@ -637,6 +647,7 @@ export function UserManager() {
                                   });
                                 }}
                               >
+                                <ActionIcon action="toggle" />
                                 {user.status === "active"
                                   ? "Nonaktifkan"
                                   : "Aktifkan"}
@@ -651,6 +662,7 @@ export function UserManager() {
                                   setConfirmation({ user, action: "archived" });
                                 }}
                               >
+                                <ActionIcon action="archive" />
                                 Arsipkan
                               </Button>
                             )}
@@ -668,6 +680,7 @@ export function UserManager() {
                 disabled={query.page === 1}
                 onClick={() => setQuery((v) => ({ ...v, page: v.page - 1 }))}
               >
+                <ActionIcon action="previous" />
                 Sebelumnya
               </Button>
               <Button
@@ -675,6 +688,7 @@ export function UserManager() {
                 disabled={data.page * data.pageSize >= data.total}
                 onClick={() => setQuery((v) => ({ ...v, page: v.page + 1 }))}
               >
+                <ActionIcon action="next" />
                 Berikutnya
               </Button>
             </div>
@@ -707,6 +721,7 @@ export function UserManager() {
             disabled={busy}
             onClick={() => requestDialogClose(editor.current)}
           >
+            <ActionIcon action="close" />
             Tutup
           </Button>
         </div>
@@ -777,9 +792,19 @@ export function UserManager() {
                   variant="outline"
                   onClick={() => requestDialogClose(confirm.current)}
                 >
+                  <ActionIcon action="close" />
                   Batal
                 </Button>
                 <Button type="submit">
+                  <ActionIcon
+                    action={
+                      confirmation.action === "activation"
+                        ? "mail"
+                        : confirmation.action === "archived"
+                          ? "archive"
+                          : "toggle"
+                    }
+                  />
                   {busy
                     ? "Memproses…"
                     : confirmation.action === "activation"

@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import Link from "next/link";
 import { AccountLifecycle } from "./account-lifecycle";
 import { SessionBoundary } from "./session-boundary";
@@ -50,7 +52,10 @@ export function SessionPanel() {
             <div className="mb-7 flex flex-wrap items-center gap-4 rounded-xl border bg-card p-5">
               <p className="text-sm">Pengamanan akun telah lengkap.</p>
               <Button asChild variant="outline">
-                <Link href="/dashboard">Buka dashboard</Link>
+                <Link href="/dashboard">
+                  <ActionIcon action="open" />
+                  Buka dashboard
+                </Link>
               </Button>
             </div>
           )}

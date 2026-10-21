@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { statusLabel } from "@/lib/ui-status";
 import { EmptyState } from "@/components/feedback/feature-state";
 import { useCallback, useEffect, useState } from "react";
@@ -144,6 +146,7 @@ export function MigrationManager() {
               })
             }
           >
+            <ActionIcon action="preview" />
             Periksa temuan dan bukti
           </button>
           {selected === b.id && report && (

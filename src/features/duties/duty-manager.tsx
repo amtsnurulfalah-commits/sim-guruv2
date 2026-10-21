@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { FormDialog } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { masterRequest } from "../masters/api";
@@ -248,6 +250,7 @@ export function DutyManager({
             setRevision((v) => v + 1);
           }}
         >
+          <ActionIcon action="refresh" />
           Muat ulang
         </button>
         {loading && <p role="status">Memuat penugasan…</p>}
@@ -296,6 +299,7 @@ export function DutyManager({
                 disabled={busy || loading}
                 onClick={() => choose(o)}
               >
+                <ActionIcon action="open" />
                 Kelola kegiatan
               </button>
             )}
@@ -417,6 +421,7 @@ export function DutyManager({
             />
           </Field>
           <button className={button} disabled={busy || loading}>
+            <ActionIcon action="preview" />
             Tinjau dampak perubahan
           </button>
           {preview && (
@@ -455,6 +460,7 @@ export function DutyManager({
                   }
                 }}
               >
+                <ActionIcon action="confirm" />
                 {labels[preview.request.operation ?? ""] ??
                   "Konfirmasi perubahan tugas"}
               </button>
@@ -464,6 +470,7 @@ export function DutyManager({
                 disabled={busy}
                 onClick={() => setPreview(null)}
               >
+                <ActionIcon action="close" />
                 Batal
               </button>
             </section>
@@ -616,6 +623,7 @@ export function DutyManager({
               </Field>
               <div className="flex gap-2">
                 <button className={button} disabled={busy || loading}>
+                  <ActionIcon action="save" />
                   Simpan jadwal tugas
                 </button>
                 {editing && (
@@ -624,6 +632,7 @@ export function DutyManager({
                     className={secondary}
                     onClick={() => setEditing(null)}
                   >
+                    <ActionIcon action="close" />
                     Batal edit
                   </button>
                 )}
@@ -650,6 +659,7 @@ export function DutyManager({
                   </p>
                 </div>
                 <button className={secondary} onClick={() => edit(s)}>
+                  <ActionIcon action="edit" />
                   Ubah jadwal tugas
                 </button>
               </article>

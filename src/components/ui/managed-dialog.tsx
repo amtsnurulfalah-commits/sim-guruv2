@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import {
   useEffect,
   useId,
@@ -94,6 +96,7 @@ export function ManagedDialog({
         </p>
         <div className="flex flex-wrap justify-end gap-3">
           <Button autoFocus variant="outline" onClick={() => setDiscard(false)}>
+            <ActionIcon action="edit" />
             Lanjutkan mengisi
           </Button>
           <Button
@@ -104,6 +107,7 @@ export function ManagedDialog({
               element.current?.close();
             }}
           >
+            <ActionIcon action="close" />
             Buang perubahan
           </Button>
         </div>

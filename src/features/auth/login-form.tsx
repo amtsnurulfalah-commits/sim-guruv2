@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
@@ -154,6 +156,7 @@ export function LoginForm() {
         />
       </div>
       <Button className="w-full" type="submit" disabled={busy || !ready}>
+        <ActionIcon action="access" />
         {busy ? "Memeriksa akun…" : ready ? "Masuk" : "Menyiapkan formulir…"}
       </Button>
       {!ready && (
@@ -163,6 +166,7 @@ export function LoginForm() {
           className="w-full"
           onClick={() => void load()}
         >
+          <ActionIcon action="refresh" />
           Muat ulang formulir
         </Button>
       )}

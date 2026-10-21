@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { useEffect, useState } from "react";
 import { masterRequest } from "../masters/api";
 import type { UserList } from "../../lib/users/schemas";
@@ -87,6 +89,7 @@ export function TeacherPicker({
           disabled={page === 1}
           onClick={() => setPage((p) => p - 1)}
         >
+          <ActionIcon action="previous" />
           Pilihan sebelumnya
         </button>
         <span>Halaman {page}</span>
@@ -96,6 +99,7 @@ export function TeacherPicker({
           disabled={page * 20 >= total}
           onClick={() => setPage((p) => p + 1)}
         >
+          <ActionIcon action="next" />
           Pilihan berikutnya
         </button>
       </div>

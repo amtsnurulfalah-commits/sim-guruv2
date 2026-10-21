@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -229,10 +231,12 @@ export function SessionBoundary({
             disabled={busy}
             onClick={() => dialog.current?.close()}
           >
+            <ActionIcon action="close" />
             Batal
           </Button>
           <Button disabled={busy} onClick={() => void logout()}>
-            {busy ? "Mengakhiri sesi…" : "Ya, keluar"}
+            <ActionIcon action="logout" />
+            {busy ? "Mengakhiri sesi…" : "Keluar dari akun"}
           </Button>
         </div>
       </dialog>

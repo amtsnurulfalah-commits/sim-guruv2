@@ -1,3 +1,4 @@
+import { ActionIcon } from "@/components/ui/action-icon";
 import Link from "next/link";
 import { FileQuestion } from "lucide-react";
 import { Brand } from "@/components/brand";
@@ -19,7 +20,10 @@ export default function NotFound() {
         melanjutkan pekerjaan.
       </p>
       <Button asChild>
-        <Link href="/">Kembali ke beranda</Link>
+        <Link href="/">
+          <ActionIcon action="open" />
+          Kembali ke beranda
+        </Link>
       </Button>
     </main>
   );

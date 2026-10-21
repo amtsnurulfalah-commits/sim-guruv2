@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import * as Primitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
@@ -98,6 +100,7 @@ export function FormDialog({
       {trigger !== "" && (
         <Primitive.Trigger asChild>
           <Button type="button" variant="outline" disabled={busy}>
+            <ActionIcon action="edit" />
             {trigger ?? title}
           </Button>
         </Primitive.Trigger>
@@ -187,6 +190,7 @@ export function FormDialog({
                     );
                   }}
                 >
+                  <ActionIcon action="edit" />
                   Lanjutkan mengisi
                 </Button>
                 <Button
@@ -199,6 +203,7 @@ export function FormDialog({
                     setOpen(false);
                   }}
                 >
+                  <ActionIcon action="close" />
                   Buang perubahan
                 </Button>
               </div>
@@ -230,6 +235,7 @@ export function FormDialog({
                 disabled={busy}
                 onClick={requestClose}
               >
+                <ActionIcon action="close" />
                 Batal
               </Button>
               {footer}

@@ -1,3 +1,4 @@
+import { ActionIcon } from "@/components/ui/action-icon";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { CircleHelp, LogIn } from "lucide-react";
@@ -39,7 +40,10 @@ export default function ReadinessPage() {
             </li>
           </ol>
           <Button asChild variant="outline">
-            <Link href="/login">Masuk ke SiM-Guru</Link>
+            <Link href="/login">
+              <ActionIcon action="access" />
+              Masuk ke SiM-Guru
+            </Link>
           </Button>
         </div>
         <div className="ui-panel space-y-4">
@@ -56,7 +60,10 @@ export default function ReadinessPage() {
             kode OTP, atau tautan pemulihan akun.
           </p>
           <Button asChild variant="outline">
-            <Link href="/lupa-password">Buka pemulihan akun</Link>
+            <Link href="/lupa-password">
+              <ActionIcon action="open" />
+              Buka pemulihan akun
+            </Link>
           </Button>
         </div>
       </section>

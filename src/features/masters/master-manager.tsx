@@ -1,4 +1,6 @@
 "use client";
+import { ActionIcon } from "@/components/ui/action-icon";
+
 import { TableRegion } from "@/components/ui/table-region";
 import { EmptyState } from "@/components/feedback/feature-state";
 import {
@@ -289,6 +291,7 @@ function ReferencePicker({
           disabled={page === 1}
           onClick={() => setPage((p) => p - 1)}
         >
+          <ActionIcon action="previous" />
           Pilihan sebelumnya
         </Button>
         <Button
@@ -298,6 +301,7 @@ function ReferencePicker({
           disabled={page * 20 >= total}
           onClick={() => setPage((p) => p + 1)}
         >
+          <ActionIcon action="next" />
           Pilihan berikutnya
         </Button>
       </div>
@@ -401,7 +405,10 @@ function Editor({
           mengganti semester aktif sebelumnya. Tarif dan tunjangan menjadi versi
           tetap; buat rentang baru untuk perubahan nominal.
         </p>
-        <Button type="submit">{busy ? "Menyimpan…" : "Simpan data"}</Button>
+        <Button type="submit">
+          <ActionIcon action="save" />
+          {busy ? "Menyimpan…" : "Simpan data"}
+        </Button>
       </fieldset>
     </form>
   );
@@ -617,6 +624,7 @@ export function MasterManager() {
               setNotice("");
             }}
           >
+            <ActionIcon action="section" />
             {labels[k]}
           </Button>
         ))}
@@ -632,6 +640,7 @@ export function MasterManager() {
               setOpened(true);
             }}
           >
+            <ActionIcon action="add" />
             Tambah {labels[kind].toLowerCase()}
           </Button>
         </div>
@@ -663,6 +672,7 @@ export function MasterManager() {
             </select>
           </label>
           <Button variant="outline" onClick={() => setRevision((v) => v + 1)}>
+            <ActionIcon action="refresh" />
             Muat ulang
           </Button>
         </div>
@@ -754,7 +764,8 @@ export function MasterManager() {
                                       setOpened(true);
                                     }}
                                   >
-                                    Ubah
+                                    <ActionIcon action="edit" />
+                                    Ubah data
                                   </Button>
                                 )}
                               {!row.archivedAt && kind !== "school" && (
@@ -766,6 +777,7 @@ export function MasterManager() {
                                     setArchive(row);
                                   }}
                                 >
+                                  <ActionIcon action="archive" />
                                   Arsipkan
                                 </Button>
                               )}
@@ -774,6 +786,7 @@ export function MasterManager() {
                                 variant="outline"
                                 onClick={() => void showHistory(row)}
                               >
+                                <ActionIcon action="history" />
                                 Riwayat
                               </Button>
                               {["academic-years", "academic-periods"].includes(
@@ -793,6 +806,7 @@ export function MasterManager() {
                                     setQuery("");
                                   }}
                                 >
+                                  <ActionIcon action="open" />
                                   Buka{" "}
                                   {kind === "academic-years"
                                     ? "semester"
@@ -813,6 +827,7 @@ export function MasterManager() {
                   disabled={page === 1}
                   onClick={() => setPage((v) => v - 1)}
                 >
+                  <ActionIcon action="previous" />
                   Sebelumnya
                 </Button>
                 {parentId && (
@@ -823,6 +838,7 @@ export function MasterManager() {
                       setPage(1);
                     }}
                   >
+                    <ActionIcon action="close" />
                     Hapus filter relasi
                   </Button>
                 )}
@@ -831,6 +847,7 @@ export function MasterManager() {
                   disabled={page * 20 >= data.total}
                   onClick={() => setPage((v) => v + 1)}
                 >
+                  <ActionIcon action="next" />
                   Berikutnya
                 </Button>
               </div>
@@ -871,6 +888,7 @@ export function MasterManager() {
             disabled={busy}
             onClick={() => requestDialogClose(dialog.current)}
           >
+            <ActionIcon action="close" />
             Tutup
           </Button>
         </div>
@@ -925,10 +943,12 @@ export function MasterManager() {
                   variant="outline"
                   onClick={() => requestDialogClose(confirmation.current)}
                 >
+                  <ActionIcon action="close" />
                   Batal
                 </Button>
                 <Button type="submit">
-                  {busy ? "Memproses…" : "Ya, arsipkan"}
+                  <ActionIcon action="archive" />
+                  {busy ? "Memproses…" : "Arsipkan data"}
                 </Button>
               </div>
             </fieldset>
@@ -950,6 +970,7 @@ export function MasterManager() {
             variant="outline"
             onClick={() => requestDialogClose(historyDialog.current)}
           >
+            <ActionIcon action="close" />
             Tutup
           </Button>
         </div>
