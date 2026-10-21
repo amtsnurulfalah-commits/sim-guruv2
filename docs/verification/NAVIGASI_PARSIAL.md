@@ -63,3 +63,9 @@ Perangkat fisik, pembaca layar, dan UAT akun produksi belum diuji.
 Jalankan `npm run check`, lalu `npm run test:navigation` dengan
 UI_PLAYWRIGHT_MODULE dan UI_BROWSER_EXECUTABLE yang menunjuk instalasi browser
 uji eksternal. Mode UI interaksi existing memakai UI_INTERACTIONS_ONLY=1.
+
+## Penyempurnaan respons klik
+
+Aturan prefetch=false pada laporan ini adalah snapshot PR #15. Penyempurnaan
+berikutnya mengaktifkan partial prefetch hanya berdasarkan intent menu dan
+menambahkan respons klik/loading tujuan. Lihat [Respons navigasi](RESPONS_NAVIGASI.md).

@@ -174,8 +174,28 @@ terpasang ketika konten tujuan berubah. Loading/error di group atau page hanya
 mengganti konten utama; gunakan PageSkeleton/ServiceState dengan prop embedded
 agar tidak membuat main dan id konten-utama ganda.
 
-Tautan internal memakai next/link dengan prefetch=false agar navigasi hanya
-meminta halaman yang dipilih. Tautan unduhan API dan jangkar field tetap native.
+Tautan internal memakai next/link. Prefetch menu dimatikan saat awal dan
+diaktifkan secara parsial hanya pada menu yang diarahkan pointer, difokuskan
+keyboard, atau disentuh pengguna. Rincian perilaku respons klik ada di bawah. Tautan unduhan API dan jangkar field tetap native.
 Perpindahan halaman tetap menjalankan pageSession pada server tujuan. Poll sesi,
 activity touch, pemeriksaan business/onboarding, maintenance, broadcast logout,
 expiry, dan hard redirect pada pergantian identitas tetap dipertahankan.
+
+## Respons klik menu dan loading tujuan
+
+Klik menu menampilkan judul serta kerangka tujuan segera melalui transisi router.
+Konten lama tetap mounted tetapi hidden selama transisi, lalu diganti konten
+tujuan yang sudah lolos pemeriksaan akses. Gunakan Next Link onNavigate agar
+Ctrl/Meta/klik tengah tetap mengikuti perilaku browser. Transisi menentukan akhir
+loading; jangan menggunakan timer untuk menyamarkan durasi atau menandai sukses.
+Klik terbaru menjadi tujuan yang berlaku; klik menu aktif tidak meminta ulang
+halaman dan tetap menutup drawer seluler.
+
+Setiap page terproteksi mempunyai loading boundary yang mengekspor RouteLoading.
+RouteLoading menampilkan judul sesuai URL; NavigationLoading menyediakan UI
+kerangka yang sama untuk respons klik. Ikon loading dekoratif menghormati
+reduced motion dan pesan status diumumkan kepada pembaca layar.
+
+Menu hanya memakai prefetch=auto setelah intent; route dinamis disiapkan sampai
+loading boundary. Tidak memakai prefetch=true untuk data seluruh menu. PageSession
+dan otorisasi server tujuan tidak dilewati, dan tidak ada cache bisnis baru.

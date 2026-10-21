@@ -1,6 +1,7 @@
 /** Real Next App Router, shared production shell, synthetic sessions/data only. */
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
+import { spawn, execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { resolve } from "node:path";
 import { createServer } from "node:net";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -12,13 +13,35 @@ await new Promise((resolve) => reservation.listen(0, "127.0.0.1", resolve));
 const port = reservation.address().port;
 await new Promise((resolve) => reservation.close(resolve));
 const baseUrl = `http://127.0.0.1:${port}`;
+const production = process.env.NAV_FIXTURE_PRODUCTION === "1";
+const fixtureEnvironment = {
+  ...process.env,
+  NAV_FIXTURE_DIST: ".next-run-" + Date.now(),
+};
+if (production) {
+  try {
+    await promisify(execFile)(
+      process.execPath,
+      [
+        "node_modules/next/dist/bin/next",
+        "build",
+        "tests/navigation",
+        "--webpack",
+      ],
+      { env: fixtureEnvironment, timeout: 120000, maxBuffer: 12 * 1024 * 1024 },
+    );
+  } catch (error) {
+    console.error(error.stdout, error.stderr);
+    throw error;
+  }
+}
 const server = spawn(
   process.execPath,
   [
     "node_modules/next/dist/bin/next",
-    "dev",
-    "tests/navigation",
-    "--webpack",
+    ...(production
+      ? ["start", "tests/navigation"]
+      : ["dev", "tests/navigation", "--webpack"]),
     "--hostname",
     "127.0.0.1",
     "--port",
@@ -26,7 +49,7 @@ const server = spawn(
   ],
   {
     stdio: ["ignore", "pipe", "pipe"],
-    env: { ...process.env, NAV_FIXTURE_DIST: ".next-run-" + Date.now() },
+    env: fixtureEnvironment,
   },
 );
 let logs = "",
@@ -91,9 +114,26 @@ try {
   const main = await page.getByRole("main").elementHandle();
   await page.getByRole("searchbox", { name: "Cari menu" }).fill("jurnal");
   dataRequests.length = 0;
+  const navigationStarted = Date.now();
   await page
     .getByRole("link", { name: "Jurnal pembelajaran", exact: true })
     .click();
+  const immediateHeading = page.getByRole("heading", {
+    name: "Jurnal pembelajaran",
+    exact: true,
+  });
+  await immediateHeading.waitFor({ state: "visible", timeout: 750 });
+  const clickFeedbackMs = Date.now() - navigationStarted;
+  assert.ok(clickFeedbackMs < 750, `CLICK_FEEDBACK_DELAY ${clickFeedbackMs}ms`);
+  assert.ok(await immediateHeading.isVisible());
+  assert.equal(
+    await page
+      .getByRole("heading", { name: "dashboard", exact: true })
+      .isVisible(),
+    false,
+  );
+  assert.equal(await sidebar.evaluate((element) => element.isConnected), true);
+
   await page.getByRole("heading", { name: "jurnal", exact: true }).waitFor();
   await page.getByText("Data halaman siap", { exact: true }).waitFor();
   assert.equal(await page.evaluate(() => performance.timeOrigin), origin);
@@ -139,6 +179,27 @@ try {
   await page.getByRole("heading", { name: "jadwal", exact: true }).waitFor();
   assert.equal(await sidebar.evaluate((element) => element.isConnected), true);
   assert.deepEqual(documents, ["/dashboard"]);
+  // A later click wins even if the previous destination has a slow response.
+  dataRequests.length = 0;
+  await page
+    .getByRole("link", { name: "Jurnal pembelajaran", exact: true })
+    .click();
+  await page
+    .getByRole("heading", { name: "Jurnal pembelajaran", exact: true })
+    .waitFor();
+  await page
+    .getByRole("link", { name: "Akun dan profil", exact: true })
+    .click();
+  await page
+    .getByRole("heading", { name: "akun", exact: true })
+    .waitFor({ timeout: 1500 });
+  await page.getByText("Data halaman siap", { exact: true }).waitFor();
+  assert.deepEqual([...new Set(dataRequests)], ["/api/data/akun"]);
+  assert.equal(
+    await page.locator('[data-slot="navigation-pending"]').count(),
+    0,
+  );
+  assert.equal(await sidebar.evaluate((element) => element.isConnected), true);
   await page.setViewportSize({ width: 375, height: 850 });
   await page
     .getByRole("button", { name: "Buka navigasi", exact: true })
@@ -155,6 +216,10 @@ try {
       () => document.documentElement.scrollWidth <= innerWidth + 1,
     ),
   );
+  await page.getByRole("button", { name: "Buka navigasi", exact: true }).click();
+  await drawer.getByRole("link", { name: "Jurnal pembelajaran", exact: true }).click();
+  await drawer.waitFor({ state: "hidden" });
+  assert.equal(await page.locator('[data-slot="navigation-pending"]').count(), 0);
   // Revocation still discards the entire protected tree and redirects to login.
   await page.route("**/api/auth/session", (route) =>
     route.request().method() === "GET"
@@ -176,6 +241,11 @@ try {
   await mkdir(output, { recursive: true });
   const result = {
     result: "passed",
+    mode: production ? "production-build" : "development",
+    clickFeedbackMs,
+    delayedResponseMs: 1800,
+    immediateDestinationState: true,
+    latestClickWins: true,
     initialDocumentRequests: 1,
     persistentSidebar: true,
     persistentTopbar: true,
@@ -184,6 +254,7 @@ try {
     searchAndCollapseRetained: true,
     accountAndBackNavigation: true,
     mobileDrawer: true,
+    currentMenuClosesDrawer: true,
     expiredSessionRedirect: true,
     pageErrors: errors,
   };

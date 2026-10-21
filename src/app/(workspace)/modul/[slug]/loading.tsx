@@ -1,4 +1,1 @@
-import { PageSkeleton } from "@/components/feedback/service-state";
-export default function Loading() {
-  return <PageSkeleton embedded />;
-}
+export { RouteLoading as default } from "@/components/shell/route-loading";
