@@ -135,6 +135,16 @@ export const modules: readonly AppModule[] = [
     adminOnly: true,
   },
   {
+    slug: "laporan-kendala",
+    href: "/admin/laporan-kendala",
+    available: true,
+    title: "Laporan Kendala",
+    description: "Telusuri kode referensi bantuan dan langkah penanganan.",
+    group: "Administrasi",
+    stage: "7.5",
+    adminOnly: true,
+  },
+  {
     slug: "operasional",
     href: "/admin/operasional",
     available: true,

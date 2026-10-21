@@ -1,6 +1,6 @@
 import "server-only";
 import { z } from "zod";
-import { authResponse, handleAuthRequest } from "../auth/http";
+import { authResponse, handleModuleRequest } from "../auth/http";
 import { AuthError, type LocalAuthService } from "../auth/service";
 import {
   assertOrigin,
@@ -29,7 +29,7 @@ export function createUserHandler(deps: {
   rate: () => Promise<AccountLifecycleService>;
 }) {
   return (action: Action, request: Request, id?: string) =>
-    handleAuthRequest(async (requestId) => {
+    handleModuleRequest("users", async (requestId) => {
       const config = deps.config(),
         names = cookieNames(config.production),
         token = requestCookie(request, names.session),

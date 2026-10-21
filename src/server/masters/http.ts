@@ -1,5 +1,5 @@
 import "server-only";
-import { authResponse, handleAuthRequest } from "../auth/http";
+import { authResponse, handleModuleRequest } from "../auth/http";
 import { AuthError, type LocalAuthService } from "../auth/service";
 import {
   assertOrigin,
@@ -22,7 +22,7 @@ export function createMasterHandler(deps: {
   rate: () => Promise<AccountLifecycleService>;
 }) {
   return (request: Request, group: string, historyId?: string) =>
-    handleAuthRequest(async (requestId) => {
+    handleModuleRequest("masters", async (requestId) => {
       const config = deps.config(),
         token = requestCookie(request, cookieNames(config.production).session),
         read = request.method === "GET";

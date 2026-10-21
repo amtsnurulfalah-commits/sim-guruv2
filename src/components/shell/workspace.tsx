@@ -57,6 +57,7 @@ const moduleIcons: Record<string, typeof LayoutDashboard> = {
   master: Database,
   kalender: CalendarDays,
   pengumuman: Megaphone,
+  "laporan-kendala": Search,
   operasional: Settings2,
   migrasi: ArrowLeftRight,
 };

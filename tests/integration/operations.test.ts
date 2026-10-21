@@ -90,6 +90,28 @@ test("Tahap 7 announcements, maintenance, fenced worker and scheduler", async (t
     other = await login("teacher.two");
   const service = new OperationsService(business),
     worker = scope("sim_guru_worker");
+  await t.test("support references are durable, admin-only, bounded and contain no submitted values", async () => {
+    const reference = randomUUID();
+    await authDb.query("select ops.record_support_event($1,clock_timestamp(),'activities','JOURNAL_BLOCKED',403)", [reference]);
+    const report = await service.read(admin, "support", { reference }) as Record<string, unknown>;
+    assert.equal(report.requestId, reference);
+    assert.equal(report.module, "activities");
+    assert.equal(report.code, "JOURNAL_BLOCKED");
+    assert.deepEqual(Object.keys(report).sort(), ["code", "module", "occurredAt", "requestId", "status"]);
+    await assert.rejects(service.read(guru, "support", { reference }), /FORBIDDEN/);
+    await assert.rejects(service.read(other, "support", { reference }), /FORBIDDEN/);
+    await assert.rejects(service.read("invalid-session", "support", { reference }), /UNAUTHENTICATED/);
+    await assert.rejects(business.query("select * from ops.support_events"), /permission denied/);
+    await assert.rejects(authDb.query("select * from ops.support_events"), /permission denied/);
+    await assert.rejects(business.query("select ops.record_support_event($1,clock_timestamp(),'activities','FORBIDDEN',403)", [randomUUID()]), /permission denied/);
+    assert.equal(await service.read(admin, "support", { reference: randomUUID() }), null);
+    await assert.rejects(service.read(admin, "support", { reference: "bad" }));
+    await authDb.query("select ops.record_support_event($1,clock_timestamp(),'auth','FORBIDDEN',403)", [reference]);
+    assert.equal((await service.read(admin,"support",{reference}) as Record<string,unknown>).module,"activities");
+    const expired = randomUUID();
+    await authDb.query("select ops.record_support_event($1,clock_timestamp()-interval '31 days','auth','FORBIDDEN',403)",[expired]);
+    assert.equal(await service.read(admin,"support",{reference:expired}),null);
+  });
   const base = {
     title: "Informasi",
     body: "Teks <script> tetap teks",

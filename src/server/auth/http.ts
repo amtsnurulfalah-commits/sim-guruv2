@@ -1,4 +1,6 @@
 import "server-only";
+import { recordSupportEvent } from "../support/record";
+import { supportEvent } from "@/lib/feedback/support";
 import { randomBytes, randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
@@ -130,8 +132,12 @@ export function authResponse(data: unknown, requestId: string) {
     { headers: { "Cache-Control": "no-store", Vary: "Cookie, Origin" } },
   );
 }
+export function handleModuleRequest(module: string, work: (requestId: string) => Promise<NextResponse>) {
+  return handleAuthRequest(work, module);
+}
 export async function handleAuthRequest(
   work: (requestId: string) => Promise<NextResponse>,
+  module = "auth",
 ) {
   const requestId = randomUUID();
   try {
@@ -316,6 +322,7 @@ export async function handleAuthRequest(
             : unavailable
               ? new AuthError("UNAVAILABLE", 503)
               : new AuthError("INTERNAL_ERROR", 500);
+    recordSupportEvent(supportEvent(requestId, module, auth.code, auth.status));
     return NextResponse.json(
       {
         ok: false,

@@ -1,6 +1,6 @@
 import "server-only";
 import { z } from "zod";
-import { authResponse, handleAuthRequest } from "../auth/http";
+import { authResponse, handleModuleRequest } from "../auth/http";
 import { AuthError, type LocalAuthService } from "../auth/service";
 import {
   assertOrigin,
@@ -33,7 +33,7 @@ export function createScheduleHandler(deps: {
   rate: () => Promise<AccountLifecycleService>;
 }) {
   return (action: Action, request: Request, id?: string) =>
-    handleAuthRequest(async (requestId) => {
+    handleModuleRequest("schedules", async (requestId) => {
       const config = deps.config(),
         token = requestCookie(request, cookieNames(config.production).session),
         read = request.method === "GET";
