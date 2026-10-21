@@ -1,3 +1,5 @@
+"use client";
+import { useDashboardDay } from "./use-dashboard-day";
 import Link from "next/link";
 import { LiveSummary } from "./live-summary";
 import { DayContextCard } from "@/features/calendar/day-context-card";
@@ -9,11 +11,13 @@ export function DashboardView({
 }: {
   data: ReturnType<typeof dashboardDto>;
 }) {
+  const date = useDashboardDay(data.date);
+  const dateLabel = new Intl.DateTimeFormat("id-ID", {dateStyle:"full",timeZone:"Asia/Jakarta"}).format(new Date(date + "T12:00:00Z"));
   return (
-    <div className="space-y-9">
+    <div className="min-w-0 space-y-6 sm:space-y-8">
       <header className="space-y-3">
         <p className="text-xs font-semibold tracking-widest text-primary uppercase">
-          {data.dateLabel} · WIB
+          {dateLabel} · WIB
         </p>
         <h1 className="text-3xl leading-tight font-bold tracking-tight sm:text-4xl">
           Selamat datang, {data.user.fullName}
@@ -25,10 +29,10 @@ export function DashboardView({
         </p>
       </header>
       <section
-        className="grid gap-5 lg:grid-cols-2"
+        className={data.user.role === "admin" ? "grid min-w-0 gap-4 lg:grid-cols-2" : "grid min-w-0 gap-4"}
         aria-label="Akses yang tersedia"
       >
-        <div className="rounded-2xl border bg-accent/60 p-6 text-accent-foreground">
+        <div className="min-w-0 rounded-2xl border bg-accent/60 p-4 sm:p-6 text-accent-foreground">
           <ShieldCheck className="mb-5 size-7" aria-hidden="true" />
           <h2 className="text-lg font-bold">Akun sudah terlindungi</h2>
           <p className="mt-2 text-sm leading-7">
@@ -57,8 +61,8 @@ export function DashboardView({
           </section>
         )}
       </section>
-      <DayContextCard />
-      <LiveSummary />
+      <DayContextCard key={date} date={date} />
+      <LiveSummary key={date} />
     </div>
   );
 }

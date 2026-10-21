@@ -27,16 +27,17 @@ export function createDashboardHandler(deps: {
       );
       if (!opaqueToken(token)) throw new AuthError("UNAUTHENTICATED", 401);
       const session = await (await deps.service()).requireSession(token, true);
-      const dayContext = deps.calendar
-        ? await (await deps.calendar()).context(token, { date: wibDate() })
-        : undefined;
+      const [dayContext, summary] = await Promise.all([
+        deps.calendar ? deps.calendar().then(calendar => calendar.context(token, { date: wibDate() })) : undefined,
+        deps.summary ? deps.summary(token) : undefined,
+      ]);
       return authResponse(
         {
           ...dashboardDto(session),
           ...(dayContext ? { dayContext } : {}),
           ...(deps.summary
             ? {
-                summary: await deps.summary(token),
+                summary,
                 activitySummaryAvailable: true,
                 financeSummaryAvailable: true,
               }
