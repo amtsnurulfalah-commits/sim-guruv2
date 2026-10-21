@@ -1,4 +1,5 @@
 "use client";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { useEffect, useState } from "react";
@@ -103,7 +104,7 @@ export function TeacherPicker({
           Pilihan berikutnya
         </button>
       </div>
-      {error && <p role="alert">{error}</p>}
+      {error && <ErrorFeedback message={error} />}
     </div>
   );
 }

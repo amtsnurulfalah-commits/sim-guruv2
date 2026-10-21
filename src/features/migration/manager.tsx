@@ -1,4 +1,5 @@
 "use client";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { statusLabel } from "@/lib/ui-status";
@@ -87,7 +88,7 @@ export function MigrationManager() {
         Berkas diunggah ke area pemeriksaan privat. Mengunggah berkas tidak
         otomatis memindahkan transaksi, mengirim email, atau mengganti layanan.
       </p>
-      {error && <p role="alert">{error}</p>}
+      {error && <ErrorFeedback message={error} />}
       <section className={panel}>
         <h2 className="font-semibold">Periksa berkas data lama</h2>
         <label className="block">

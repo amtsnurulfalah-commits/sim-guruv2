@@ -1,4 +1,5 @@
 "use client";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { useEffect, useState } from "react";
@@ -64,7 +65,7 @@ export function RecipientPicker({
           }}
         />
       </label>
-      {error && <p role="alert">{error}</p>}
+      {error && <ErrorFeedback message={error} />}
       <div className="flex flex-wrap gap-2">
         {value.map((id, i) => (
           <button

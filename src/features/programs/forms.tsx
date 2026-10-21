@@ -1,4 +1,5 @@
 "use client";
+import { serverFieldErrors } from "@/lib/feedback/api-error";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { useEffect, useId, useRef, useState } from "react";
@@ -75,11 +76,13 @@ export function DataForm({
       onInvalid={(event) => {
         event.preventDefault();
         const control: EventTarget = event.target;
-        if (!(
-          control instanceof HTMLInputElement ||
-          control instanceof HTMLSelectElement ||
-          control instanceof HTMLTextAreaElement
-        ))
+        if (
+          !(
+            control instanceof HTMLInputElement ||
+            control instanceof HTMLSelectElement ||
+            control instanceof HTMLTextAreaElement
+          )
+        )
           return;
         const field = fields.find((field) => field.key === control.name);
         if (!field) return;
@@ -92,11 +95,13 @@ export function DataForm({
       }}
       onChangeCapture={(event) => {
         const control: EventTarget = event.target;
-        if (!(
-          control instanceof HTMLInputElement ||
-          control instanceof HTMLSelectElement ||
-          control instanceof HTMLTextAreaElement
-        ))
+        if (
+          !(
+            control instanceof HTMLInputElement ||
+            control instanceof HTMLSelectElement ||
+            control instanceof HTMLTextAreaElement
+          )
+        )
           return;
         const key = control.name;
         if (!fieldErrors[key]) return;
@@ -181,6 +186,7 @@ export function DataForm({
                 ? e.message
                 : "Gagal menyimpan.",
           );
+          setFieldErrors(serverFieldErrors(e));
           if (e instanceof z.ZodError) {
             const errors: Record<string, string> = {};
             for (const issue of e.issues) {

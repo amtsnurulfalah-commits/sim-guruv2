@@ -1,4 +1,7 @@
 "use client";
+import { serverFieldErrors } from "@/lib/feedback/api-error";
+import { applyFieldErrors } from "@/lib/feedback/form-fields";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { TableRegion } from "@/components/ui/table-region";
@@ -182,6 +185,7 @@ function UserEditor({
       form.reset();
       onSuccess(result);
     } catch (e) {
+      applyFieldErrors(form, serverFieldErrors(e));
       setError(
         e instanceof Error ? e.message : "Perubahan belum dapat disimpan.",
       );
@@ -252,12 +256,7 @@ function UserEditor({
           {busy ? "Menyimpan…" : user ? "Simpan perubahan" : "Buat akun"}
         </Button>
       </fieldset>
-      {error && (
-        <p role="alert" className="text-sm leading-7">
-          {error} Untuk konflik versi, tutup formulir, muat ulang daftar, lalu
-          periksa data terbaru.
-        </p>
-      )}
+      {error && <ErrorFeedback message={error} />}
     </form>
   );
 }
@@ -519,8 +518,8 @@ export function UserManager() {
           Memuat pengguna…
         </p>
       ) : error ? (
-        <div role="alert" className="space-y-3 rounded-xl border p-5">
-          <p>{error}</p>
+        <div className="space-y-3 rounded-xl border p-5">
+          <ErrorFeedback message={error} />
           <Button variant="outline" onClick={() => setRevision((v) => v + 1)}>
             <ActionIcon action="refresh" />
             Muat ulang daftar
@@ -817,11 +816,7 @@ export function UserManager() {
                 </Button>
               </div>
             </fieldset>
-            {error && (
-              <p role="alert" className="text-sm leading-7">
-                {error}
-              </p>
-            )}
+            {error && <ErrorFeedback message={error} />}
           </form>
         )}
       </ManagedDialog>

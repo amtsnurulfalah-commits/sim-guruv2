@@ -1,4 +1,5 @@
 "use client";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { TableRegion } from "@/components/ui/table-region";
@@ -681,11 +682,7 @@ export function MasterManager() {
             {notice}
           </p>
         )}
-        {error && !opened && !archive && (
-          <p role="alert" className="text-sm">
-            {error}
-          </p>
-        )}
+        {error && !opened && !archive && <ErrorFeedback message={error} />}
         {loading ? (
           <p role="status">Memuat data…</p>
         ) : (
@@ -901,12 +898,7 @@ export function MasterManager() {
             onSubmit={(e) => void save(e)}
           />
         )}{" "}
-        {error && (
-          <p role="alert" className="mt-4 text-sm">
-            {error} Jika terjadi konflik versi, tutup formulir dan muat ulang
-            data.
-          </p>
-        )}
+        {error && <ErrorFeedback message={error} />}
       </ManagedDialog>
       <ManagedDialog
         ref={confirmation}
@@ -952,7 +944,7 @@ export function MasterManager() {
                 </Button>
               </div>
             </fieldset>
-            {error && <p role="alert">{error}</p>}
+            {error && <ErrorFeedback message={error} />}
           </form>
         )}
       </ManagedDialog>

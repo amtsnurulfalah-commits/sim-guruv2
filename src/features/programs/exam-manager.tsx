@@ -1,4 +1,5 @@
 "use client";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { TableRegion } from "@/components/ui/table-region";
@@ -290,11 +291,7 @@ export function ExamManager({
           </select>
         </label>
       </div>
-      {error && (
-        <p role="alert" className="text-red-700">
-          {error}
-        </p>
-      )}
+      {error && <ErrorFeedback message={error} />}
       {message && (
         <p role="status" className="text-green-800">
           {message}

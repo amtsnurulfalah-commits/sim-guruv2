@@ -1,4 +1,5 @@
 "use client";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import * as Primitive from "@radix-ui/react-dialog";
@@ -222,9 +223,7 @@ export function FormDialog({
               {children}
             </fieldset>
             {error && (
-              <p role="alert" className="form-feedback-error mt-4">
-                {error}
-              </p>
+              <ErrorFeedback message={error} autoFocus className="mt-4" />
             )}
           </div>
           {!discard && (

@@ -458,7 +458,7 @@ try {
       await history.waitFor();
       assert.equal(
         await history
-          .getByRole("link", { name: "Unduh CSV", exact: true })
+          .getByRole("button", { name: "Unduh CSV", exact: true })
           .count(),
         1,
       );
@@ -578,6 +578,121 @@ try {
     prefilledValues: true,
     deleteReasonAccessible: true,
     passed: true,
+  });
+  // Rejected envelopes use synthetic data; HTTP status handling is covered by unit tests.
+  await page.route("**/api/auth/change-password", (r) =>
+    r.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        ok: false,
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Periksa isian formulir.",
+          fieldErrors: { newPassword: ["Tambahkan huruf besar."] },
+        },
+        requestId: "fixture-help-001",
+      }),
+    }),
+  );
+  await page.setViewportSize({ width: 375, height: 900 });
+  await go("account");
+  await page
+    .getByRole("tab", { name: "Ganti Kata Sandi", exact: true })
+    .click();
+  await page
+    .getByRole("tabpanel")
+    .getByLabel("Kata sandi saat ini", { exact: true })
+    .fill("SyntheticCurrent9!");
+  const invalidPassword = page
+    .getByRole("tabpanel")
+    .getByLabel("Kata sandi baru", { exact: true });
+  await invalidPassword.fill("synthetic9!");
+  await page
+    .getByRole("tabpanel")
+    .getByLabel("Ulangi kata sandi baru", { exact: true })
+    .fill("synthetic9!");
+  await page
+    .getByRole("button", { name: "Simpan kata sandi baru", exact: true })
+    .click();
+  const serverFeedback = page
+    .getByRole("alert")
+    .filter({ hasText: "fixture-help-001" });
+  await serverFeedback.waitFor();
+  assert.match(
+    await serverFeedback.innerText(),
+    /Kata sandi baru: Tambahkan huruf besar/,
+  );
+  assert.equal(await invalidPassword.getAttribute("aria-invalid"), "true");
+  assert.equal(
+    await page
+      .getByRole("tabpanel")
+      .getByLabel("Kata sandi saat ini", { exact: true })
+      .inputValue(),
+    "SyntheticCurrent9!",
+  );
+  await page.screenshot({
+    path: resolve(output, "feedback-account-mobile.png"),
+    fullPage: true,
+    animations: "disabled",
+  });
+  await invalidPassword.fill("Synthetic9!");
+  assert.equal(await invalidPassword.getAttribute("aria-invalid"), null);
+  await page.unroute("**/api/auth/change-password");
+  interactions.push({
+    scenario: "actionable-validation",
+    fieldMarked: true,
+    valuesRetained: true,
+    reference: true,
+    clearedOnEdit: true,
+  });
+  await page.route("**/api/activities/export?*", (r) =>
+    r.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        ok: false,
+        error: { code: "FORBIDDEN", message: "Unduhan tidak diizinkan." },
+        requestId: "fixture-export-001",
+      }),
+    }),
+  );
+  await go("journals");
+  await page
+    .getByRole("tab", { name: "Riwayat dan Detail Jurnal", exact: true })
+    .click();
+  const beforeDownload = page.url();
+  await page.getByRole("button", { name: "Unduh CSV", exact: true }).click();
+  await page
+    .getByRole("alert")
+    .filter({ hasText: "fixture-export-001" })
+    .waitFor();
+  assert.equal(page.url(), beforeDownload);
+  assert.match(
+    await page.getByRole("alert").innerText(),
+    /peran dan penugasan/,
+  );
+  await page.unroute("**/api/activities/export?*");
+  interactions.push({
+    scenario: "rejected-download-in-place",
+    pageRetained: true,
+    repairGuidance: true,
+  });
+  await page.route("**/api/activities/export?*", (r) =>
+    r.fulfill({
+      contentType: "text/csv; charset=utf-8",
+      body: "Tanggal,Materi\n2026-10-21,Materi sintetis\n",
+    }),
+  );
+  const fileDownloaded = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Unduh CSV", exact: true }).click();
+  const csvDownload = await fileDownloaded;
+  assert.equal(csvDownload.suggestedFilename(), "journals.csv");
+  assert.equal(await csvDownload.failure(), null);
+  assert.equal(page.url(), beforeDownload);
+  await page.unroute("**/api/activities/export?*");
+  interactions.push({
+    scenario: "download-success",
+    fileReceived: true,
+    pageRetained: true,
   });
   if (!process.env.UI_INTERACTIONS_ONLY)
     for (const width of [320, 375, 767, 768, 1024, 1440, 1920]) {

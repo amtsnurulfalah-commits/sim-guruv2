@@ -1,4 +1,5 @@
 "use client";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { TableRegion } from "@/components/ui/table-region";
@@ -684,9 +685,7 @@ export function CalendarManager() {
         </div>
       </section>
       {message && <p role="status">{message}</p>}
-      {error && !preview && (
-        <p role="alert">{error} Muat ulang data sebelum mencoba lagi.</p>
-      )}
+      {error && !preview && <ErrorFeedback message={error} />}
       <dialog
         ref={dialog}
         aria-labelledby="calendar-preview-title"
@@ -737,7 +736,7 @@ export function CalendarManager() {
               atau bonus. Data yang sudah digunakan atau difinalisasi tetap
               dilindungi; perubahan yang tidak memenuhi aturan akan ditolak.
             </p>
-            {error && <p role="alert">{error}</p>}
+            {error && <ErrorFeedback message={error} />}
             <div className="flex justify-end gap-3">
               <Button
                 variant="outline"

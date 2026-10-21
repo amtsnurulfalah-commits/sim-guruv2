@@ -1,4 +1,6 @@
 "use client";
+import { downloadFile } from "@/lib/feedback/api-error";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { TableRegion } from "@/components/ui/table-region";
@@ -197,25 +199,14 @@ export function FinanceManager({
       const security = await masterRequest<{ csrfToken: string }>(
         "/api/auth/csrf?intent=session",
       );
-      const response = await fetch("/api/honorarium/pdf", {
+      await downloadFile("/api/honorarium/pdf", "slip-honor.pdf", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-CSRF-Token": security.csrfToken,
         },
         body: JSON.stringify({ statementId: id }),
-        cache: "no-store",
       });
-      if (!response.ok) {
-        const result = await response.json();
-        throw new Error(result.error.message);
-      }
-      const url = URL.createObjectURL(await response.blob());
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = "slip-honor.pdf";
-      anchor.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
     }, false);
   }
   async function showSlip(id: string) {
@@ -308,14 +299,7 @@ export function FinanceManager({
           {hidden ? "Tampilkan nominal" : "Sembunyikan nominal"}
         </button>
       </div>
-      {error && (
-        <p
-          role="alert"
-          className="rounded border border-red-300 p-3 text-red-800"
-        >
-          {error}
-        </p>
-      )}
+      {error && <ErrorFeedback message={error} />}
       {message && <p role="status">{message}</p>}
       {view === "estimate" && (
         <>
@@ -390,15 +374,25 @@ export function FinanceManager({
             <h2 className="font-semibold">
               Slip diterbitkan ({history?.total ?? 0})
             </h2>
-            <a
+            <button
+              type="button"
               className={secondary}
-              href={
-                "/api/honorarium/excel?" + new URLSearchParams({ period, q })
+              disabled={busy}
+              onClick={() =>
+                void run(
+                  () =>
+                    downloadFile(
+                      "/api/honorarium/excel?" +
+                        new URLSearchParams({ period, q }),
+                      "honorarium.xlsx",
+                    ),
+                  false,
+                )
               }
             >
               <ActionIcon action="download" />
               Ekspor Excel (semua hasil filter)
-            </a>
+            </button>
           </div>
           <TableRegion label="Riwayat honorarium">
             <table className="w-full text-left text-sm">

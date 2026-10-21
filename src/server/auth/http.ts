@@ -2,6 +2,7 @@ import "server-only";
 import { randomBytes, randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
+import { validationFieldErrors } from "./validation-feedback";
 import { EnvironmentConfigurationError } from "../env";
 import { PasswordCryptoError, PasswordPolicyError } from "./passwords";
 import { AuthError, loginSchema, sessionDto } from "./service";
@@ -321,6 +322,9 @@ export async function handleAuthRequest(
         error: {
           code: auth.code,
           message: messages[auth.code] ?? messages.UNAVAILABLE,
+          ...(auth.code === "VALIDATION_ERROR" && validationFieldErrors(error)
+            ? { fieldErrors: validationFieldErrors(error) }
+            : {}),
         },
         requestId,
       },

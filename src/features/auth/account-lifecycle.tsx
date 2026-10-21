@@ -16,36 +16,31 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { FormDialog } from "@/components/ui/dialog";
 import { notifySuccess } from "@/components/feedback/toast-region";
 import { Button } from "@/components/ui/button";
-import type { ApiResult } from "@/types/api";
+import { requestJson, serverFieldErrors } from "@/lib/feedback/api-error";
+import { applyFieldErrors } from "@/lib/feedback/form-fields";
+import { FeatureState } from "@/components/feedback/feature-state";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import type { ProfileDto } from "@/lib/accounts/schemas";
 export async function accountRequest<T>(
   action: string,
   data?: unknown,
   publicForm = false,
 ): Promise<T> {
-  let headers: Record<string, string> = {};
+  const headers: Record<string, string> = {};
   if (data !== undefined) {
-    const c = await fetch(
-        "/api/auth/csrf?intent=" + (publicForm ? "login" : "session"),
-        { cache: "no-store", signal: AbortSignal.timeout(15000) },
-      ),
-      csrf: ApiResult<{ csrfToken: string }> = await c.json();
-    if (!csrf.ok) throw new Error(csrf.error.message);
-    headers = {
-      "Content-Type": "application/json",
-      "X-CSRF-Token": csrf.data.csrfToken,
-    };
+    const csrf = await requestJson<{ csrfToken: string }>(
+      "/api/auth/csrf?intent=" + (publicForm ? "login" : "session"),
+      { signal: AbortSignal.timeout(15000) },
+    );
+    headers["Content-Type"] = "application/json";
+    headers["X-CSRF-Token"] = csrf.csrfToken;
   }
-  const res = await fetch("/api/auth/" + action, {
-      method: data === undefined ? "GET" : "POST",
-      headers,
-      ...(data === undefined ? {} : { body: JSON.stringify(data) }),
-      cache: "no-store",
-      signal: AbortSignal.timeout(action === "email-request" ? 40000 : 20000),
-    }),
-    body: ApiResult<T> = await res.json();
-  if (!body.ok) throw new Error(body.error.message);
-  return body.data;
+  return requestJson<T>("/api/auth/" + action, {
+    method: data === undefined ? "GET" : "POST",
+    headers,
+    ...(data === undefined ? {} : { body: JSON.stringify(data) }),
+    signal: AbortSignal.timeout(action === "email-request" ? 40000 : 20000),
+  });
 }
 export function endLocalSession() {
   try {
@@ -146,6 +141,7 @@ export function ActionForm({
       notifySuccess(result);
     } catch (error) {
       setFailed(true);
+      applyFieldErrors(form, serverFieldErrors(error));
       setMessage(
         error instanceof Error && error.name !== "TimeoutError"
           ? error.message
@@ -170,15 +166,17 @@ export function ActionForm({
           {busy ? "Memproses…" : submitLabel}
         </Button>
       </fieldset>
-      {message && (
-        <p
-          role={failed ? "alert" : "status"}
-          aria-live="polite"
-          className="text-sm leading-7"
-        >
-          {message}
-        </p>
-      )}
+      {message &&
+        (failed ? (
+          <ErrorFeedback message={message} />
+        ) : (
+          <p
+            role="status"
+            className="rounded-lg border bg-muted p-3 text-sm leading-6"
+          >
+            {message}
+          </p>
+        ))}
     </form>
   );
   if (inline || (title !== "Ganti kata sandi" && title !== "Ubah profil"))
@@ -222,17 +220,35 @@ export function AccountLifecycle({
     let active = true;
     accountRequest<ProfileDto>("profile")
       .then((data) => {
-        if (active) setProfile(data);
+        if (active) {
+          setProfile(data);
+          setError("");
+        }
       })
-      .catch(() => {
-        if (active) setError("Profil belum dapat dimuat. Coba muat ulang.");
+      .catch((error) => {
+        if (active)
+          setError(
+            error instanceof Error
+              ? error.message
+              : "Profil belum dapat dimuat. Coba muat ulang.",
+          );
       });
     return () => {
       active = false;
     };
   }, [revision]);
   if (!profile)
-    return <p role="status">{error || "Memuat pengamanan akun…"}</p>;
+    return (
+      <FeatureState
+        headingLevel={2}
+        error={error}
+        label="Memuat pengamanan akun…"
+        retry={() => {
+          setError("");
+          setRevision((v) => v + 1);
+        }}
+      />
+    );
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">Profil dan pengamanan akun</h2>

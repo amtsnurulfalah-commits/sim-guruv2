@@ -22,10 +22,17 @@ export const scheduleData = z
     validTo: date,
   })
   .strict()
-  .refine((v) => {
-    const n = (Date.parse(v.validTo) - Date.parse(v.validFrom)) / 86400000;
-    return n >= 0 && n <= 365;
-  });
+  .refine(
+    (v) => {
+      const n = (Date.parse(v.validTo) - Date.parse(v.validFrom)) / 86400000;
+      return n >= 0 && n <= 365;
+    },
+    {
+      path: ["validTo"],
+      message:
+        "Tanggal akhir harus setelah atau sama dengan tanggal mulai, maksimal 366 hari.",
+    },
+  );
 export const createSchedule = z.object({ data: scheduleData, reason }).strict();
 export const editSchedule = createSchedule.extend({ version }).strict();
 export const stopSchedule = z

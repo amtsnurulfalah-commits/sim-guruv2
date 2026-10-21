@@ -1,5 +1,5 @@
 "use client";
-import type { ApiResult } from "@/types/api";
+import { requestJson } from "@/lib/feedback/api-error";
 export async function masterRequest<T>(
   path: string,
   method = "GET",
@@ -8,23 +8,23 @@ export async function masterRequest<T>(
 ): Promise<T> {
   const headers: Record<string, string> = {};
   if (method !== "GET") {
-    const r = await fetch("/api/auth/csrf?intent=session", {
-      cache: "no-store",
-      signal: AbortSignal.timeout(15000),
-    });
-    const v: ApiResult<{ csrfToken: string }> = await r.json();
-    if (!v.ok) throw new Error(v.error.message);
+    const csrf = await requestJson<{ csrfToken: string }>(
+      "/api/auth/csrf?intent=session",
+      {
+        signal: signal
+          ? AbortSignal.any([signal, AbortSignal.timeout(15000)])
+          : AbortSignal.timeout(15000),
+      },
+    );
     headers["Content-Type"] = "application/json";
-    headers["X-CSRF-Token"] = v.data.csrfToken;
+    headers["X-CSRF-Token"] = csrf.csrfToken;
   }
-  const r = await fetch(path, {
+  return requestJson<T>(path, {
     method,
     headers,
-    cache: "no-store",
-    signal: signal ?? AbortSignal.timeout(20000),
+    signal: signal
+      ? AbortSignal.any([signal, AbortSignal.timeout(20000)])
+      : AbortSignal.timeout(20000),
     ...(data === undefined ? {} : { body: JSON.stringify(data) }),
   });
-  const v: ApiResult<T> = await r.json();
-  if (!v.ok) throw new Error(v.error.message);
-  return v.data;
 }

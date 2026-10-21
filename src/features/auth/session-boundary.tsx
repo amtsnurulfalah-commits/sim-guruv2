@@ -7,7 +7,8 @@ import {
   ServiceState,
   PageSkeleton,
 } from "@/components/feedback/service-state";
-import type { ApiResult } from "@/types/api";
+import { ApiRequestError, requestJson } from "@/lib/feedback/api-error";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import type { SessionDto } from "@/types/auth";
 export function SessionBoundary({
   children,
@@ -17,6 +18,7 @@ export function SessionBoundary({
   business?: boolean;
 }) {
   const [logoutRequested, setLogoutRequested] = useState(false);
+  const [logoutError, setLogoutError] = useState("");
   const [resolved, setResolved] = useState(false);
   const identity = useRef<string | null>(null);
   const [session, setSession] = useState<SessionDto | null>(null),
@@ -33,26 +35,17 @@ export function SessionBoundary({
       if (inFlight) return;
       inFlight = true;
       try {
-        const res = await fetch("/api/auth/session", {
-            cache: "no-store",
-            signal: AbortSignal.timeout(15000),
-          }),
-          data: ApiResult<SessionDto> = await res.json();
+        const data = await requestJson<SessionDto>("/api/auth/session", {
+          signal: AbortSignal.timeout(15000),
+        });
         if (!active) return;
-        if (res.status === 401) {
-          setSession(null);
-          setLogoutRequested(false);
-          window.location.replace("/login?status=expired");
-          return;
-        }
-        if (!data.ok) throw new Error();
-        if (business && data.data.scope !== "business") {
+        if (business && data.scope !== "business") {
           setSession(null);
           setLogoutRequested(false);
           window.location.replace("/akun");
           return;
         }
-        const nextIdentity = data.data.user.id + ":" + data.data.user.role;
+        const nextIdentity = data.user.id + ":" + data.user.role;
         if (identity.current !== null && identity.current !== nextIdentity) {
           setSession(null);
           setLogoutRequested(false);
@@ -60,13 +53,27 @@ export function SessionBoundary({
           return;
         }
         identity.current = nextIdentity;
-        setSession(data.data);
+        setSession(data);
         setMessage("");
-      } catch {
+      } catch (error) {
+        if (
+          active &&
+          error instanceof ApiRequestError &&
+          error.status === 401
+        ) {
+          setSession(null);
+          setLogoutRequested(false);
+          window.location.replace("/login?status=expired");
+          return;
+        }
         if (active) {
           setSession(null);
           setLogoutRequested(false);
-          setMessage("Sesi belum dapat diperiksa. Coba kembali.");
+          setMessage(
+            error instanceof Error
+              ? error.message
+              : "Sesi belum dapat diperiksa. Coba kembali.",
+          );
         }
       } finally {
         if (active) setResolved(true);
@@ -81,25 +88,17 @@ export function SessionBoundary({
         return;
       lastActivity.current = Date.now();
       try {
-        const r = await fetch("/api/auth/csrf?intent=session", {
-            cache: "no-store",
-            signal: AbortSignal.timeout(15000),
-          }),
-          csrf: ApiResult<{
-            csrfToken: string;
-          }> = await r.json();
-        if (!csrf.ok) {
-          void check();
-          return;
-        }
-        const res = await fetch("/api/auth/session", {
+        const csrf = await requestJson<{ csrfToken: string }>(
+          "/api/auth/csrf?intent=session",
+          { signal: AbortSignal.timeout(15000) },
+        );
+        await requestJson("/api/auth/session", {
           method: "POST",
-          headers: { "X-CSRF-Token": csrf.data.csrfToken },
+          headers: { "X-CSRF-Token": csrf.csrfToken },
           signal: AbortSignal.timeout(15000),
         });
-        if (!res.ok) void check();
       } catch {
-        /* check berkala menyembunyikan UI bila layanan tidak tersedia. */
+        void check();
       }
     }
     void check();
@@ -134,45 +133,38 @@ export function SessionBoundary({
     if (logoutRequested) dialog.current?.showModal();
   }, [logoutRequested]);
   function requestLogout() {
+    setLogoutError("");
     setLogoutRequested(true);
   }
   async function logout() {
     setBusy(true);
+    setLogoutError("");
     try {
-      const r = await fetch("/api/auth/csrf?intent=session", {
-        cache: "no-store",
+      const csrf = await requestJson<{ csrfToken: string }>(
+        "/api/auth/csrf?intent=session",
+        { signal: AbortSignal.timeout(15000) },
+      );
+      await requestJson<{ loggedOut: boolean }>("/api/auth/logout", {
+        method: "POST",
+        headers: { "X-CSRF-Token": csrf.csrfToken },
         signal: AbortSignal.timeout(15000),
       });
-      if (r.status === 401) {
-        setSession(null);
-        setLogoutRequested(false);
-        window.location.replace("/login?status=expired");
-        return;
-      }
-      const csrf: ApiResult<{
-        csrfToken: string;
-      }> = await r.json();
-      if (!csrf.ok) throw new Error(csrf.error.message);
-      const res = await fetch("/api/auth/logout", {
-          method: "POST",
-          headers: { "X-CSRF-Token": csrf.data.csrfToken },
-          signal: AbortSignal.timeout(15000),
-        }),
-        data: ApiResult<{
-          loggedOut: boolean;
-        }> = await res.json();
-      if (!data.ok) throw new Error(data.error.message);
       setSession(null);
       setLogoutRequested(false);
       channel.current?.postMessage("logout");
       window.location.replace("/login?status=logout");
     } catch (error) {
-      setMessage(
+      if (error instanceof ApiRequestError && error.status === 401) {
+        setSession(null);
+        setLogoutRequested(false);
+        window.location.replace("/login?status=expired");
+        return;
+      }
+      setLogoutError(
         error instanceof Error
           ? error.message
           : "Belum dapat keluar. Coba kembali.",
       );
-      dialog.current?.close();
     } finally {
       setBusy(false);
     }
@@ -225,6 +217,7 @@ export function SessionBoundary({
           Sesi pada browser ini akan diakhiri. Anda dapat masuk kembali
           menggunakan akun Anda.
         </p>
+        <ErrorFeedback message={logoutError} autoFocus className="mt-4" />
         <div className="mt-6 flex justify-end gap-3">
           <Button
             variant="outline"
