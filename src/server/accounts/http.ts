@@ -1,6 +1,6 @@
 import "server-only";
 import { z } from "zod";
-import { authResponse, handleAuthRequest } from "../auth/http";
+import { authResponse, handleModuleRequest } from "../auth/http";
 import { AuthError } from "../auth/service";
 import {
   assertOrigin,
@@ -44,7 +44,7 @@ export function createLifecycleHandler(deps: {
   service: () => Promise<AccountLifecycleService>;
 }) {
   return (action: LifecycleAction, request: Request) =>
-    handleAuthRequest(async (requestId) => {
+    handleModuleRequest("accounts", async (requestId) => {
       const config = deps.config(),
         names = cookieNames(config.production),
         isPublic = publicActions.has(action),

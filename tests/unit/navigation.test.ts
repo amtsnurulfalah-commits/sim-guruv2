@@ -9,7 +9,9 @@ import {
 test("navigation registry has unique slugs and enforces role visibility independently of the UI", () => {
   assert.equal(new Set(modules.map((m) => m.slug)).size, modules.length);
   assert.equal(modulesFor("guru").length, 9);
-  assert.equal(modulesFor("admin").length, 15);
+  assert.equal(modulesFor("admin").length, 16);
+  assert.equal(canViewModule("guru", moduleBySlug("laporan-kendala")!), false);
+  assert.equal(canViewModule("admin", moduleBySlug("laporan-kendala")!), true);
   const users = moduleBySlug("pengguna")!;
   assert.equal(canViewModule("guru", users), false);
   assert.equal(canViewModule("admin", users), true);

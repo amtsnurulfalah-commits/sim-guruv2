@@ -1,5 +1,5 @@
 import "server-only";
-import { authResponse, handleAuthRequest } from "../auth/http";
+import { authResponse, handleModuleRequest } from "../auth/http";
 import { AuthError, type LocalAuthService } from "../auth/service";
 import {
   assertOrigin,
@@ -21,7 +21,7 @@ export function createDutyHandler(deps: {
   rate(): Promise<AccountLifecycleService>;
 }) {
   return (action: string, request: Request) =>
-    handleAuthRequest(async (requestId) => {
+    handleModuleRequest("duties", async (requestId) => {
       const config = deps.config(),
         token = requestCookie(request, cookieNames(config.production).session),
         read = action === "board" && request.method === "GET";

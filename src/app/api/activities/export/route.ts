@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { handleAuthRequest } from "@/server/auth/http";
+import { handleModuleRequest } from "@/server/auth/http";
 import { AuthError } from "@/server/auth/service";
 import { getAuthService, getBusinessDatabase } from "@/server/auth/runtime";
 import { getLifecycleService } from "@/server/accounts/runtime";
@@ -18,7 +18,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 export async function GET(request: Request) {
-  return handleAuthRequest(async () => {
+  return handleModuleRequest("activities", async () => {
     const config = {
       appUrl: requireEnvironment("core").APP_URL,
       sessionSecret: requireEnvironment("auth").SESSION_SECRET,

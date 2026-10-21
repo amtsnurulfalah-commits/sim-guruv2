@@ -39,6 +39,7 @@ async function main() {
   await writeFile(resolve(output, "app.css"), css.css);
   const db = await openPgliteDatabase();
   await applyMigrations(db, await readMigrations("supabase/migrations"));
+  await db.query("select ops.record_support_event($1,clock_timestamp(),'activities','JOURNAL_BLOCKED',403)", ["48bfc3a0-adb3-45d0-a97f-eb27186062b0"]);
   const id = "11111111-1111-4111-8111-111111111111",
     token = "A".repeat(43),
     hash =
@@ -170,7 +171,7 @@ async function main() {
       else if (path === "/api/honorarium/read")
         data = await finance.read(token, q);
       else if (path.startsWith("/api/operations/"))
-        data = await operations.read(token, path.split("/").at(-1)!);
+        data = await operations.read(token, path.split("/").at(-1)!, q);
       else if (path === "/api/migration/board")
         data = await migration.read(token, "board", q);
       else if (path === "/api/settings/calendar")

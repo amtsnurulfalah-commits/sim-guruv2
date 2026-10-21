@@ -1,5 +1,5 @@
 import "server-only";
-import { authResponse, handleAuthRequest } from "../auth/http";
+import { authResponse, handleModuleRequest } from "../auth/http";
 import { AuthError, type LocalAuthService } from "../auth/service";
 import {
   cookieNames,
@@ -18,7 +18,7 @@ export function createDashboardHandler(deps: {
   service: () => Promise<LocalAuthService>;
 }) {
   return (request: Request) =>
-    handleAuthRequest(async (requestId) => {
+    handleModuleRequest("dashboard", async (requestId) => {
       const config = deps.config();
       rejectCrossSiteRead(request, config);
       const token = requestCookie(

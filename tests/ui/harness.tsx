@@ -33,6 +33,7 @@ import {
   AnnouncementManager,
   OperationsManager,
 } from "../../src/features/operations/managers";
+import { SupportReports } from "../../src/features/operations/support-reports";
 import { MigrationManager } from "../../src/features/migration/manager";
 import type { SessionDto } from "../../src/types/auth";
 const params = new URLSearchParams(location.search),
@@ -200,6 +201,7 @@ const components: Record<string, React.ReactNode> = {
   history: <FinanceManager admin={admin} view="history" />,
   financeOperations: <FinanceManager admin={admin} view="operations" />,
   announcements: <AnnouncementManager />,
+  support: <SupportReports />,
   operations: <OperationsManager />,
   migration: <MigrationManager />,
 };

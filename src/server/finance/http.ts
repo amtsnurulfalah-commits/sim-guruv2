@@ -1,6 +1,6 @@
 import "server-only";
 import { NextResponse } from "next/server";
-import { authResponse, handleAuthRequest } from "../auth/http";
+import { authResponse, handleModuleRequest } from "../auth/http";
 import { AuthError, type LocalAuthService } from "../auth/service";
 import {
   assertOrigin,
@@ -24,7 +24,7 @@ export function createFinanceHandler(deps: {
   rate(): Promise<AccountLifecycleService>;
 }) {
   return (action: string, request: Request) =>
-    handleAuthRequest(async (requestId) => {
+    handleModuleRequest("finance", async (requestId) => {
       const config = deps.config();
       const query = Object.fromEntries(new URL(request.url).searchParams);
       if (action === "verify" && request.method === "POST") {
