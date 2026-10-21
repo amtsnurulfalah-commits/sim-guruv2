@@ -55,6 +55,8 @@ try {
     if (message.type() === "error") consoleErrors.push(message.text());
   });
   const adminViews = [
+    "account",
+    "onboarding",
     "dashboard",
     "home",
     "guide",
@@ -79,6 +81,8 @@ try {
     "migration",
   ];
   const guruViews = [
+    "account",
+    "onboarding",
     "dashboard",
     "occurrences",
     "attendance",
@@ -92,6 +96,8 @@ try {
   ];
   async function go(view, role = "admin") {
     const paths = {
+      account: "/akun",
+      onboarding: "/akun",
       masters: "/admin/master",
       users: "/admin/pengguna",
       calendar: "/admin/kalender",
@@ -118,6 +124,141 @@ try {
     );
     await page.waitForLoadState("networkidle");
   }
+  // Account tabs retain drafts and expose a single keyboard-focusable tab.
+  for (const width of [320, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await go("account");
+    const tabs = page.getByRole("tablist", {
+      name: "Pengaturan akun dan profil",
+    });
+    assert.equal(await tabs.getByRole("tab").count(), 4);
+    let panel = page.getByRole("tabpanel");
+    assert.equal(await panel.count(), 1);
+    await panel
+      .getByLabel("Nama lengkap", { exact: true })
+      .fill("Draf profil sintetis");
+    const profileTab = tabs.getByRole("tab", {
+      name: "Ubah Profil",
+      exact: true,
+    });
+    await profileTab.focus();
+    await page.keyboard.press("ArrowRight");
+    const passwordTab = tabs.getByRole("tab", {
+      name: "Ganti Kata Sandi",
+      exact: true,
+    });
+    assert.equal(await passwordTab.getAttribute("aria-selected"), "true");
+    await page
+      .getByRole("tabpanel")
+      .getByLabel("Kata sandi baru", { exact: true })
+      .waitFor();
+    assert.equal(await page.getByRole("dialog").count(), 0);
+    await page.keyboard.press("End");
+    assert.equal(
+      await tabs
+        .getByRole("tab", { name: "Pertanyaan Keamanan" })
+        .getAttribute("aria-selected"),
+      "true",
+    );
+    await page.keyboard.press("Home");
+    assert.equal(await profileTab.getAttribute("aria-selected"), "true");
+    assert.equal(
+      await page
+        .getByRole("tabpanel")
+        .getByLabel("Nama lengkap", { exact: true })
+        .inputValue(),
+      "Draf profil sintetis",
+    );
+    assert.equal(await tabs.locator('[tabindex="0"]').count(), 1);
+    for (const name of [
+      "Ubah Profil",
+      "Ganti Kata Sandi",
+      "Verifikasi Email",
+      "Pertanyaan Keamanan",
+    ]) {
+      await tabs.getByRole("tab", { name, exact: true }).click();
+      assert.equal(await page.getByRole("tabpanel").count(), 1);
+      assert.ok(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth + 1,
+        ),
+      );
+    }
+    await go("onboarding");
+    assert.equal(
+      await page
+        .getByRole("tab", { name: "Ganti Kata Sandi" })
+        .getAttribute("aria-selected"),
+      "true",
+    );
+    assert.ok(
+      await page
+        .getByRole("button", { name: "Selesaikan dan lanjutkan", exact: true })
+        .isVisible(),
+    );
+    interactions.push({
+      accountTabs: "navigation-drafts-onboarding",
+      viewport: width,
+      passed: true,
+    });
+  }
+  // Synthetic request only: no real credentials, email, OTP or production API.
+  await page.route("**/api/auth/email-request", async (route) => {
+    const data = route.request().postDataJSON();
+    assert.equal(data.email, "baru@example.test");
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        ok: true,
+        data: {
+          queued: true,
+          delivery: "accepted",
+          challengeId: "33333333-3333-4333-8333-333333333333",
+        },
+      }),
+    });
+  });
+  await go("account");
+  await page
+    .getByRole("tab", { name: "Verifikasi Email", exact: true })
+    .click();
+  let emailPanel = page.getByRole("tabpanel");
+  await emailPanel
+    .getByLabel("Alamat email milik Anda", { exact: true })
+    .fill("baru@example.test");
+  await emailPanel
+    .getByLabel("Kata sandi saat ini", { exact: true })
+    .fill("Synthetic9!only");
+  await emailPanel
+    .getByRole("button", { name: "Kirim kode OTP", exact: true })
+    .click();
+  await emailPanel.getByLabel("Kode OTP enam digit", { exact: true }).waitFor();
+  assert.equal(
+    await emailPanel
+      .getByLabel("Kata sandi saat ini", { exact: true })
+      .inputValue(),
+    "",
+  );
+  await page
+    .getByRole("tab", { name: "Pertanyaan Keamanan", exact: true })
+    .click();
+  await page
+    .getByRole("tab", { name: "Verifikasi Email", exact: true })
+    .click();
+  emailPanel = page.getByRole("tabpanel");
+  assert.ok(
+    await emailPanel
+      .getByLabel("Kode OTP enam digit", { exact: true })
+      .isVisible(),
+  );
+  assert.equal(
+    await emailPanel
+      .getByLabel("Alamat email milik Anda", { exact: true })
+      .inputValue(),
+    "baru@example.test",
+  );
+  await page.unroute("**/api/auth/email-request");
+  interactions.push({ accountTabs: "email-challenge-retained", passed: true });
   // Dashboard: native disclosure, keyboard operation, section order and retry.
   for (const role of ["admin", "guru"]) {
     for (const width of [320, 768, 1440]) {

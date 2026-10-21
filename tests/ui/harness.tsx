@@ -3,7 +3,11 @@ import { createRoot } from "react-dom/client";
 import { DashboardView } from "../../src/features/dashboard/dashboard-view";
 import { modulesFor } from "../../src/lib/navigation/modules";
 import { AuthLayout } from "../../src/components/shell/auth-layout";
-import { ActionForm, Field } from "../../src/features/auth/account-lifecycle";
+import {
+  AccountLifecycle,
+  ActionForm,
+  Field,
+} from "../../src/features/auth/account-lifecycle";
 import { LoginForm } from "../../src/features/auth/login-form";
 import GuidePage from "../../src/app/kesiapan/page";
 import HomePage from "../../src/app/page";
@@ -165,6 +169,8 @@ function Lab() {
   );
 }
 const components: Record<string, React.ReactNode> = {
+  account: <AccountLifecycle isAdmin={admin} onboarding={false} />,
+  onboarding: <AccountLifecycle isAdmin={false} onboarding />,
   lab: <Lab />,
   dashboard: (
     <DashboardView
