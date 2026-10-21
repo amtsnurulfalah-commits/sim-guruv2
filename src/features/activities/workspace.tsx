@@ -1,4 +1,6 @@
 "use client";
+import { ChevronDown } from "lucide-react";
+import { Tabs } from "@/components/ui/tabs";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { FormDialog } from "@/components/ui/dialog";
@@ -127,6 +129,7 @@ export function ActivityWorkspace({
   userId: string;
   mode: Mode;
 }) {
+  const [journalTab, setJournalTab] = useState("input");
   const [manualEditor, setManualEditor] = useState(0),
     [journalEditor, setJournalEditor] = useState(0),
     [leaveEditor, setLeaveEditor] = useState(0);
@@ -341,6 +344,96 @@ export function ActivityWorkspace({
     ...(filterTeacher ? { userId: filterTeacher } : {}),
     ...(mode === "journals" && query ? { q: query } : {}),
   });
+  const activityFilters = (
+    <>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Text
+          label="Tanggal kegiatan / input"
+          value={date}
+          set={(v) => {
+            setDate(v);
+            setPreview(null);
+          }}
+          type="date"
+        />
+        {mode !== "occurrences" && (
+          <>
+            <Text
+              label="Riwayat mulai"
+              value={from}
+              set={(v) => {
+                setFrom(v);
+                setPage(1);
+              }}
+              type="date"
+            />
+            <Text
+              label="Riwayat sampai"
+              value={to}
+              set={(v) => {
+                setTo(v);
+                setPage(1);
+              }}
+              type="date"
+            />
+          </>
+        )}
+        {admin && ["attendance", "journals"].includes(mode) && (
+          <Select
+            label="Filter guru (kosong: semua)"
+            value={filterTeacher}
+            set={(v) => {
+              setFilterTeacher(v);
+              setPage(1);
+            }}
+            items={options.teachers}
+          />
+        )}{" "}
+        {mode === "journals" && (
+          <Text
+            label="Cari materi/catatan"
+            value={query}
+            set={(v) => {
+              setQuery(v);
+              setPage(1);
+            }}
+          />
+        )}
+      </div>
+      <button
+        className={smallButton}
+        onClick={() => setRevision((v) => v + 1)}
+        disabled={loading}
+      >
+        <ActionIcon action="refresh" />
+        Muat ulang
+      </button>
+      {loading && <p role="status">Memuat data…</p>}
+    </>
+  );
+  const pagination = (
+    <div className="flex items-center justify-between">
+      <button
+        className={smallButton}
+        disabled={page <= 1 || loading}
+        onClick={() => setPage((p) => p - 1)}
+      >
+        <ActionIcon action="previous" />
+        Sebelumnya
+      </button>
+      <span className="text-sm">
+        Halaman {page} · {total} catatan
+      </span>
+      <button
+        className={smallButton}
+        disabled={page * 25 >= total || loading}
+        onClick={() => setPage((p) => p + 1)}
+      >
+        <ActionIcon action="next" />
+        Berikutnya
+      </button>
+    </div>
+  );
   return (
     <div className="space-y-6">
       <header>
@@ -352,72 +445,24 @@ export function ActivityWorkspace({
       </header>
       {error && <p role="alert">{error}</p>}
       {message && <p role="status">{message}</p>}
-      <section className={panel}>
-        <h2 className="font-semibold">Tanggal dan filter kegiatan</h2>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <Text
-            label="Tanggal kegiatan / input"
-            value={date}
-            set={(v) => {
-              setDate(v);
-              setPreview(null);
-            }}
-            type="date"
-          />
-          {mode !== "occurrences" && (
-            <>
-              <Text
-                label="Riwayat mulai"
-                value={from}
-                set={(v) => {
-                  setFrom(v);
-                  setPage(1);
-                }}
-                type="date"
-              />
-              <Text
-                label="Riwayat sampai"
-                value={to}
-                set={(v) => {
-                  setTo(v);
-                  setPage(1);
-                }}
-                type="date"
-              />
-            </>
-          )}
-          {admin && ["attendance", "journals"].includes(mode) && (
-            <Select
-              label="Filter guru (kosong: semua)"
-              value={filterTeacher}
-              set={(v) => {
-                setFilterTeacher(v);
-                setPage(1);
-              }}
-              items={options.teachers}
+      {mode === "journals" ? (
+        <details className="group/journal-filter rounded-2xl border bg-card shadow-xs">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 rounded-2xl px-5 py-4 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
+            <ActionIcon action="filter" />
+            <span className="min-w-0 flex-1">Tanggal dan filter jurnal</span>
+            <ChevronDown
+              aria-hidden="true"
+              className="size-4 shrink-0 transition-transform group-open/journal-filter:rotate-180 motion-reduce:transition-none"
             />
-          )}{" "}
-          {mode === "journals" && (
-            <Text
-              label="Cari materi/catatan"
-              value={query}
-              set={(v) => {
-                setQuery(v);
-                setPage(1);
-              }}
-            />
-          )}
-        </div>
-        <button
-          className={smallButton}
-          onClick={() => setRevision((v) => v + 1)}
-          disabled={loading}
-        >
-          <ActionIcon action="refresh" />
-          Muat ulang
-        </button>
-        {loading && <p role="status">Memuat data…</p>}
-      </section>
+          </summary>
+          <div className="space-y-4 border-t p-5">{activityFilters}</div>
+        </details>
+      ) : (
+        <section className={panel}>
+          <h2 className="font-semibold">Tanggal dan filter kegiatan</h2>
+          {activityFilters}
+        </section>
+      )}
       {mode === "occurrences" && (
         <section className={panel}>
           <h2 className="font-semibold">Penugasan tanggal {date}</h2>
@@ -1062,362 +1107,438 @@ export function ActivityWorkspace({
         </>
       )}
       {mode === "journals" && (
-        <>
-          <FormDialog
-            title="Jurnal pembelajaran"
-            onDiscard={() => {
-              setEditing(null);
-              setMaterial("");
-              setNotes("");
-              setOccurrenceId("");
-              setPresent(0);
-              setAbsent(0);
-              setReason("");
-            }}
-            busy={busy}
-            success={message}
-            error={error}
-            revealKey={editing ? editing.id + ":" + journalEditor : undefined}
-          >
-            <form
-              className={panel}
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const r = await run(
-                  editing ? "journal-edit" : "journal-create",
-                  editing
-                    ? {
-                        journalId: editing.id,
-                        version: editing.version,
-                        material,
-                        present,
-                        absent,
-                        notes,
-                        reason,
-                      }
-                    : {
-                        occurrenceId,
-                        material,
-                        present,
-                        absent,
-                        notes,
-                        reason,
-                      },
-                );
-                if (r) {
-                  setEditing(null);
-                  setMaterial("");
-                  setNotes("");
-                  setOccurrenceId("");
-                }
-              }}
-            >
-              <h2 className="font-semibold">
-                {editing
-                  ? "Ubah jurnal " + editing.date
-                  : "Input jurnal tanggal " + date}
-              </h2>
-              {!editing && (
+        <Tabs
+          label="Jurnal pembelajaran"
+          defaultValue="input"
+          value={journalTab}
+          onValueChange={setJournalTab}
+          items={[
+            {
+              value: "input",
+              label: "Input Jurnal Pembelajaran",
+              icon: <ActionIcon action="add" />,
+              content: (
                 <>
-                  <p className="text-sm">
-                    H-1:{" "}
-                    {options.h1Enabled
-                      ? "aktif, bobot 80% dibulatkan satu desimal"
-                      : "belum aktif"}
-                    . Rekap siswa yang tersedia wajib cocok dengan jurnal.
-                  </p>
-                  <Select
-                    label="Kegiatan"
-                    value={occurrenceId}
-                    set={(v) => {
-                      setOccurrenceId(v);
-                      const o = eligible.find((x) => x.id === v);
-                      setPresent(o?.expectedStudents ?? 0);
-                      setAbsent(0);
-                    }}
-                    items={eligible
-                      .filter((o) => !o.journalId && !o.eligibilityError)
-                      .map((o) => ({
-                        id: o.id,
-                        name: `${o.subjectName} · ${o.className} · ${o.timeStart}–${o.timeEnd}`,
-                      }))}
-                  />
-                  {eligible
-                    .filter((o) => o.eligibilityError)
-                    .map((o) => (
-                      <p className="text-sm text-amber-800" key={o.id}>
-                        {o.subjectName} · {o.className}:{" "}
-                        {eligibilityText(o.eligibilityError)}
-                      </p>
-                    ))}
+                  <section className={panel}>
+                    <h2 className="font-semibold">Input jurnal pembelajaran</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Tanggal kegiatan: {date}. Pilih kegiatan yang memenuhi
+                      syarat untuk mencatat materi dan kehadiran siswa.
+                    </p>
+                    <FormDialog
+                      title="Jurnal pembelajaran"
+                      onDiscard={() => {
+                        setEditing(null);
+                        setMaterial("");
+                        setNotes("");
+                        setOccurrenceId("");
+                        setPresent(0);
+                        setAbsent(0);
+                        setReason("");
+                      }}
+                      busy={busy}
+                      success={message}
+                      error={error}
+                      revealKey={
+                        editing ? editing.id + ":" + journalEditor : undefined
+                      }
+                    >
+                      <form
+                        className={panel}
+                        onSubmit={async (e) => {
+                          e.preventDefault();
+                          const r = await run(
+                            editing ? "journal-edit" : "journal-create",
+                            editing
+                              ? {
+                                  journalId: editing.id,
+                                  version: editing.version,
+                                  material,
+                                  present,
+                                  absent,
+                                  notes,
+                                  reason,
+                                }
+                              : {
+                                  occurrenceId,
+                                  material,
+                                  present,
+                                  absent,
+                                  notes,
+                                  reason,
+                                },
+                          );
+                          if (r) {
+                            setEditing(null);
+                            setMaterial("");
+                            setNotes("");
+                            setOccurrenceId("");
+                          }
+                        }}
+                      >
+                        <h2 className="font-semibold">
+                          {editing
+                            ? "Ubah jurnal " + editing.date
+                            : "Input jurnal tanggal " + date}
+                        </h2>
+                        {!editing && (
+                          <>
+                            <p className="text-sm">
+                              H-1:{" "}
+                              {options.h1Enabled
+                                ? "aktif, bobot 80% dibulatkan satu desimal"
+                                : "belum aktif"}
+                              . Rekap siswa yang tersedia wajib cocok dengan
+                              jurnal.
+                            </p>
+                            <Select
+                              label="Kegiatan"
+                              value={occurrenceId}
+                              set={(v) => {
+                                setOccurrenceId(v);
+                                const o = eligible.find((x) => x.id === v);
+                                setPresent(o?.expectedStudents ?? 0);
+                                setAbsent(0);
+                              }}
+                              items={eligible
+                                .filter(
+                                  (o) => !o.journalId && !o.eligibilityError,
+                                )
+                                .map((o) => ({
+                                  id: o.id,
+                                  name: `${o.subjectName} · ${o.className} · ${o.timeStart}–${o.timeEnd}`,
+                                }))}
+                            />
+                            {eligible
+                              .filter((o) => o.eligibilityError)
+                              .map((o) => (
+                                <p
+                                  className="text-sm text-amber-800"
+                                  key={o.id}
+                                >
+                                  {o.subjectName} · {o.className}:{" "}
+                                  {eligibilityText(o.eligibilityError)}
+                                </p>
+                              ))}
+                          </>
+                        )}
+                        <Field label="Materi pembelajaran">
+                          <textarea
+                            className={inputClass}
+                            maxLength={2000}
+                            required
+                            value={material}
+                            onChange={(e) => setMaterial(e.target.value)}
+                          />
+                        </Field>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <Count
+                            label="Siswa hadir"
+                            value={present}
+                            set={setPresent}
+                          />
+                          <Count
+                            label="Siswa absen"
+                            value={absent}
+                            set={setAbsent}
+                          />
+                        </div>
+                        <Field label="Catatan">
+                          <textarea
+                            className={inputClass}
+                            maxLength={2000}
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                          />
+                        </Field>
+                        <Text
+                          label="Alasan penyimpanan"
+                          value={reason}
+                          set={setReason}
+                          required
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            className={buttonClass}
+                            disabled={busy || (!editing && !occurrenceId)}
+                          >
+                            <ActionIcon action="save" />
+                            Simpan jurnal
+                          </button>
+                          {editing && (
+                            <button
+                              type="button"
+                              className={smallButton}
+                              onClick={() => {
+                                setEditing(null);
+                                setMaterial("");
+                                setNotes("");
+                              }}
+                            >
+                              <ActionIcon action="close" />
+                              Batal edit
+                            </button>
+                          )}
+                        </div>
+                      </form>
+                    </FormDialog>
+                  </section>
                 </>
-              )}
-              <Field label="Materi pembelajaran">
-                <textarea
-                  className={inputClass}
-                  maxLength={2000}
-                  required
-                  value={material}
-                  onChange={(e) => setMaterial(e.target.value)}
-                />
-              </Field>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Count label="Siswa hadir" value={present} set={setPresent} />
-                <Count label="Siswa absen" value={absent} set={setAbsent} />
-              </div>
-              <Field label="Catatan">
-                <textarea
-                  className={inputClass}
-                  maxLength={2000}
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                />
-              </Field>
-              <Text
-                label="Alasan penyimpanan"
-                value={reason}
-                set={setReason}
-                required
-              />
-              <div className="flex gap-2">
-                <button
-                  className={buttonClass}
-                  disabled={busy || (!editing && !occurrenceId)}
-                >
-                  <ActionIcon action="save" />
-                  Simpan jurnal
-                </button>
-                {editing && (
-                  <button
-                    type="button"
-                    className={smallButton}
-                    onClick={() => {
-                      setEditing(null);
-                      setMaterial("");
-                      setNotes("");
-                    }}
-                  >
-                    <ActionIcon action="close" />
-                    Batal edit
-                  </button>
-                )}
-              </div>
-            </form>
-          </FormDialog>
-          <section className={panel}>
-            <h2 className="font-semibold">Riwayat dan detail jurnal</h2>
-            <div className="flex gap-4 text-sm">
-              <a
-                className="ui-action ui-action-secondary"
-                href={`/api/activities/export?${exportQuery}&format=csv`}
-              >
-                <ActionIcon action="download" />
-                Unduh CSV
-              </a>
-              <a
-                className="ui-action ui-action-secondary"
-                href={`/api/activities/export?${exportQuery}&format=pdf`}
-              >
-                <ActionIcon action="download" />
-                Unduh PDF
-              </a>
-            </div>
-            {!loading && !rows.length && (
-              <p>Belum ada jurnal pada rentang ini.</p>
-            )}
-            {(rows as Journal[]).map((j) => (
-              <article key={j.id} className="space-y-2 rounded border p-4">
-                <h3 className="font-semibold">
-                  {j.date} · {j.teacherName} · {j.subjectName} · {j.className}
-                </h3>
-                <p className="whitespace-pre-wrap">{j.material}</p>
-                <p>
-                  Hadir {j.present}; absen {j.absent} · {j.creditedJtm} JTM ·{" "}
-                  {j.inputType === "H_MINUS_1" ? "H-1 (80%)" : "Hari H (100%)"}
-                </p>
-                <p className="whitespace-pre-wrap text-sm">{j.notes}</p>
-                <p className="text-sm">
-                  {j.recapAvailable
-                    ? "Rekap siswa tersedia"
-                    : "Belum ada rekap siswa; jumlah diperiksa terhadap standar kelas."}
-                </p>
-                <div className="flex gap-2">
-                  <button
-                    className={smallButton}
-                    onClick={() => {
-                      setEditing(j);
-                      setJournalEditor((v) => v + 1);
-                      setMaterial(j.material);
-                      setPresent(j.present);
-                      setAbsent(j.absent);
-                      setNotes(j.notes);
-                    }}
-                  >
-                    <ActionIcon action="edit" />
-                    Ubah jurnal
-                  </button>
-                  <button
-                    className={smallButton}
-                    disabled={busy || reason.trim().length < 5}
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          "Hapus jurnal ini? Kredit JTM akan dibalik dan riwayat penghapusan tetap tersimpan.",
-                        )
-                      )
-                        void run("journal-delete", {
-                          journalId: j.id,
-                          version: j.version,
-                          reason,
-                        });
-                    }}
-                  >
-                    <ActionIcon action="delete" />
-                    Hapus jurnal dan batalkan JTM
-                  </button>
-                </div>
-              </article>
-            ))}
-          </section>
-          {admin && (
-            <section className={panel}>
-              <h2 className="font-semibold">
-                Kebijakan dan pemblokiran jurnal
-              </h2>
-              <Text
-                label="Alasan perubahan kebijakan"
-                value={reason}
-                set={setReason}
-                required
-              />
-              <button
-                className={smallButton}
-                disabled={busy || reason.trim().length < 5}
-                onClick={() =>
-                  run("h1", { enabled: !options.h1Enabled, reason })
-                }
-              >
-                <ActionIcon action="toggle" />
-                {options.h1Enabled ? "Nonaktifkan" : "Aktifkan"} jurnal H-1
-              </button>
-              <FormDialog
-                title="Blok pengisian jurnal"
-                onDiscard={() => {
-                  setSubjectId("");
-                  setBlockMessage("");
-                  setReason("");
-                }}
-                busy={busy}
-                success={message}
-                error={error}
-              >
-                <form
-                  className="space-y-3"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    void run("block", {
-                      subjectId,
-                      dateStart: blockFrom,
-                      dateEnd: blockTo,
-                      message: blockMessage,
-                      active: true,
-                      version: "0",
-                      reason,
-                    });
-                  }}
-                >
-                  <Select
-                    label="Mata pelajaran"
-                    value={subjectId}
-                    set={setSubjectId}
-                    items={options.subjects}
-                  />
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <Text
-                      label="Blok mulai"
-                      value={blockFrom}
-                      set={setBlockFrom}
-                      type="date"
-                      required
-                    />
-                    <Text
-                      label="Blok sampai"
-                      value={blockTo}
-                      set={setBlockTo}
-                      type="date"
-                      required
-                    />
-                  </div>
-                  <Text
-                    label="Pesan pemblokiran"
-                    value={blockMessage}
-                    set={setBlockMessage}
-                    required
-                  />
-                  <button
-                    className={buttonClass}
-                    disabled={busy || !subjectId || reason.trim().length < 5}
-                  >
-                    <ActionIcon action="save" />
-                    Simpan blok jurnal
-                  </button>
-                </form>
-              </FormDialog>
-              {blocks.map((b) => (
-                <p className="text-sm" key={b.id}>
-                  {options.subjects.find((s) => s.id === b.subject_id)?.name} ·{" "}
-                  {b.date_start}–{b.date_end}: {b.message} (
-                  {b.active ? "Aktif" : "Nonaktif"}){" "}
-                  <button
-                    className="ui-action ui-action-secondary"
-                    disabled={busy || reason.trim().length < 5}
-                    onClick={() =>
-                      run("block", {
-                        id: b.id,
-                        subjectId: b.subject_id,
-                        dateStart: b.date_start,
-                        dateEnd: b.date_end,
-                        message: b.message,
-                        active: !b.active,
-                        version: b.version,
-                        reason,
-                      })
-                    }
-                  >
-                    <ActionIcon action="toggle" />
-                    {b.active
-                      ? "Nonaktifkan blok jurnal"
-                      : "Aktifkan blok jurnal"}
-                  </button>
-                </p>
-              ))}
-            </section>
-          )}
-        </>
+              ),
+            },
+            {
+              value: "history",
+              label: "Riwayat dan Detail Jurnal",
+              icon: <ActionIcon action="history" />,
+              content: (
+                <>
+                  <section className={panel}>
+                    <h2 className="font-semibold">Riwayat dan detail jurnal</h2>
+                    <div className="flex gap-4 text-sm">
+                      <a
+                        className="ui-action ui-action-secondary"
+                        href={`/api/activities/export?${exportQuery}&format=csv`}
+                      >
+                        <ActionIcon action="download" />
+                        Unduh CSV
+                      </a>
+                      <a
+                        className="ui-action ui-action-secondary"
+                        href={`/api/activities/export?${exportQuery}&format=pdf`}
+                      >
+                        <ActionIcon action="download" />
+                        Unduh PDF
+                      </a>
+                    </div>
+                    {!loading && !rows.length && (
+                      <p>Belum ada jurnal pada rentang ini.</p>
+                    )}
+                    {rows.length > 0 && (
+                      <Text
+                        label="Alasan penghapusan jurnal"
+                        value={reason}
+                        set={setReason}
+                        required
+                      />
+                    )}
+                    {(rows as Journal[]).map((j) => (
+                      <article
+                        key={j.id}
+                        className="space-y-2 rounded border p-4"
+                      >
+                        <h3 className="font-semibold">
+                          {j.date} · {j.teacherName} · {j.subjectName} ·{" "}
+                          {j.className}
+                        </h3>
+                        <p className="whitespace-pre-wrap">{j.material}</p>
+                        <p>
+                          Hadir {j.present}; absen {j.absent} · {j.creditedJtm}{" "}
+                          JTM ·{" "}
+                          {j.inputType === "H_MINUS_1"
+                            ? "H-1 (80%)"
+                            : "Hari H (100%)"}
+                        </p>
+                        <p className="whitespace-pre-wrap text-sm">{j.notes}</p>
+                        <p className="text-sm">
+                          {j.recapAvailable
+                            ? "Rekap siswa tersedia"
+                            : "Belum ada rekap siswa; jumlah diperiksa terhadap standar kelas."}
+                        </p>
+                        <div className="flex gap-2">
+                          <button
+                            className={smallButton}
+                            onClick={() => {
+                              setJournalTab("input");
+                              setEditing(j);
+                              setJournalEditor((v) => v + 1);
+                              setMaterial(j.material);
+                              setPresent(j.present);
+                              setAbsent(j.absent);
+                              setNotes(j.notes);
+                            }}
+                          >
+                            <ActionIcon action="edit" />
+                            Ubah jurnal
+                          </button>
+                          <button
+                            className={smallButton}
+                            disabled={busy || reason.trim().length < 5}
+                            onClick={() => {
+                              if (
+                                window.confirm(
+                                  "Hapus jurnal ini? Kredit JTM akan dibalik dan riwayat penghapusan tetap tersimpan.",
+                                )
+                              )
+                                void run("journal-delete", {
+                                  journalId: j.id,
+                                  version: j.version,
+                                  reason,
+                                });
+                            }}
+                          >
+                            <ActionIcon action="delete" />
+                            Hapus jurnal dan batalkan JTM
+                          </button>
+                        </div>
+                      </article>
+                    ))}
+                  </section>
+                  {pagination}
+                </>
+              ),
+            },
+            {
+              value: "policy",
+              label: "Kebijakan dan Pemblokiran Jurnal",
+              icon: <ActionIcon action="section" />,
+              content: (
+                <>
+                  {admin ? (
+                    <section className={panel}>
+                      <h2 className="font-semibold">
+                        Kebijakan dan pemblokiran jurnal
+                      </h2>
+                      <Text
+                        label="Alasan perubahan kebijakan"
+                        value={reason}
+                        set={setReason}
+                        required
+                      />
+                      <button
+                        className={smallButton}
+                        disabled={busy || reason.trim().length < 5}
+                        onClick={() =>
+                          run("h1", { enabled: !options.h1Enabled, reason })
+                        }
+                      >
+                        <ActionIcon action="toggle" />
+                        {options.h1Enabled ? "Nonaktifkan" : "Aktifkan"} jurnal
+                        H-1
+                      </button>
+                      <FormDialog
+                        title="Blok pengisian jurnal"
+                        onDiscard={() => {
+                          setSubjectId("");
+                          setBlockMessage("");
+                          setReason("");
+                        }}
+                        busy={busy}
+                        success={message}
+                        error={error}
+                      >
+                        <form
+                          className="space-y-3"
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            void run("block", {
+                              subjectId,
+                              dateStart: blockFrom,
+                              dateEnd: blockTo,
+                              message: blockMessage,
+                              active: true,
+                              version: "0",
+                              reason,
+                            });
+                          }}
+                        >
+                          <Select
+                            label="Mata pelajaran"
+                            value={subjectId}
+                            set={setSubjectId}
+                            items={options.subjects}
+                          />
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            <Text
+                              label="Blok mulai"
+                              value={blockFrom}
+                              set={setBlockFrom}
+                              type="date"
+                              required
+                            />
+                            <Text
+                              label="Blok sampai"
+                              value={blockTo}
+                              set={setBlockTo}
+                              type="date"
+                              required
+                            />
+                          </div>
+                          <Text
+                            label="Pesan pemblokiran"
+                            value={blockMessage}
+                            set={setBlockMessage}
+                            required
+                          />
+                          <button
+                            className={buttonClass}
+                            disabled={
+                              busy || !subjectId || reason.trim().length < 5
+                            }
+                          >
+                            <ActionIcon action="save" />
+                            Simpan blok jurnal
+                          </button>
+                        </form>
+                      </FormDialog>
+                      {blocks.map((b) => (
+                        <p className="text-sm" key={b.id}>
+                          {
+                            options.subjects.find((s) => s.id === b.subject_id)
+                              ?.name
+                          }{" "}
+                          · {b.date_start}–{b.date_end}: {b.message} (
+                          {b.active ? "Aktif" : "Nonaktif"}){" "}
+                          <button
+                            className="ui-action ui-action-secondary"
+                            disabled={busy || reason.trim().length < 5}
+                            onClick={() =>
+                              run("block", {
+                                id: b.id,
+                                subjectId: b.subject_id,
+                                dateStart: b.date_start,
+                                dateEnd: b.date_end,
+                                message: b.message,
+                                active: !b.active,
+                                version: b.version,
+                                reason,
+                              })
+                            }
+                          >
+                            <ActionIcon action="toggle" />
+                            {b.active
+                              ? "Nonaktifkan blok jurnal"
+                              : "Aktifkan blok jurnal"}
+                          </button>
+                        </p>
+                      ))}
+                    </section>
+                  ) : (
+                    <section className={panel}>
+                      <h2 className="font-semibold">
+                        Kebijakan dan pemblokiran jurnal
+                      </h2>
+                      <p>
+                        Jurnal H-1{" "}
+                        {options.h1Enabled
+                          ? "aktif dengan bobot 80%"
+                          : "belum aktif"}
+                        . Kegiatan harus memenuhi ketentuan konfirmasi dan batas
+                        waktu pengisian.
+                      </p>
+                      <p>
+                        Pengaturan kebijakan dan pemblokiran dikelola
+                        administrator. Kendala pengisian kegiatan ditampilkan
+                        pada tab Input Jurnal Pembelajaran.
+                      </p>
+                    </section>
+                  )}{" "}
+                </>
+              ),
+            },
+          ]}
+        />
       )}
-      {mode !== "occurrences" && (
-        <div className="flex items-center justify-between">
-          <button
-            className={smallButton}
-            disabled={page <= 1 || loading}
-            onClick={() => setPage((p) => p - 1)}
-          >
-            <ActionIcon action="previous" />
-            Sebelumnya
-          </button>
-          <span className="text-sm">
-            Halaman {page} · {total} catatan
-          </span>
-          <button
-            className={smallButton}
-            disabled={page * 25 >= total || loading}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            <ActionIcon action="next" />
-            Berikutnya
-          </button>
-        </div>
-      )}
+      {mode !== "occurrences" && mode !== "journals" && pagination}
     </div>
   );
 }

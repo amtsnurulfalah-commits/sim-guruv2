@@ -15,13 +15,22 @@ export function Tabs({
   items,
   defaultValue,
   label,
+  value,
+  onValueChange,
 }: {
   items: readonly TabItem[];
   defaultValue: string;
   label: string;
+  value?: string;
+  onValueChange?: (value: string) => void;
 }) {
   const id = useId();
-  const [selected, setSelected] = useState(defaultValue);
+  const [localSelected, setLocalSelected] = useState(defaultValue);
+  const selected = value ?? localSelected;
+  function setSelected(next: string) {
+    if (value === undefined) setLocalSelected(next);
+    onValueChange?.(next);
+  }
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   return (
     <div className="space-y-6">
@@ -29,7 +38,12 @@ export function Tabs({
         role="tablist"
         aria-label={label}
         aria-orientation="horizontal"
-        className="grid grid-cols-2 gap-2 rounded-2xl border bg-muted/60 p-2 lg:grid-cols-4"
+        className={cn(
+          "grid gap-2 rounded-2xl border bg-muted/60 p-2",
+          items.length === 3
+            ? "grid-cols-1 md:grid-cols-3"
+            : "grid-cols-2 lg:grid-cols-4",
+        )}
       >
         {items.map((item, index) => (
           <button

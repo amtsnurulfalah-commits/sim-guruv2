@@ -129,14 +129,12 @@ try {
     for (const width of [320, 768, 1440]) {
       await page.setViewportSize({ width, height: 900 });
       await go("schedules", role);
-      const daily = page
-        .locator("details")
-        .filter({
-          has: page.getByRole("heading", {
-            name: "Jadwal pribadi pada tanggal",
-            exact: true,
-          }),
-        });
+      const daily = page.locator("details").filter({
+        has: page.getByRole("heading", {
+          name: "Jadwal pribadi pada tanggal",
+          exact: true,
+        }),
+      });
       const dailyToggle = daily.locator("summary");
       assert.equal(await daily.getAttribute("open"), null);
       await dailyToggle.focus();
@@ -166,11 +164,9 @@ try {
         await daily.getByLabel("Tanggal (WIB)", { exact: true }).inputValue(),
         "2026-10-20",
       );
-      const filters = page
-        .locator("details")
-        .filter({
-          has: page.getByText("Filter jadwal mingguan", { exact: true }),
-        });
+      const filters = page.locator("details").filter({
+        has: page.getByText("Filter jadwal mingguan", { exact: true }),
+      });
       const filterToggle = filters.locator("summary").first();
       assert.equal(await filters.getAttribute("open"), null);
       await filterToggle.click();
@@ -432,6 +428,157 @@ try {
   await context.locator("summary").waitFor();
   assert.equal(await context.locator("details").getAttribute("open"), null);
   interactions.push({ dashboard: "context-error-retry", passed: true });
+  // Journal panels retain filters and keep administrative policy controls role-scoped.
+  for (const role of ["admin", "guru"]) {
+    for (const width of [320, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await go("journals", role);
+      const filters = page
+        .locator("details")
+        .filter({ hasText: "Tanggal dan filter jurnal" });
+      assert.equal(await filters.getAttribute("open"), null);
+      await filters.locator("summary").focus();
+      await page.keyboard.press("Enter");
+      assert.notEqual(await filters.getAttribute("open"), null);
+      const search = filters.getByLabel("Cari materi/catatan");
+      await search.fill("Materi uji tab");
+      await page.waitForLoadState("networkidle");
+      await filters.locator("summary").click();
+      const inputTab = page.getByRole("tab", {
+        name: "Input Jurnal Pembelajaran",
+        exact: true,
+      });
+      assert.equal(await inputTab.getAttribute("aria-selected"), "true");
+      await inputTab.focus();
+      await page.keyboard.press("ArrowRight");
+      const history = page.getByRole("tabpanel", {
+        name: "Riwayat dan Detail Jurnal",
+        exact: true,
+      });
+      await history.waitFor();
+      assert.equal(
+        await history
+          .getByRole("link", { name: "Unduh CSV", exact: true })
+          .count(),
+        1,
+      );
+      assert.equal(
+        await history
+          .getByRole("button", { name: "Sebelumnya", exact: true })
+          .count(),
+        1,
+      );
+      await page.keyboard.press("End");
+      const policy = page.getByRole("tabpanel", {
+        name: "Kebijakan dan Pemblokiran Jurnal",
+        exact: true,
+      });
+      await policy.waitFor();
+      assert.equal(
+        await policy.getByRole("button", { name: /jurnal H-1/ }).count(),
+        role === "admin" ? 1 : 0,
+      );
+      await page.keyboard.press("Home");
+      assert.equal(await inputTab.getAttribute("aria-selected"), "true");
+      assert.equal(
+        await page
+          .getByRole("button", { name: "Sebelumnya", exact: true })
+          .count(),
+        0,
+      );
+      await filters.locator("summary").click();
+      assert.equal(await search.inputValue(), "Materi uji tab");
+      assert.ok(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth + 1,
+        ),
+      );
+      interactions.push({
+        scenario: "journal-tabs-filter",
+        role,
+        viewport: width,
+        passed: true,
+      });
+    }
+  }
+
+  await page.route("**/api/activities/journals?*", (r) =>
+    r.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        ok: true,
+        data: {
+          items: [
+            {
+              id: "33333333-3333-4333-8333-333333333333",
+              occurrenceId: "44444444-4444-4444-8444-444444444444",
+              userId: "11111111-1111-4111-8111-111111111111",
+              teacherName: "Guru Uji",
+              date: "2026-10-21",
+              className: "VII",
+              subjectName: "IPA",
+              material: "Materi sintetis",
+              present: 20,
+              absent: 0,
+              notes: "Catatan sintetis",
+              inputType: "H_DAY",
+              weight: "1",
+              creditedJtm: "2",
+              version: "1",
+              recapAvailable: false,
+            },
+          ],
+          total: 1,
+        },
+      }),
+    }),
+  );
+  await go("journals");
+  await page
+    .getByRole("tab", { name: "Riwayat dan Detail Jurnal", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Ubah jurnal", exact: true }).click();
+  const journalEditDialog = page.getByRole("dialog", {
+    name: "Jurnal pembelajaran",
+    exact: true,
+  });
+  await journalEditDialog.waitFor();
+  assert.equal(
+    await page
+      .getByRole("tab", {
+        name: "Input Jurnal Pembelajaran",
+        exact: true,
+        includeHidden: true,
+      })
+      .getAttribute("aria-selected"),
+    "true",
+  );
+  assert.equal(
+    await journalEditDialog.getByLabel("Materi pembelajaran").inputValue(),
+    "Materi sintetis",
+  );
+  await page.keyboard.press("Escape");
+  await journalEditDialog.waitFor({ state: "hidden" });
+  await page
+    .getByRole("tab", { name: "Riwayat dan Detail Jurnal", exact: true })
+    .click();
+  const del = page.getByRole("button", {
+    name: "Hapus jurnal dan batalkan JTM",
+    exact: true,
+  });
+  assert.equal(await del.isDisabled(), true);
+  await page
+    .getByLabel("Alasan penghapusan jurnal")
+    .fill("Alasan penghapusan sintetis");
+  assert.equal(await del.isEnabled(), true);
+
+  await page.unroute("**/api/activities/journals?*");
+  interactions.push({
+    scenario: "journal-edit-from-history",
+    prefilledValues: true,
+    deleteReasonAccessible: true,
+    passed: true,
+  });
   if (!process.env.UI_INTERACTIONS_ONLY)
     for (const width of [320, 375, 767, 768, 1024, 1440, 1920]) {
       await page.setViewportSize({ width, height: 900 });

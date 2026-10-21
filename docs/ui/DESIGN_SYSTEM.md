@@ -199,3 +199,7 @@ reduced motion dan pesan status diumumkan kepada pembaca layar.
 Menu hanya memakai prefetch=auto setelah intent; route dinamis disiapkan sampai
 loading boundary. Tidak memakai prefetch=true untuk data seluruh menu. PageSession
 dan otorisasi server tujuan tidak dilewati, dan tidak ada cache bisnis baru.
+
+### Tab Jurnal Pembelajaran
+
+Halaman jurnal memakai komponen `Tabs` bersama dengan tiga panel Input, Riwayat/Detail, serta Kebijakan/Pemblokiran. Susunan satu kolom pada ponsel dan tiga kolom mulai `md` menjaga label lengkap terbaca. Accordion filter terletak sebelum tab agar konteks tanggal dan rentang berlaku bersama. Panel tetap mounted untuk mempertahankan isian; editor yang dibuka dari riwayat memilih tab Input terlebih dahulu. Kontrol kebijakan hanya tersedia bagi administrator, sedangkan guru melihat informasi kebijakan. Paginasi dan alasan penghapusan ditempatkan dalam Riwayat. Detail verifikasi: `docs/verification/TABULASI_JURNAL.md`.
