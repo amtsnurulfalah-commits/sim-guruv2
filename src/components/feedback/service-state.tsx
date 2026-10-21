@@ -9,14 +9,17 @@ export function ServiceState({
   title = "Layanan belum dapat dihubungi",
   message = "Silakan coba kembali. Jika gangguan berlanjut, hubungi administrator.",
   retry,
+  embedded = false,
 }: {
   title?: string;
   message?: string;
   retry?: () => void;
+  embedded?: boolean;
 }) {
+  const Container = embedded ? "section" : "main";
   return (
-    <main
-      id="konten-utama"
+    <Container
+      id={embedded ? undefined : "konten-utama"}
       className="ui-panel mx-4 my-12 max-w-lg space-y-5 sm:mx-auto sm:p-8"
     >
       <Brand />
@@ -34,19 +37,20 @@ export function ServiceState({
           Coba kembali
         </Button>
         <Button asChild variant="outline">
-          <Link href="/akun">
+          <Link prefetch={false} href="/akun">
             <ActionIcon action="open" />
             Ke akun
           </Link>
         </Button>
       </div>
-    </main>
+    </Container>
   );
 }
-export function PageSkeleton() {
+export function PageSkeleton({ embedded = false }: { embedded?: boolean }) {
+  const Container = embedded ? "div" : "main";
   return (
-    <main
-      id="konten-utama"
+    <Container
+      id={embedded ? undefined : "konten-utama"}
       aria-busy="true"
       aria-label="Memuat halaman"
       className="mx-auto max-w-6xl space-y-6 p-6 sm:p-10"
@@ -63,6 +67,6 @@ export function PageSkeleton() {
           />
         ))}
       </div>
-    </main>
+    </Container>
   );
 }

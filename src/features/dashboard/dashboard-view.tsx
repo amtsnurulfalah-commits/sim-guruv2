@@ -36,7 +36,7 @@ export function DashboardView({
             telah lengkap.
           </p>
           <Button asChild variant="outline" className="mt-5">
-            <Link href="/akun">
+            <Link prefetch={false} href="/akun">
               Kelola akun <ArrowRight aria-hidden="true" />
             </Link>
           </Button>
@@ -50,7 +50,7 @@ export function DashboardView({
               </p>
             </div>
             <Button asChild variant="outline">
-              <Link href="/admin/pemulihan">
+              <Link prefetch={false} href="/admin/pemulihan">
                 Buka pemulihan <ArrowRight aria-hidden="true" />
               </Link>
             </Button>

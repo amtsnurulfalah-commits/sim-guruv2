@@ -175,7 +175,7 @@ export function LoginForm() {
         membutuhkan pemulihan, hubungi administrator madrasah.
       </p>
       <p className="text-sm">
-        <Link href="/lupa-password" className="underline">
+        <Link prefetch={false} href="/lupa-password" className="underline">
           Lupa kata sandi?
         </Link>
       </p>

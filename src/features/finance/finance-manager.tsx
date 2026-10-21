@@ -241,9 +241,17 @@ export function FinanceManager({
                 : "Honorarium saya"}
         </h1>
         <nav className="flex flex-wrap gap-4 text-sm">
-          <Link href={root}>Estimasi / rekap</Link>
-          <Link href={root + "/riwayat"}>Riwayat dan slip</Link>
-          {admin && <Link href={root + "/operasi"}>Libur / transport</Link>}
+          <Link prefetch={false} href={root}>
+            Estimasi / rekap
+          </Link>
+          <Link prefetch={false} href={root + "/riwayat"}>
+            Riwayat dan slip
+          </Link>
+          {admin && (
+            <Link prefetch={false} href={root + "/operasi"}>
+              Libur / transport
+            </Link>
+          )}
         </nav>
       </header>
       <div className="flex flex-wrap items-end gap-3">
@@ -468,7 +476,10 @@ export function FinanceManager({
           <p className="break-all text-xs">Checksum: {slip.checksum}</p>
           {verifyLink && (
             <p className="break-all text-sm">
-              Verifikasi: <a href={verifyLink}>{verifyLink}</a>
+              Verifikasi:{" "}
+              <Link prefetch={false} href={verifyLink}>
+                {verifyLink}
+              </Link>
             </p>
           )}
           <div className="flex flex-wrap gap-3 print:hidden">

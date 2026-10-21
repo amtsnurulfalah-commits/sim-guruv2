@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { TableRegion } from "@/components/ui/table-region";
@@ -262,8 +263,12 @@ export function ExamManager({
         +5 menit, paling lambat pada tanggal akhir periode.
       </p>
       <nav className="flex flex-wrap gap-3 text-primary">
-        <a href="/kehadiran">Jam kehadiran</a>
-        <a href="/absensi-siswa/input">Rekap siswa</a>
+        <Link prefetch={false} href="/kehadiran">
+          Jam kehadiran
+        </Link>
+        <Link prefetch={false} href="/absensi-siswa/input">
+          Rekap siswa
+        </Link>
       </nav>
       <div className="flex flex-wrap gap-3">
         <label>

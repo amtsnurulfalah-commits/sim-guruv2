@@ -488,7 +488,7 @@ export function AccountLifecycle({
       )}
       {isAdmin && (
         <p>
-          <Link href="/admin/pemulihan" className="underline">
+          <Link prefetch={false} href="/admin/pemulihan" className="underline">
             Tinjau permintaan pemulihan akun
           </Link>
         </p>

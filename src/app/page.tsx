@@ -28,7 +28,7 @@ export default function HomePage() {
     <div className="min-h-svh">
       <header className="border-b bg-card">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-5 sm:px-8">
-          <Link href="/" aria-label="SiM-Guru, beranda">
+          <Link prefetch={false} href="/" aria-label="SiM-Guru, beranda">
             <Brand />
           </Link>
           <Badge className="border-primary/15 bg-primary/5 text-primary">
@@ -61,12 +61,13 @@ export default function HomePage() {
               Anda.
             </p>
             <Button asChild size="lg" className="mt-8">
-              <Link href="/login">
+              <Link prefetch={false} href="/login">
                 Masuk ke SiM-Guru <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
             <p className="mt-5 text-sm">
               <Link
+                prefetch={false}
                 href="/kesiapan"
                 className="font-semibold text-primary underline underline-offset-4"
               >

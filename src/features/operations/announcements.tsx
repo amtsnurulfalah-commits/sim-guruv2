@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { useCallback, useEffect, useState } from "react";
@@ -36,9 +37,14 @@ export function Announcements() {
           <h2 className="text-lg font-bold">{a.title}</h2>
           <p className="whitespace-pre-wrap">{a.body}</p>
           {a.cta_url && (
-            <a href={a.cta_url} rel="noopener noreferrer" className="underline">
+            <Link
+              prefetch={false}
+              href={a.cta_url}
+              rel="noopener noreferrer"
+              className="underline"
+            >
               {a.cta_text}
-            </a>
+            </Link>
           )}
           {a.canDismiss && (
             <button

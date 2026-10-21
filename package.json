@@ -27,7 +27,8 @@
     "db:verify-mail-worker": "node --conditions=react-server --import tsx scripts/verify-mail-worker.ts",
     "migration:legacy": "node --import tsx scripts/migrate-legacy.ts",
     "backup:database": "node --import tsx scripts/backup-database.ts",
-    "test:ui": "node tests/ui/verify.mjs"
+    "test:ui": "node tests/ui/verify.mjs",
+    "test:navigation": "node tests/navigation/verify.mjs"
   },
   "dependencies": {
     "@next/env": "16.4.2",

@@ -25,6 +25,7 @@ export function ModuleCards({
           </p>
           {linked && (
             <Link
+              prefetch={false}
               href={module.href ?? "/modul/" + module.slug}
               className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring"
             >

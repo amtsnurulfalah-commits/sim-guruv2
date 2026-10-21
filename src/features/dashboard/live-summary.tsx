@@ -70,7 +70,7 @@ export function LiveSummary() {
             >
               <p>Jam masuk · WIB</p>
               <p>Keluar: {value.attendance?.actualOut ?? "Belum tercatat"}</p>
-              <Link className="ui-text-link" href="/kehadiran">
+              <Link prefetch={false} className="ui-text-link" href="/kehadiran">
                 Buka kehadiran
               </Link>
             </MetricCard>
@@ -96,7 +96,11 @@ export function LiveSummary() {
               <p className="text-muted-foreground">
                 Perhitungan berjalan, dapat berubah sampai finalisasi.
               </p>
-              <Link className="ui-text-link" href="/honorarium">
+              <Link
+                prefetch={false}
+                className="ui-text-link"
+                href="/honorarium"
+              >
                 Rincian honorarium
               </Link>
             </MetricCard>
@@ -132,7 +136,7 @@ export function LiveSummary() {
                 }{" "}
                 jurnal / BAP perlu dilengkapi
               </p>
-              <Link className="ui-text-link" href="/kegiatan">
+              <Link prefetch={false} className="ui-text-link" href="/kegiatan">
                 Buka kegiatan
               </Link>
             </MetricCard>
@@ -173,7 +177,11 @@ export function LiveSummary() {
                 {value.admin.failedMessages} email perlu ditinjau ·{" "}
                 {value.admin.failedJobs} pekerjaan gagal
               </p>
-              <Link className="underline" href="/admin/operasional">
+              <Link
+                prefetch={false}
+                className="underline"
+                href="/admin/operasional"
+              >
                 Buka pemantauan operasional
               </Link>
             </section>

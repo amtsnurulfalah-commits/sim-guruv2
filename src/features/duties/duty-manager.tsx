@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { FormDialog } from "@/components/ui/dialog";
@@ -202,18 +203,22 @@ export function DutyManager({
         </p>
       </header>
       <nav className="flex flex-wrap gap-3 text-sm">
-        <a className="underline" href="/kehadiran">
+        <Link prefetch={false} className="underline" href="/kehadiran">
           Kehadiran dan izin
-        </a>
-        <a className="underline" href="/absensi-siswa/input">
+        </Link>
+        <Link
+          prefetch={false}
+          className="underline"
+          href="/absensi-siswa/input"
+        >
           Rekap siswa
-        </a>
-        <a className="underline" href="/kegiatan">
+        </Link>
+        <Link prefetch={false} className="underline" href="/kegiatan">
           Konfirmasi KBM
-        </a>
-        <a className="underline" href="/jurnal">
+        </Link>
+        <Link prefetch={false} className="underline" href="/jurnal">
           Jurnal KBM
-        </a>
+        </Link>
       </nav>
       <div role="alert" aria-live="polite">
         {error && <p className="rounded bg-red-50 p-3 text-red-800">{error}</p>}

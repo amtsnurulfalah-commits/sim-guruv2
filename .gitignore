@@ -10,3 +10,7 @@ coverage/
 *.log
 
 supabase/.temp/
+
+# Generated only by the disposable Next navigation fixture.
+tests/navigation/next-env.d.ts
+tests/navigation/.next*/
