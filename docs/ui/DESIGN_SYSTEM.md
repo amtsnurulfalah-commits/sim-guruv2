@@ -113,3 +113,18 @@ paragraf tetap berupa tautan; tidak semua teks tautan harus menjadi tombol.
 Target sentuh minimal 44px, focus ring, disabled state, serta reduced motion
 mengikuti token yang sudah ada. Hindari animasi dekoratif dan tombol tanpa label
 kecuali kontrol ikon yang sudah memiliki nama aksesibel, seperti tutup dialog.
+
+## Susunan Dashboard dan konteks harian
+
+Dashboard menempatkan kartu keamanan akun tepat di atas Konteks hari ini,
+diikuti ringkasan kegiatan. Daftar kartu Modul ruang kerja dihapus dari
+Dashboard; navigasi sidebar dan katalog pada Panduan aplikasi tetap tersedia.
+
+Konteks hari ini mempertahankan ringkasan tanggal, hari libur, KBM, dan ujian.
+Rincian memakai accordion satu bagian berbasis `details`/`summary` native,
+tertutup saat pertama tampil. Keyboard Enter/Spasi mengubah keadaan; ikon panah
+dekoratif mengikuti keadaan buka dan menghormati reduced motion. Rincian berisi
+catatan kalender, semester dan rentang tanggal, pengaturan khusus, status kegiatan,
+dan alasan status dari respons API yang sudah ada. Kode versi internal tidak ditampilkan.
+Saat muat ulang, data lama dibersihkan, status loading ditampilkan, dan tombol
+retry dinonaktifkan selama permintaan berjalan.
