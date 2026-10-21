@@ -151,3 +151,10 @@ export const userStatusLabels: Record<UserDto["status"], string> = {
   disabled: "Nonaktif",
   archived: "Diarsipkan",
 };
+
+/** Validate the public pending-request DTO before rendering decisions. */
+export const recoveryRequestsSchema = z.array(z.object({
+  id: z.uuid(), userId: z.uuid(), version: versionSchema,
+  username: z.string(), fullName: z.string(), createdAt: z.iso.datetime({offset:true}),
+  reason: z.string().nullable(),
+})).max(100);

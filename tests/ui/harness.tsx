@@ -8,6 +8,8 @@ import {
   ActionForm,
   Field,
 } from "../../src/features/auth/account-lifecycle";
+import { AdminRecovery } from "../../src/features/auth/admin-recovery";
+import { RecoveryForm, ActivationForm } from "../../src/features/auth/recovery-form";
 import { LoginForm } from "../../src/features/auth/login-form";
 import GuidePage from "../../src/app/kesiapan/page";
 import HomePage from "../../src/app/page";
@@ -170,6 +172,7 @@ function Lab() {
   );
 }
 const components: Record<string, React.ReactNode> = {
+  recoveryAdmin: <><h1 className="mb-6 text-3xl">Verifikasi pemulihan akun</h1><AdminRecovery /></>,
   account: <AccountLifecycle isAdmin={admin} onboarding={false} />,
   onboarding: <AccountLifecycle isAdmin={false} onboarding />,
   lab: <Lab />,
@@ -208,7 +211,7 @@ const components: Record<string, React.ReactNode> = {
 };
 createRoot(document.getElementById("root")!).render(
   <>
-    {view === "login" ? (
+    {view === "recovery" || view === "activation" ? <AuthLayout title={view === "recovery" ? "Pemulihan akun" : "Aktivasi akun"} description="Pulihkan akses akun madrasah Anda.">{view === "recovery" ? <RecoveryForm /> : <ActivationForm />}</AuthLayout> : view === "login" ? (
       <AuthLayout
         title="Masuk ke SiM-Guru"
         description="Gunakan username dan kata sandi akun madrasah Anda."

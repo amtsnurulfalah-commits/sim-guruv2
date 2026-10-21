@@ -26,6 +26,17 @@ import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { emailDispatchSchema, profileDtoSchema, profileSchema, changePasswordSchema, questionSchema, emailRequestSchema, verifyOtpSchema, type ProfileDto } from "@/lib/accounts/schemas";
 import { validateAccount } from "@/lib/accounts/client-validation";
 const AccountActions = createContext<{busy:boolean; claim:()=>boolean; release:()=>void} | null>(null);
+/** Serializes related recovery forms without changing standalone ActionForm callers. */
+export function AccountActionScope({ children, blocked = false }: {children: ReactNode; blocked?: boolean}) {
+  const [busy, setBusy] = useState(false);
+  const pending = useRef(false);
+  const mounted = useRef(false);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+  return <AccountActions.Provider value={{busy: busy || blocked, claim: () => {
+    if (pending.current || blocked) return false;
+    pending.current = true; setBusy(true); return true;
+  }, release: () => { pending.current = false; if (mounted.current) setBusy(false); }}}>{children}</AccountActions.Provider>;
+}
 type ActionResult = {message:string; tone:"success" | "info" | "error"};
 export async function accountRequest<T>(
   action: string,
