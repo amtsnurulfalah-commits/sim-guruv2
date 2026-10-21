@@ -5,8 +5,10 @@ export function usePathname() {
 export default function Link({
   href,
   children,
+  prefetch,
   ...props
-}: React.ComponentProps<"a">) {
+}: React.ComponentProps<"a"> & { prefetch?: boolean }) {
+  void prefetch;
   return (
     <a href={href} {...props}>
       {children}

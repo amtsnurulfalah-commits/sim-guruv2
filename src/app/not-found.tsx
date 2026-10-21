@@ -20,7 +20,7 @@ export default function NotFound() {
         melanjutkan pekerjaan.
       </p>
       <Button asChild>
-        <Link href="/">
+        <Link prefetch={false} href="/">
           <ActionIcon action="open" />
           Kembali ke beranda
         </Link>

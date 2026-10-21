@@ -49,6 +49,7 @@ export function Breadcrumbs({
       className="mb-6 flex min-w-0 flex-wrap items-center gap-2 text-xs leading-6 text-muted-foreground"
     >
       <Link
+        prefetch={false}
         href={ready ? "/dashboard" : "/"}
         className="inline-flex min-h-11 items-center gap-2 rounded-md hover:text-primary"
       >
@@ -59,6 +60,7 @@ export function Breadcrumbs({
       {currentModule && pathname !== currentModule.href && (
         <>
           <Link
+            prefetch={false}
             href={currentModule.href!}
             className="inline-flex min-h-11 items-center rounded-md hover:text-primary"
           >

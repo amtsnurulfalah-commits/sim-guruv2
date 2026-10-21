@@ -161,3 +161,21 @@ muat ulang, dan tambah jadwal tetap di luar accordion filter. Menutup accordion
 tidak mereset tanggal atau filter dan tidak mengubah query API. Enter/Spasi,
 focus ring, target minimum 48px, ikon panah dekoratif, dan reduced motion
 mengikuti pola accordion native yang sudah digunakan Dashboard.
+
+## Navigasi antarmodul tanpa memasang ulang shell
+
+Halaman terproteksi berada di route group `src/app/(workspace)` dengan layout
+bersama. URL publik tetap sama; API dan halaman login/aktivasi/pemulihan tetap
+pada root. AuthenticatedWorkspace dan SessionBoundary dipasang oleh layout,
+bukan oleh setiap page. SessionPanel memakai konteks sesi dari layout tersebut.
+
+Sidebar, topbar, drawer, preferensi ciut, pencarian menu dan pemantau sesi tetap
+terpasang ketika konten tujuan berubah. Loading/error di group atau page hanya
+mengganti konten utama; gunakan PageSkeleton/ServiceState dengan prop embedded
+agar tidak membuat main dan id konten-utama ganda.
+
+Tautan internal memakai next/link dengan prefetch=false agar navigasi hanya
+meminta halaman yang dipilih. Tautan unduhan API dan jangkar field tetap native.
+Perpindahan halaman tetap menjalankan pageSession pada server tujuan. Poll sesi,
+activity touch, pemeriksaan business/onboarding, maintenance, broadcast logout,
+expiry, dan hard redirect pada pergantian identitas tetap dipertahankan.

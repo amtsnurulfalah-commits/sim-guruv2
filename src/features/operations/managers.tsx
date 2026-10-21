@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { statusLabel } from "@/lib/ui-status";
@@ -310,17 +311,21 @@ export function OperationsManager() {
       <section className={panel}>
         <h2 className="font-bold">Pembatasan kegiatan</h2>
         <p>
-          <a className="underline" href="/admin/jurnal">
+          <Link prefetch={false} className="underline" href="/admin/jurnal">
             Blok jurnal mata pelajaran
-          </a>{" "}
+          </Link>{" "}
           ·{" "}
-          <a className="underline" href="/admin/acara">
+          <Link prefetch={false} className="underline" href="/admin/acara">
             Blok jurnal acara
-          </a>{" "}
+          </Link>{" "}
           ·{" "}
-          <a className="underline" href="/admin/honorarium/operasi">
+          <Link
+            prefetch={false}
+            className="underline"
+            href="/admin/honorarium/operasi"
+          >
             Blok transport dan libur
-          </a>
+          </Link>
         </p>
       </section>
       <section className={panel}>

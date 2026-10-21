@@ -17,6 +17,7 @@ export default async function Page() {
     >
       <ActivationForm />
       <Link
+        prefetch={false}
         href="/login"
         className="inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4"
       >

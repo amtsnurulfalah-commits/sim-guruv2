@@ -26,5 +26,5 @@ export default defineConfig([
       message: "Komponen UI tidak boleh mengimpor modul server; gunakan layanan pada Server Component/Action.",
     }] }] },
   },
-  globalIgnores([".next/**", "out/**", "coverage/**", "next-env.d.ts"]),
+  globalIgnores(["**/.next*/**", "out/**", "coverage/**", "**/next-env.d.ts"]),
 ]);

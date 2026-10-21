@@ -40,7 +40,7 @@ export default function ReadinessPage() {
             </li>
           </ol>
           <Button asChild variant="outline">
-            <Link href="/login">
+            <Link prefetch={false} href="/login">
               <ActionIcon action="access" />
               Masuk ke SiM-Guru
             </Link>
@@ -60,7 +60,7 @@ export default function ReadinessPage() {
             kode OTP, atau tautan pemulihan akun.
           </p>
           <Button asChild variant="outline">
-            <Link href="/lupa-password">
+            <Link prefetch={false} href="/lupa-password">
               <ActionIcon action="open" />
               Buka pemulihan akun
             </Link>

@@ -17,7 +17,11 @@ export function AuthLayout({
         className="relative hidden flex-col justify-between overflow-hidden bg-primary p-12 text-white lg:flex xl:p-16"
         aria-label="Tentang SiM-Guru"
       >
-        <Link href="/" className="text-xl font-bold tracking-tight">
+        <Link
+          prefetch={false}
+          href="/"
+          className="text-xl font-bold tracking-tight"
+        >
           SiM-Guru
           <span className="mt-1 block text-xs font-normal tracking-wide text-white/80">
             SISTEM INFORMASI GURU
@@ -62,7 +66,7 @@ export function AuthLayout({
       <section className="flex min-w-0 flex-col justify-center px-5 py-10 sm:px-10 lg:px-14">
         <div className="mx-auto w-full max-w-lg">
           <div className="mb-9 lg:hidden">
-            <Link href="/">
+            <Link prefetch={false} href="/">
               <Brand />
             </Link>
           </div>

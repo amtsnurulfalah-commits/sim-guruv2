@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { FormDialog } from "@/components/ui/dialog";
@@ -351,18 +352,22 @@ export function ActivityWorkspace({
         </p>
       </header>
       <nav className="flex flex-wrap gap-3 text-sm" aria-label="Modul kegiatan">
-        <a className="underline" href="/kegiatan">
+        <Link prefetch={false} className="underline" href="/kegiatan">
           Konfirmasi KBM
-        </a>
-        <a className="underline" href="/kehadiran">
+        </Link>
+        <Link prefetch={false} className="underline" href="/kehadiran">
           Kehadiran dan izin
-        </a>
-        <a className="underline" href="/absensi-siswa/input">
+        </Link>
+        <Link
+          prefetch={false}
+          className="underline"
+          href="/absensi-siswa/input"
+        >
           Rekap siswa
-        </a>
-        <a className="underline" href="/jurnal">
+        </Link>
+        <Link prefetch={false} className="underline" href="/jurnal">
           Jurnal KBM
-        </a>
+        </Link>
       </nav>
       {error && <p role="alert">{error}</p>}
       {message && <p role="status">{message}</p>}

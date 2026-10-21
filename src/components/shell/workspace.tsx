@@ -125,6 +125,7 @@ export function Workspace({
       !matches(label) &&
       !filteredLinks.some((module) => module.title === label) ? null : (
         <Link
+          prefetch={false}
           key={href}
           href={href}
           onClick={() => {
@@ -240,13 +241,17 @@ export function Workspace({
         <div className="flex h-20 shrink-0 items-center justify-center border-b px-4">
           {collapsed ? (
             <Link
+              prefetch={false}
               href={ready ? "/dashboard" : session ? "/akun" : "/"}
               aria-label="SiM-Guru, halaman utama"
             >
               <BookOpen aria-hidden="true" className="size-7 text-primary" />
             </Link>
           ) : (
-            <Link href={ready ? "/dashboard" : session ? "/akun" : "/"}>
+            <Link
+              prefetch={false}
+              href={ready ? "/dashboard" : session ? "/akun" : "/"}
+            >
               <Brand />
             </Link>
           )}
@@ -315,7 +320,7 @@ export function Workspace({
               </Button>
             ) : (
               <Button asChild variant="outline">
-                <Link href="/login">
+                <Link prefetch={false} href="/login">
                   <ActionIcon action="access" />
                   Masuk
                 </Link>
