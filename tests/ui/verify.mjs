@@ -118,6 +118,82 @@ try {
     );
     await page.waitForLoadState("networkidle");
   }
+  // Dashboard: native disclosure, keyboard operation, section order and retry.
+  for (const role of ["admin", "guru"]) {
+    for (const width of [320, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await go("dashboard", role);
+      const context = page.getByRole("region", {
+        name: "Konteks hari ini",
+        exact: true,
+      });
+      const details = context.locator("details");
+      const summary = context.locator("summary");
+      assert.equal(await details.getAttribute("open"), null);
+      assert.equal(
+        await page
+          .getByRole("heading", { name: "Modul ruang kerja", exact: true })
+          .count(),
+        0,
+      );
+      assert.ok(
+        await context.evaluate((element) =>
+          element.previousElementSibling?.textContent.includes(
+            "Akun sudah terlindungi",
+          ),
+        ),
+      );
+      await summary.focus();
+      await page.keyboard.press("Enter");
+      assert.notEqual(await details.getAttribute("open"), null);
+      await context.getByText("Catatan kalender", { exact: true }).waitFor();
+      assert.ok(
+        await context.getByText("Semester aktif", { exact: true }).isVisible(),
+      );
+      assert.ok(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth + 1,
+        ),
+      );
+      await page.keyboard.press("Space");
+      assert.equal(await details.getAttribute("open"), null);
+      interactions.push({
+        dashboard: "context-accordion",
+        role,
+        viewport: width,
+        passed: true,
+      });
+    }
+  }
+  const beforeContextFailure = consoleErrors.length;
+  await page.route("**/api/day-context?*", (route) =>
+    route.fulfill({
+      status: 503,
+      contentType: "application/json",
+      body: JSON.stringify({
+        ok: false,
+        error: { message: "Layanan konteks tidak tersedia untuk pengujian." },
+      }),
+    }),
+  );
+  await go("dashboard");
+  const context = page.getByRole("region", {
+    name: "Konteks hari ini",
+    exact: true,
+  });
+  await context
+    .getByText("Konteks hari belum dapat dimuat.", { exact: true })
+    .waitFor();
+  assert.deepEqual(consoleErrors.splice(beforeContextFailure), [
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+  ]);
+  await page.unroute("**/api/day-context?*");
+  await context
+    .getByRole("button", { name: "Muat ulang konteks", exact: true })
+    .click();
+  await context.locator("summary").waitFor();
+  assert.equal(await context.locator("details").getAttribute("open"), null);
+  interactions.push({ dashboard: "context-error-retry", passed: true });
   if (!process.env.UI_INTERACTIONS_ONLY)
     for (const width of [320, 375, 767, 768, 1024, 1440, 1920]) {
       await page.setViewportSize({ width, height: 900 });

@@ -3,7 +3,6 @@ import { LiveSummary } from "./live-summary";
 import { DayContextCard } from "@/features/calendar/day-context-card";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ModuleCards } from "./module-cards";
 import type { dashboardDto } from "@/server/dashboard/query";
 export function DashboardView({
   data,
@@ -25,8 +24,6 @@ export function DashboardView({
             : "Ruang kerja guru. Pantau jadwal, catat kehadiran, lengkapi jurnal, dan lihat honorarium Anda."}
         </p>
       </header>
-      <DayContextCard />
-      <LiveSummary />
       <section
         className="grid gap-5 lg:grid-cols-2"
         aria-label="Akses yang tersedia"
@@ -60,20 +57,8 @@ export function DashboardView({
           </section>
         )}
       </section>
-      <section
-        className="page-section rounded-2xl border bg-card p-5"
-        aria-labelledby="module-heading"
-      >
-        <div className="mb-5 space-y-2">
-          <h2 id="module-heading" className="text-xl font-bold">
-            Modul ruang kerja
-          </h2>
-          <p className="text-sm leading-7 text-muted-foreground">
-            Pilih modul untuk melanjutkan pekerjaan sesuai kewenangan akun Anda.
-          </p>
-        </div>
-        <ModuleCards items={data.modules} />
-      </section>
+      <DayContextCard />
+      <LiveSummary />
     </div>
   );
 }
