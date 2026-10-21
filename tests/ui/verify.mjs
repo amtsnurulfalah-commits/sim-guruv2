@@ -50,6 +50,7 @@ try {
     consoleErrors = [],
     matrix = [],
     interactions = [];
+  page.setDefaultTimeout(20000);
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text());
@@ -123,6 +124,7 @@ try {
       `http://127.0.0.1:4319/?view=${view}&role=${role}&path=${encodeURIComponent(paths[view] ?? "/dashboard")}`,
     );
     await page.waitForLoadState("networkidle");
+    if (process.env.UI_TRACE_PROGRESS) console.log("UI", role, view);
   }
   // Schedule accordions keep selected dates/filters and preserve server requests.
   for (const role of ["admin", "guru"]) {

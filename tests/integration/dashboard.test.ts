@@ -10,6 +10,7 @@ import type {
   SqlParameter,
 } from "../../scripts/lib/sql-database";
 import { getPasswordService } from "../../src/server/auth/passwords";
+import { CalendarService } from "../../src/server/calendar/service";
 import { LocalAuthService } from "../../src/server/auth/service";
 import { createDashboardHandler } from "../../src/server/dashboard/http";
 const password = "H9!vL4#qT8@bP2$wF7&z";
@@ -149,6 +150,31 @@ test("Tahap1.6 dashboard boundaries with real local sessions", async (t) => {
       );
     },
   );
+  await t.test("SH06 context and summary begin independently after session verification and preserve the response contract", {timeout:10000}, async () => {
+    const calendar = new CalendarService(db);
+    let summaryStarted = false;
+    let contextStarted = false;
+    let releaseContext!: () => void;
+    const contextReady = new Promise<void>(resolve => { releaseContext = resolve; });
+    const context = await calendar.context(admin, {date:"2026-10-21"});
+    t.mock.method(calendar,"context",async () => {
+      contextStarted = true;
+      await contextReady;
+      return context;
+    });
+    const extended = createDashboardHandler({config:()=>config,service:async()=>auth,calendar:async()=>calendar,summary:async()=>{
+      summaryStarted = true;
+      releaseContext();
+      return {date:"2026-10-21",tasks:[],planned:[]};
+    }});
+    const response = await extended(request(admin));
+    assert.equal(response.status,200);
+    const data=(await response.json()).data;
+    assert.equal(contextStarted,true); assert.equal(summaryStarted,true);
+    assert.equal(data.dayContext.date,"2026-10-21");
+    assert.equal(data.activitySummaryAvailable,true);assert.equal(data.financeSummaryAvailable,true);
+    assert.deepEqual(data.summary.tasks,[]);
+  });
   await t.test(
     "SH05 cross-origin and revoked sessions rejected; backend error sanitized",
     async () => {

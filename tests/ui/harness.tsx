@@ -177,6 +177,7 @@ const components: Record<string, React.ReactNode> = {
     <DashboardView
       data={{
         user: { fullName: session.user.fullName, role: session.user.role },
+        date: new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Jakarta"}).format(new Date()),
         dateLabel: "Selasa, 20 Oktober 2026",
         modules: modulesFor(session.user.role),
         activitySummaryAvailable: false,

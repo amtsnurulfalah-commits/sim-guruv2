@@ -4,47 +4,57 @@ import { ActionIcon } from "@/components/ui/action-icon";
 import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { masterRequest } from "@/features/masters/api";
-import { wibDate, type DayContext } from "@/lib/calendar/schemas";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
+import { z } from "zod";
+import { wibDate } from "@/lib/calendar/schemas";
+const cardDaySchema = z.object({
+  date: z.iso.date(), isHoliday: z.boolean(), kbmEnabled: z.boolean(), examEnabled: z.boolean(),
+  calendarEntry: z.object({description:z.string().nullable()}).nullable(),
+  activeAcademicPeriod: z.object({label:z.string(),semester:z.number(),dateStart:z.iso.date(),dateEnd:z.iso.date()}).nullable(),
+  override: z.object({}).nullable(), reasons:z.array(z.string()),
+});
 const reasonLabels: Record<string, string> = {
   NO_ACADEMIC_PERIOD: "Belum ada semester aktif yang mencakup tanggal ini.",
   HOLIDAY:
     "Tanggal ditandai sebagai hari libur; KBM dan ujian reguler dinonaktifkan.",
   SUNDAY_DEFAULT_OFF: "Hari Minggu tidak otomatis menjadi hari kegiatan.",
 };
-export function DayContextCard() {
-  const [day, setDay] = useState<DayContext | null>(null),
-    [error, setError] = useState(false),
+export function DayContextCard({ date = wibDate() }: { date?: string }) {
+  const [day, setDay] = useState<z.infer<typeof cardDaySchema> | null>(null),
+    [error, setError] = useState(""),
     [revision, setRevision] = useState(0);
   useEffect(() => {
     let active = true;
     const c = new AbortController();
-    masterRequest<DayContext>(
-      "/api/day-context?date=" + wibDate(),
+    masterRequest<unknown>(
+      "/api/day-context?date=" + date,
       "GET",
       undefined,
       c.signal,
     )
       .then((v) => {
         if (active) {
-          setDay(v);
-          setError(false);
+          const parsed = cardDaySchema.safeParse(v);
+          if (!parsed.success) throw new Error("Data konteks hari belum sesuai. Muat ulang atau hubungi administrator.");
+          setDay(parsed.data);
+          setError("");
         }
       })
-      .catch(() => {
+      .catch((e) => {
         if (active) {
           setDay(null);
-          setError(true);
+          setError(e instanceof Error ? e.message : "Konteks hari belum dapat dimuat.");
         }
       });
     return () => {
       active = false;
       c.abort();
     };
-  }, [revision]);
+  }, [revision, date]);
   return (
     <section
       aria-labelledby="dashboard-day-context-title"
-      className="space-y-3 rounded-2xl border bg-card p-6"
+      className="min-w-0 space-y-3 rounded-2xl border bg-card p-4 sm:p-6"
     >
       <h2 id="dashboard-day-context-title" className="text-lg font-bold">
         Konteks hari ini
@@ -66,8 +76,8 @@ export function DayContextCard() {
                 className="size-4 shrink-0 transition-transform group-open:rotate-180 motion-reduce:transition-none"
               />
             </summary>
-            <div className="space-y-4 border-t px-4 py-4">
-              <dl className="grid gap-4 text-sm sm:grid-cols-2">
+            <div className="min-w-0 space-y-4 [overflow-wrap:anywhere] border-t px-4 py-4">
+              <dl className="grid min-w-0 gap-4 text-sm sm:grid-cols-2 [&>div]:min-w-0">
                 <div>
                   <dt className="font-semibold">Catatan kalender</dt>
                   <dd className="mt-1 leading-6 text-muted-foreground">
@@ -117,10 +127,11 @@ export function DayContextCard() {
                 <div className="border-t pt-4 text-sm">
                   <h3 className="font-semibold">Keterangan status hari</h3>
                   <ul className="mt-2 list-disc space-y-1 pl-5 leading-6 text-muted-foreground">
-                    {day.reasons.map((reason) => (
+                    {[...new Set(day.reasons)].map((reason) => (
                       <li key={reason}>
-                        {reasonLabels[reason] ??
-                          "Konteks hari mengikuti kebijakan kalender yang berlaku."}
+                        {Object.hasOwn(reasonLabels, reason)
+                          ? reasonLabels[reason]
+                          : "Konteks hari mengikuti kebijakan kalender yang berlaku."}
                       </li>
                     ))}
                   </ul>
@@ -138,13 +149,14 @@ export function DayContextCard() {
           {error ? "Konteks hari belum dapat dimuat." : "Memuat konteks hari…"}
         </p>
       )}
+      {error && <ErrorFeedback message={error} />}
       <button
         className="ui-action ui-action-secondary"
         type="button"
         disabled={!day && !error}
         onClick={() => {
           setDay(null);
-          setError(false);
+          setError("");
           setRevision((v) => v + 1);
         }}
       >
