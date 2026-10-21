@@ -18,7 +18,7 @@ export function FormFeedback({
       role="alert"
       className="form-feedback-error sm:col-span-2"
     >
-      <p className="flex items-start gap-2 font-semibold">
+      <p className="flex items-start gap-2 whitespace-pre-line break-words font-semibold">
         <CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
         {message}
       </p>

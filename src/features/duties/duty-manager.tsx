@@ -1,4 +1,5 @@
 "use client";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { FormDialog } from "@/components/ui/dialog";
@@ -201,8 +202,8 @@ export function DutyManager({
           dikonfirmasi kembali. Klaim pribadi tidak memberi kredit.
         </p>
       </header>
-      <div role="alert" aria-live="polite">
-        {error && <p className="rounded bg-red-50 p-3 text-red-800">{error}</p>}
+      <div>
+        {error && <ErrorFeedback message={error} />}
         {message && (
           <p className="rounded bg-green-50 p-3 text-green-800">{message}</p>
         )}

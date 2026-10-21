@@ -1,4 +1,5 @@
 "use client";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { EmptyState } from "@/components/feedback/feature-state";
@@ -172,11 +173,7 @@ export function EventManager({
           onChange={(e) => setDate(e.target.value)}
         />
       </label>
-      {error && (
-        <p role="alert" className="text-red-700">
-          {error}
-        </p>
-      )}
+      {error && <ErrorFeedback message={error} />}
       {message && (
         <p role="status" className="text-green-800">
           {message}

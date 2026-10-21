@@ -1,4 +1,5 @@
 "use client";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 import { ChevronDown } from "lucide-react";
 
@@ -134,11 +135,7 @@ function Picker({
           ))}
         </select>
       </label>
-      {error && (
-        <p role="status" className="text-sm">
-          {error}
-        </p>
-      )}
+      {error && <ErrorFeedback message={error} />}
       <div className="flex gap-2">
         <Button
           type="button"
@@ -450,12 +447,7 @@ function Editor({
           ))}
         </div>
       )}
-      {error && (
-        <p role="alert" className="text-sm">
-          {error} Jika terjadi konflik versi, tutup formulir dan muat ulang
-          data.
-        </p>
-      )}
+      {error && <ErrorFeedback message={error} />}
     </form>
   );
 }
@@ -1171,7 +1163,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
         )}
       </section>
       {message && <p role="status">{message}</p>}
-      {error && !open && !targets && <p role="alert">{error}</p>}
+      {error && !open && !targets && <ErrorFeedback message={error} />}
       <ManagedDialog
         ref={editor}
         aria-labelledby="schedule-editor-title"
@@ -1295,11 +1287,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             </fieldset>
           </form>
         )}
-        {error && (
-          <p className="mt-4 text-sm" role="alert">
-            {error} Tutup dan muat ulang bila versi telah berubah.
-          </p>
-        )}
+        {error && <ErrorFeedback message={error} />}
       </ManagedDialog>
       <ManagedDialog
         ref={historyDialog}

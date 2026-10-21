@@ -1,4 +1,5 @@
 "use client";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { Inbox, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 export function EmptyState({
@@ -36,9 +37,7 @@ export function FeatureState({
     return (
       <section className="ui-panel space-y-4">
         <Heading className="text-xl">Data belum dapat dimuat</Heading>
-        <p role="alert" className="form-feedback-error">
-          {error}
-        </p>
+        <ErrorFeedback message={error} />
         <Button variant="outline" onClick={retry}>
           <RotateCcw className="size-4" aria-hidden="true" />
           Coba kembali

@@ -16,7 +16,10 @@ export const changePasswordSchema = z
     confirmation: password,
   })
   .strict()
-  .refine((v) => v.newPassword === v.confirmation);
+  .refine((v) => v.newPassword === v.confirmation, {
+    path: ["confirmation"],
+    message: "Konfirmasi kata sandi harus sama dengan kata sandi baru.",
+  });
 export const questionSchema = z
   .object({
     currentPassword: password,
@@ -81,7 +84,10 @@ export const resetSchema = z
     confirmation: password,
   })
   .strict()
-  .refine((v) => v.newPassword === v.confirmation);
+  .refine((v) => v.newPassword === v.confirmation, {
+    path: ["confirmation"],
+    message: "Konfirmasi kata sandi harus sama dengan kata sandi baru.",
+  });
 export const activationSchema = z
   .object({
     challengeId: z.uuid(),
@@ -90,7 +96,10 @@ export const activationSchema = z
     confirmation: password,
   })
   .strict()
-  .refine((v) => v.newPassword === v.confirmation);
+  .refine((v) => v.newPassword === v.confirmation, {
+    path: ["confirmation"],
+    message: "Konfirmasi kata sandi harus sama dengan kata sandi baru.",
+  });
 export const approvalSchema = z
   .object({
     requestId: z.uuid(),

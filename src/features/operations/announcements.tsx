@@ -1,4 +1,5 @@
 "use client";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import Link from "next/link";
 import { ActionIcon } from "@/components/ui/action-icon";
 
@@ -30,7 +31,7 @@ export function Announcements() {
   }, []);
   return (
     <section aria-label="Pengumuman" className="space-y-3">
-      {error && <p role="alert">{error}</p>}
+      {error && <ErrorFeedback message={error} />}
       {items.map((a) => (
         <article key={a.id} className="space-y-3 rounded-xl border bg-card p-5">
           <p className="text-sm font-semibold uppercase">{a.severity}</p>

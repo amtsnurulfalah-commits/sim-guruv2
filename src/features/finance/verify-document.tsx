@@ -1,4 +1,6 @@
 "use client";
+import { requestJson } from "@/lib/feedback/api-error";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { useEffect, useRef, useState } from "react";
 
 export function VerifyDocument() {
@@ -24,17 +26,15 @@ export function VerifyDocument() {
       return;
     }
     const c = new AbortController();
-    fetch("/api/honorarium/verify", {
+    requestJson<NonNullable<typeof result>>("/api/honorarium/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),
       cache: "no-store",
       signal: c.signal,
     })
-      .then(async (response) => {
-        const value = await response.json();
-        if (!value.ok) throw new Error(value.error.message);
-        if (!c.signal.aborted) setResult(value.data);
+      .then((value) => {
+        if (!c.signal.aborted) setResult(value);
       })
       .catch((e) => {
         if (!c.signal.aborted) setError(e.message);
@@ -48,9 +48,7 @@ export function VerifyDocument() {
     >
       <h1 className="text-2xl font-bold">Verifikasi Dokumen SiM-Guru</h1>
       {error ? (
-        <p role="alert" className="form-feedback-error">
-          {error}
-        </p>
+        <ErrorFeedback message={error} />
       ) : !result ? (
         <p role="status">Memeriksa dokumen…</p>
       ) : (

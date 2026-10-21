@@ -1,4 +1,5 @@
 "use client";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import Link from "next/link";
 import { ActionIcon } from "@/components/ui/action-icon";
 
@@ -133,7 +134,7 @@ export function AnnouncementManager() {
         Email dikirim hanya jika pengiriman dan pekerjaan diaktifkan pada
         pengaturan operasional.
       </p>
-      {error && <p role="alert">{error}</p>}
+      {error && <ErrorFeedback message={error} />}
       <section className={panel}>
         <h2>{edit ? "Ubah pengumuman" : "Pengumuman baru"}</h2>
         <p className="text-sm">
@@ -232,7 +233,7 @@ export function OperationsManager() {
   return (
     <div className="space-y-5">
       <h1 className="text-2xl font-bold">Pengaturan operasional</h1>
-      {error && <p role="alert">{error}</p>}
+      {error && <ErrorFeedback message={error} />}
       <section className={panel}>
         <h2>
           Pemeliharaan aplikasi{" "}

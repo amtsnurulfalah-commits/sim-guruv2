@@ -203,3 +203,7 @@ dan otorisasi server tujuan tidak dilewati, dan tidak ada cache bisnis baru.
 ### Tab Jurnal Pembelajaran
 
 Halaman jurnal memakai komponen `Tabs` bersama dengan tiga panel Input, Riwayat/Detail, serta Kebijakan/Pemblokiran. Susunan satu kolom pada ponsel dan tiga kolom mulai `md` menjaga label lengkap terbaca. Accordion filter terletak sebelum tab agar konteks tanggal dan rentang berlaku bersama. Panel tetap mounted untuk mempertahankan isian; editor yang dibuka dari riwayat memilih tab Input terlebih dahulu. Kontrol kebijakan hanya tersedia bagi administrator, sedangkan guru melihat informasi kebijakan. Paginasi dan alasan penghapusan ditempatkan dalam Riwayat. Detail verifikasi: `docs/verification/TABULASI_JURNAL.md`.
+
+### Feedback error yang dapat ditindaklanjuti
+
+Gunakan `ErrorFeedback` untuk ringkasan penolakan, gangguan, atau gagal memuat data. Pesan harus menjelaskan penyebab yang diketahui dan langkah perbaikan; sertakan referensi bantuan bila server memberikannya. Gunakan `FormFeedback` dengan tautan kolom pada DataForm. Jangan menghapus isian setelah penolakan, menampilkan error internal mentah, atau mengirim ulang perubahan secara otomatis saat koneksi putus. Pesan berhasil tetap memakai role status, terpisah dari role alert. Untuk formulir bernama, gunakan detail server untuk menandai dan memfokuskan kolom yang salah. Detail implementasi dan verifikasi: `docs/verification/FEEDBACK_KESALAHAN.md`.

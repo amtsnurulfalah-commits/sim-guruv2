@@ -28,7 +28,7 @@ export function ServiceState({
         aria-hidden="true"
       />
       <h1 className="text-2xl font-bold">{title}</h1>
-      <p role="alert" className="text-sm leading-7 text-muted-foreground">
+      <p role="alert" className="whitespace-pre-line break-words text-sm leading-7 text-muted-foreground">
         {message}
       </p>
       <div className="flex flex-wrap gap-3">

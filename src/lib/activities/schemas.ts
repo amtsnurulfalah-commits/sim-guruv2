@@ -46,7 +46,10 @@ export const commandSchemas = {
       reason,
     })
     .strict()
-    .refine((v) => v.timeOut > v.timeIn),
+    .refine((v) => v.timeOut > v.timeIn, {
+      path: ["timeOut"],
+      message: "Jam pulang harus setelah jam masuk.",
+    }),
   "template-delete": z
     .object({
       dayIndex: z.number().int().min(0).max(6),
@@ -84,7 +87,10 @@ export const commandSchemas = {
   leave: z
     .object({ ...attendanceIdentity, leaveTime: time, returnTime: time })
     .strict()
-    .refine((v) => v.returnTime > v.leaveTime),
+    .refine((v) => v.returnTime > v.leaveTime, {
+      path: ["returnTime"],
+      message: "Jam kembali harus setelah jam keluar.",
+    }),
   "delete-leave": z.object({ ...attendanceIdentity, leaveId: uuid }).strict(),
   "students-save": z
     .object({

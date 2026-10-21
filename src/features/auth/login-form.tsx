@@ -6,26 +6,33 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
-import type { ApiResult } from "@/types/api";
+import {
+  ApiRequestError,
+  requestJson,
+  serverFieldErrors,
+} from "@/lib/feedback/api-error";
+import { applyFieldErrors } from "@/lib/feedback/form-fields";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 export function LoginForm() {
   const [csrf, setCsrf] = useState(""),
     [message, setMessage] = useState(""),
+    [failed, setFailed] = useState(false),
     [busy, setBusy] = useState(false),
     [ready, setReady] = useState(false);
-  async function load() {
+  async function load(preserveMessage = false) {
     setReady(false);
+    if (!preserveMessage) {
+      setMessage("");
+      setFailed(false);
+    }
     try {
-      const res = await fetch("/api/auth/csrf", {
-          cache: "no-store",
-          signal: AbortSignal.timeout(15000),
-        }),
-        data: ApiResult<{
-          csrfToken: string;
-        }> = await res.json();
-      if (!data.ok) throw new Error(data.error.message);
-      setCsrf(data.data.csrfToken);
+      const data = await requestJson<{ csrfToken: string }>("/api/auth/csrf", {
+        signal: AbortSignal.timeout(15000),
+      });
+      setCsrf(data.csrfToken);
       setReady(true);
     } catch (error) {
+      setFailed(true);
       setMessage(
         error instanceof Error && error.name !== "TimeoutError"
           ? error.message
@@ -37,16 +44,12 @@ export function LoginForm() {
     let active = true;
     async function init() {
       try {
-        const res = await fetch("/api/auth/csrf", {
-            cache: "no-store",
-            signal: AbortSignal.timeout(15000),
-          }),
-          data: ApiResult<{
-            csrfToken: string;
-          }> = await res.json();
-        if (!data.ok) throw new Error(data.error.message);
+        const data = await requestJson<{ csrfToken: string }>(
+          "/api/auth/csrf",
+          { signal: AbortSignal.timeout(15000) },
+        );
         if (active) {
-          setCsrf(data.data.csrfToken);
+          setCsrf(data.csrfToken);
           setReady(true);
           const status = new URLSearchParams(window.location.search).get(
             "status",
@@ -61,9 +64,15 @@ export function LoginForm() {
           else if (status === "expired")
             setMessage("Sesi berakhir. Silakan masuk kembali.");
         }
-      } catch {
-        if (active)
-          setMessage("Formulir belum dapat dimuat. Silakan coba kembali.");
+      } catch (error) {
+        if (active) {
+          setFailed(true);
+          setMessage(
+            error instanceof Error
+              ? error.message
+              : "Formulir belum dapat dimuat. Coba kembali.",
+          );
+        }
       }
     }
     void init();
@@ -79,7 +88,9 @@ export function LoginForm() {
     const form = event.currentTarget,
       values = new FormData(form);
     try {
-      const res = await fetch("/api/auth/login", {
+      const data = await requestJson<{ redirectTo: string }>(
+        "/api/auth/login",
+        {
           method: "POST",
           headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
           body: JSON.stringify({
@@ -87,28 +98,21 @@ export function LoginForm() {
             password: values.get("password"),
           }),
           signal: AbortSignal.timeout(15000),
-        }),
-        data: ApiResult<{
-          redirectTo: string;
-        }> = await res.json();
-      if (data.ok) {
-        window.location.replace(
-          data.data.redirectTo === "/dashboard" ? "/dashboard" : "/akun",
-        );
-        return;
-      }
-      const retry = res.headers.get("retry-after");
-      setMessage(
-        data.error.message +
-          (retry
-            ? ` Coba kembali sekitar ${Math.ceil(Number(retry) / 60)} menit lagi.`
-            : ""),
+        },
       );
-      if (data.error.code === "CSRF_INVALID") await load();
-    } catch {
-      setMessage(
-        "Tidak dapat menghubungi layanan. Periksa koneksi lalu coba kembali.",
+      window.location.replace(
+        data.redirectTo === "/dashboard" ? "/dashboard" : "/akun",
       );
+    } catch (error) {
+      setFailed(true);
+      applyFieldErrors(form, serverFieldErrors(error));
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Tidak dapat menghubungi layanan. Periksa koneksi Anda.",
+      );
+      if (error instanceof ApiRequestError && error.code === "CSRF_INVALID")
+        await load(true);
     } finally {
       const input = form.elements.namedItem("password");
       if (input instanceof HTMLInputElement) input.value = "";
@@ -117,14 +121,17 @@ export function LoginForm() {
   }
   return (
     <form onSubmit={submit} className="space-y-5" aria-busy={busy}>
-      {message && (
-        <p
-          role="alert"
-          className="rounded-lg border bg-muted p-3 text-sm leading-6"
-        >
-          {message}
-        </p>
-      )}
+      {message &&
+        (failed ? (
+          <ErrorFeedback message={message} autoFocus />
+        ) : (
+          <p
+            role="status"
+            className="rounded-lg border bg-muted p-3 text-sm leading-6"
+          >
+            {message}
+          </p>
+        ))}
       <div className="space-y-2">
         <label htmlFor="username" className="text-sm font-semibold">
           Username

@@ -1,4 +1,6 @@
 "use client";
+import { downloadFile } from "@/lib/feedback/api-error";
+import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ChevronDown } from "lucide-react";
 import { Tabs } from "@/components/ui/tabs";
 import { ActionIcon } from "@/components/ui/action-icon";
@@ -326,6 +328,22 @@ export function ActivityWorkspace({
       setBusy(false);
     }
   }
+  async function download(format: "csv" | "pdf") {
+    setError("");
+    setBusy(true);
+    try {
+      await downloadFile(
+        `/api/activities/export?${exportQuery}&format=${format}`,
+        `${mode}.${format}`,
+      );
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Unduhan gagal. Coba kembali.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
   const attendanceRows = mode === "attendance" ? (rows as Attendance[]) : [];
   const selectedAttendance = attendanceRows.find((r) => r.id === attendanceId);
   const currentManual = attendanceRows.find(
@@ -443,7 +461,7 @@ export function ActivityWorkspace({
           harian merupakan bukti yang berbeda.
         </p>
       </header>
-      {error && <p role="alert">{error}</p>}
+      {error && <ErrorFeedback message={error} />}
       {message && <p role="status">{message}</p>}
       {mode === "journals" ? (
         <details className="group/journal-filter rounded-2xl border bg-card shadow-xs">
@@ -539,20 +557,24 @@ export function ActivityWorkspace({
           <section className={panel}>
             <h2 className="font-semibold">Riwayat kehadiran</h2>
             <div className="flex gap-4 text-sm">
-              <a
+              <button
+                type="button"
                 className="ui-action ui-action-secondary"
-                href={`/api/activities/export?${exportQuery}&format=csv`}
+                disabled={busy || loading}
+                onClick={() => void download("csv")}
               >
                 <ActionIcon action="download" />
                 Unduh CSV
-              </a>
-              <a
+              </button>
+              <button
+                type="button"
                 className="ui-action ui-action-secondary"
-                href={`/api/activities/export?${exportQuery}&format=pdf`}
+                disabled={busy || loading}
+                onClick={() => void download("pdf")}
               >
                 <ActionIcon action="download" />
                 Unduh PDF
-              </a>
+              </button>
             </div>
             {!loading && rows.length === 0 && (
               <p>Belum ada catatan kehadiran pada rentang ini.</p>
@@ -1295,20 +1317,24 @@ export function ActivityWorkspace({
                   <section className={panel}>
                     <h2 className="font-semibold">Riwayat dan detail jurnal</h2>
                     <div className="flex gap-4 text-sm">
-                      <a
+                      <button
+                        type="button"
                         className="ui-action ui-action-secondary"
-                        href={`/api/activities/export?${exportQuery}&format=csv`}
+                        disabled={busy || loading}
+                        onClick={() => void download("csv")}
                       >
                         <ActionIcon action="download" />
                         Unduh CSV
-                      </a>
-                      <a
+                      </button>
+                      <button
+                        type="button"
                         className="ui-action ui-action-secondary"
-                        href={`/api/activities/export?${exportQuery}&format=pdf`}
+                        disabled={busy || loading}
+                        onClick={() => void download("pdf")}
                       >
                         <ActionIcon action="download" />
                         Unduh PDF
-                      </a>
+                      </button>
                     </div>
                     {!loading && !rows.length && (
                       <p>Belum ada jurnal pada rentang ini.</p>
