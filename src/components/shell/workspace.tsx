@@ -341,7 +341,7 @@ export function Workspace({
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 max-w-full flex-wrap items-center gap-3">
             <span className="hidden rounded-full border bg-muted px-3 py-1 text-xs sm:inline">
               {role === "admin"
                 ? "Administrator"
