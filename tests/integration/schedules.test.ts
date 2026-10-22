@@ -297,6 +297,15 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
       );
     },
   );
+  await t.test("SC03b invalid JTM returns 422 field feedback instead of INTERNAL_ERROR",async()=>{
+    for(const action of ["collection","conflicts"] as const){
+      const response=await handler(action,req(admin,"POST",{data:data({scheduledJtm:"invalid"}),...(action==="collection"?{reason}:{})}));
+      assert.equal(response.status,422);
+      const body=await response.json();
+      assert.equal(body.error.code,"VALIDATION_ERROR");
+      assert.ok(body.error.fieldErrors["data.scheduledJtm"]);
+    }
+  });
   await t.test(
     "SC04 end time calculated server-side from school minutes, JTM stored exact4dp",
     async () => {
