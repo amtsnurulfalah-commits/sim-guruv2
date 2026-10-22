@@ -1,12 +1,12 @@
 import "server-only";
 import { createHash, createHmac, randomBytes } from "node:crypto";
-import { z } from "zod";
+import { loginSchema } from "@/lib/accounts/login";
+export { loginSchema } from "@/lib/accounts/login";
 import type { SqlDatabase } from "../../../scripts/lib/sql-database";
 import type { PasswordService } from "./passwords";
 export class AuthError extends Error {
     constructor(readonly code: string, readonly status: number, readonly retryAfter?: number) { super(code); }
 }
-export const loginSchema = z.object({ username: z.string().trim().regex(/^[A-Za-z0-9._-]{3,64}$/).transform(v => v.toLowerCase()), password: z.string().refine(v => Array.from(v).length >= 1 && Array.from(v).length <= 128) }).strict();
 export const tokenHash = (value: string) => createHash("sha256").update(value).digest("hex");
 export type SessionRow = {
     session_id: string;
