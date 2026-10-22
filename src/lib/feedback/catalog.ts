@@ -93,6 +93,7 @@ export function fieldLabel(path: string) {
   return Object.hasOwn(fieldLabels, key) ? fieldLabels[key]! : "Isian formulir";
 }
 export const guidance: Record<string, string> = {
+  FORM_NOT_READY: "Coba kembali untuk menyiapkan formulir. Jika masih gagal, hubungi administrator dengan referensi bantuan bila tersedia.",
   VALIDATION_ERROR:
     "Perbaiki isian yang disebutkan, lalu kirim kembali. Periksa kembali formulir sebelum mengirim ulang.",
   INVALID_CREDENTIALS:

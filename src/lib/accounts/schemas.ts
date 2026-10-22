@@ -137,3 +137,5 @@ export const emailDispatchSchema = z.discriminatedUnion("queued", [
 
 export const recoveryAcceptedSchema = z.object({accepted:z.literal(true), challengeId:z.uuid()});
 export const resetProofSchema = z.object({challengeId:z.uuid(), token:z.string().regex(/^[A-Za-z0-9_-]{43}$/)});
+
+export const recoveryCompletedSchema = z.object({ loginRequired: z.literal(true) });

@@ -2,6 +2,8 @@
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import Link from "next/link";
+import { loginCsrfSchema } from "@/lib/accounts/login";
+import { cn } from "@/lib/utils";
 import { UserRound, KeyRound, MailCheck, ShieldQuestion } from "lucide-react";
 import { Tabs } from "@/components/ui/tabs";
 import {
@@ -46,12 +48,21 @@ export async function accountRequest<T>(
 ): Promise<T> {
   const headers: Record<string, string> = {};
   if (data !== undefined) {
-    const csrf = await requestJson<{ csrfToken: string }>(
-      "/api/auth/csrf?intent=" + (publicForm ? "login" : "session"),
-      { signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(15000)]) : AbortSignal.timeout(15000) },
-    );
+    let rawCsrf: unknown;
+    try {
+      rawCsrf = await requestJson<unknown>(
+        "/api/auth/csrf?intent=" + (publicForm ? "login" : "session"),
+        { signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(15000)]) : AbortSignal.timeout(15000) },
+      );
+    } catch (error) {
+      if (publicForm && error instanceof ApiRequestError)
+        throw new ApiRequestError("FORM_NOT_READY", "Formulir belum dapat disiapkan. Permintaan belum dikirim; periksa koneksi lalu coba kembali.", error.status, {}, error.requestId, error.retryAfter);
+      throw error;
+    }
+    const csrf = loginCsrfSchema.safeParse(rawCsrf);
+    if (!csrf.success) throw new ApiRequestError("FORM_NOT_READY", "Formulir belum dapat disiapkan. Coba kembali; jika tetap gagal, muat ulang halaman.");
     headers["Content-Type"] = "application/json";
-    headers["X-CSRF-Token"] = csrf.csrfToken;
+    headers["X-CSRF-Token"] = csrf.data.csrfToken;
   }
   return requestJson<T>("/api/auth/" + action, {
     method: data === undefined ? "GET" : "POST",
@@ -136,29 +147,38 @@ export function ActionForm({
   children,
   submitLabel = "Simpan",
   inline = false,
+  disabled = false,
+  className,
   onSubmit,
 }: {
   title: string;
   children: ReactNode;
   submitLabel?: string;
   inline?: boolean;
+  disabled?: boolean;
+  className?: string;
   onSubmit: (
     data: Record<string, string>,
     form: HTMLFormElement,
+    signal: AbortSignal,
   ) => Promise<string | ActionResult | void>;
 }) {
   const [busy, setBusy] = useState(false),
     [message, setMessage] = useState(""),
     [open, setOpen] = useState(false),
     [failed, setFailed] = useState(false);
+  const [focusSummary, setFocusSummary] = useState(false);
   const group = useContext(AccountActions);
   const mounted = useRef(false);
-  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+  const controller = useRef<AbortController | null>(null);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; controller.current?.abort(); }; }, []);
   const pending = useRef(false);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (pending.current || (group && !group.claim())) return;
+    if (disabled || pending.current || (group && !group.claim())) return;
     pending.current = true;
+    const request = new AbortController();
+    controller.current = request;
     const form = event.currentTarget;
     setBusy(true);
     setMessage("");
@@ -168,19 +188,20 @@ export function ActionForm({
         string,
         string
       >;
-      const result = (await onSubmit(data, form)) ?? "Tersimpan.";
+      const result = (await onSubmit(data, form, request.signal)) ?? "Tersimpan.";
       const notice = typeof result === "string" ? {message:result,tone:"success"} : result;
       if (mounted.current) {
         setMessage(notice.message);
         setFailed(notice.tone === "error");
         if (notice.tone === "success") setOpen(false);
       }
-      if (notice.tone === "success") notifySuccess(notice.message);
+      if (mounted.current && notice.tone === "success") notifySuccess(notice.message);
     } catch (error) {
       if (!mounted.current) return;
       setFailed(true);
       const fields = serverFieldErrors(error);
       if (error instanceof ApiRequestError && error.code === "INVALID_CREDENTIALS" && form.elements.namedItem("currentPassword")) fields.currentPassword = "Kata sandi saat ini tidak sesuai. Periksa kembali isian ini.";
+      setFocusSummary(Object.keys(fields).length === 0);
       applyFieldErrors(form, fields);
       setMessage(
         error instanceof Error && error.name !== "TimeoutError"
@@ -188,6 +209,7 @@ export function ActionForm({
           : "Layanan belum dapat dihubungi. Coba kembali.",
       );
     } finally {
+      controller.current = null;
       pending.current = false;
       group?.release();
       if (mounted.current) setBusy(false);
@@ -195,21 +217,22 @@ export function ActionForm({
   }
   const content = (
     <form
+      method="post"
       aria-busy={busy || group?.busy}
-      className="ui-panel min-w-0 space-y-4 [overflow-wrap:anywhere]"
+      className={cn("ui-panel min-w-0 space-y-4 [overflow-wrap:anywhere]", className)}
       onSubmit={(event) => void submit(event)}
     >
       <h3 className="text-lg font-semibold">{title}</h3>
-      <fieldset disabled={busy || group?.busy} className="min-w-0 space-y-4">
+      <fieldset disabled={disabled || busy || group?.busy} className="min-w-0 space-y-4">
         {children}
-        <Button className="w-full sm:w-auto" type="submit" disabled={busy || group?.busy}>
+        <Button className="w-full sm:w-auto" type="submit" disabled={disabled || busy || group?.busy}>
           <ActionIcon action="submit" />
           {busy ? "Memproses…" : submitLabel}
         </Button>
       </fieldset>
       {message &&
         (failed ? (
-          <ErrorFeedback message={message} />
+          <ErrorFeedback message={message} autoFocus={focusSummary} />
         ) : (
           <p
             role="status"
