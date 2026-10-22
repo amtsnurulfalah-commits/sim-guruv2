@@ -43,6 +43,8 @@ waktu WIB dan relasi. Tidak ada retry otomatis untuk mutasi.
   navigasi anak, relasi induk tetap, validasi client tanpa request, retry pilihan,
   close riwayat saat request tertunda, submit ganda, respons malformed,
   server error dengan referensi bantuan, empty state, resize/orientasi.
+- `npm run test:ui`: regresi seluruh aplikasi lulus, 252 kombinasi tampilan,
+  4 ukuran interaksi dan CRUD mata pelajaran; 0 page error dan 0 console error.
 - Screenshot editor mobile dan daftar desktop diperiksa secara visual.
 
 Pengujian browser memakai data sintetis dan database disposable. Hasil ini bukan
