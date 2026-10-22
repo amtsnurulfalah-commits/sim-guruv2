@@ -52,3 +52,8 @@ test("Dated context requires explicit flags/period and rejects browser permissio
     false,
   );
 });
+test("Calendar range validation points at the end date for correction", () => {
+  const result = calendarChangeSchema.safeParse({ action: "range", dateStart: "2090-03-02", dateEnd: "2090-03-01", description: "Uji", isHoliday: false, reason: "Alasan uji" });
+  assert.equal(result.success, false);
+  if (!result.success) assert.equal(result.error.issues[0]?.path.join("."), "dateEnd");
+});

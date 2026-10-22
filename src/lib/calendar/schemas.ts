@@ -33,7 +33,7 @@ export const rangeSchema = z
         Date.parse(v.dateStart + "T00:00:00Z")) /
       86400000;
     return days >= 0 && days <= 365;
-  }, "Rentang maksimal 366 tanggal.");
+  }, { path: ["dateEnd"], message: "Tanggal akhir harus setelah atau sama dengan tanggal mulai, maksimal 366 hari." });
 export const calendarChangeSchema = z.discriminatedUnion("action", [
   entrySchema,
   removeSchema,
@@ -103,7 +103,7 @@ export type DayContext = {
   academicPeriodId: string | null;
   contextVersion: string;
   override: {
-    id: string;
+    id: string | null;
     version: string;
     academicPeriodId: string;
     kbmEnabled: boolean;
