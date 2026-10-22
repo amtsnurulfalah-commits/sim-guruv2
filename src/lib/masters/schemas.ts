@@ -42,14 +42,15 @@ export const payloadSchemas = {
     .strict()
     .refine(
       (v) => v.parallelMax <= { SD: 4, SMP: 11, SMA: 12, SMK: 24 }[v.level],
-      "Batas paralel melampaui jenjang.",
+      { path: ["parallelMax"], message: "Batas paralel melampaui jenjang." },
     ),
   "academic-years": z
     .object({ label: z.string().regex(/^\d{4}\/\d{4}$/), ...window })
     .strict()
-    .refine(validWindow)
+    .refine(validWindow, { path: ["dateEnd"], message: "Tanggal akhir harus setelah atau sama dengan tanggal mulai." })
     .refine(
       (v) => Number(v.label.slice(5)) === Number(v.label.slice(0, 4)) + 1,
+      { path: ["label"], message: "Tahun pelajaran harus berurutan." },
     ),
   "academic-periods": z
     .object({
@@ -59,7 +60,7 @@ export const payloadSchemas = {
       isActive: z.boolean(),
     })
     .strict()
-    .refine(validWindow),
+    .refine(validWindow, { path: ["dateEnd"], message: "Tanggal akhir harus setelah atau sama dengan tanggal mulai." }),
   classes: z
     .object({
       academicPeriodId: z.uuid(),
@@ -77,19 +78,12 @@ export const payloadSchemas = {
         SMA: [10, 12, 12, 36],
         SMK: [10, 12, 24, 36],
       }[v.level];
-      if (
-        v.grade < limits[0]! ||
-        v.grade > limits[1]! ||
-        v.expectedStudents > limits[3]! ||
-        (v.parallel &&
-          (v.parallel.charCodeAt(0) - 64 > limits[2]! ||
-            (v.expectedStudents > 0 && v.expectedStudents < 15)))
-      )
-        c.addIssue({
-          code: "custom",
-          message:
-            "Jenjang, kelas, paralel atau standar siswa tidak sesuai kebijakan.",
-        });
+      if (v.grade < limits[0]! || v.grade > limits[1]!)
+        c.addIssue({ code: "custom", path: ["grade"], message: "Tingkat kelas tidak sesuai jenjang." });
+      if (v.parallel && v.parallel.charCodeAt(0) - 64 > limits[2]!)
+        c.addIssue({ code: "custom", path: ["parallel"], message: "Paralel melampaui batas jenjang." });
+      if (v.expectedStudents > limits[3]! || (v.parallel && v.expectedStudents > 0 && v.expectedStudents < 15))
+        c.addIssue({ code: "custom", path: ["expectedStudents"], message: "Jumlah siswa tidak sesuai kebijakan rombel." });
     }),
   subjects: z.object({ name }).strict(),
   rates: z
@@ -100,12 +94,12 @@ export const payloadSchemas = {
       ...window,
     })
     .strict()
-    .refine(validWindow)
-    .refine((v) => v.kind !== "transport" || !v.enabled || v.amount !== "0"),
+    .refine(validWindow, { path: ["dateEnd"], message: "Tanggal akhir harus setelah atau sama dengan tanggal mulai." })
+    .refine((v) => v.kind !== "transport" || !v.enabled || v.amount !== "0", { path: ["amount"], message: "Tarif transportasi aktif harus lebih dari nol." }),
   allowances: z
     .object({ userId: z.uuid(), dutyName: name, amount: money, ...window })
     .strict()
-    .refine(validWindow),
+    .refine(validWindow, { path: ["dateEnd"], message: "Tanggal akhir harus setelah atau sama dengan tanggal mulai." }),
 } as const;
 export const mutationSchema = z
   .object({

@@ -1,4 +1,9 @@
 "use client";
+import { validateAccount as validateInput } from "@/lib/accounts/client-validation";
+import { applyFieldErrors } from "@/lib/feedback/form-fields";
+import { serverFieldErrors } from "@/lib/feedback/api-error";
+import { masterListSchema, masterHistorySchema } from "@/lib/masters/contracts";
+import { payloadSchemas, mutationSchema } from "@/lib/masters/schemas";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
@@ -17,6 +22,7 @@ import {
   type MasterList,
   type MasterRow,
 } from "@/lib/masters/schemas";
+import { userListSchema } from "@/lib/users/contracts";
 import type { UserList } from "@/lib/users/schemas";
 import { masterRequest } from "./api";
 type Field = {
@@ -194,7 +200,11 @@ function ReferencePicker({
     >([]),
     [total, setTotal] = useState(0),
     [value, setValue] = useState(String(row?.[field.key] ?? "")),
-    [message, setMessage] = useState("Memuat pilihan…");
+    [message, setMessage] = useState("Memuat pilihan…"),
+    [loading, setLoading] = useState(true),
+    [failure, setFailure] = useState(""),
+    [retry, setRetry] = useState(0),
+    [selectedLabel, setSelectedLabel] = useState(String(row?.parentLabel ?? "Pilihan tersimpan"));
   useEffect(() => {
     const controller = new AbortController();
     let active = true;
@@ -204,7 +214,10 @@ function ReferencePicker({
       pageSize: "20",
       ...(field.reference === "users" ? { status: "active" } : {}),
     });
-    masterRequest<MasterList | UserList>(
+    async function loadChoices() {
+    setLoading(true);
+    setFailure("");
+    await masterRequest<MasterList | UserList>(
       field.reference === "users"
         ? "/api/users?" + params
         : "/api/settings/" + field.reference + "?" + params,
@@ -214,6 +227,8 @@ function ReferencePicker({
     )
       .then((data) => {
         if (!active) return;
+        if (field.reference === "users") userListSchema.parse(data);
+        else masterListSchema.parse(data);
         setItems(
           data.items.map((v) => ({
             id: v.id,
@@ -229,22 +244,22 @@ function ReferencePicker({
         setTotal(data.total);
         setMessage(data.total ? "" : "Belum ada pilihan sesuai pencarian.");
       })
-      .catch(() => {
-        if (active)
-          setMessage(
-            "Pilihan tidak dapat dimuat. Ubah pencarian untuk mencoba kembali.",
-          );
-      });
+      .catch((error: unknown) => {
+        if (active) { setItems([]); setTotal(0); setMessage(""); setFailure(error instanceof Error && error.name !== "ZodError" ? error.message : "Respons pilihan tidak sesuai. Coba lagi atau hubungi admin."); }
+      }).finally(() => { if (active) setLoading(false); });
+    }
+    void loadChoices();
     return () => {
       active = false;
       controller.abort();
     };
-  }, [query, page, field.reference, field.key]);
+  }, [query, page, field.reference, field.key, retry]);
   return (
-    <div className="space-y-2 rounded-lg border p-3">
+    <div className="min-w-0 space-y-2 rounded-lg border p-3">
       <label className="block text-sm">
         {field.label}
         <input
+          maxLength={100}
           aria-label={"Cari " + field.label}
           className="mt-2 h-10 w-full rounded border bg-background px-3"
           placeholder="Cari nama…"
@@ -261,7 +276,7 @@ function ReferencePicker({
           name={field.key}
           required={!field.optional}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => { setValue(e.target.value); setSelectedLabel(e.target.selectedOptions[0]?.textContent ?? "Pilihan tersimpan"); }}
           className="mt-2 h-11 w-full rounded border bg-background px-3"
         >
           <option value="">
@@ -269,27 +284,28 @@ function ReferencePicker({
           </option>
           {value && !items.some((v) => v.id === value) && (
             <option value={value}>
-              {String(row?.parentLabel ?? "Pilihan tersimpan")}
+              {selectedLabel}
             </option>
           )}
           {items.map((v) => (
-            <option key={v.id} value={v.id} disabled={v.disabled}>
+            <option key={v.id} value={v.id} disabled={v.id !== value && (v.disabled || loading || Boolean(failure))}>
               {v.label}
             </option>
           ))}
         </select>
       </label>
-      {message && (
+      {failure && <><ErrorFeedback message={failure} /><Button type="button" variant="outline" onClick={() => setRetry(v => v + 1)}>Coba lagi pilihan</Button></>}
+      {loading ? <p role="status">Memuat pilihan…</p> : message && (
         <p className="text-sm" role="status">
           {message}
         </p>
       )}
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <Button
           type="button"
           size="sm"
           variant="outline"
-          disabled={page === 1}
+          disabled={loading || Boolean(failure) || page === 1}
           onClick={() => setPage((p) => p - 1)}
         >
           <ActionIcon action="previous" />
@@ -299,7 +315,7 @@ function ReferencePicker({
           type="button"
           size="sm"
           variant="outline"
-          disabled={page * 20 >= total}
+          disabled={loading || Boolean(failure) || page * 20 >= total}
           onClick={() => setPage((p) => p + 1)}
         >
           <ActionIcon action="next" />
@@ -325,7 +341,7 @@ function Editor({
       <fieldset disabled={busy} className="space-y-4">
         {fields[kind].map((f) =>
           f.type === "reference" ? (
-            <ReferencePicker key={f.key} field={f} row={row} />
+            row && ["academicYearId", "academicPeriodId"].includes(f.key) ? <div key={f.key} className="rounded-lg border p-3 text-sm"><p className="font-medium">{f.label}</p><p className="mt-2 break-words">{String(row.parentLabel ?? row[f.key])}</p><p className="mt-2 text-muted-foreground">Relasi data tersimpan tidak dapat dipindahkan.</p><input type="hidden" name={f.key} value={String(row[f.key])} /></div> : <ReferencePicker key={f.key} field={f} row={row} />
           ) : f.type === "checkbox" ? (
             <label key={f.key} className="flex gap-3 text-sm">
               <input
@@ -476,7 +492,7 @@ export function MasterManager() {
     [history, setHistory] = useState<
       | {
           actor_id: string;
-          actor_name?: string;
+          actor_name?: string | null | undefined;
           reason: string;
           created_at: string;
           old_data: unknown;
@@ -484,6 +500,25 @@ export function MasterManager() {
         }[]
       | null
     >(null);
+  const pending = useRef(false);
+  const historyRequest = useRef<AbortController | null>(null);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState("");
+  const [historyKind, setHistoryKind] = useState<MasterKind>("school");
+  const [schoolExists, setSchoolExists] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (kind !== "school") return;
+    const controller = new AbortController(); let active = true;
+    async function checkSchool() {
+    setSchoolExists(null);
+    await masterRequest<MasterList>("/api/settings/school?pageSize=1&archived=", "GET", undefined, controller.signal)
+      .then(d => { if (active) setSchoolExists(masterListSchema.parse(d).total > 0); })
+      .catch(() => { /* Keep creation disabled until existence can be verified. */ });
+    }
+    void checkSchool();
+    return () => { active = false; controller.abort(); };
+  }, [kind, revision]);
+  useEffect(() => () => historyRequest.current?.abort(), []);
   const dialog = useRef<HTMLDialogElement>(null),
     confirmation = useRef<HTMLDialogElement>(null),
     historyDialog = useRef<HTMLDialogElement>(null);
@@ -509,11 +544,12 @@ export function MasterManager() {
           undefined,
           c.signal,
         );
-        if (active) setData(d);
+        masterListSchema.parse(d);
+        if (active) { const last = Math.max(1, Math.ceil(d.total / 20)); if (page > last) setPage(last); else setData(d); }
       } catch (e) {
         if (active) {
           setData(null);
-          setError(e instanceof Error ? e.message : "Data tidak dapat dimuat.");
+          setError(e instanceof Error && e.name !== "ZodError" ? e.message : "Respons data tidak sesuai. Muat ulang atau hubungi admin.");
         }
       } finally {
         if (active) setLoading(false);
@@ -536,7 +572,8 @@ export function MasterManager() {
   }, [history]);
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy) return;
+    if (pending.current) return;
+    pending.current = true;
     setBusy(true);
     setError("");
     const form = event.currentTarget,
@@ -552,56 +589,65 @@ export function MasterManager() {
       ]),
     );
     try {
-      await masterRequest("/api/settings/" + kind, editing ? "PATCH" : "POST", {
+      const validatedPayload = validateInput<unknown>(payloadSchemas[kind], payload);
+      const input = validateInput(mutationSchema, {
         ...(editing ? { id: editing.id } : {}),
         version: editing?.version ?? "0",
         reason: v.get("reason"),
-        data: payload,
+        data: validatedPayload,
       });
+      await masterRequest("/api/settings/" + kind, editing ? "PATCH" : "POST", input);
       dialog.current?.close();
-      setNotice("Data tersimpan dan riwayat perubahan dicatat.");
+      setNotice("Data tersimpan dan riwayat perubahan dicatat. Jika daftar gagal dimuat, gunakan Muat ulang tanpa menyimpan kembali.");
       setRevision((v) => v + 1);
     } catch (e) {
+      applyFieldErrors(form, Object.fromEntries(Object.entries(serverFieldErrors(e)).map(([key, value]) => [key.replace(/^data\./, ""), value])));
       setError(e instanceof Error ? e.message : "Perubahan gagal.");
     } finally {
+      pending.current = false;
       setBusy(false);
     }
   }
   async function archiveRow(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!archive || busy) return;
+    if (!archive || pending.current) return;
+    pending.current = true;
     setBusy(true);
     setError("");
     const form = event.currentTarget,
       v = new FormData(form);
     try {
-      await masterRequest("/api/settings/" + kind, "DELETE", {
+      const input = validateInput(mutationSchema, {
         id: archive.id,
         version: archive.version,
         reason: v.get("reason"),
       });
+      await masterRequest("/api/settings/" + kind, "DELETE", input);
       form.reset();
       confirmation.current?.close();
-      setNotice("Data diarsipkan. Riwayat tetap tersimpan.");
+      setNotice("Data diarsipkan. Riwayat tetap tersimpan. Jika daftar gagal dimuat, gunakan Muat ulang tanpa mengarsipkan kembali.");
       setRevision((v) => v + 1);
     } catch (e) {
+      applyFieldErrors(form, serverFieldErrors(e));
       setError(e instanceof Error ? e.message : "Pengarsipan gagal.");
     } finally {
+      pending.current = false;
       setBusy(false);
     }
   }
   async function showHistory(row: MasterRow) {
-    setError("");
+    historyRequest.current?.abort();
+    const controller = new AbortController(); historyRequest.current = controller;
+    setHistory([]); setHistoryKind(kind); setHistoryLoading(true); setHistoryError("");
     try {
-      setHistory(
-        await masterRequest("/api/settings/" + kind + "/history/" + row.id),
-      );
+      const result = await masterRequest<NonNullable<typeof history>>("/api/settings/" + kind + "/history/" + row.id, "GET", undefined, controller.signal);
+      if (!controller.signal.aborted) setHistory(masterHistorySchema.parse(result));
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Riwayat tidak dapat dimuat.");
-    }
+      if (!controller.signal.aborted) setHistoryError(e instanceof Error && e.name !== "ZodError" ? e.message : "Respons riwayat tidak sesuai. Tutup lalu coba kembali.");
+    } finally { if (!controller.signal.aborted) setHistoryLoading(false); }
   }
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6 [overflow-wrap:anywhere]">
       <header>
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">
           Administrasi madrasah
@@ -616,8 +662,10 @@ export function MasterManager() {
         {kinds.map((k) => (
           <Button
             key={k}
+            aria-current={kind === k ? "page" : undefined}
             variant={kind === k ? "default" : "outline"}
             onClick={() => {
+              setArchived("false");
               setKind(k);
               setPage(1);
               setQuery("");
@@ -634,7 +682,7 @@ export function MasterManager() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-bold">{labels[kind]}</h2>
           <Button
-            disabled={loading || (kind === "school" && Boolean(data?.total))}
+            disabled={loading || busy || (kind === "school" && schoolExists !== false)}
             onClick={() => {
               setEditing(null);
               setError("");
@@ -645,16 +693,18 @@ export function MasterManager() {
             Tambah {labels[kind].toLowerCase()}
           </Button>
         </div>
+        {kind === "school" && schoolExists === null && !loading && <p role="status" className="text-sm text-muted-foreground">Identitas sekolah belum dapat diverifikasi. Gunakan Muat ulang sebelum menambah data.</p>}
         <div className="flex flex-wrap items-end gap-3">
-          <label className="text-sm">
+          <label className="min-w-0 flex-1 text-sm">
             Cari nama / label
             <input
+              maxLength={100}
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
                 setPage(1);
               }}
-              className="mt-2 block h-11 rounded border bg-background px-3"
+              className="mt-2 block h-11 w-full min-w-0 rounded border bg-background px-3"
             />
           </label>
           <label className="text-sm">
@@ -665,7 +715,7 @@ export function MasterManager() {
                 setArchived(e.target.value);
                 setPage(1);
               }}
-              className="mt-2 block h-11 rounded border bg-background px-3"
+              className="mt-2 block h-11 w-full min-w-0 rounded border bg-background px-3"
             >
               <option value="false">Belum diarsipkan</option>
               <option value="true">Diarsipkan</option>
@@ -695,7 +745,7 @@ export function MasterManager() {
                 <EmptyState title="Belum ada data sesuai pencarian." />
               ) : (
                 <TableRegion label="Data master">
-                  <table className="w-full min-w-[620px] text-left text-sm">
+                  <table className="w-full min-w-[620px] table-fixed text-left text-sm">
                     <thead>
                       <tr className="border-b">
                         <th className="p-3">Nama / relasi</th>
@@ -793,6 +843,8 @@ export function MasterManager() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => {
+                                    setArchived("false");
+                                    setNotice("");
                                     setParentId(row.id);
                                     setKind(
                                       kind === "academic-years"
@@ -867,7 +919,7 @@ export function MasterManager() {
       <ManagedDialog
         ref={dialog}
         aria-labelledby="master-editor-title"
-        className="m-auto max-h-[90svh] w-[min(42rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-6 text-foreground backdrop:bg-black/45"
+        className="m-auto max-h-[90svh] w-[min(42rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-4 sm:p-6 text-foreground [overflow-wrap:anywhere] backdrop:bg-black/45"
         onCancel={(e) => {
           if (busy) e.preventDefault();
         }}
@@ -903,7 +955,7 @@ export function MasterManager() {
       <ManagedDialog
         ref={confirmation}
         aria-labelledby="master-archive-title"
-        className="m-auto w-[min(32rem,calc(100%_-_2rem))] rounded-2xl border bg-card p-6 text-foreground backdrop:bg-black/45"
+        className="m-auto max-h-[90svh] overflow-y-auto w-[min(32rem,calc(100%_-_2rem))] rounded-2xl border bg-card p-4 sm:p-6 text-foreground [overflow-wrap:anywhere] backdrop:bg-black/45"
         onCancel={(e) => {
           if (busy) e.preventDefault();
         }}
@@ -929,7 +981,7 @@ export function MasterManager() {
                   className="mt-2 h-11 w-full rounded border bg-background px-3"
                 />
               </label>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 <Button
                   type="button"
                   variant="outline"
@@ -951,8 +1003,8 @@ export function MasterManager() {
       <ManagedDialog
         ref={historyDialog}
         aria-labelledby="master-history-title"
-        className="m-auto max-h-[90svh] w-[min(42rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-6 text-foreground backdrop:bg-black/45"
-        onClose={() => setHistory(null)}
+        className="m-auto max-h-[90svh] w-[min(42rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-4 sm:p-6 text-foreground [overflow-wrap:anywhere] backdrop:bg-black/45"
+        onClose={() => { historyRequest.current?.abort(); setHistory(null); }}
       >
         <div className="mb-5 flex justify-between gap-3">
           <h2 id="master-history-title" className="text-xl font-bold">
@@ -966,7 +1018,7 @@ export function MasterManager() {
             Tutup
           </Button>
         </div>
-        {history?.length === 0 ? (
+        {historyLoading ? <p role="status">Memuat riwayat…</p> : historyError ? <ErrorFeedback message={historyError} /> : history?.length === 0 ? (
           <EmptyState title="Belum ada riwayat." />
         ) : (
           history?.map((h, i) => (
@@ -980,7 +1032,7 @@ export function MasterManager() {
               <details className="mt-3 text-sm">
                 <summary>Lihat nilai sebelum dan sesudah</summary>
                 <HistoryChanges
-                  kind={kind}
+                  kind={historyKind}
                   before={h.old_data}
                   after={h.new_data}
                 />
