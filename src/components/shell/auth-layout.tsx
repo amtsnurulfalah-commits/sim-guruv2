@@ -12,15 +12,19 @@ export function AuthLayout({
   children: ReactNode;
 }) {
   return (
-    <main id="konten-utama" className="grid min-h-svh lg:grid-cols-[1fr_1.1fr]">
+    <main
+      id="konten-utama"
+      tabIndex={-1}
+      className="grid min-h-svh min-w-0 [overflow-wrap:anywhere] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]"
+    >
       <section
-        className="relative hidden flex-col justify-between overflow-hidden bg-primary p-12 text-white lg:flex xl:p-16"
+        className="relative hidden min-w-0 flex-col justify-between gap-10 overflow-hidden bg-primary p-12 text-white lg:flex xl:p-16"
         aria-label="Tentang SiM-Guru"
       >
         <Link
           prefetch={false}
           href="/"
-          className="text-xl font-bold tracking-tight"
+          className="inline-flex min-h-11 flex-col items-start justify-center rounded-md text-xl font-bold tracking-tight"
         >
           SiM-Guru
           <span className="mt-1 block text-xs font-normal tracking-wide text-white/80">
@@ -42,15 +46,15 @@ export function AuthLayout({
           </p>
           <div className="grid gap-4 pt-4 text-sm">
             <p className="flex items-center gap-3">
-              <CalendarCheck2 className="size-5" aria-hidden="true" />
+              <CalendarCheck2 className="size-5 shrink-0" aria-hidden="true" />
               Kegiatan harian lebih terarah
             </p>
             <p className="flex items-center gap-3">
-              <BookOpen className="size-5" aria-hidden="true" />
+              <BookOpen className="size-5 shrink-0" aria-hidden="true" />
               Catatan pembelajaran tersusun rapi
             </p>
             <p className="flex items-center gap-3">
-              <ShieldCheck className="size-5" aria-hidden="true" />
+              <ShieldCheck className="size-5 shrink-0" aria-hidden="true" />
               Akses sesuai kewenangan akun
             </p>
           </div>
@@ -63,10 +67,15 @@ export function AuthLayout({
           className="pointer-events-none absolute -right-36 -bottom-32 size-[30rem] rounded-full border-[70px] border-white/5"
         />
       </section>
-      <section className="flex min-w-0 flex-col justify-center px-5 py-10 sm:px-10 lg:px-14">
-        <div className="mx-auto w-full max-w-lg">
+      <section className="flex min-w-0 flex-col justify-center px-4 py-8 sm:px-8 sm:py-10 lg:px-12">
+        <div className="mx-auto w-full min-w-0 max-w-lg">
           <div className="mb-9 lg:hidden">
-            <Link prefetch={false} href="/">
+            <Link
+              prefetch={false}
+              href="/"
+              aria-label="SiM-Guru, beranda"
+              className="inline-flex min-h-11 max-w-full items-center rounded-md [&>span]:flex-wrap [&>span>span:first-child]:shrink-0"
+            >
               <Brand />
             </Link>
           </div>
