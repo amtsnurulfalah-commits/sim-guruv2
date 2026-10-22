@@ -32,18 +32,18 @@ export const userProfileSchema = z
       z
         .url()
         .max(2048)
-        .refine((v) => {
+        .pipe(z.string().refine((v) => {
           const u = new URL(v);
           return u.protocol === "https:" && !u.username && !u.password;
-        }),
+        })),
     ]),
     employmentStatus: z.string().trim().max(100),
     rank: z.string().trim().max(100),
     kmDistance: z
       .string()
       .regex(/^\d{1,3}(\.\d{1,2})?$/)
-      .refine((v) => new DomainDecimal(v).lte("999.99"))
-      .transform((v) => new DomainDecimal(v).toFixed(2)),
+      .pipe(z.string().refine((v) => new DomainDecimal(v).lte("999.99"))
+        .transform((v) => new DomainDecimal(v).toFixed(2))),
     additionalRole: z.enum(["", "KEPALA_SEKOLAH"]),
   })
   .strict();

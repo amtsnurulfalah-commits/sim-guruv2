@@ -1,5 +1,5 @@
 "use client";
-import { serverFieldErrors } from "@/lib/feedback/api-error";
+import { ApiRequestError, serverFieldErrors } from "@/lib/feedback/api-error";
 import { applyFieldErrors } from "@/lib/feedback/form-fields";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import {
   useEffect,
+  useId,
   useRef,
   useState,
   type FormEvent,
@@ -19,13 +20,23 @@ import {
 } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  userStatusLabels,
+  userStatusLabels, createUserSchema, editUserSchema, statusSchema, activationRequestSchema, listUsersSchema,
   type UserDto,
   type UserList,
   type UserProfileInput,
 } from "@/lib/users/schemas";
 import { usersRequest } from "./api";
 import { endLocalSession } from "@/features/auth/account-lifecycle";
+import { userListSchema, userMutationSchema } from "@/lib/users/contracts";
+import { validateAccount as validateInput } from "@/lib/accounts/client-validation";
+import { PasswordInput } from "@/components/ui/password-input";
+import { Field } from "@/features/auth/account-lifecycle";
+import { EmptyState } from "@/components/feedback/feature-state";
+function fieldError(form:HTMLFormElement,error:unknown){
+ const fields=serverFieldErrors(error);
+ if(error instanceof ApiRequestError && error.code==="INVALID_CREDENTIALS") fields.currentPassword="Kata sandi administrator tidak sesuai. Periksa kembali isian ini.";
+ applyFieldErrors(form,fields);
+}
 const empty: UserProfileInput = {
   username: "",
   fullName: "",
@@ -44,23 +55,22 @@ function Input({
   label,
   ...props
 }: InputHTMLAttributes<HTMLInputElement> & { label: string }) {
-  return (
-    <label className="block space-y-2 text-sm">
-      <span>{label}</span>
-      <input
-        {...props}
-        className="h-11 w-full rounded-lg border bg-background px-3 read-only:bg-muted"
-      />
-    </label>
-  );
+  const id=useId();
+  const {type,...inputProps}=props;
+  return <div className="min-w-0 space-y-2 text-sm"><label htmlFor={id} className="block font-medium">{label}</label>
+    {type==="password"?<PasswordInput {...inputProps} id={id}/>:<input {...inputProps} id={id} type={type} className="min-h-11 w-full min-w-0 rounded-lg border bg-background px-3 read-only:bg-muted"/>}
+  </div>;
 }
+
 function ProfileFields({
   user,
+  emailRequired=false,
 }: {
   user: UserProfileInput & { emailVerified?: boolean };
+  emailRequired?:boolean;
 }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid min-w-0 gap-4 sm:grid-cols-2">
       <Input
         label="Username"
         name="username"
@@ -87,8 +97,9 @@ function ProfileFields({
         <span>Peran aplikasi</span>
         <select
           name="role"
+          aria-label="Peran aplikasi"
           defaultValue={user.role}
-          className="h-11 w-full rounded-lg border bg-background px-3"
+          className="min-h-11 w-full min-w-0 rounded-lg border bg-background px-3"
         >
           <option value="guru">Guru</option>
           <option value="admin">Administrator</option>
@@ -98,6 +109,7 @@ function ProfileFields({
         label="Email kandidat / terverifikasi"
         name="email"
         type="email"
+        required={emailRequired}
         defaultValue={user.email}
         maxLength={254}
         readOnly={user.emailVerified}
@@ -109,12 +121,7 @@ function ProfileFields({
         defaultValue={user.phone}
         maxLength={25}
       />
-      <Input
-        label="Alamat"
-        name="address"
-        defaultValue={user.address}
-        maxLength={500}
-      />
+      <Field label="Alamat" name="address" value={user.address} maxLength={500} required={false} multiline />
       <Input
         label="URL foto HTTPS"
         name="photoUrl"
@@ -146,8 +153,9 @@ function ProfileFields({
         <span>Jabatan tambahan</span>
         <select
           name="additionalRole"
+          aria-label="Jabatan tambahan"
           defaultValue={user.additionalRole}
-          className="h-11 w-full rounded-lg border bg-background px-3"
+          className="min-h-11 w-full min-w-0 rounded-lg border bg-background px-3"
         >
           <option value="">Tidak ada</option>
           <option value="KEPALA_SEKOLAH">Kepala Sekolah</option>
@@ -162,42 +170,47 @@ function UserEditor({
   onBusy,
 }: {
   user: UserDto | null;
-  onSuccess: (r: MutationResult) => void;
+  onSuccess: (r: unknown, target:string) => void;
   onBusy: (busy: boolean) => void;
 }) {
+  const pending=useRef(false),mounted=useRef(false);
+  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;};},[]);
   const [delivery, setDelivery] = useState("activation"),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy) return;
+    if (pending.current) return;
+    pending.current=true;
     const form = event.currentTarget,
       data = Object.fromEntries(new FormData(form));
     setBusy(true);
     onBusy(true);
     setError("");
     try {
-      const result = await usersRequest<MutationResult>(
+      const result = await usersRequest<unknown>(
         user ? "/" + user.id : "",
         user ? "PATCH" : "POST",
-        { ...data, ...(user ? { version: user.version } : { delivery }) },
+        user ? validateInput(editUserSchema,{...data,version:user.version}) : validateInput(createUserSchema,{...data,delivery}),
       );
       form.reset();
-      onSuccess(result);
+      if(mounted.current)onSuccess(result,String(data.fullName)+" ("+String(data.username)+")");
     } catch (e) {
-      applyFieldErrors(form, serverFieldErrors(e));
+      if(!mounted.current)return;
+      fieldError(form,e);
       setError(
         e instanceof Error ? e.message : "Perubahan belum dapat disimpan.",
       );
     } finally {
-      setBusy(false);
+      pending.current=false;
+      if(mounted.current)setBusy(false);
       onBusy(false);
     }
   }
   return (
-    <form className="space-y-5" onSubmit={(e) => void submit(e)}>
+    <form aria-busy={busy} className="min-w-0 space-y-5" onSubmit={(e) => void submit(e)}>
       <fieldset disabled={busy} className="space-y-5">
-        <ProfileFields user={user ?? empty} />
+        <ProfileFields user={user ?? empty} emailRequired={user ? user.status==="pending_activation" : delivery==="activation"} />
         {user?.emailVerified && (
           <p className="text-sm leading-7">
             Email terverifikasi tidak dapat diganti dari formulir ini. Gunakan
@@ -210,9 +223,10 @@ function UserEditor({
             <label className="block space-y-2 text-sm">
               <span>Metode penyerahan akun</span>
               <select
+                aria-label="Metode penyerahan akun"
                 value={delivery}
                 onChange={(e) => setDelivery(e.target.value)}
-                className="h-11 w-full rounded-lg border bg-background px-3"
+                className="min-h-11 w-full min-w-0 rounded-lg border bg-background px-3"
               >
                 <option value="activation">
                   Tautan aktivasi melalui email
@@ -267,7 +281,8 @@ export function IdentityFields() {
         <span>Metode verifikasi identitas</span>
         <select
           name="method"
-          className="h-11 w-full rounded-lg border bg-background px-3"
+          aria-label="Metode verifikasi identitas"
+          className="min-h-11 w-full min-w-0 rounded-lg border bg-background px-3"
         >
           <option value="tatap_muka">Tatap muka</option>
           <option value="dokumen_dan_panggilan">
@@ -285,13 +300,6 @@ export function IdentityFields() {
     </>
   );
 }
-type MutationResult = {
-  user?: UserDto;
-  selfAffected?: boolean;
-  delivery?: string;
-  temporaryPassword?: string;
-  expiresInHours?: number;
-};
 type Confirmation = {
   user: UserDto;
   action: "active" | "disabled" | "archived" | "activation";
@@ -313,7 +321,11 @@ export function UserManager() {
     [editorOpen, setEditorOpen] = useState(false),
     [confirmation, setConfirmation] = useState<Confirmation | null>(null),
     [busy, setBusy] = useState(false),
-    [secret, setSecret] = useState("");
+    [secret, setSecret] = useState<{value:string;target:string}|null>(null);
+  const [listError,setListError]=useState(""),[filterRevision,setFilterRevision]=useState(0);
+  const pending=useRef(false),mounted=useRef(false),committed=useRef(false);
+  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;};},[]);
+  function editorBusy(value:boolean){pending.current=value;if(mounted.current)setBusy(value);}
   const editor = useRef<HTMLDialogElement>(null),
     confirm = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -321,9 +333,9 @@ export function UserManager() {
     let active = true;
     async function load() {
       setLoading(true);
-      setError("");
+      setListError("");
       try {
-        const value = await usersRequest<UserList>(
+        const raw = await usersRequest<unknown>(
           "?" +
             new URLSearchParams({
               ...query,
@@ -334,13 +346,18 @@ export function UserManager() {
           undefined,
           controller.signal,
         );
-        if (active) setData(value);
+        const parsed=userListSchema.safeParse(raw);
+        if(!parsed.success)throw new ApiRequestError("INVALID_RESPONSE","Daftar pengguna belum sesuai format. Muat ulang sebelum memproses tindakan.");
+        const value=parsed.data;
+        if(active){
+          const last=Math.max(1,Math.ceil(value.total/query.pageSize));
+          if(query.page>last){setQuery(v=>({...v,page:last}));return;}
+          setData(value);committed.current=false;
+        }
       } catch (e) {
         if (active) {
           setData(null);
-          setError(
-            e instanceof Error ? e.message : "Daftar belum dapat dimuat.",
-          );
+          setListError((committed.current?"Perubahan sudah diproses, tetapi daftar terbaru belum dapat dimuat. Jangan ulangi tindakan. ":"")+(e instanceof Error ? e.message : "Daftar belum dapat dimuat."));
         }
       } finally {
         if (active) setLoading(false);
@@ -358,62 +375,58 @@ export function UserManager() {
   useEffect(() => {
     if (confirmation) confirm.current?.showModal();
   }, [confirmation]);
-  function success(result: MutationResult) {
-    if (result.selfAffected) {
-      endLocalSession();
-      return;
-    }
-    if (result.temporaryPassword) setSecret(result.temporaryPassword);
-    setMessage(
-      result.delivery === "queued"
-        ? "Akun tersimpan dan aktivasi masuk antrean pengiriman. Belum berarti email telah terkirim."
-        : "Perubahan pengguna berhasil disimpan.",
-    );
-    editor.current?.close();
-    confirm.current?.close();
-    setRevision((v) => v + 1);
+  function success(raw:unknown,target:string) {
+    if(!mounted.current)return;
+    const value=raw && typeof raw==="object"?raw as Record<string,unknown>:{};
+    committed.current=true;
+    if(value.selfAffected===true){endLocalSession();return;}
+    // Preserve a one-time secret even if other response fields are malformed.
+    if(typeof value.temporaryPassword==="string"&&value.temporaryPassword)setSecret({value:value.temporaryPassword,target});
+    const parsed=userMutationSchema.safeParse(raw);
+    setMessage(!parsed.success?"Tindakan sudah diproses, tetapi detail hasil belum dapat dibaca. Jangan ulangi tindakan; periksa status pengguna setelah memuat ulang daftar.":parsed.data.delivery==="handover"&&!parsed.data.temporaryPassword?"Akun sudah dibuat tetapi kata sandi sementara tidak terbaca. Jangan buat akun ulang; tinjau status pengguna dan ajukan pemulihan bila diperlukan.":parsed.data.delivery==="queued"?"Akun tersimpan dan aktivasi masuk antrean pengiriman. Belum berarti email telah terkirim.":"Perubahan pengguna berhasil disimpan.");
+    editor.current?.close();confirm.current?.close();setRevision(v=>v+1);
   }
   async function confirmAction(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!confirmation || busy) return;
+    if (!confirmation || pending.current || secret) return;
+    pending.current=true;
     setBusy(true);
     setError("");
     const form = event.currentTarget,
       values = Object.fromEntries(new FormData(form)),
       { user, action } = confirmation;
     try {
-      const result = await usersRequest<MutationResult>(
+      const result = await usersRequest<unknown>(
         "/" + user.id + (action === "activation" ? "/activation" : "/status"),
         "POST",
-        {
-          ...values,
-          version: user.version,
-          ...(action === "activation" ? {} : { status: action }),
-        },
+        action==="activation"?validateInput(activationRequestSchema,{...values,version:user.version}):validateInput(statusSchema,{...values,version:user.version,status:action}),
       );
       form.reset();
-      success(result);
+      success(result,user.fullName+" ("+user.username+")");
     } catch (e) {
+      if(!mounted.current)return;
+      fieldError(form,e);
       setError(
         e instanceof Error ? e.message : "Tindakan belum dapat dijalankan.",
       );
     } finally {
-      setBusy(false);
+      pending.current=false;
+      if(mounted.current)setBusy(false);
     }
   }
   function filter(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
-    setQuery({
+    try {setQuery(validateInput(listUsersSchema,{
       q: String(values.get("q") ?? ""),
       role: String(values.get("role") ?? ""),
       status: String(values.get("status") ?? ""),
       page: 1,
       pageSize: Number(values.get("pageSize")),
-    });
+    }));}catch(e){fieldError(event.currentTarget,e);setListError(e instanceof Error?e.message:"Periksa filter pengguna.");}
   }
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6 [overflow-wrap:anywhere]">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold tracking-widest text-primary uppercase">
@@ -427,7 +440,7 @@ export function UserManager() {
           </p>
         </div>
         <Button
-          disabled={Boolean(secret)}
+          disabled={busy || Boolean(secret)}
           onClick={() => {
             setEditing(null);
             setEditorOpen(true);
@@ -444,25 +457,26 @@ export function UserManager() {
       )}
       {secret && (
         <section className="page-section space-y-3 rounded-2xl border bg-card p-5">
-          <h2 className="font-semibold">Serah terima kata sandi sementara</h2>
+          <h2 className="font-semibold">Serah terima kata sandi sementara</h2><p className="text-sm font-medium">Pemilik: {secret.target}</p>
           <p className="text-sm leading-7">
             Berlaku 24 jam, ditampilkan satu kali untuk diserahkan secara aman
             kepada pemilik yang sudah diverifikasi. Pemilik wajib mengganti kata
-            sandi dan menyelesaikan onboarding.
+            sandi dan menyelesaikan onboarding. Nilai tidak ditampilkan kembali setelah halaman ditutup.
           </p>
           <output className="block break-all rounded-lg border p-3 font-mono">
-            {secret}
+            {secret.value}
           </output>
-          <Button variant="outline" onClick={() => setSecret("")}>
+          <Button variant="outline" onClick={() => setSecret(null)}>
             <ActionIcon action="visibility" />
             Sembunyikan kata sandi sementara
           </Button>
         </section>
       )}
       <form
+        key={filterRevision}
         onSubmit={filter}
-        className="grid items-end gap-4 rounded-2xl border bg-card p-5 sm:grid-cols-2 xl:grid-cols-5"
-      >
+        className="rounded-2xl border bg-card p-5"
+      ><fieldset disabled={busy} className="grid min-w-0 items-end gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <Input
           name="q"
           label="Cari nama, username atau NIP"
@@ -474,7 +488,7 @@ export function UserManager() {
           <select
             name="role"
             defaultValue={query.role}
-            className="h-11 w-full rounded-lg border bg-background px-3"
+            className="min-h-11 w-full min-w-0 rounded-lg border bg-background px-3"
           >
             <option value="">Semua peran</option>
             <option value="admin">Administrator</option>
@@ -486,7 +500,7 @@ export function UserManager() {
           <select
             name="status"
             defaultValue={query.status}
-            className="h-11 w-full rounded-lg border bg-background px-3"
+            className="min-h-11 w-full min-w-0 rounded-lg border bg-background px-3"
           >
             <option value="">Semua status</option>
             {Object.entries(userStatusLabels).map(([value, label]) => (
@@ -501,7 +515,7 @@ export function UserManager() {
           <select
             name="pageSize"
             defaultValue={query.pageSize}
-            className="h-11 w-full rounded-lg border bg-background px-3"
+            className="min-h-11 w-full min-w-0 rounded-lg border bg-background px-3"
           >
             <option value="20">20</option>
             <option value="50">50</option>
@@ -512,15 +526,16 @@ export function UserManager() {
           <ActionIcon action="filter" />
           Terapkan filter
         </Button>
-      </form>
+        <Button type="button" variant="outline" onClick={()=>{setQuery({q:"",role:"",status:"",page:1,pageSize:20});setFilterRevision(v=>v+1);}}>Reset filter</Button>
+      </fieldset></form>
       {loading ? (
         <p role="status" aria-busy="true">
           Memuat pengguna…
         </p>
-      ) : error ? (
+      ) : listError ? (
         <div className="space-y-3 rounded-xl border p-5">
-          <ErrorFeedback message={error} />
-          <Button variant="outline" onClick={() => setRevision((v) => v + 1)}>
+          <ErrorFeedback message={listError} />
+          <Button variant="outline" disabled={busy} onClick={() => setRevision((v) => v + 1)}>
             <ActionIcon action="refresh" />
             Muat ulang daftar
           </Button>
@@ -534,6 +549,7 @@ export function UserManager() {
               </p>
               <Button
                 variant="outline"
+                disabled={busy}
                 onClick={() => setRevision((v) => v + 1)}
               >
                 <ActionIcon action="refresh" />
@@ -541,13 +557,10 @@ export function UserManager() {
               </Button>
             </div>
             {data.items.length === 0 ? (
-              <p className="rounded-2xl border bg-card p-6 text-sm">
-                Tidak ada pengguna yang sesuai filter. Ubah filter atau
-                tambahkan pengguna baru.
-              </p>
+              <EmptyState title="Tidak ada pengguna yang sesuai filter" description="Sesuaikan atau reset filter. Gunakan Tambah pengguna untuk membuat akun baru."/>
             ) : (
               <TableRegion label="Daftar pengguna">
-                <table className="w-full min-w-200 text-left text-sm">
+                <table className="w-full min-w-[900px] table-fixed text-left text-sm"><colgroup><col className="w-52"/><col className="w-36"/><col className="w-60"/><col className="w-24"/><col className="w-56"/></colgroup>
                   <caption className="sr-only">
                     Daftar pengguna sesuai filter
                   </caption>
@@ -572,7 +585,7 @@ export function UserManager() {
                   </thead>
                   <tbody>
                     {data.items.map((user) => (
-                      <tr key={user.id} className="border-b last:border-0">
+                      <tr key={user.id} className="border-b align-top last:border-0">
                         <td className="p-4">
                           <p className="font-semibold">{user.fullName}</p>
                           <p className="mt-1 text-xs text-muted-foreground">
@@ -604,7 +617,7 @@ export function UserManager() {
                               size="sm"
                               variant="outline"
                               disabled={
-                                user.status === "archived" || Boolean(secret)
+                                user.status === "archived" || busy || Boolean(secret)
                               }
                               onClick={() => {
                                 setEditing(user);
@@ -618,6 +631,7 @@ export function UserManager() {
                               <Button
                                 size="sm"
                                 variant="outline"
+                                disabled={busy || Boolean(secret) || Boolean(listError)}
                                 onClick={() => {
                                   setError("");
                                   setConfirmation({
@@ -635,6 +649,7 @@ export function UserManager() {
                               <Button
                                 size="sm"
                                 variant="outline"
+                                disabled={busy || Boolean(secret)}
                                 onClick={() => {
                                   setError("");
                                   setConfirmation({
@@ -656,6 +671,7 @@ export function UserManager() {
                               <Button
                                 size="sm"
                                 variant="outline"
+                                disabled={busy || Boolean(secret)}
                                 onClick={() => {
                                   setError("");
                                   setConfirmation({ user, action: "archived" });
@@ -673,10 +689,10 @@ export function UserManager() {
                 </table>
               </TableRegion>
             )}
-            <div className="flex justify-between gap-3">
+            <nav aria-label="Pagination pengguna" className="flex flex-wrap justify-between gap-3">
               <Button
                 variant="outline"
-                disabled={query.page === 1}
+                disabled={busy || query.page === 1}
                 onClick={() => setQuery((v) => ({ ...v, page: v.page - 1 }))}
               >
                 <ActionIcon action="previous" />
@@ -684,13 +700,13 @@ export function UserManager() {
               </Button>
               <Button
                 variant="outline"
-                disabled={data.page * data.pageSize >= data.total}
+                disabled={busy || data.page * data.pageSize >= data.total}
                 onClick={() => setQuery((v) => ({ ...v, page: v.page + 1 }))}
               >
                 <ActionIcon action="next" />
                 Berikutnya
               </Button>
-            </div>
+            </nav>
           </>
         )
       )}
@@ -702,7 +718,7 @@ export function UserManager() {
       <ManagedDialog
         ref={editor}
         aria-labelledby="user-editor-title"
-        className="m-auto max-h-[90svh] w-[min(48rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-6 text-foreground shadow-xl backdrop:bg-black/45"
+        className="m-auto max-h-[90svh] w-[min(48rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-4 sm:p-6 text-foreground [overflow-wrap:anywhere] shadow-xl backdrop:bg-black/45"
         onCancel={(e) => {
           if (busy) e.preventDefault();
         }}
@@ -711,7 +727,7 @@ export function UserManager() {
           setEditing(null);
         }}
       >
-        <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <h2 id="user-editor-title" className="text-xl font-bold">
             {editing ? "Ubah pengguna" : "Tambah pengguna"}
           </h2>
@@ -729,14 +745,14 @@ export function UserManager() {
             key={editing?.id ?? "create"}
             user={editing}
             onSuccess={success}
-            onBusy={setBusy}
+            onBusy={editorBusy}
           />
         )}
       </ManagedDialog>
       <ManagedDialog
         ref={confirm}
         aria-labelledby="user-confirm-title"
-        className="m-auto w-[min(32rem,calc(100%_-_2rem))] rounded-2xl border bg-card p-6 text-foreground shadow-xl backdrop:bg-black/45"
+        className="m-auto max-h-[90svh] w-[min(32rem,calc(100%_-_2rem))] overflow-y-auto rounded-2xl border bg-card p-4 sm:p-6 text-foreground [overflow-wrap:anywhere] shadow-xl backdrop:bg-black/45"
         onCancel={(e) => {
           if (busy) e.preventDefault();
         }}
@@ -746,7 +762,7 @@ export function UserManager() {
         }}
       >
         {confirmation && (
-          <form onSubmit={(e) => void confirmAction(e)} className="space-y-5">
+          <form key={confirmation.user.id+confirmation.action+confirmation.user.version} aria-busy={busy} onSubmit={(e) => void confirmAction(e)} className="min-w-0 space-y-5">
             <h2 id="user-confirm-title" className="text-xl font-bold">
               {confirmation.action === "activation"
                 ? "Antrekan ulang email aktivasi"
@@ -785,7 +801,7 @@ export function UserManager() {
                 autoComplete="current-password"
                 maxLength={256}
               />
-              <div className="flex justify-end gap-3">
+              <div className="flex flex-wrap justify-end gap-3">
                 <Button
                   type="button"
                   variant="outline"

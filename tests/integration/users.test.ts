@@ -673,6 +673,13 @@ test("Tahap 2.1 — user management, real hashes and role-scoped SQL", async (t)
         assert.equal(JSON.stringify(dto).includes(key), false);
     },
   );
+  await t.test("US17b malformed distance/photo returns field 422 instead of INTERNAL_ERROR",async()=>{
+    for(const patch of [{kmDistance:"invalid"},{photoUrl:"not a URL"}]){
+      const response=await handler("collection",request(admin,"POST",{...profile("invalid.input"),...proof,delivery:"activation",email:"invalid@example.test",...patch}));
+      assert.equal(response.status,422);const body=await response.json();assert.equal(body.error.code,"VALIDATION_ERROR");
+      assert.ok(body.error.fieldErrors[Object.keys(patch)[0]!]);
+    }
+  });
   await t.test(
     "US18 strict decimal/profile validation and sanitized HTTP conflicts",
     async () => {
