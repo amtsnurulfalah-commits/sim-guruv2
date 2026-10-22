@@ -25,28 +25,34 @@ const steps = [
 ];
 export default function HomePage() {
   return (
-    <div className="min-h-svh">
+    <div className="public-home flex min-h-svh min-w-0 flex-col [overflow-wrap:anywhere]">
       <header className="border-b bg-card">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-5 sm:px-8">
-          <Link prefetch={false} href="/" aria-label="SiM-Guru, beranda">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-8 sm:py-5">
+          <Link
+            prefetch={false}
+            href="/"
+            aria-label="SiM-Guru, beranda"
+            className="inline-flex min-h-11 max-w-full items-center rounded-md [&>span]:flex-wrap [&>span>span:first-child]:shrink-0"
+          >
             <Brand />
           </Link>
-          <Badge className="border-primary/15 bg-primary/5 text-primary">
+          <Badge className="max-w-full border-primary/15 bg-primary/5 text-primary">
             Ruang kerja madrasah
           </Badge>
         </div>
       </header>
       <main
         id="konten-utama"
-        className="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-20"
+        tabIndex={-1}
+        className="mx-auto w-full max-w-6xl min-w-0 flex-1 px-5 py-8 sm:px-8 sm:py-16"
       >
-        <div className="grid gap-10 lg:grid-cols-[1.25fr_1fr] lg:gap-16">
-          <div className="py-4">
-            <p className="mb-6 flex items-center gap-2 text-xs font-bold tracking-widest text-primary uppercase">
-              <Sprout aria-hidden="true" className="size-4" /> Ruang kerja guru
+        <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-12">
+          <div className="min-w-0 py-4">
+            <p className="mb-5 flex items-start gap-2 text-xs font-bold tracking-widest text-primary uppercase">
+              <Sprout aria-hidden="true" className="mt-0.5 size-4 shrink-0" /> Ruang kerja guru
               yang terhubung
             </p>
-            <h1 className="max-w-2xl text-4xl leading-tight font-bold tracking-tight sm:text-5xl">
+            <h1 className="max-w-2xl text-3xl leading-tight font-bold tracking-tight min-[375px]:text-4xl sm:text-5xl">
               Administrasi tertata.
               <br />
               <span className="text-primary">Fokus untuk mengajar.</span>
@@ -60,7 +66,11 @@ export default function HomePage() {
               jadwal, lengkapi catatan kegiatan, lalu pantau rekap administrasi
               Anda.
             </p>
-            <Button asChild size="lg" className="mt-8">
+            <Button
+              asChild
+              size="lg"
+              className="mt-8 h-auto min-h-12 w-full py-3 sm:w-auto"
+            >
               <Link prefetch={false} href="/login">
                 Masuk ke SiM-Guru <ArrowRight aria-hidden="true" />
               </Link>
@@ -69,50 +79,60 @@ export default function HomePage() {
               <Link
                 prefetch={false}
                 href="/kesiapan"
-                className="font-semibold text-primary underline underline-offset-4"
+                className="ui-text-link max-w-full rounded-md py-2 underline underline-offset-4 hover:text-accent-foreground"
               >
                 Panduan penggunaan SiM-Guru
               </Link>
             </p>
-            <div className="mt-8 flex items-center gap-2 text-xs text-muted-foreground">
-              <LockKeyhole aria-hidden="true" className="size-4" /> Akun
+            <div className="mt-6 flex items-start gap-2 text-xs text-muted-foreground">
+              <LockKeyhole aria-hidden="true" className="mt-0.5 size-4 shrink-0" /> Akun
               dikelola oleh administrator madrasah.
             </div>
           </div>
-          <Card className="overflow-hidden self-start shadow-sm">
+          <Card
+            aria-labelledby="home-workflow-title"
+            className="min-w-0 self-start shadow-sm"
+          >
             <CardHeader className="border-b bg-muted/40 p-6">
               <p className="mb-2 text-xs tracking-widest text-muted-foreground uppercase">
                 Alur kerja SiM-Guru
               </p>
-              <CardTitle className="text-xl">
+              <CardTitle id="home-workflow-title" className="text-xl">
                 Mulai dari kegiatan harian
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-7 p-6">
-              {steps.map((step, index) => (
-                <div key={step.number} className="flex gap-4">
-                  <span
-                    className={`flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold ${index === 0 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
-                  >
-                    {step.number}
-                  </span>
-                  <div>
-                    <h3 className="font-semibold">{step.title}</h3>
-                    <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                      {step.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              <div className="flex items-center gap-2 border-t pt-5 text-xs text-muted-foreground">
-                <Check aria-hidden="true" className="size-4 text-primary" />{" "}
+            <CardContent className="p-5 sm:p-6">
+              <ol
+                role="list"
+                className="space-y-6"
+                aria-label="Tiga langkah menggunakan SiM-Guru"
+              >
+                {steps.map((step, index) => (
+                  <li key={step.number} className="flex min-w-0 gap-3 sm:gap-4">
+                    <span
+                      aria-hidden="true"
+                      className={`flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold ${index === 0 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+                    >
+                      {step.number}
+                    </span>
+                    <div className="min-w-0">
+                      <h3 className="font-semibold">{step.title}</h3>
+                      <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                        {step.description}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              <div className="mt-6 flex items-start gap-2 border-t pt-5 text-xs text-muted-foreground">
+                <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />{" "}
                 Akses dikelola oleh administrator madrasah.
               </div>
             </CardContent>
           </Card>
         </div>
       </main>
-      <footer className="mx-auto flex max-w-6xl flex-wrap justify-between gap-2 border-t px-5 py-6 text-xs text-muted-foreground sm:px-8">
+      <footer className="mx-auto flex w-full max-w-6xl flex-wrap justify-between gap-2 border-t px-5 py-6 text-xs text-muted-foreground sm:px-8">
         <p>SiM-Guru · Sistem Informasi Guru</p>
         <p>Ruang kerja madrasah</p>
       </footer>

@@ -437,3 +437,11 @@ dialog[open] {
     position: static;
   }
 }
+
+/* Public home remains printable alongside the scoped honorarium print view. */
+@media print {
+  .public-home,
+  .public-home * {
+    visibility: visible;
+  }
+}
