@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-23T23:43:24.971954+00:00",
+  "baselineCommit": "c3bced20922163d0abddae2358c3450a84437d9d",
+  "applicationSourceChanged": false,
+  "productionDatabaseAccessed": false,
+  "reexecutedAfterWorkspaceRecovery": true,
+  "checks": {
+    "npmRunCheck": {
+      "status": "passed",
+      "lint": "passed",
+      "typecheck": "passed",
+      "unit": 129,
+      "cryptoHttp": 35,
+      "integration": 333,
+      "totalRunnerResults": 497,
+      "productionBuild": "passed"
+    },
+    "toolingLint": {
+      "status": "passed"
+    },
+    "globalUi": {
+      "status": "passed",
+      "matrix": 252,
+      "interactions": 45,
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "serverErrors": ""
+    },
+    "readOnlyBaseline": {
+      "status": "passed",
+      "screens": 4,
+      "apiReadTargets": 3,
+      "warmupsPerTarget": 1,
+      "samplesPerTarget": 10,
+      "report": "performance.json"
+    },
+    "documentationLinks": {
+      "status": "passed",
+      "markdownFiles": 10,
+      "missingLinks": 0
+    }
+  },
+  "limitations": [
+    "Local PGlite/browser harness does not verify production deployment, pooler, native restore or SMTP delivery.",
+    "Runner results include parent tests and are not 497 full business end-to-end flows.",
+    "Prior module-specific browser audits are historical evidence, not newly rerun Stage 0 results."
+  ],
+  "ci": "Inspect GitHub PR checks; no CI result is assumed from this local artifact."
+}

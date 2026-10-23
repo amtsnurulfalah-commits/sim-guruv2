@@ -1,5 +1,7 @@
 # Status implementasi pada Tahap 8.5
 
+> Rekam historis pembangunan ulang awal. Baseline setelah audit halaman hingga PR #43 dan program lanjutan ada pada [paket Tahap 0](../development/stage-0/README.md) dan [checkpoint](../development/CHECKPOINT.md). Angka/status di bawah adalah bukti pada waktu tahap asal.
+
 | Lingkup | Status | Bukti/batas |
 |---|---|---|
 | Tahap1.1 fondasi lokal | Teruji lokal | Lint/typecheck/build,9 unit tests, HTTP smoke; tidak deploy |

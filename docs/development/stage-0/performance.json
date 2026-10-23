@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "measuredAt": "2026-10-23T23:39:00.084Z",
+  "environment": "localhost UI harness + PGlite synthetic minimal dataset",
+  "production": false,
+  "node": "v24.19.0",
+  "browser": "153.0.8010.0",
+  "fixtureStartupMs": 4150.33,
+  "method": "Sequential read-only requests; 1 warmup + 10 samples/API; nearest-rank p50/p95. Page readiness includes networkidle and aria-busy=false.",
+  "limitations": [
+    "Not production latency, SSR timing, Core Web Vitals, concurrency or capacity.",
+    "Small synthetic data; fixture bypasses production auth/CSRF/rate layer. Security is tested separately by integration tests.",
+    "Only compare repeat runs using same environment/data. These numbers are not production SLOs."
+  ],
+  "screens": [
+    {
+      "view": "dashboard",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "navigationAndReadyMs": 867.11,
+      "documentOverflow": false
+    },
+    {
+      "view": "finance",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "navigationAndReadyMs": 787.12,
+      "documentOverflow": false
+    },
+    {
+      "view": "events",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "navigationAndReadyMs": 787.29,
+      "documentOverflow": false
+    },
+    {
+      "view": "schedules",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "navigationAndReadyMs": 882.86,
+      "documentOverflow": false
+    }
+  ],
+  "api": [
+    {
+      "path": "/api/dashboard",
+      "samples": 10,
+      "warmups": 1,
+      "p50Ms": 13.7,
+      "p95Ms": 26.2,
+      "minMs": 8,
+      "maxMs": 26.2
+    },
+    {
+      "path": "/api/programs/read?domain=events&date=2026-10-24",
+      "samples": 10,
+      "warmups": 1,
+      "p50Ms": 6.8,
+      "p95Ms": 13.9,
+      "minMs": 5.5,
+      "maxMs": 13.9
+    },
+    {
+      "path": "/api/honorarium/read?kind=recap&period=2026-10&mode=realized",
+      "samples": 10,
+      "warmups": 1,
+      "p50Ms": 8.7,
+      "p95Ms": 15.9,
+      "minMs": 5.8,
+      "maxMs": 15.9
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "serverErrors": ""
+}

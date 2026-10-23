@@ -1,5 +1,7 @@
 /** Read-only structural inventory; candidates are never automatic deletion approval. */
 import ts from "typescript";
+import { execFileSync } from "node:child_process";
+import { dirname } from "node:path";
 import { readdir, readFile, mkdir, writeFile } from "node:fs/promises";
 import { resolve, relative } from "node:path";
 const root = process.cwd();
@@ -82,7 +84,9 @@ async function main() {
   }
   const sourceFiles = files.filter((f) => relative(root, f).startsWith("src/"));
   const inventory = {
-    baseCommit: "7f5c6cc38979917e25a759105c92c74054846ae3",
+    baseCommit: execFileSync("git", ["rev-parse", "HEAD"], {
+      encoding: "utf8",
+    }).trim(),
     limitations:
       "Literal module graph only; framework routes are roots, not dead code. Dynamic expressions, SQL RPCs, operational entrypoints and exports require human review.",
     analyzedFiles: files.length,
@@ -104,11 +108,11 @@ async function main() {
       importedBy: [...(incoming.get(f) ?? [])].sort(),
     })),
   };
-  await mkdir(resolve("docs/verification"), { recursive: true });
-  await writeFile(
-    resolve("docs/verification/codebase-audit-inventory.json"),
-    JSON.stringify(inventory, null, 2) + "\n",
+  const output = resolve(
+    process.argv[2] ?? "docs/verification/codebase-audit-inventory.json",
   );
+  await mkdir(dirname(output), { recursive: true });
+  await writeFile(output, JSON.stringify(inventory, null, 2) + "\n");
   console.log(JSON.stringify({ ...inventory, files: undefined }));
 }
 void main().catch(() => {
