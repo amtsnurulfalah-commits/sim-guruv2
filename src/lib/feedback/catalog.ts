@@ -1,6 +1,11 @@
 /** User-facing labels only. Never include submitted values or raw database errors. */
 export const fieldLabels: Record<string, string> = {
   username: "Username",
+  ctaText: "Teks tautan",
+  ctaUrl: "URL tautan",
+  targetUsers: "Sasaran pengguna",
+  allowDismiss: "Pengecualian boleh menutup",
+  denyDismiss: "Pengecualian tidak boleh menutup",
   password: "Kata sandi",
   currentPassword: "Kata sandi saat ini",
   newPassword: "Kata sandi baru",

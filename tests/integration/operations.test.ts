@@ -185,6 +185,7 @@ test("Tahap 7 announcements, maintenance, fenced worker and scheduler", async (t
   await t.test(
     "OP04 contradictory overrides, invalid CTA and reversed dates rejected",
     async () => {
+      await assert.rejects(() => service.command(admin, "save", { ...base, ctaText: "Buka", ctaUrl: "not-a-url" }), { name: "ZodError" });
       for (const d of [
         { allowDismiss: [guruId], denyDismiss: [guruId] },
         { ctaText: "Klik", ctaUrl: "javascript:alert(1)" },
