@@ -4,7 +4,23 @@ import { ActionIcon } from "@/components/ui/action-icon";
 
 import { TableRegion } from "@/components/ui/table-region";
 import { FeatureState } from "@/components/feedback/feature-state";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { z } from "zod";
+import {
+  examBoardSchema,
+  examBapSchema,
+  examOccurrenceSchema,
+  examPreviewSchema,
+  examDeletePreviewSchema,
+  readExamResponse,
+  examOperations,
+  bapAvailability,
+  validateBap,
+  validateExamOperation,
+  validateExamSave,
+  verifyExamSave,
+} from "../../lib/programs/exam-contracts";
+import { ExamImpactDialog } from "./exam-impact-dialog";
 import { masterRequest } from "../masters/api";
 import { wibDate } from "../../lib/calendar/schemas";
 import type {
@@ -12,14 +28,7 @@ import type {
   ExamOccurrence,
   Impact,
 } from "../../lib/programs/schemas";
-import {
-  DataForm,
-  ImpactDialog,
-  type Field,
-  input,
-  secondary,
-  panel,
-} from "./forms";
+import { DataForm, type Field, input, secondary, panel } from "./forms";
 const names = {
   period: "Periode",
   session: "Sesi",
@@ -50,6 +59,25 @@ export function ExamManager({
   admin: boolean;
   userId: string;
 }) {
+  const lock = useRef(false),
+    live = useRef(true),
+    opener = useRef<HTMLButtonElement | null>(null);
+  const [loading, setLoading] = useState(true),
+    [activeForm, setActiveForm] = useState(false),
+    [uncertain, setUncertain] = useState(false),
+    [now, setNow] = useState(() => Date.now()),
+    [query, setQuery] = useState(""),
+    [page, setPage] = useState(1),
+    [bapPage, setBapPage] = useState(1);
+  const today = wibDate(new Date(now));
+  useEffect(() => {
+    live.current = true;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => {
+      live.current = false;
+      clearInterval(timer);
+    };
+  }, []);
   const [date, setDate] = useState(wibDate()),
     [period, setPeriod] = useState(""),
     [board, setBoard] = useState<ExamBoard | null>(null),
@@ -65,56 +93,111 @@ export function ExamManager({
     } | null>(null),
     [operation, setOperation] = useState("confirm"),
     [selected, setSelected] = useState(""),
-    [preview, setPreview] = useState<{ impact: Impact; action: string } | null>(
-      null,
-    );
+    [preview, setPreview] = useState<{
+      impact: Impact;
+      action: string;
+      subject: string;
+      occurrence?: ExamOccurrence;
+    } | null>(null);
   useEffect(() => {
     const c = new AbortController();
-    masterRequest<ExamBoard>(
+    if (!date) return () => c.abort();
+    void masterRequest<unknown>(
       `/api/programs/read?domain=exams&date=${date}${period ? "&periodId=" + period : ""}`,
       "GET",
       undefined,
       c.signal,
     )
-      .then(setBoard)
+      .then((raw) => {
+        if (c.signal.aborted) return;
+        const value = readExamResponse(examBoardSchema, raw);
+        if (
+          value.date !== date ||
+          value.admin !== admin ||
+          (period && value.occurrences.some((o) => o.periodId !== period))
+        )
+          throw Error(
+            "Tanggal, periode atau hak akses respons ujian tidak sesuai. Muat ulang.",
+          );
+        setBoard(value);
+        setError("");
+      })
       .catch((e) => {
-        if (!c.signal.aborted) setError(e.message);
+        if (!c.signal.aborted) {
+          setBoard(null);
+          setError(e instanceof Error ? e.message : "Gagal memuat ujian.");
+        }
+      })
+      .finally(() => {
+        if (!c.signal.aborted) setLoading(false);
       });
     return () => c.abort();
-  }, [date, period, revision]);
+  }, [date, period, revision, admin]);
+  function refresh() {
+    setLoading(true);
+    setBoard(null);
+    setError("");
+    setSelected("");
+    setEdit(null);
+    setPreview(null);
+    setUncertain(false);
+    setRevision((v) => v + 1);
+  }
   async function run(
     work: () => Promise<unknown>,
-    refresh = true,
+    refreshAfter = true,
     propagate = false,
   ) {
+    if (lock.current) {
+      if (propagate) throw Error("Permintaan sebelumnya masih diproses.");
+      return;
+    }
+    lock.current = true;
     setBusy(true);
     setError("");
     setMessage("");
     try {
       await work();
-      if (refresh) {
-        setRevision((v) => v + 1);
+      if (live.current && refreshAfter) {
+        refresh();
         setMessage("Perubahan berhasil disimpan.");
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Permintaan gagal.");
+      if (live.current)
+        setError(e instanceof Error ? e.message : "Permintaan gagal.");
       if (propagate) throw e;
     } finally {
-      setBusy(false);
+      lock.current = false;
+      if (live.current) setBusy(false);
     }
   }
-  const formRun = (work: () => Promise<unknown>, refresh = true) =>
-    run(work, refresh, true);
-  const post = <T,>(action: string, data: unknown) =>
-    masterRequest<T>("/api/programs/" + action, "POST", data);
+  const formRun = (work: () => Promise<unknown>, refreshAfter = true) =>
+    run(work, refreshAfter, true);
+  async function post<T>(action: string, data: unknown): Promise<T> {
+    if (uncertain && action !== "preview")
+      throw Error(
+        "Muat ulang panel dan periksa status sebelum mengirim ulang.",
+      );
+    const mutates =
+      action !== "preview" &&
+      !(
+        action === "exam-delete" &&
+        !("previewId" in (data as Record<string, unknown>))
+      );
+    try {
+      return await masterRequest<T>("/api/programs/" + action, "POST", data);
+    } catch (e) {
+      if (live.current && mutates) setUncertain(true);
+      throw e;
+    }
+  }
+  function markUncertain() {
+    if (live.current) setUncertain(true);
+  }
+  const eligible = (o: ExamOccurrence) =>
+    examOperations(o, board!, userId, today);
   if (!board)
-    return (
-      <FeatureState
-        error={error}
-        label="Memuat ujian…"
-        retry={() => setRevision((v) => v + 1)}
-      />
-    );
+    return <FeatureState error={error} label="Memuat ujian…" retry={refresh} />;
   const fields: Record<Entity, Field[]> = {
     period: [
       {
@@ -234,15 +317,33 @@ export function ExamManager({
     ],
   };
   async function remove(kind: Entity, id: string) {
+    opener.current =
+      document.activeElement instanceof HTMLButtonElement
+        ? document.activeElement
+        : null;
     await run(async () => {
-      setPreview({
-        impact: await post<Impact>("exam-delete", {
+      const impact = readExamResponse(
+        examDeletePreviewSchema,
+        await post<unknown>("exam-delete", {
           entity: kind,
           id,
           reason: "Penghapusan melalui pengelolaan ujian",
         }),
-        action: "exam-delete",
-      });
+      );
+      const name =
+        kind === "period"
+          ? board?.periods.find((p) => p.id === id)?.name
+          : kind === "session"
+            ? board?.sessions.find((s) => s.id === id)?.name
+            : kind === "room"
+              ? board?.rooms.find((r) => r.id === id)?.name
+              : board?.occurrences.find((o) => o.sourceId === id)?.teacherName;
+      if (live.current)
+        setPreview({
+          impact,
+          action: "exam-delete",
+          subject: `Hapus ${names[kind]} — ${name ?? id}`,
+        });
     }, false);
   }
   function editMaster(
@@ -251,25 +352,75 @@ export function ExamManager({
     version: string,
     data: Record<string, unknown>,
   ) {
+    opener.current =
+      document.activeElement instanceof HTMLButtonElement
+        ? document.activeElement
+        : null;
+    setActiveForm(true);
     setEntity(kind);
     setEdit({ id, version, data });
   }
-  const occ = board.occurrences.find((o) => o.id === selected);
+  const occ = board.occurrences.find((o) => o.id === selected),
+    actions = occ ? eligible(occ) : [];
+  const matches = (text: string) =>
+    text.toLocaleLowerCase("id").includes(query.trim().toLocaleLowerCase("id"));
+  const occurrences = board.occurrences.filter((o) =>
+      matches(
+        [
+          o.teacherName,
+          o.originalTeacherName,
+          o.sessionName,
+          o.periodName,
+          o.className,
+        ].join(" "),
+      ),
+    ),
+    baps = board.baps.filter((b) =>
+      matches([b.teacherName, b.date, b.notes].join(" ")),
+    );
+  const currentPage = Math.min(
+      page,
+      Math.max(1, Math.ceil(occurrences.length / 12)),
+    ),
+    currentBapPage = Math.min(
+      bapPage,
+      Math.max(1, Math.ceil(baps.length / 20)),
+    );
+
   return (
-    <div className="space-y-5">
+    <div
+      className="min-w-0 space-y-5 [overflow-wrap:anywhere]"
+      aria-busy={loading}
+    >
       <h1 className="text-2xl font-semibold">Ujian, panitia dan BAP</h1>
       <p>
         Konfirmasi pengawas belum menghasilkan JTM. Isi BAP setelah sesi selesai
         +5 menit, paling lambat pada tanggal akhir periode.
       </p>
-      <div className="flex flex-wrap gap-3">
+      <fieldset
+        disabled={busy || activeForm || !!preview}
+        className="flex min-w-0 flex-wrap gap-3"
+      >
         <label>
           Tanggal
           <input
+            aria-label="Tanggal"
             type="date"
+            required
             className={input}
             value={date}
             onChange={(e) => {
+              if (!e.target.value) {
+                setError("Tanggal kegiatan wajib diisi.");
+                return;
+              }
+              setLoading(true);
+              setBoard(null);
+              setError("");
+              setPreview(null);
+              setEdit(null);
+              setPage(1);
+              setBapPage(1);
               setDate(e.target.value);
               setSelected("");
             }}
@@ -278,9 +429,20 @@ export function ExamManager({
         <label>
           Filter periode
           <select
+            aria-label="Filter periode"
             className={input}
             value={period}
-            onChange={(e) => setPeriod(e.target.value)}
+            onChange={(e) => {
+              setLoading(true);
+              setBoard(null);
+              setError("");
+              setPreview(null);
+              setEdit(null);
+              setSelected("");
+              setPage(1);
+              setBapPage(1);
+              setPeriod(e.target.value);
+            }}
           >
             <option value="">Semua periode</option>
             {board.periods.map((p) => (
@@ -290,26 +452,98 @@ export function ExamManager({
             ))}
           </select>
         </label>
-      </div>
+        <button className={secondary} onClick={refresh}>
+          Muat ulang ujian
+        </button>
+      </fieldset>
+      <label className="grid gap-1 text-sm">
+        Cari penugasan dan BAP
+        <input
+          aria-label="Cari penugasan dan BAP"
+          type="search"
+          className={input}
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setPage(1);
+            setBapPage(1);
+          }}
+          placeholder="Guru, sesi, periode, ruang atau catatan"
+        />
+      </label>
       {error && <ErrorFeedback message={error} />}
       {message && (
         <p role="status" className="text-green-800">
           {message}
         </p>
       )}
-      {preview && (
-        <ImpactDialog
-          impact={{ ...preview.impact }}
+      {uncertain && !preview && (
+        <p role="alert">
+          Status penyimpanan perlu diperiksa. Tutup formulir lalu muat ulang
+          panel sebelum mengirim ulang.
+        </p>
+      )}
+      {preview && !activeForm && (
+        <ExamImpactDialog
+          impact={preview.impact}
+          subject={preview.subject}
+          now={now}
           busy={busy}
-          onCancel={() => setPreview(null)}
+          blocked={
+            uncertain ||
+            (!!preview.occurrence && preview.occurrence.date !== today)
+          }
+          blockedReason={
+            preview.occurrence && preview.occurrence.date !== today
+              ? "Tanggal kegiatan telah berubah (WIB). Batalkan pratinjau dan muat ulang panel."
+              : "Status penyimpanan perlu diperiksa. Tutup pratinjau, lalu muat ulang panel sebelum mengirim ulang."
+          }
+          error={error}
+          onCancel={() => {
+            setPreview(null);
+            requestAnimationFrame(() => opener.current?.focus());
+          }}
           onConfirm={() =>
             void run(async () => {
-              await post(preview.action, {
+              if (Date.parse(preview.impact.expiresAt) <= now)
+                throw Error("Pratinjau kedaluwarsa. Buat pratinjau baru.");
+              const raw = await post<unknown>(preview.action, {
                 previewId: preview.impact.previewId,
                 ...(preview.action === "exam-delete"
                   ? { confirmed: true }
                   : {}),
               });
+              try {
+                if (preview.action === "exam-delete")
+                  readExamResponse(z.object({ deleted: z.literal(true) }), raw);
+                else {
+                  const value = readExamResponse(
+                    examOccurrenceSchema.omit({
+                      sourceId: true,
+                      sourceVersion: true,
+                      roomId: true,
+                      overrideJtm: true,
+                      periodId: true,
+                      sessionName: true,
+                      periodName: true,
+                      bap: true,
+                      lockedBaps: true,
+                      netJtm: true,
+                    }),
+                    raw,
+                  );
+                  if (
+                    value.id !== preview.occurrence?.id ||
+                    BigInt(value.version) <= BigInt(preview.occurrence.version)
+                  )
+                    throw Error(
+                      "Hasil perubahan tidak sesuai penugasan. Muat ulang.",
+                    );
+                }
+              } catch (e) {
+                markUncertain();
+                throw e;
+              }
               setPreview(null);
             })
           }
@@ -330,80 +564,154 @@ export function ExamManager({
       </section>
       <section className={panel}>
         <h2 className="font-semibold">Penugasan dan kredit tanggal terpilih</h2>
-        {!board.occurrences.length && (
+        {!occurrences.length && (
           <p>Tidak ada penugasan dalam cakupan akun ini.</p>
         )}
-        {board.occurrences.map((o) => (
-          <article className="space-y-2 border-b pb-4" key={o.id}>
-            <h3 className="font-semibold">
-              {o.kind === "EXAM_COMMITTEE"
-                ? "Panitia"
-                : o.sessionName + " · " + o.className}{" "}
-              — {o.teacherName}
-            </h3>
-            <p>
-              {o.timeStart}–{o.timeEnd} ·{" "}
-              {o.confirmed ? "Terkonfirmasi" : "Belum dikonfirmasi"} · JTM
-              terjadwal {o.scheduledJtm}, dasar {o.adjustedJtm}, bersih{" "}
-              {o.netJtm}, sisa alokasi {o.remainingJtm}
-            </p>
-            {o.substitutionId && <p>Pengganti untuk {o.originalTeacherName}</p>}
-            {o.adjustmentReason && <p>Penyesuaian: {o.adjustmentReason}</p>}
-            {o.allocations.map((a) => (
-              <p key={a.id}>
-                Alokasi {a.teacherName}: {a.jtm} JTM
+        {occurrences
+          .slice((currentPage - 1) * 12, currentPage * 12)
+          .map((o) => (
+            <article className="space-y-2 border-b pb-4" key={o.id}>
+              <h3 className="font-semibold">
+                {o.kind === "EXAM_COMMITTEE"
+                  ? "Panitia"
+                  : o.sessionName + " · " + o.className}{" "}
+                — {o.teacherName}
+              </h3>
+              <p>
+                {o.timeStart}–{o.timeEnd} ·{" "}
+                {o.confirmed ? "Terkonfirmasi" : "Belum dikonfirmasi"} · JTM
+                terjadwal {o.scheduledJtm}, dasar {o.adjustedJtm}, bersih{" "}
+                {o.netJtm}, sisa alokasi {o.remainingJtm}
               </p>
-            ))}
-            {o.lockedBaps > 0 && (
-              <p>{o.lockedBaps} BAP lama terkunci dalam riwayat.</p>
-            )}
-            {o.kind === "EXAM_SUPERVISOR" && o.userId === userId && (
-              <BapForm
-                key={o.id + ":" + o.bap?.version}
-                occurrence={o}
-                busy={busy}
-                save={(data) => formRun(() => post("bap", data))}
-              />
-            )}
-          </article>
-        ))}
+              {o.substitutionId && (
+                <p>Pengganti untuk {o.originalTeacherName}</p>
+              )}
+              {o.adjustmentReason && <p>Penyesuaian: {o.adjustmentReason}</p>}
+              {o.allocations.map((a) => (
+                <p key={a.id}>
+                  Alokasi {a.teacherName}: {a.jtm} JTM
+                </p>
+              ))}
+              {o.lockedBaps > 0 && (
+                <p>{o.lockedBaps} BAP lama terkunci dalam riwayat.</p>
+              )}
+              {o.kind === "EXAM_SUPERVISOR" && o.userId === userId && (
+                <BapForm
+                  key={o.id + ":" + o.bap?.version}
+                  occurrence={o}
+                  busy={busy}
+                  blocked={uncertain}
+                  unavailable={bapAvailability(o, board, userId, now)}
+                  onVisibilityChange={setActiveForm}
+                  save={(data) =>
+                    formRun(async () => {
+                      const unavailable = bapAvailability(
+                        o,
+                        board,
+                        userId,
+                        now,
+                      );
+                      if (unavailable) throw Error(unavailable);
+                      const payload = validateBap(data, o),
+                        raw = await post<unknown>("bap", payload);
+                      try {
+                        const value = readExamResponse(examBapSchema, raw);
+                        if (
+                          value.occurrence_id !== o.id ||
+                          value.state !== "active" ||
+                          value.present !== payload.present ||
+                          value.absent !== payload.absent ||
+                          value.notes !== payload.notes ||
+                          (o.bap && value.id !== o.bap.id) ||
+                          BigInt(value.version) <= BigInt(payload.version)
+                        )
+                          throw Error(
+                            "Hasil BAP tidak sesuai penugasan atau versi.",
+                          );
+                      } catch (e) {
+                        markUncertain();
+                        throw e;
+                      }
+                    })
+                  }
+                />
+              )}
+            </article>
+          ))}
       </section>
+      <ExamPagination
+        label="Halaman penugasan"
+        page={currentPage}
+        total={occurrences.length}
+        size={12}
+        change={setPage}
+      />
       {board.canOperate && (
         <section className={panel}>
           <h2 className="font-semibold">Operasi penugasan</h2>
+          <p className="text-sm text-muted-foreground">
+            Operasi hanya tersedia pada hari kegiatan (WIB). Panitia dapat
+            mengelola pengawas pada periode yang sama setelah rekap kelas wajib
+            lengkap; tugas sendiri tidak dapat dikelola.
+          </p>
           <label>
             Penugasan
             <select
+              aria-label="Penugasan"
+              disabled={busy || activeForm || !!preview}
               className={input}
               value={selected}
-              onChange={(e) => setSelected(e.target.value)}
+              onChange={(e) => {
+                setSelected(e.target.value);
+                setOperation(
+                  (e.target.value
+                    ? eligible(
+                        board.occurrences.find((o) => o.id === e.target.value)!,
+                      )
+                    : []
+                  ).at(0) ?? "confirm",
+                );
+                setPreview(null);
+              }}
             >
               <option value="">Pilih…</option>
-              {board.occurrences.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.teacherName} · {o.sessionName} · {o.className ?? "Panitia"}
-                </option>
-              ))}
+              {board.occurrences
+                .filter((o) => eligible(o).length)
+                .map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.teacherName} · {o.sessionName} ·{" "}
+                    {o.className ?? "Panitia"}
+                  </option>
+                ))}
             </select>
           </label>
           <label>
             Operasi
             <select
+              aria-label="Operasi"
+              disabled={busy || activeForm || !!preview || !occ}
               className={input}
               value={operation}
               onChange={(e) => setOperation(e.target.value)}
             >
-              {Object.entries(ops).map(([id, name]) => (
+              {actions.map((id) => (
                 <option key={id} value={id}>
-                  {name}
+                  {ops[id]}
                 </option>
               ))}
             </select>
           </label>
-          {occ && (
+          {occ && (actions.includes(operation) || activeForm) && (
             <DataForm
+              successMessage={false}
               key={operation + selected + occ.version}
               busy={busy}
+              locked={uncertain || !actions.includes(operation)}
+              onVisibilityChange={(open) => {
+                setActiveForm(open);
+                if (open && document.activeElement instanceof HTMLButtonElement)
+                  opener.current = document.activeElement;
+              }}
               label="Atur perubahan penugasan"
               submitLabel="Buat pratinjau perubahan"
               fields={[
@@ -413,7 +721,12 @@ export function ExamManager({
                         key: "userId",
                         label: "Guru tujuan",
                         type: "select" as const,
-                        options: board.teachers,
+                        options: board.teachers.filter(
+                          (t) =>
+                            ![occ.userId, occ.originalUserId, userId].includes(
+                              t.id,
+                            ),
+                        ),
                       },
                     ]
                   : []),
@@ -451,19 +764,45 @@ export function ExamManager({
                 reason,
               ]}
               onSave={async (data) => {
-                await formRun(
-                  async () =>
-                    setPreview({
-                      impact: await post<Impact>("preview", {
+                await formRun(async () => {
+                  if (
+                    !examOperations(occ, board, userId, wibDate()).includes(
+                      operation,
+                    )
+                  )
+                    throw Error(
+                      "Hak operasi atau tanggal kegiatan berubah. Muat ulang panel.",
+                    );
+                  const payload = validateExamOperation(
+                      {
                         occurrenceId: occ.id,
                         version: occ.version,
                         operation,
                         ...data,
-                      }),
+                      },
+                      occ,
+                    ),
+                    impact = readExamResponse(
+                      examPreviewSchema,
+                      await post<unknown>("preview", payload),
+                    );
+                  if (
+                    impact.current.id !== occ.id ||
+                    impact.current.version !== occ.version ||
+                    impact.operation !== operation ||
+                    JSON.stringify(impact.request) !== JSON.stringify(payload)
+                  )
+                    throw Error(
+                      "Pratinjau tidak sesuai isian. Buat pratinjau baru.",
+                    );
+                  if (live.current)
+                    setPreview({
+                      impact,
                       action: "commit",
-                    }),
-                  false,
-                );
+                      subject: `${ops[operation]} — ${occ.teacherName} · ${occ.date} · ${data.reason}`,
+                      occurrence: occ,
+                    });
+                }, false);
               }}
             />
           )}
@@ -475,6 +814,7 @@ export function ExamManager({
             {edit ? "Ubah" : "Tambah"} master ujian
           </h2>
           <select
+            disabled={busy || activeForm || !!preview}
             aria-label="Jenis master ujian"
             className={input}
             value={entity}
@@ -496,6 +836,7 @@ export function ExamManager({
             </button>
           )}
           <DataForm
+            successMessage={false}
             description={
               "Jenis data: " +
               (
@@ -510,7 +851,13 @@ export function ExamManager({
               ". Periksa relasi sebelum menyimpan."
             }
             openOnMount={Boolean(edit)}
-            onDismiss={() => setEdit(null)}
+            locked={uncertain}
+            onVisibilityChange={setActiveForm}
+            onDismiss={() => {
+              setEdit(null);
+              setActiveForm(false);
+              requestAnimationFrame(() => opener.current?.focus());
+            }}
             key={entity + (edit?.id ?? "new")}
             busy={busy}
             label={edit ? "Ubah data ujian" : "Tambah data ujian"}
@@ -525,13 +872,24 @@ export function ExamManager({
             onSave={async (values) => {
               const { reason, ...data } = values;
               await formRun(async () => {
-                await post("exam-save", {
-                  entity,
-                  id: edit?.id,
-                  version: edit?.version ?? "0",
-                  reason,
-                  data,
-                });
+                const payload = validateExamSave(
+                  {
+                    entity,
+                    id: edit?.id,
+                    version: edit?.version ?? "0",
+                    reason,
+                    data,
+                  },
+                  board,
+                  wibDate(),
+                );
+                const raw = await post<unknown>("exam-save", payload);
+                try {
+                  verifyExamSave(raw, payload);
+                } catch (e) {
+                  markUncertain();
+                  throw e;
+                }
                 setEdit(null);
               });
             }}
@@ -541,8 +899,11 @@ export function ExamManager({
               <summary className="cursor-pointer font-medium">
                 {p.name} · {p.date_start}–{p.date_end}
               </summary>
-              <div className="my-2 flex gap-2">
+              <div className="my-2 flex flex-wrap gap-2">
                 <button
+                  disabled={
+                    busy || activeForm || !!preview || p.date_start <= today
+                  }
                   className={secondary}
                   onClick={() =>
                     editMaster("period", p.id, p.version, {
@@ -558,7 +919,7 @@ export function ExamManager({
                   Ubah periode
                 </button>
                 <button
-                  disabled={busy}
+                  disabled={busy || activeForm || !!preview}
                   className={secondary}
                   onClick={() => void remove("period", p.id)}
                 >
@@ -569,13 +930,19 @@ export function ExamManager({
               {board.sessions
                 .filter((s) => s.period_id === p.id)
                 .map((s) => (
-                  <details key={s.id} className="ml-3 border-l p-3">
+                  <details
+                    key={s.id}
+                    className="min-w-0 border-l p-2 sm:ml-3 sm:p-3"
+                  >
                     <summary>
                       {s.date} · {s.name} ({s.time_start}–{s.time_end}) ·{" "}
                       {s.scheduled_jtm} JTM
                     </summary>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <button
+                        disabled={
+                          busy || activeForm || !!preview || s.date <= today
+                        }
                         className={secondary}
                         onClick={() =>
                           editMaster("session", s.id, s.version, {
@@ -592,7 +959,7 @@ export function ExamManager({
                         Ubah sesi
                       </button>
                       <button
-                        disabled={busy}
+                        disabled={busy || activeForm || !!preview}
                         className={secondary}
                         onClick={() => void remove("session", s.id)}
                       >
@@ -614,6 +981,16 @@ export function ExamManager({
                               .join(", ")}
                           </p>
                           <button
+                            disabled={
+                              busy ||
+                              activeForm ||
+                              !!preview ||
+                              s.date < today ||
+                              (s.date === today &&
+                                board.occurrences.some(
+                                  (o) => o.roomId === r.id,
+                                ))
+                            }
                             className={secondary}
                             onClick={() =>
                               editMaster("room", r.id, r.version, {
@@ -629,7 +1006,7 @@ export function ExamManager({
                             Ubah ruang
                           </button>{" "}
                           <button
-                            disabled={busy}
+                            disabled={busy || activeForm || !!preview}
                             className={secondary}
                             onClick={() => void remove("room", r.id)}
                           >
@@ -648,7 +1025,7 @@ export function ExamManager({
                 {o.teacherName} · {o.sessionName}
               </span>
               <button
-                disabled={busy}
+                disabled={busy || activeForm || !!preview}
                 className={secondary}
                 onClick={() =>
                   void remove(
@@ -662,6 +1039,7 @@ export function ExamManager({
               </button>
               {o.kind === "EXAM_SUPERVISOR" && (
                 <button
+                  disabled={busy || activeForm || !!preview || o.date <= today}
                   className={secondary}
                   onClick={() =>
                     editMaster("supervisor", o.sourceId, o.sourceVersion, {
@@ -702,20 +1080,36 @@ export function ExamManager({
               </tr>
             </thead>
             <tbody>
-              {board.baps.map((b) => (
-                <tr key={b.id}>
-                  <td>{b.date}</td>
-                  <td>{b.teacherName}</td>
-                  <td>
-                    {b.present}/{b.absent}
+              {!baps.length && (
+                <tr>
+                  <td colSpan={5} className="p-4 text-muted-foreground">
+                    Belum ada BAP yang sesuai filter.
                   </td>
-                  <td>{b.notes}</td>
-                  <td>{b.state === "active" ? "Aktif" : "Terkunci"}</td>
                 </tr>
-              ))}
+              )}
+              {baps
+                .slice((currentBapPage - 1) * 20, currentBapPage * 20)
+                .map((b) => (
+                  <tr key={b.id}>
+                    <td>{b.date}</td>
+                    <td>{b.teacherName}</td>
+                    <td>
+                      {b.present}/{b.absent}
+                    </td>
+                    <td>{b.notes}</td>
+                    <td>{b.state === "active" ? "Aktif" : "Terkunci"}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </TableRegion>
+        <ExamPagination
+          label="Halaman BAP"
+          page={currentBapPage}
+          total={baps.length}
+          size={20}
+          change={setBapPage}
+        />
       </section>
     </div>
   );
@@ -724,7 +1118,13 @@ function BapForm({
   occurrence: o,
   busy,
   save,
+  blocked,
+  unavailable,
+  onVisibilityChange,
 }: {
+  blocked: boolean;
+  unavailable: string;
+  onVisibilityChange: (open: boolean) => void;
   occurrence: ExamOccurrence;
   busy: boolean;
   save: (data: unknown) => Promise<void>;
@@ -734,14 +1134,21 @@ function BapForm({
       <summary className="cursor-pointer text-primary">
         {o.bap ? "Ubah BAP" : "Isi BAP"} (total siswa: {o.expectedStudents})
       </summary>
+      {unavailable && (
+        <p className="my-3 text-sm text-muted-foreground">{unavailable}</p>
+      )}
       <DataForm
+        successMessage={false}
+        locked={blocked || !!unavailable}
+        onVisibilityChange={onVisibilityChange}
         busy={busy}
         label={o.bap ? "Ubah BAP" : "Isi BAP"}
         submitLabel={o.bap ? "Simpan perubahan BAP" : "Kirim BAP"}
         description={
           "Total siswa pada penugasan ini: " +
           o.expectedStudents +
-          ". Periksa jumlah hadir dan tidak hadir."
+          ". Periksa jumlah hadir dan tidak hadir. " +
+          unavailable
         }
         fields={[
           {
@@ -779,5 +1186,42 @@ function BapForm({
         }
       />
     </details>
+  );
+}
+
+function ExamPagination({
+  label,
+  page,
+  total,
+  size,
+  change,
+}: {
+  label: string;
+  page: number;
+  total: number;
+  size: number;
+  change: (page: number) => void;
+}) {
+  if (total <= size) return null;
+  return (
+    <nav aria-label={label} className="flex flex-wrap items-center gap-3">
+      <button
+        className={secondary}
+        disabled={page === 1}
+        onClick={() => change(page - 1)}
+      >
+        Sebelumnya
+      </button>
+      <span>
+        {page} / {Math.ceil(total / size)} · {total} data
+      </span>
+      <button
+        className={secondary}
+        disabled={page * size >= total}
+        onClick={() => change(page + 1)}
+      >
+        Berikutnya
+      </button>
+    </nav>
   );
 }

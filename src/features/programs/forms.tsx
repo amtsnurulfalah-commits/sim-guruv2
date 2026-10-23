@@ -48,7 +48,13 @@ export function DataForm({
   openOnMount = false,
   onDismiss,
   description,
+  locked = false,
+  onVisibilityChange,
+  successMessage = "Permintaan berhasil diproses.",
 }: {
+  locked?: boolean;
+  onVisibilityChange?: (open: boolean) => void;
+  successMessage?: string | false;
   inline?: boolean;
   openOnMount?: boolean;
   onDismiss?: () => void;
@@ -113,7 +119,7 @@ export function DataForm({
       }}
       onSubmit={async (e) => {
         e.preventDefault();
-        if (pending.current || busy) return;
+        if (pending.current || busy || locked) return;
         const f = new FormData(e.currentTarget);
         const data: Record<string, unknown> = {};
         for (const x of fields) {
@@ -177,7 +183,8 @@ export function DataForm({
           setSaving(true);
           await onSave(data);
           setOpen(false);
-          notifySuccess("Permintaan berhasil diproses.");
+          onVisibilityChange?.(false);
+          if (successMessage) notifySuccess(successMessage);
         } catch (e) {
           setError(
             e instanceof z.ZodError
@@ -214,7 +221,7 @@ export function DataForm({
             message: fieldErrors[field.key]!,
           }))}
       />
-      <fieldset disabled={busy || saving} className="contents">
+      <fieldset disabled={busy || saving || locked} className="contents">
         {fields.map((x) => (
           <div
             key={x.key}
@@ -327,7 +334,7 @@ export function DataForm({
         ))}
         <div className="flex flex-wrap items-center gap-3 border-t pt-4 sm:col-span-2">
           {inline && (
-            <button className={button} disabled={busy || saving}>
+            <button className={button} disabled={busy || saving || locked}>
               <ActionIcon action="submit" />
               {busy || saving ? "Memproses…" : submitLabel}
             </button>
@@ -347,7 +354,7 @@ export function DataForm({
           className={button}
           type="submit"
           form={prefix + "-form"}
-          disabled={busy || saving}
+          disabled={busy || saving || locked}
         >
           <ActionIcon action="submit" />
           {busy || saving ? "Memproses…" : submitLabel}
@@ -356,6 +363,7 @@ export function DataForm({
       open={open}
       onOpenChange={(next) => {
         setOpen(next);
+        onVisibilityChange?.(next);
         if (next) {
           setError("");
           setFieldErrors({});

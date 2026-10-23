@@ -5,6 +5,7 @@ import { createProgramHandler } from "../../src/server/programs/http";
 import { AccountLifecycleService } from "../../src/server/accounts/lifecycle";
 import { issueCsrf } from "../../src/server/auth/security";
 import { readFile } from "node:fs/promises";
+import { examBoardSchema, examPreviewSchema, examDeletePreviewSchema } from "../../src/lib/programs/exam-contracts";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { randomBytes, randomUUID } from "node:crypto";
@@ -192,7 +193,7 @@ test("Tahap 5 — exams, BAP and events", async (t) => {
       version: string;
     };
   const read = async (token = admin, day = date) =>
-    (await programs.read(token, { domain: "exams", date: day })) as ExamBoard;
+    examBoardSchema.parse(await programs.read(token, { domain: "exams", date: day })) as ExamBoard;
   const rejected = async (work: () => Promise<unknown>, code?: string) =>
     assert.rejects(work, (e: unknown) => {
       if (code) assert.match(String((e as Error).message), new RegExp(code));
@@ -221,6 +222,7 @@ test("Tahap 5 — exams, BAP and events", async (t) => {
       reason,
       ...data,
     });
+    examPreviewSchema.parse(p);
     await programs.commit(token, { previewId: p.previewId });
   };
   let ep: { id: string; version: string },
@@ -784,6 +786,7 @@ test("Tahap 5 — exams, BAP and events", async (t) => {
         reason,
       });
       assert.ok((p.assignments ?? 0) >= 2);
+      examDeletePreviewSchema.parse(p);
       assert.equal(p.baps, 2);
       await programs.deleteExam(admin, {
         previewId: p.previewId,
