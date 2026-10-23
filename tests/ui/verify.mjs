@@ -885,16 +885,18 @@ try {
   });
 
   const batches = ["A", "B"].map((name) => ({
-    id: name,
+    id: name === "A" ? "11111111-1111-4111-8111-111111111111" : "22222222-2222-4222-8222-222222222222",
     source: "Batch " + name,
-    state: "staged",
+    source_checksum: "a".repeat(64),
+    created_at: "2026-10-23T00:00:00Z",
+    state: "blocked",
     version: "1",
     gates: [],
     summary: { rows: 1, errors: 0, review: 1, redactedFields: 0 },
   }));
   await page.route("**/api/migration/board*", async (route) => {
     const id = new URL(route.request().url()).searchParams.get("id");
-    if (id === "B") {
+    if (id === "22222222-2222-4222-8222-222222222222") {
       await route.fulfill({
         status: 503,
         json: { ok: false, error: { message: "Laporan B gagal dimuat" } },
@@ -925,10 +927,10 @@ try {
     }
   });
   await go("migration");
-  const batchA = page.locator("section").filter({
+  const batchA = page.locator("section.ui-panel").filter({
     has: page.getByRole("heading", { name: "Batch A", exact: true }),
   });
-  const batchB = page.locator("section").filter({
+  const batchB = page.locator("section.ui-panel").filter({
     has: page.getByRole("heading", { name: "Batch B", exact: true }),
   });
   await batchA

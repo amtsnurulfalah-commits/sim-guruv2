@@ -26,6 +26,10 @@ type Dependencies = {
   service: () => Promise<LocalAuthService>;
 };
 const messages: Record<string, string> = {
+  REVIEW_NOT_ALLOWED: "Temuan ini sudah ditinjau atau tidak dapat diselesaikan melalui formulir tinjauan. Muat ulang laporan dan periksa status terbaru.",
+  MIGRATION_BLOCKED: "Batch masih memiliki kesalahan atau temuan yang belum selesai. Perbaiki sumber untuk kesalahan data, atau selesaikan tinjauan yang diizinkan sebelum menyetujui bukti.",
+  MIGRATION_NOT_IMPORTED: "Batch belum diimpor. Rekonsiliasi, pencocokan perubahan terakhir, dan persetujuan pemindahan layanan baru dapat dipenuhi setelah impor melalui prosedur operator.",
+  CUTOVER_GATES_INCOMPLETE: "Sembilan pemeriksaan pendukung belum seluruhnya disetujui dengan bukti. Lengkapi pemeriksaan tersebut sebelum menyetujui pemindahan layanan.",
   RETRY_NOT_ALLOWED: "Status antrean atau pekerjaan sudah berubah dan tidak dapat dijadwalkan ulang. Muat ulang lalu periksa data terbaru.",
   RECONCILE_NOT_ALLOWED: "Status email sudah berubah. Muat ulang dan periksa hasil terbaru sebelum melakukan pemeriksaan kembali.",
   FINANCE_INVALID: "Data honorarium atau koreksi tidak sesuai aturan.",
