@@ -19,7 +19,7 @@ Alur: tanggal WIB → daftar KBM terotorisasi dan kemampuan piket → filter lok
 | Sukses simpan dan gagal refresh bercampur | Pesan sukses tetap terlihat; daftar lama dihapus dan tindakan dikunci sampai data terbaru berhasil dimuat |
 | Tidak ada pencarian/paging untuk daftar besar; aksi/teks panjang berisiko overflow | Pencarian guru/mapel/kelas dan status lokal, 25 kartu/halaman, tombol membungkus, grid responsif dan min-width nol |
 | Aksi tanggal lampau tetap ditawarkan | Tinjau tanggal lampau/mendatang tanpa tombol mutasi; indikator hari WIB diperbarui setiap 30 detik dan saat tab kembali fokus |
-| Label select status tidak stabil untuk pembaca layar | Label eksplisit dengan htmlFor/id unik |
+| Label select status dan fokus setelah modal ditutup tidak konsisten | Label eksplisit dengan htmlFor/id unik; fokus kembali ke tombol pembuka saat modal dibatalkan |
 
 ## Kompatibilitas dan keamanan
 
@@ -32,7 +32,7 @@ Workspace kehadiran/rekap siswa dan Jurnal Pembelajaran mempertahankan alur masi
 - `npm run check`: lint, TypeScript, 93 unit, 32 crypto/HTTP, 333 integrasi PostgreSQL WASM/PGlite dan production build lulus (458 tes).
 - Tes integrasi D06 mereproduksi NOT_FOUND sebelum migrasi, lalu membuktikan endpoint activities/confirm dan /revoke bekerja untuk piket yang memenuhi syarat setelah migrasi. Tes ownership, CAS, jurnal/ledger, finalisasi dan least privilege tetap berjalan.
 - `npm run test:ui:confirmations`: browser nyata → API → service → database disposable untuk klaim guru dan konfirmasi/pencabutan admin. Fixture API terkontrol menguji 61 baris, pencarian/status/pagination, angka/versi respons rusak, gagal baca, 403/409, koneksi terputus, kiriman ganda, modal sibuk, sukses lalu gagal refresh, respons tanggal lama, kepemilikan/admin/guru/piket, jurnal aktif dan pergantian hari WIB.
-- Tujuh lebar 280/320/375/768/1024/1440/1920, landscape 844×390, teks 200%, teks panjang, data kosong dan batas modal diuji; tidak terdeteksi overflow horizontal atau page error. Screenshot modal desktop/mobile diperiksa.
+- Tujuh lebar 280/320/375/768/1024/1440/1920, landscape 844×390, teks 200%, teks panjang, data kosong, tap sentuhan, pengembalian fokus dan batas modal diuji; tidak terdeteksi overflow horizontal atau page error. Screenshot modal desktop/mobile diperiksa.
 - Regresi UI seluruh aplikasi (`npm run test:ui`) lulus: 252 kombinasi halaman/role/viewport, interaksi pada empat lebar, 0 page error dan 0 console error yang tidak diharapkan.
 
 ## Migrasi dan penerapan

@@ -250,9 +250,12 @@ try {
     await page.setViewportSize({ width, height: 800 });
     await go();
     await overflow();
-    await page
-      .getByRole("button", { name: "Konfirmasi KBM", exact: true })
-      .click();
+    const opener = page.getByRole("button", {
+      name: "Konfirmasi KBM",
+      exact: true,
+    });
+    if (width === 320) await opener.tap();
+    else await opener.click();
     await modal().getByLabel("Alasan tindakan", { exact: true }).waitFor();
     assert.equal(
       await modal().evaluate((el) => {
@@ -271,6 +274,15 @@ try {
         path: screenshots + "/confirmation-modal-" + width + ".png",
       });
     await close();
+    await page.waitForFunction(
+      () =>
+        document.activeElement?.tagName === "BUTTON" &&
+        document.activeElement.textContent?.trim() === "Konfirmasi KBM",
+    );
+    assert.equal(
+      await opener.evaluate((el) => el === document.activeElement),
+      true,
+    );
   }
   // Search/status/pagination are local and do not re-fetch or expose other pages of data.
   rows = Array.from({ length: 61 }, (_, i) => ({

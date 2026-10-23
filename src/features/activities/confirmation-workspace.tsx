@@ -49,6 +49,7 @@ export function ConfirmationWorkspace({
   userId: string;
 }) {
   const prefix = useId();
+  const opener = useRef<HTMLButtonElement | null>(null);
   const [date, setDate] = useState(wibDate),
     [today, setToday] = useState(wibDate);
   const [rows, setRows] = useState<ConfirmationOccurrence[] | null>(null);
@@ -154,7 +155,7 @@ export function ConfirmationWorkspace({
       active = false;
       read.current?.abort();
     };
-  }, [load]);
+  }, [load, userId]);
 
   async function save(input: unknown, signal: AbortSignal) {
     if (!selection || pending.current || blocked)
@@ -409,7 +410,10 @@ export function ConfirmationWorkspace({
                       <Button
                         variant="outline"
                         disabled={disabled}
-                        onClick={() => setSelection({ row, action: "claim" })}
+                        onClick={(event) => {
+                          opener.current = event.currentTarget;
+                          setSelection({ row, action: "claim" });
+                        }}
                       >
                         <ActionIcon action="submit" />
                         {actionLabels.claim}
@@ -419,12 +423,13 @@ export function ConfirmationWorkspace({
                       <Button
                         variant="outline"
                         disabled={disabled}
-                        onClick={() =>
+                        onClick={(event) => {
+                          opener.current = event.currentTarget;
                           setSelection({
                             row,
                             action: row.confirmed ? "revoke" : "confirm",
-                          })
-                        }
+                          });
+                        }}
                       >
                         <ActionIcon action="confirm" />
                         {row.confirmed
@@ -468,7 +473,10 @@ export function ConfirmationWorkspace({
           selection={selection}
           blocked={blocked}
           onSave={save}
-          onClose={() => setSelection(null)}
+          onClose={() => {
+            setSelection(null);
+            requestAnimationFrame(() => opener.current?.focus());
+          }}
           onRecover={() => {
             setSelection(null);
             void load();
