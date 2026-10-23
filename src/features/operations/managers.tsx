@@ -1,7 +1,6 @@
 "use client";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import Link from "next/link";
-import { ActionIcon } from "@/components/ui/action-icon";
 
 import { statusLabel } from "@/lib/ui-status";
 import { EmptyState } from "@/components/feedback/feature-state";
@@ -10,12 +9,9 @@ import { masterRequest } from "@/features/masters/api";
 import {
   DataForm,
   panel,
-  button,
-  secondary,
   type Field,
 } from "@/features/programs/forms";
-import type { Announcement, Operations } from "@/lib/operations/schemas";
-import { RecipientPicker } from "./recipient-picker";
+import type { Operations } from "@/lib/operations/schemas";
 const api = "/api/operations/";
 const yesNo = [
   { id: "true", name: "Ya" },
@@ -28,187 +24,7 @@ const bool = (key: string, label: string, value = true): Field => ({
   options: yesNo,
   value: String(value),
 });
-export function AnnouncementManager() {
-  const [targets, setTargets] = useState<string[]>([]),
-    [allow, setAllow] = useState<string[]>([]),
-    [deny, setDeny] = useState<string[]>([]);
-  function selectEdit(a: Announcement | null) {
-    setEdit(a);
-    setTargets(a?.target_users ?? []);
-    setAllow(a?.allow_dismiss ?? []);
-    setDeny(a?.deny_dismiss ?? []);
-  }
-  const [items, setItems] = useState<Announcement[]>([]),
-    [edit, setEdit] = useState<Announcement | null>(null),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState("");
-  const load = useCallback(async () => {
-    setItems(await masterRequest(api + "manage"));
-  }, []);
-  useEffect(() => {
-    const c = new AbortController();
-    masterRequest<Announcement[]>(api + "manage", "GET", undefined, c.signal)
-      .then((v) => {
-        if (!c.signal.aborted) setItems(v);
-      })
-      .catch((e) => {
-        if (!c.signal.aborted) setError(e.message);
-      });
-    return () => c.abort();
-  }, []);
-  const fields: Field[] = [
-    { key: "title", label: "Judul", value: edit?.title },
-    {
-      key: "body",
-      label: "Isi (teks biasa)",
-      type: "textarea",
-      value: edit?.body,
-    },
-    {
-      key: "severity",
-      label: "Prioritas",
-      type: "select",
-      options: ["info", "success", "warning", "critical"].map((id) => ({
-        id,
-        name: statusLabel(id),
-      })),
-      value: edit?.severity ?? "info",
-    },
-    {
-      key: "targetRole",
-      label: "Sasaran peran",
-      type: "select",
-      options: [
-        { id: "all", name: "Semua" },
-        { id: "guru", name: "Guru" },
-        { id: "admin", name: "Admin" },
-      ],
-      value: edit?.target_role ?? "all",
-    },
-    {
-      key: "from",
-      label: "Tanggal mulai inklusif",
-      type: "date",
-      optional: true,
-      value: edit?.date_start ?? undefined,
-    },
-    {
-      key: "to",
-      label: "Tanggal akhir inklusif",
-      type: "date",
-      optional: true,
-      value: edit?.date_end ?? undefined,
-    },
-    bool("active", "Aktif", edit?.active ?? true),
-    bool("dismissible", "Dapat ditutup", edit?.dismissible ?? true),
-    bool("sendEmail", "Antrekan email", edit?.send_email ?? false),
-    {
-      key: "reminderOffsets",
-      label: "Pengingat sebelum tanggal akhir",
-      type: "days",
-      options: [
-        { id: "3", name: "H-3" },
-        { id: "2", name: "H-2" },
-        { id: "1", name: "H-1" },
-      ],
-      value: edit?.reminder_offsets ?? [],
-    },
-    {
-      key: "ctaText",
-      label: "Teks tautan",
-      optional: true,
-      value: edit?.cta_text ?? undefined,
-    },
-    {
-      key: "ctaUrl",
-      label: "URL http/https",
-      optional: true,
-      value: edit?.cta_url ?? undefined,
-    },
-    { key: "reason", label: "Alasan perubahan (min. 5 karakter)" },
-  ];
-  return (
-    <div className="space-y-5">
-      <h1 className="text-2xl font-bold">Pengumuman</h1>
-      <p>
-        Email dikirim hanya jika pengiriman dan pekerjaan diaktifkan pada
-        pengaturan operasional.
-      </p>
-      {error && <ErrorFeedback message={error} />}
-      <section className={panel}>
-        <h2>{edit ? "Ubah pengumuman" : "Pengumuman baru"}</h2>
-        <p className="text-sm">
-          Pilihan pengguna tertentu mengutamakan sasaran peran. Kosongkan
-          pilihan untuk mengikuti peran.
-        </p>
-        <RecipientPicker
-          label="Sasaran pengguna tertentu"
-          value={targets}
-          onChange={setTargets}
-          names={edit?.recipientNames ?? {}}
-        />
-        <RecipientPicker
-          label="Pengecualian: boleh menutup"
-          value={allow}
-          onChange={setAllow}
-          names={edit?.recipientNames ?? {}}
-        />
-        <RecipientPicker
-          label="Pengecualian: tidak boleh menutup"
-          value={deny}
-          onChange={setDeny}
-          names={edit?.recipientNames ?? {}}
-        />
-        <DataForm
-          inline
-          key={edit ? edit.id + edit.version : "new"}
-          fields={fields}
-          busy={busy}
-          label="Simpan pengumuman"
-          onSave={async (d) => {
-            setBusy(true);
-            try {
-              await masterRequest(api + "save", "POST", {
-                ...d,
-                id: edit?.id ?? null,
-                version: edit ? String(edit.version) : null,
-                active: d.active === "true",
-                dismissible: d.dismissible === "true",
-                sendEmail: d.sendEmail === "true",
-                targetUsers: targets,
-                allowDismiss: allow,
-                denyDismiss: deny,
-              });
-              selectEdit(null);
-              await load();
-            } finally {
-              setBusy(false);
-            }
-          }}
-        />
-        {edit && (
-          <button className={secondary} onClick={() => selectEdit(null)}>
-            <ActionIcon action="close" />
-            Batal mengubah
-          </button>
-        )}
-      </section>
-      {items.map((a) => (
-        <section key={a.id} className={panel}>
-          <h2 className="font-bold">{a.title}</h2>
-          <p>
-            {a.severity} · versi {a.version} · {a.active ? "Aktif" : "Nonaktif"}
-          </p>
-          <p className="whitespace-pre-wrap">{a.body}</p>
-          <button className={button} onClick={() => selectEdit(a)}>
-            <ActionIcon action="edit" />
-            Ubah pengumuman
-          </button>
-        </section>
-      ))}
-    </div>
-  );
-}
+export { AnnouncementManager } from "./announcement-manager";
 export function OperationsManager() {
   const [data, setData] = useState<Operations | null>(null),
     [busy, setBusy] = useState(false),

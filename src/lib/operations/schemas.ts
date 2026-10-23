@@ -8,14 +8,15 @@ const url = z
   .url()
   .max(2000)
   .refine((v) => {
-    const u = new URL(v);
+    let u: URL;
+    try { u = new URL(v); } catch { return false; }
     return (
       ["http:", "https:"].includes(u.protocol) &&
       !u.username &&
       !u.password &&
       !/[\s@\\]/.test(v)
     );
-  })
+  }, { message: "Gunakan URL HTTP atau HTTPS tanpa kredensial atau spasi." })
   .nullable()
   .default(null);
 const config = z
@@ -62,13 +63,12 @@ export const commands = {
       reason,
     })
     .strict()
-    .refine(
-      (v) =>
-        (!v.id || !!v.version) &&
-        (!v.from || !v.to || v.to >= v.from) &&
-        !!v.ctaText === !!v.ctaUrl &&
-        !v.allowDismiss.some((u) => v.denyDismiss.includes(u)),
-    ),
+    .superRefine((v, ctx) => {
+      if (v.id && !v.version) ctx.addIssue({ code: "custom", path: ["version"], message: "Versi pengumuman wajib tersedia." });
+      if (v.from && v.to && v.to < v.from) ctx.addIssue({ code: "custom", path: ["to"], message: "Tanggal akhir harus setelah atau sama dengan tanggal mulai." });
+      if (!!v.ctaText !== !!v.ctaUrl) ctx.addIssue({ code: "custom", path: [v.ctaText ? "ctaUrl" : "ctaText"], message: "Isi teks dan URL tautan bersama-sama." });
+      if (v.allowDismiss.some(u => v.denyDismiss.includes(u))) ctx.addIssue({ code: "custom", path: ["denyDismiss"], message: "Pengguna yang sama tidak boleh berada pada kedua pengecualian." });
+    }),
   deactivate: z.object({ id, version, reason }).strict(),
   dismiss: z.object({ id, version }).strict(),
   settings: z.object({ version, config, reason }).strict(),
