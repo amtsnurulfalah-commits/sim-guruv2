@@ -15,6 +15,8 @@ import { ActivityService } from "../../src/server/activities/service";
 import { DutyService } from "../../src/server/duties/service";
 import { renderCsv, renderPdf } from "../../src/server/activities/export";
 import { ProgramService } from "../../src/server/programs/service";
+import { renderHonorExcel,renderHonorPdf } from "../../src/server/finance/export";
+import type { FinanceAction, FinancePreview } from "../../src/lib/finance/schemas";
 import { FinanceService } from "../../src/server/finance/service";
 import { OperationsService } from "../../src/server/operations/service";
 import { MigrationService } from "../../src/server/migration/service";
@@ -193,6 +195,24 @@ async function main() {
     const room=await programs.saveExam(token,{entity:"room",version:"0",reason,data:{sessionId:session.id,name:"Ruang Sintetis",subjectId:subject.id,totalStudents:30,classIds:[klass.id]}}) as {id:string};
     await programs.saveExam(token,{entity:"supervisor",version:"0",reason,data:{roomId:room.id,userId:guru,overrideJtm:null}});
   }
+  if(process.env.UI_FINANCE_FIXTURE === "1"){
+    const reason="Fikstur honorarium sintetis";
+    await db.exec("alter table ops.finance_previews alter column expires_at set default timestamptz '2090-02-01 12:10:00+07'");
+    await db.exec("create or replace function app.activity_today() returns date language sql stable set search_path=pg_catalog as $$ select date '2090-01-01' $$; create or replace function finance.today() returns date language sql stable set search_path=pg_catalog as $$ select date '2090-02-01' $$");
+    await db.query("update app.app_users set additional_role='KEPALA_SEKOLAH' where id=$1",[id]);
+    await masters.save(token,"school",{version:"0",reason,data:{name:"Madrasah Honorarium Sintetis",address:"Alamat pengujian",npsn:"12345678",level:"SMP",useParallel:false,parallelMax:1,minutesPerJtm:40,headmasterId:id}});
+    const year=await masters.save(token,"academic-years",{version:"0",reason,data:{label:"2090/2091",dateStart:"2090-01-01",dateEnd:"2090-12-31"}});
+    const period=await masters.save(token,"academic-periods",{version:"0",reason,data:{academicYearId:year.id,semester:1,dateStart:"2090-01-01",dateEnd:"2090-12-31",isActive:true}});
+    const klass=await masters.save(token,"classes",{version:"0",reason,data:{academicPeriodId:period.id,name:"Kelas 7",level:"SMP",grade:7,parallel:"",expectedStudents:30}});
+    const subject=(await masters.list(token,"subjects",{page:1,pageSize:20})).items[0]!;
+    await schedules.save(token,undefined,{reason,data:{academicPeriodId:period.id,userId:guru,subjectId:subject.id,classId:klass.id,dayIndex:new Date("2090-01-02T00:00:00Z").getUTCDay(),timeStart:"07:30",scheduledJtm:"3",restMinutes:0,validFrom:"2090-01-01",validTo:"2090-12-31"}});
+    await masters.save(token,"rates",{version:"0",reason,data:{kind:"jtm",amount:"10001",enabled:true,dateStart:"2090-01-01",dateEnd:"2090-12-31"}});
+    for(const date of ["2090-01-02","2090-01-09"]){const preview=await calendar.preview(token,"calendar",{action:"upsert",date,version:"0",description:"Libur sintetis",isHoliday:true,reason});await calendar.commit(token,"calendar",{previewId:preview.previewId},"upsert");}
+    if(process.env.UI_FINANCE_FINAL === "1"){
+      for(const date of ["2090-01-02","2090-01-09"])await finance.command(token,"holiday",{operation:"generate",date,reason});
+      const preview=await finance.command<FinancePreview>(token,"preview",{operation:"finalize",period:"2090-01",reason});await finance.command(token,"commit",{previewId:preview.previewId});
+    }
+  }
   // A real disposable attendance row exercises repeated leave-editor selection.
   const fixtureDate = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Jakarta",
@@ -286,8 +306,18 @@ async function main() {
         if(!Object.hasOwn(methods,action))throw Error("FIXTURE_ROUTE_NOT_IMPLEMENTED");
         data=await methods[action as keyof typeof methods].call(programs,token,input);
       }
+      else if(path==="/api/honorarium/excel"){
+        const bytes=renderHonorExcel(await finance.exportHistory(token,{...q,kind:"history"}));res.setHeader("content-type","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");res.end(bytes);return;
+      }
+      else if(path==="/api/honorarium/pdf"){
+        const statement=await finance.statement(token,input.statementId as string);
+        const proof=await finance.command<{token:string}>(token,"token",input);
+        const bytes=await renderHonorPdf(statement,"http://127.0.0.1:4319/verifikasi-dokumen#"+proof.token);res.setHeader("content-type","application/pdf");res.end(bytes);return;
+      }
+      else if(path==="/api/honorarium/verify")data=await finance.verify(input);
       else if (path === "/api/honorarium/read")
         data = await finance.read(token, q);
+      else if(path.startsWith("/api/honorarium/")) data=await finance.command(token,path.split("/").at(-1)! as FinanceAction,input);
       else if (path.startsWith("/api/operations/"))
         data = req.method === "GET" ? await operations.read(token, path.split("/").at(-1)!, q) : await operations.command(token, path.split("/").at(-1)!, input);
       else if (path.startsWith("/api/migration/"))
@@ -313,8 +343,8 @@ async function main() {
       else if (path === "/api/users")
         data = (
           await db.query<{ value: unknown }>(
-            "select auth_private.users_list($1,$2,'','',1,20) value",
-            [createHash("sha256").update(token).digest("hex"), q.q ?? ""],
+            "select auth_private.users_list($1,$2,$3,$4,$5,$6) value",
+            [createHash("sha256").update(token).digest("hex"), q.q ?? "",q.role??"",q.status??"",Number(q.page??1),Number(q.pageSize??20)],
           )
         ).rows[0]!.value;
       else throw Error("FIXTURE_ROUTE_NOT_IMPLEMENTED");

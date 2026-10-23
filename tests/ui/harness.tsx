@@ -30,6 +30,7 @@ import { ActivityWorkspace } from "../../src/features/activities/workspace";
 import { DutyManager } from "../../src/features/duties/duty-manager";
 import { ExamManager } from "../../src/features/programs/exam-manager";
 import { EventManager } from "../../src/features/programs/event-manager";
+import { VerifyDocument } from "../../src/features/finance/verify-document";
 import { FinanceManager } from "../../src/features/finance/finance-manager";
 import {
   AnnouncementManager,
@@ -201,6 +202,7 @@ const components: Record<string, React.ReactNode> = {
   duties: <DutyManager admin={admin} userId={id} />,
   exams: <ExamManager admin={admin} userId={id} />,
   events: <EventManager admin={admin} userId={id} />,
+  verifyDocument: <VerifyDocument />,
   finance: <FinanceManager admin={admin} />,
   history: <FinanceManager admin={admin} view="history" />,
   financeOperations: <FinanceManager admin={admin} view="operations" />,

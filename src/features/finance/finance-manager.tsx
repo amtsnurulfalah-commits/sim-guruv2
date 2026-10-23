@@ -1,10 +1,10 @@
 "use client";
-import { downloadFile } from "@/lib/feedback/api-error";
+import { ApiRequestError, downloadFile } from "@/lib/feedback/api-error";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { TableRegion } from "@/components/ui/table-region";
-import { EmptyState } from "@/components/feedback/feature-state";
+import { EmptyState, FeatureState } from "@/components/feedback/feature-state";
 import Link from "next/link";
 import { TeacherPicker, type TeacherChoice } from "./teacher-picker";
 import { useEffect, useRef, useState } from "react";
@@ -12,7 +12,6 @@ import { masterRequest } from "../masters/api";
 import { wibDate } from "../../lib/calendar/schemas";
 import {
   DataForm,
-  button,
   input,
   panel,
   secondary,
@@ -27,6 +26,28 @@ import {
   type Operations,
   type HonorSnapshot,
 } from "../../lib/finance/schemas";
+import { z } from "zod";
+import { FinancePreviewDialog } from "./finance-preview-dialog";
+import {
+  commandSchemas,
+  previewSchema,
+  type FinanceAction,
+} from "../../lib/finance/schemas";
+import {
+  honorBundleSchema,
+  honorHistorySchema,
+  honorStatementSchema,
+  financeOperationsSchema,
+  financeTokenSchema,
+  financeIdSchema,
+  holidayCommandResultSchema,
+  readFinanceResponse,
+  validateFinanceCommand,
+  validateFinancePreview,
+  verifyFinancePreview,
+  verifyFinanceCommit,
+  formatHonorAmount,
+} from "../../lib/finance/contracts";
 const reason: Field = { key: "reason", label: "Alasan (5–500 karakter)" };
 const labels: Record<string, string> = {
   KBM: "KBM",
@@ -47,19 +68,25 @@ const labels: Record<string, string> = {
 };
 function Breakdown({ s, hidden }: { s: HonorSnapshot; hidden: boolean }) {
   return (
-    <div className="space-y-3">
+    <div className="min-w-0 space-y-3 [overflow-wrap:anywhere]">
       <h3 className="font-semibold">
         {s.recipient.name} — {s.period}
       </h3>
       <dl className="grid gap-2 text-sm sm:grid-cols-2">
         {[
           ["Total JTM", s.totalJtm],
-          ["Tarif per JTM", hidden ? "••••" : s.rate],
-          ["Honor mengajar", hidden ? "••••" : s.teachingSettled],
-          ["Tunjangan", hidden ? "••••" : s.allowances],
-          ["Transport bulanan", hidden ? "••••" : s.transportSettled],
-          ["Koreksi", hidden ? "••••" : s.corrections],
-          ["Total pembayaran", hidden ? "••••" : s.total],
+          ["Tarif per JTM", hidden ? "••••" : formatHonorAmount(s.rate)],
+          [
+            "Honor mengajar",
+            hidden ? "••••" : formatHonorAmount(s.teachingSettled),
+          ],
+          ["Tunjangan", hidden ? "••••" : formatHonorAmount(s.allowances)],
+          [
+            "Transport bulanan",
+            hidden ? "••••" : formatHonorAmount(s.transportSettled),
+          ],
+          ["Koreksi", hidden ? "••••" : formatHonorAmount(s.corrections)],
+          ["Total pembayaran", hidden ? "••••" : formatHonorAmount(s.total)],
         ].map(([k, v]) => (
           <div key={k}>
             <dt className="text-slate-500">{k}</dt>
@@ -84,7 +111,13 @@ function Breakdown({ s, hidden }: { s: HonorSnapshot; hidden: boolean }) {
             <tbody>
               {s.lines.map((l, i) => (
                 <tr
-                  key={String(l.ledgerId ?? l.sourceRef ?? l.sourceKey ?? i)}
+                  key={
+                    l.component +
+                    ":" +
+                    String(l.ledgerId ?? l.sourceRef ?? l.sourceKey ?? i) +
+                    ":" +
+                    i
+                  }
                   className="border-t"
                 >
                   <td className="p-2">{l.date ?? "—"}</td>
@@ -132,11 +165,63 @@ export function FinanceManager({
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [message, setMessage] = useState(""),
-    [verifyLink, setVerifyLink] = useState("");
+    [verifyLink, setVerifyLink] = useState(""),
+    [loading, setLoading] = useState(true),
+    [activeForm, setActiveForm] = useState(false),
+    [uncertain, setUncertain] = useState(false),
+    [now, setNow] = useState(() => Date.now()),
+    [previewRequest, setPreviewRequest] = useState<z.infer<
+      typeof previewSchema
+    > | null>(null),
+    [recapQuery, setRecapQuery] = useState(""),
+    [recapPage, setRecapPage] = useState(1);
+  const pending = useRef(false),
+    mounted = useRef(true),
+    writes = useRef<AbortController | null>(null),
+    opener = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    mounted.current = true;
+    writes.current = new AbortController();
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => {
+      mounted.current = false;
+      writes.current?.abort();
+      clearInterval(timer);
+    };
+  }, []);
+  const visibility = (v: boolean) => {
+    if (v && document.activeElement instanceof HTMLElement)
+      opener.current = document.activeElement;
+    setActiveForm(v);
+  };
+  const restoreFocus = () =>
+    requestAnimationFrame(() => {
+      if (opener.current?.isConnected) opener.current.focus();
+    });
+  const locked = busy || loading || uncertain;
+  function resetContext() {
+    setLoading(true);
+    setBundle(null);
+    setHistory(null);
+    setOperations(null);
+    setSlip(null);
+    setVerifyLink("");
+    setPreview(null);
+    setPreviewRequest(null);
+    setMessage("");
+    setRecapPage(1);
+  }
+
   const [blockTeacher, setBlockTeacher] = useState<TeacherChoice | null>(null);
-  const dialog = useRef<HTMLDialogElement>(null);
+
   useEffect(() => {
     const c = new AbortController();
+    queueMicrotask(() => {
+      if (!c.signal.aborted) {
+        setLoading(true);
+        setError("");
+      }
+    });
     const params = new URLSearchParams(
       view === "history"
         ? { kind: "history", period, q, page: String(page) }
@@ -144,7 +229,7 @@ export function FinanceManager({
           ? { kind: "operations", period }
           : { kind: admin ? "recap" : "estimate", period, mode },
     );
-    masterRequest<HonorBundle | HonorHistory | Operations>(
+    masterRequest<unknown>(
       "/api/honorarium/read?" + params,
       "GET",
       undefined,
@@ -152,55 +237,196 @@ export function FinanceManager({
     )
       .then((r) => {
         if (c.signal.aborted) return;
-        if (view === "history") setHistory(r as HonorHistory);
-        else if (view === "operations") setOperations(r as Operations);
-        else setBundle(r as HonorBundle);
+        if (view === "history") {
+          const h = readFinanceResponse(honorHistorySchema, r);
+          if (h.page !== page || h.items.some((s) => s.period !== period))
+            throw new ApiRequestError(
+              "INVALID_RESPONSE",
+              "Riwayat tidak sesuai filter. Muat ulang honorarium.",
+            );
+          setHistory(h);
+        } else if (view === "operations") {
+          const ops = readFinanceResponse(financeOperationsSchema, r);
+          if (
+            [...ops.holidays, ...ops.runs].some(
+              (v) => v.date.slice(0, 7) !== period,
+            )
+          )
+            throw new ApiRequestError(
+              "INVALID_RESPONSE",
+              "Operasi tidak sesuai periode yang dipilih. Muat ulang honorarium.",
+            );
+          setOperations(ops);
+        } else {
+          const b = readFinanceResponse(honorBundleSchema, r);
+          if (b.period !== period || (b.mode !== "final" && b.mode !== mode))
+            throw new ApiRequestError(
+              "INVALID_RESPONSE",
+              "Perhitungan tidak sesuai periode/basis yang dipilih. Muat ulang honorarium.",
+            );
+          setBundle(b);
+        }
         setError("");
+        setLoading(false);
+        setUncertain(false);
       })
       .catch((e) => {
-        if (!c.signal.aborted) setError(e.message);
+        if (!c.signal.aborted) {
+          setError(e instanceof Error ? e.message : "Gagal memuat honorarium.");
+          setLoading(false);
+          setBundle(null);
+          setHistory(null);
+          setOperations(null);
+          setSlip(null);
+          setVerifyLink("");
+        }
       });
     return () => c.abort();
   }, [view, admin, period, mode, q, page, revision]);
-  useEffect(() => {
-    if (preview) {
-      const modal = dialog.current;
-      modal?.showModal();
-      return () => modal?.close();
-    }
-  }, [preview]);
   async function run(
     work: () => Promise<unknown>,
     refresh = true,
     propagate = false,
   ) {
+    if (pending.current || loading || uncertain) {
+      if (propagate) throw Error("Muat ulang status sebelum melanjutkan.");
+      return;
+    }
+    pending.current = true;
+    if (
+      !activeForm &&
+      !preview &&
+      document.activeElement instanceof HTMLElement
+    )
+      opener.current = document.activeElement;
     setBusy(true);
     setError("");
     setMessage("");
     try {
       await work();
+      if (!mounted.current) return;
       if (refresh) {
+        if (slip) {
+          const updated = readFinanceResponse(
+            honorStatementSchema,
+            await masterRequest<unknown>(
+              "/api/honorarium/read?kind=statement&id=" + slip.id,
+              "GET",
+              undefined,
+              writes.current?.signal,
+            ),
+          );
+          if (updated.id !== slip.id)
+            throw new ApiRequestError(
+              "INVALID_RESPONSE",
+              "Slip sumber berubah. Muat ulang honorarium.",
+            );
+          setSlip(updated);
+        }
+        setLoading(true);
         setRevision((v) => v + 1);
         setMessage("Tindakan berhasil disimpan.");
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Permintaan gagal.");
+      if (!mounted.current) return;
+      setError(
+        e instanceof z.ZodError
+          ? (e.issues[0]?.message ?? "Periksa isian formulir.")
+          : e instanceof Error
+            ? e.message
+            : "Permintaan gagal.",
+      );
+      if (
+        e instanceof ApiRequestError &&
+        ([
+          "NETWORK_ERROR",
+          "TIMEOUT",
+          "INVALID_RESPONSE",
+          "VERSION_CONFLICT",
+          "PREVIEW_STALE",
+        ].includes(e.code) ||
+          e.status >= 500 ||
+          e.status === 409 ||
+          e.status === 404)
+      )
+        setUncertain(true);
       if (propagate) throw e;
     } finally {
-      setBusy(false);
+      pending.current = false;
+      if (mounted.current) setBusy(false);
     }
   }
   const formRun = (work: () => Promise<unknown>, refresh = true) =>
     run(work, refresh, true);
-  const post = <T,>(action: string, data: unknown) =>
-    masterRequest<T>("/api/honorarium/" + action, "POST", data);
+  async function post<T>(action: FinanceAction, data: unknown): Promise<T> {
+    const v =
+      action === "preview"
+        ? validateFinancePreview(data, slip, wibDate())
+        : action === "commit"
+          ? commandSchemas.commit.parse(data)
+          : validateFinanceCommand(action, data, wibDate());
+    const raw = await masterRequest<unknown>(
+      "/api/honorarium/" + action,
+      "POST",
+      v,
+      writes.current?.signal,
+    );
+    if (!mounted.current) throw new DOMException("Aborted", "AbortError");
+    if (action === "preview") {
+      const request = previewSchema.parse(v),
+        result = verifyFinancePreview(raw, request);
+      setPreviewRequest(request);
+      return result as T;
+    }
+    if (action === "commit") {
+      if (!previewRequest)
+        throw new ApiRequestError(
+          "INVALID_RESPONSE",
+          "Konteks pratinjau tidak tersedia. Muat ulang status honorarium.",
+        );
+      verifyFinanceCommit(raw, previewRequest);
+      return raw as T;
+    }
+    const schema =
+      action === "token"
+        ? financeTokenSchema
+        : action === "holiday"
+          ? holidayCommandResultSchema
+          : financeIdSchema;
+    const result = readFinanceResponse<unknown>(schema, raw);
+    if (
+      action === "block" &&
+      "id" in v &&
+      (result as { id: string }).id !== v.id
+    )
+      throw new ApiRequestError(
+        "INVALID_RESPONSE",
+        "Blok transportasi tidak sesuai pilihan. Muat ulang honorarium.",
+      );
+    if (
+      action === "holiday" &&
+      (result as { operation?: string }).operation !== "generate"
+    )
+      throw new ApiRequestError(
+        "INVALID_RESPONSE",
+        "Hasil posting libur tidak sesuai tindakan. Muat ulang honorarium.",
+      );
+    return result as T;
+  }
   async function downloadPdf(id: string) {
     await run(async () => {
       const security = await masterRequest<{ csrfToken: string }>(
         "/api/auth/csrf?intent=session",
+        "GET",
+        undefined,
+        writes.current?.signal,
       );
       await downloadFile("/api/honorarium/pdf", "slip-honor.pdf", {
         method: "POST",
+        signal: AbortSignal.any([
+          writes.current?.signal ?? new AbortController().signal,
+          AbortSignal.timeout(40000),
+        ]),
         headers: {
           "Content-Type": "application/json",
           "X-CSRF-Token": security.csrfToken,
@@ -213,14 +439,38 @@ export function FinanceManager({
     await run(async () => {
       const r = await masterRequest<HonorStatement>(
         "/api/honorarium/read?kind=statement&id=" + id,
+        "GET",
+        undefined,
+        writes.current?.signal,
       );
-      setSlip(r);
+      const result = readFinanceResponse(honorStatementSchema, r);
+      if (result.id !== id)
+        throw new ApiRequestError(
+          "INVALID_RESPONSE",
+          "Slip yang diterima tidak sesuai pilihan. Muat ulang riwayat.",
+        );
+      setSlip(result);
       setVerifyLink("");
+      requestAnimationFrame(() =>
+        document.getElementById("honor-slip")?.focus(),
+      );
     }, false);
   }
+  const records =
+    bundle?.statements.filter((s) =>
+      (s.recipient.name + " " + s.recipient.username)
+        .toLocaleLowerCase("id")
+        .includes(recapQuery.toLocaleLowerCase("id")),
+    ) ?? [];
+  const recapPages = Math.max(1, Math.ceil(records.length / 12)),
+    currentRecapPage = Math.min(recapPage, recapPages);
+  const formProps = { busy, locked, onVisibilityChange: visibility };
   const root = admin ? "/admin/honorarium" : "/honorarium";
   return (
-    <div className="space-y-5">
+    <div
+      className="min-w-0 space-y-5 [overflow-wrap:anywhere]"
+      aria-busy={busy || loading}
+    >
       <header className="space-y-2">
         <h1 className="text-2xl font-bold">
           {view === "history"
@@ -231,15 +481,33 @@ export function FinanceManager({
                 ? "Rekap honorarium"
                 : "Honorarium saya"}
         </h1>
-        <nav className="flex flex-wrap gap-4 text-sm">
-          <Link prefetch={false} href={root}>
+        <nav
+          aria-label="Navigasi honorarium"
+          className="flex flex-wrap gap-3 text-sm"
+        >
+          <Link
+            prefetch={false}
+            href={root}
+            aria-current={view === "estimate" ? "page" : undefined}
+            className={secondary}
+          >
             Estimasi / rekap
           </Link>
-          <Link prefetch={false} href={root + "/riwayat"}>
+          <Link
+            prefetch={false}
+            href={root + "/riwayat"}
+            aria-current={view === "history" ? "page" : undefined}
+            className={secondary}
+          >
             Riwayat dan slip
           </Link>
           {admin && (
-            <Link prefetch={false} href={root + "/operasi"}>
+            <Link
+              prefetch={false}
+              href={root + "/operasi"}
+              aria-current={view === "operations" ? "page" : undefined}
+              className={secondary}
+            >
               Libur / transport
             </Link>
           )}
@@ -250,14 +518,17 @@ export function FinanceManager({
           Periode
           <input
             type="month"
+            min="2000-01"
+            max="2199-12"
+            disabled={busy || activeForm || Boolean(preview)}
             className={input}
             value={period}
             onChange={(e) => {
+              if (!/^(20|21)\d{2}-(0[1-9]|1[0-2])$/.test(e.target.value))
+                return;
               setPeriod(e.target.value);
               setPage(1);
-              setBundle(null);
-              setHistory(null);
-              setOperations(null);
+              resetContext();
             }}
           />
         </label>
@@ -267,9 +538,10 @@ export function FinanceManager({
             <select
               className={input}
               value={mode}
+              disabled={busy || activeForm || Boolean(preview)}
               onChange={(e) => {
                 setMode(e.target.value);
-                setBundle(null);
+                resetContext();
               }}
             >
               <option value="realized">Realisasi sampai hari ini</option>
@@ -283,9 +555,13 @@ export function FinanceManager({
             <input
               className={input}
               value={q}
+              maxLength={100}
+              type="search"
+              disabled={busy || activeForm || Boolean(preview)}
               onChange={(e) => {
                 setQ(e.target.value);
                 setPage(1);
+                resetContext();
               }}
             />
           </label>
@@ -299,9 +575,42 @@ export function FinanceManager({
           {hidden ? "Tampilkan nominal" : "Sembunyikan nominal"}
         </button>
       </div>
-      {error && <ErrorFeedback message={error} />}
+      {error && !preview && <ErrorFeedback message={error} />}
       {message && <p role="status">{message}</p>}
-      {view === "estimate" && (
+      {hidden && (
+        <p className="text-sm text-muted-foreground">
+          Nominal disembunyikan di layar. Berkas PDF dan Excel tetap memuat
+          nominal lengkap.
+        </p>
+      )}
+      {uncertain && (
+        <p role="alert" className="rounded-xl border border-amber-500 p-4">
+          Status tindakan belum pasti atau data telah berubah. Tutup
+          formulir/pratinjau, muat ulang, dan periksa hasil sebelum mengirim
+          ulang.
+        </p>
+      )}
+      <button
+        className={secondary}
+        disabled={busy || activeForm || Boolean(preview)}
+        onClick={() => {
+          resetContext();
+          setRevision((v) => v + 1);
+        }}
+      >
+        Muat ulang honorarium
+      </button>
+      {loading && (
+        <FeatureState
+          error=""
+          label="Memuat honorarium…"
+          retry={() => setRevision((v) => v + 1)}
+        />
+      )}
+      {!loading && error && !bundle && !history && !operations && (
+        <p>Gunakan tombol muat ulang untuk mencoba kembali.</p>
+      )}
+      {view === "estimate" && (!loading || activeForm) && (
         <>
           <p className="text-sm text-slate-600">
             Tarif per JTM dan tunjangan memakai versi yang berlaku pada akhir
@@ -309,9 +618,7 @@ export function FinanceManager({
             mendatang, sedangkan transport hanya memakai bukti kehadiran aktual.
             Nilai final mengikuti rincian saat honorarium diterbitkan.
           </p>
-          {!bundle ? (
-            <p role="status">Memuat perhitungan…</p>
-          ) : (
+          {!bundle ? null : (
             <>
               <p className="font-medium">
                 {bundle.mode === "final"
@@ -322,7 +629,7 @@ export function FinanceManager({
               </p>
               {admin && bundle.issues.length > 0 && (
                 <ul className="list-disc rounded border border-amber-300 p-5 text-sm text-amber-900">
-                  {bundle.issues.map((x, i) => (
+                  {Array.from(new Set(bundle.issues)).map((x, i) => (
                     <li key={i}>{issueLabels[x.split(":")[0]!] ?? x}</li>
                   ))}
                 </ul>
@@ -330,14 +637,62 @@ export function FinanceManager({
               {bundle.statements.length === 0 && (
                 <p>Tidak ada penerima pada periode ini.</p>
               )}
-              {bundle.statements.map((s) => (
-                <section className={panel} key={s.recipient.id}>
-                  <Breakdown s={s} hidden={hidden} />
-                </section>
-              ))}
+              {admin && bundle.statements.length > 0 && (
+                <label className="block text-sm">
+                  Cari penerima rekap
+                  <input
+                    className={input}
+                    type="search"
+                    value={recapQuery}
+                    maxLength={100}
+                    disabled={busy || activeForm}
+                    onChange={(e) => {
+                      setRecapQuery(e.target.value);
+                      setRecapPage(1);
+                    }}
+                  />
+                </label>
+              )}
+              {bundle.statements.length > 0 && records.length === 0 && (
+                <EmptyState title="Tidak ada penerima yang cocok." />
+              )}
+              {records
+                .slice((currentRecapPage - 1) * 12, currentRecapPage * 12)
+                .map((s) => (
+                  <section className={panel} key={s.recipient.id}>
+                    <Breakdown s={s} hidden={hidden} />
+                  </section>
+                ))}
+              {records.length > 12 && (
+                <nav
+                  aria-label="Halaman rekap honorarium"
+                  className="flex flex-wrap items-center gap-3"
+                >
+                  <button
+                    className={secondary}
+                    disabled={currentRecapPage === 1 || busy || activeForm}
+                    onClick={() => setRecapPage(currentRecapPage - 1)}
+                  >
+                    Penerima sebelumnya
+                  </button>
+                  <span>
+                    Halaman {currentRecapPage} dari {recapPages} ·{" "}
+                    {records.length} penerima
+                  </span>
+                  <button
+                    className={secondary}
+                    disabled={
+                      currentRecapPage === recapPages || busy || activeForm
+                    }
+                    onClick={() => setRecapPage(currentRecapPage + 1)}
+                  >
+                    Penerima berikutnya
+                  </button>
+                </nav>
+              )}
             </>
           )}
-          {admin && bundle?.mode !== "final" && (
+          {admin && bundle && bundle.mode !== "final" && (
             <section className={panel}>
               <h2 className="font-semibold">Finalisasi periode</h2>
               <p className="text-sm">
@@ -346,10 +701,11 @@ export function FinanceManager({
                 diselesaikan. Snapshot final tidak dapat diedit.
               </p>
               <DataForm
+                successMessage={false}
                 fields={[reason]}
                 label="Tinjau finalisasi honorarium"
                 submitLabel="Buat pratinjau finalisasi"
-                busy={busy}
+                {...formProps}
                 onSave={(data) =>
                   formRun(
                     async () =>
@@ -368,9 +724,9 @@ export function FinanceManager({
           )}
         </>
       )}
-      {view === "history" && (
+      {view === "history" && (!loading || activeForm) && history && (
         <section className={panel}>
-          <div className="flex justify-between">
+          <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
             <h2 className="font-semibold">
               Slip diterbitkan ({history?.total ?? 0})
             </h2>
@@ -385,6 +741,13 @@ export function FinanceManager({
                       "/api/honorarium/excel?" +
                         new URLSearchParams({ period, q }),
                       "honorarium.xlsx",
+                      {
+                        signal: AbortSignal.any([
+                          writes.current?.signal ??
+                            new AbortController().signal,
+                          AbortSignal.timeout(40000),
+                        ]),
+                      },
                     ),
                   false,
                 )
@@ -411,7 +774,7 @@ export function FinanceManager({
                     <td className="p-2">{r.period}</td>
                     <td>{r.name}</td>
                     <td>{r.jtm}</td>
-                    <td>{hidden ? "••••" : r.total}</td>
+                    <td>{hidden ? "••••" : formatHonorAmount(r.total)}</td>
                     <td>
                       <button
                         className={secondary}
@@ -428,22 +791,35 @@ export function FinanceManager({
             </table>
           </TableRegion>
           {history?.total === 0 && <EmptyState title="Belum ada slip final." />}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               className={secondary}
-              disabled={page === 1 || busy}
-              onClick={() => setPage((v) => v - 1)}
+              disabled={page === 1 || locked || activeForm}
+              onClick={() => {
+                setPage((v) => v - 1);
+                resetContext();
+              }}
             >
               <ActionIcon action="previous" />
               Sebelumnya
             </button>
-            <span>Halaman {page}</span>
+            <span>
+              Halaman {page} dari{" "}
+              {Math.max(1, Math.ceil(history.total / history.pageSize))} ·{" "}
+              {history.total} slip
+            </span>
             <button
               className={secondary}
               disabled={
-                !history || page * history.pageSize >= history.total || busy
+                !history ||
+                page * history.pageSize >= history.total ||
+                locked ||
+                activeForm
               }
-              onClick={() => setPage((v) => v + 1)}
+              onClick={() => {
+                setPage((v) => v + 1);
+                resetContext();
+              }}
             >
               <ActionIcon action="next" />
               Berikutnya
@@ -452,7 +828,12 @@ export function FinanceManager({
         </section>
       )}
       {slip && (
-        <section className={panel + " honor-print"}>
+        <section
+          id="honor-slip"
+          tabIndex={-1}
+          aria-label="Slip honorarium terpilih"
+          className={panel + " honor-print min-w-0 [overflow-wrap:anywhere]"}
+        >
           <h2 className="text-lg font-bold">
             Slip Honorarium — {slip.snapshot.school?.name}
           </h2>
@@ -506,23 +887,35 @@ export function FinanceManager({
               <ActionIcon action="link" />
               Buat tautan verifikasi
             </button>
-            <button className={secondary} onClick={() => setSlip(null)}>
+            <button
+              className={secondary}
+              disabled={busy || activeForm}
+              onClick={() => {
+                setSlip(null);
+                setVerifyLink("");
+              }}
+            >
               <ActionIcon action="close" />
               Tutup slip
             </button>
           </div>
-          <DataForm
-            fields={[reason]}
-            label="Ajukan koreksi honorarium"
-            submitLabel="Kirim permintaan koreksi"
-            description={
-              "Slip " + slip.trxId + ". Jelaskan alasan permintaan koreksi."
-            }
-            busy={busy}
-            onSave={(data) =>
-              formRun(() => post("request", { ...data, statementId: slip.id }))
-            }
-          />
+          <div className="print:hidden">
+            <DataForm
+              key={slip.id + ":request"}
+              fields={[reason]}
+              label="Ajukan koreksi honorarium"
+              submitLabel="Kirim permintaan koreksi"
+              description={
+                "Slip " + slip.trxId + ". Jelaskan alasan permintaan koreksi."
+              }
+              {...formProps}
+              onSave={(data) =>
+                formRun(() =>
+                  post("request", { ...data, statementId: slip.id }),
+                )
+              }
+            />
+          </div>
           {admin && (
             <details className="print:hidden">
               <summary>Koreksi administratif ke periode berikutnya</summary>
@@ -531,9 +924,14 @@ export function FinanceManager({
                 penerbitan dan menghitung selisih terhadap koreksi terakhir.
               </p>
               <DataForm
+                successMessage={false}
                 key={slip.id}
                 fields={[
-                  { key: "targetPeriod", label: "Periode tujuan (YYYY-MM)" },
+                  {
+                    key: "targetPeriod",
+                    label: "Periode tujuan (YYYY-MM)",
+                    value: period > slip.snapshot.period ? period : undefined,
+                  },
                   {
                     key: "correctedJtm",
                     label: "Total JTM yang benar",
@@ -558,7 +956,7 @@ export function FinanceManager({
                 ]}
                 label="Tinjau koreksi honorarium"
                 submitLabel="Buat pratinjau koreksi"
-                busy={busy}
+                {...formProps}
                 onSave={(data) =>
                   formRun(
                     async () =>
@@ -577,263 +975,248 @@ export function FinanceManager({
           )}
         </section>
       )}
-      {view === "operations" && admin && (
-        <>
-          <section className={panel}>
-            <h2 className="font-semibold">
-              Hak libur ({operations?.holidays.length ?? 0})
-            </h2>
-            <p className="text-sm">
-              Posting hari ini mulai 16.00 WIB. Pengecualian beralasan hanya
-              untuk hak belum diposting; pembatalan penerbitan mengembalikannya
-              menjadi tertunda. Posting langsung mencatat hak yang memenuhi
-              syarat. Pengecualian menampilkan pratinjau untuk dikonfirmasi.
-            </p>
-            <DataForm
-              fields={[
-                { key: "date", label: "Tanggal libur", type: "date" },
-                {
-                  key: "operation",
-                  label: "Tindakan",
-                  type: "select",
-                  options: [
-                    { id: "generate", name: "Posting hak libur" },
-                    {
-                      id: "waive",
-                      name: "Kecualikan hak tertunda dengan alasan",
-                    },
-                  ],
-                },
-                reason,
-              ]}
-              label="Atur honorarium hari libur"
-              submitLabel="Jalankan tindakan hari libur"
-              busy={busy}
-              onSave={(data) =>
-                data.operation === "waive"
-                  ? formRun(
-                      async () =>
-                        setPreview(
-                          await post<FinancePreview>("preview", {
-                            ...data,
-                            operation: "holiday-waive",
-                          }),
-                        ),
-                      false,
-                    )
-                  : formRun(() => post("holiday", data))
-              }
-            />
-            <TableRegion label="Operasi honorarium">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr>
-                    <th>Tanggal</th>
-                    <th>Guru</th>
-                    <th>Sumber</th>
-                    <th>JTM</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {operations?.holidays.map((h) => (
-                    <tr key={h.sourceKey} className="border-t">
-                      <td>{h.date}</td>
-                      <td>{h.name}</td>
-                      <td>{labels[h.kind] ?? h.kind}</td>
-                      <td>{h.jtm}</td>
-                      <td>
-                        {{
-                          projected: "Proyeksi",
-                          pending: "Tertunda",
-                          posted: "Diposting",
-                          waived: "Dikecualikan",
-                        }[h.state] ?? h.state}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </TableRegion>
-            {operations?.runs
-              .filter((r) => r.state === "completed")
-              .map((r) => (
-                <details key={r.id}>
-                  <summary>
-                    Run {r.date} — generasi {r.generation}
-                  </summary>
-                  <DataForm
-                    fields={[reason]}
-                    label="Tinjau pembatalan penerbitan"
-                    submitLabel="Buat pratinjau pembatalan"
-                    busy={busy}
-                    onSave={(data) =>
-                      formRun(
+      {view === "operations" &&
+        admin &&
+        operations &&
+        (!loading || activeForm) && (
+          <>
+            <section className={panel}>
+              <h2 className="font-semibold">
+                Hak libur ({operations?.holidays.length ?? 0})
+              </h2>
+              <p className="text-sm">
+                Posting hari ini mulai 16.00 WIB. Pengecualian beralasan hanya
+                untuk hak belum diposting; pembatalan penerbitan
+                mengembalikannya menjadi tertunda. Posting langsung mencatat hak
+                yang memenuhi syarat. Pengecualian menampilkan pratinjau untuk
+                dikonfirmasi.
+              </p>
+              <DataForm
+                fields={[
+                  {
+                    key: "date",
+                    label: "Tanggal libur",
+                    type: "date",
+                    value: period + "-01",
+                  },
+                  {
+                    key: "operation",
+                    label: "Tindakan",
+                    type: "select",
+                    options: [
+                      { id: "generate", name: "Posting hak libur" },
+                      {
+                        id: "waive",
+                        name: "Kecualikan hak tertunda dengan alasan",
+                      },
+                    ],
+                  },
+                  reason,
+                ]}
+                successMessage={false}
+                label="Atur honorarium hari libur"
+                submitLabel="Jalankan tindakan hari libur"
+                {...formProps}
+                onSave={(data) =>
+                  data.operation === "waive"
+                    ? formRun(
                         async () =>
                           setPreview(
                             await post<FinancePreview>("preview", {
                               ...data,
-                              operation: "holiday-cancel",
-                              date: r.date,
-                              runId: r.id,
+                              operation: "holiday-waive",
                             }),
                           ),
                         false,
                       )
-                    }
-                  />
-                </details>
-              ))}
-            <p className="text-sm text-slate-600">
-              Penjadwalan dan pengiriman mengikuti pengaturan administrator.
-              Tindakan di bagian ini dijalankan secara manual.
-            </p>
-          </section>
-          <section className={panel}>
-            <h2 className="font-semibold">Blok transportasi</h2>
-            <TeacherPicker value={blockTeacher} onChange={setBlockTeacher} />
-            <DataForm
-              fields={[
-                { key: "from", label: "Dari tanggal", type: "date" },
-                { key: "to", label: "Sampai tanggal", type: "date" },
-                reason,
-              ]}
-              label="Tambah blok transportasi"
-              submitLabel="Simpan blok transportasi"
-              description={
-                "Sasaran: " +
-                (blockTeacher?.name ?? "semua guru") +
-                ". Periksa penerima dan rentang tanggal sebelum menyimpan."
-              }
-              busy={busy}
-              onSave={(data) =>
-                formRun(() =>
-                  post("block", { ...data, userId: blockTeacher?.id ?? null }),
-                )
-              }
-            />
-            {operations?.blocks
-              .filter((b) => b.active)
-              .map((b) => (
-                <details key={b.id}>
-                  <summary>
-                    {b.date_start}–{b.date_end}: {b.reason}
-                  </summary>
-                  <DataForm
-                    fields={[reason]}
-                    label="Nonaktifkan blok transportasi"
-                    submitLabel="Konfirmasi penonaktifan blok"
-                    busy={busy}
-                    onSave={(data) =>
-                      formRun(() =>
-                        post("block", {
-                          ...data,
-                          id: b.id,
-                          version: String(b.version),
-                        }),
-                      )
-                    }
-                  />
-                </details>
-              ))}
-          </section>
-          <section className={panel}>
-            <h2 className="font-semibold">Permintaan koreksi</h2>
-            {operations?.requests.map((r) => (
-              <div className="border-t p-2" key={r.id}>
-                <p>{r.reason}</p>
-                <button
-                  className={secondary}
-                  onClick={() => void showSlip(r.statement_id)}
-                >
-                  <ActionIcon action="preview" />
-                  Tinjau slip sumber
-                </button>
-              </div>
-            ))}
-          </section>
-        </>
-      )}
-      <dialog
-        ref={dialog}
-        onCancel={(e) => {
-          if (busy) e.preventDefault();
-          else setPreview(null);
-        }}
-        className="m-auto max-h-[85vh] w-[min(95vw,720px)] space-y-4 overflow-y-auto rounded-xl border bg-white p-6 shadow-xl backdrop:bg-black/40"
-        aria-labelledby="finance-preview-title"
-      >
-        <h2 id="finance-preview-title" className="text-lg font-bold">
-          Konfirmasi pratinjau
-        </h2>
-        {preview &&
-          ("statements" in preview.result ? (
-            <>
-              <p>
-                Periode {preview.result.period}:{" "}
-                {preview.result.statements.length} penerima.
+                    : formRun(() => post("holiday", data))
+                }
+              />
+              <TableRegion label="Operasi honorarium">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Guru</th>
+                      <th>Sumber</th>
+                      <th>JTM</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {operations?.holidays.map((h) => (
+                      <tr key={h.sourceKey} className="border-t">
+                        <td>{h.date}</td>
+                        <td>{h.name}</td>
+                        <td>{labels[h.kind] ?? h.kind}</td>
+                        <td>{h.jtm}</td>
+                        <td>
+                          {{
+                            projected: "Proyeksi",
+                            pending: "Tertunda",
+                            posted: "Diposting",
+                            waived: "Dikecualikan",
+                          }[h.state] ?? h.state}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </TableRegion>
+              {operations.holidays.length === 0 && (
+                <EmptyState title="Tidak ada hak libur pada periode ini." />
+              )}
+              {operations?.runs
+                .filter((r) => r.state === "completed")
+                .map((r) => (
+                  <details key={r.id}>
+                    <summary>
+                      Run {r.date} — generasi {r.generation}
+                    </summary>
+                    <DataForm
+                      fields={[reason]}
+                      successMessage={false}
+                      label="Tinjau pembatalan penerbitan"
+                      submitLabel="Buat pratinjau pembatalan"
+                      {...formProps}
+                      onSave={(data) =>
+                        formRun(
+                          async () =>
+                            setPreview(
+                              await post<FinancePreview>("preview", {
+                                ...data,
+                                operation: "holiday-cancel",
+                                date: r.date,
+                                runId: r.id,
+                              }),
+                            ),
+                          false,
+                        )
+                      }
+                    />
+                  </details>
+                ))}
+              <p className="text-sm text-slate-600">
+                Penjadwalan dan pengiriman mengikuti pengaturan administrator.
+                Tindakan di bagian ini dijalankan secara manual.
               </p>
-              {preview.result.statements.map((s) => (
-                <p key={s.recipient.id}>
-                  {s.recipient.name} — {s.totalJtm} JTM; total{" "}
-                  {hidden ? "••••" : s.total} rupiah
-                </p>
+            </section>
+            <section className={panel}>
+              <h2 className="font-semibold">Blok transportasi</h2>
+              <TeacherPicker
+                value={blockTeacher}
+                onChange={setBlockTeacher}
+                disabled={locked || activeForm}
+              />
+              <DataForm
+                fields={[
+                  {
+                    key: "from",
+                    label: "Dari tanggal",
+                    type: "date",
+                    value: period + "-01",
+                  },
+                  {
+                    key: "to",
+                    label: "Sampai tanggal",
+                    type: "date",
+                    value: period + "-01",
+                  },
+                  reason,
+                ]}
+                label="Tambah blok transportasi"
+                submitLabel="Simpan blok transportasi"
+                description={
+                  "Sasaran: " +
+                  (blockTeacher?.name ?? "semua guru") +
+                  ". Periksa penerima dan rentang tanggal sebelum menyimpan."
+                }
+                {...formProps}
+                onSave={(data) =>
+                  formRun(() =>
+                    post("block", {
+                      ...data,
+                      userId: blockTeacher?.id ?? null,
+                    }),
+                  )
+                }
+              />
+              {!operations.blocks.some((b) => b.active) && (
+                <EmptyState title="Tidak ada blok transportasi aktif." />
+              )}
+              {operations?.blocks
+                .filter((b) => b.active)
+                .map((b) => (
+                  <details key={b.id}>
+                    <summary>
+                      {b.user_id ? "Guru terpilih" : "Semua guru"} ·{" "}
+                      {b.date_start}–{b.date_end}: {b.reason}
+                    </summary>
+                    <DataForm
+                      fields={[reason]}
+                      label="Nonaktifkan blok transportasi"
+                      submitLabel="Konfirmasi penonaktifan blok"
+                      {...formProps}
+                      onSave={(data) =>
+                        formRun(() =>
+                          post("block", {
+                            ...data,
+                            id: b.id,
+                            version: String(b.version),
+                          }),
+                        )
+                      }
+                    />
+                  </details>
+                ))}
+            </section>
+            <section className={panel}>
+              <h2 className="font-semibold">Permintaan koreksi</h2>
+              {operations.requests.length === 0 && (
+                <EmptyState title="Belum ada permintaan koreksi." />
+              )}
+              {operations?.requests.map((r) => (
+                <div className="border-t p-2" key={r.id}>
+                  <p>{r.reason}</p>
+                  <button
+                    className={secondary}
+                    disabled={locked || activeForm}
+                    onClick={() => void showSlip(r.statement_id)}
+                  >
+                    <ActionIcon action="preview" />
+                    Tinjau slip sumber
+                  </button>
+                </div>
               ))}
-              {preview.result.issues.map((x, i) => (
-                <p key={i} className="text-red-800">
-                  {issueLabels[x.split(":")[0]!] ?? x}
-                </p>
-              ))}
-            </>
-          ) : "delta" in preview.result ? (
-            <p>
-              Basis sebelumnya: {preview.result.baseline}; basis baru:{" "}
-              {preview.result.correctedTotal}; selisih: {preview.result.delta}{" "}
-              rupiah.
-            </p>
-          ) : (
-            <p>
-              Hak terdampak:{" "}
-              {String((preview.result as Record<string, unknown>).count)}; JTM:{" "}
-              {String((preview.result as Record<string, unknown>).jtm)}. Hak
-              kembali tertunda.
-            </p>
-          ))}
-        <p className="text-sm">
-          Pratinjau berlaku 10 menit. Perubahan data mengharuskan pratinjau
-          ulang.
-        </p>
-        <div className="flex gap-3">
-          <button
-            className={button}
-            disabled={
-              busy ||
-              !!(
-                preview &&
-                "issues" in preview.result &&
-                preview.result.issues.length
-              )
-            }
-            onClick={() =>
-              void run(async () => {
-                await post("commit", { previewId: preview!.previewId });
-                setPreview(null);
-              })
-            }
-          >
-            <ActionIcon action="confirm" />
-            Konfirmasi perubahan honorarium
-          </button>
-          <button
-            className={secondary}
-            disabled={busy}
-            onClick={() => setPreview(null)}
-          >
-            <ActionIcon action="close" />
-            Batal
-          </button>
-        </div>
-      </dialog>
+            </section>
+          </>
+        )}
+      {preview && previewRequest && !activeForm && (
+        <FinancePreviewDialog
+          preview={preview}
+          request={previewRequest}
+          hidden={hidden}
+          busy={busy}
+          locked={uncertain || loading}
+          error={error}
+          now={now}
+          onCancel={() => {
+            setPreview(null);
+            setPreviewRequest(null);
+            restoreFocus();
+          }}
+          onConfirm={() =>
+            void run(async () => {
+              if (Date.parse(preview.expiresAt) <= Date.now())
+                throw Error("Pratinjau kedaluwarsa. Buat pratinjau baru.");
+              await post("commit", { previewId: preview.previewId });
+              setPreview(null);
+              setPreviewRequest(null);
+              restoreFocus();
+            })
+          }
+        />
+      )}
     </div>
   );
 }
