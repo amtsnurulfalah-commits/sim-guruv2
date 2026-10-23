@@ -526,14 +526,15 @@ try {
               present: 20,
               absent: 0,
               notes: "Catatan sintetis",
-              inputType: "H_DAY",
+              inputType: "SAME_DAY",
               weight: "1",
               creditedJtm: "2",
               version: "1",
               recapAvailable: false,
+              submittedAt: "2026-10-21T07:00:00Z",
             },
           ],
-          total: 1,
+          total: 1, page: 1, pageSize: 25,
         },
       }),
     }),
@@ -571,11 +572,13 @@ try {
     name: "Hapus jurnal dan batalkan JTM",
     exact: true,
   });
-  assert.equal(await del.isDisabled(), true);
-  await page
-    .getByLabel("Alasan penghapusan jurnal")
-    .fill("Alasan penghapusan sintetis");
-  assert.equal(await del.isEnabled(), true);
+  await del.click();
+  const deletionDialog = page.getByRole("dialog", {name:"Hapus jurnal pembelajaran",exact:true});
+  await deletionDialog.getByLabel("Alasan penghapusan jurnal",{exact:true}).fill("Alasan penghapusan sintetis");
+  assert.equal(await deletionDialog.getByRole("button",{name:"Konfirmasi penghapusan jurnal",exact:true}).isEnabled(),true);
+  await page.keyboard.press("Escape");
+  await page.getByRole("button",{name:"Buang perubahan",exact:true}).click();
+  await deletionDialog.waitFor({state:"hidden"});
 
   await page.unroute("**/api/activities/journals?*");
   interactions.push({
