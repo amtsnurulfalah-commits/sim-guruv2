@@ -92,7 +92,7 @@ async function main() {
     data: { name: "Mata Pelajaran Pengujian Responsivitas" },
   });
   // Opt-in KBM fixture: disposable database only, isolated from the global UI matrix.
-  if (process.env.UI_CONFIRMATION_FIXTURE === "1" || process.env.UI_STUDENT_FIXTURE === "1" || process.env.UI_DUTY_FIXTURE === "1") {
+  if (process.env.UI_CONFIRMATION_FIXTURE === "1" || process.env.UI_STUDENT_FIXTURE === "1" || process.env.UI_DUTY_FIXTURE === "1" || process.env.UI_EXAM_FIXTURE === "1") {
     const reason = "Fikstur konfirmasi KBM sintetis",
       today = new Intl.DateTimeFormat("en-CA", {
         timeZone: "Asia/Jakarta",
@@ -156,8 +156,8 @@ async function main() {
       date: today,
       version: "0",
       academicPeriodId: period.id,
-      kbmEnabled: true,
-      examEnabled: false,
+      kbmEnabled: process.env.UI_EXAM_FIXTURE !== "1",
+      examEnabled: process.env.UI_EXAM_FIXTURE === "1",
       reason,
     });
     await calendar.commit(
@@ -181,6 +181,16 @@ async function main() {
         validTo: end,
       },
     });
+  }
+  if(process.env.UI_EXAM_FIXTURE === "1"){
+    const today=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Jakarta"}).format(new Date()),reason="Fikstur ujian sintetis";
+    // Fixed clock in the disposable test database only.
+    await db.exec("create or replace function app.exam_now() returns timestamp language sql volatile set search_path=pg_catalog as $$ select (clock_timestamp() at time zone 'Asia/Jakarta')::date + time '12:00' $$");
+    const academic=(await masters.list(token,"academic-periods",{page:1,pageSize:20})).items[0]!,klass=(await masters.list(token,"classes",{page:1,pageSize:20})).items[0]!,subject=(await masters.list(token,"subjects",{page:1,pageSize:20})).items[0]!;
+    const period=await programs.saveExam(token,{entity:"period",version:"0",reason,data:{academicPeriodId:academic.id,name:"Ujian Sintetis",dateStart:today,dateEnd:today.slice(0,4)+"-12-31",committeeJtm:"1"}}) as {id:string};
+    const session=await programs.saveExam(token,{entity:"session",version:"0",reason,data:{periodId:period.id,date:today,name:"Sesi Sintetis",timeStart:"08:00",timeEnd:"09:00",jtm:"3"}}) as {id:string};
+    const room=await programs.saveExam(token,{entity:"room",version:"0",reason,data:{sessionId:session.id,name:"Ruang Sintetis",subjectId:subject.id,totalStudents:30,classIds:[klass.id]}}) as {id:string};
+    await programs.saveExam(token,{entity:"supervisor",version:"0",reason,data:{roomId:room.id,userId:guru,overrideJtm:null}});
   }
   // A real disposable attendance row exercises repeated leave-editor selection.
   const fixtureDate = new Intl.DateTimeFormat("en-CA", {
@@ -262,6 +272,11 @@ async function main() {
       else if (path === "/api/duties/commit") data = await duties.commit(token,input);
       else if (path === "/api/programs/read")
         data = await programs.read(token, q);
+      else if (path.startsWith("/api/programs/")) {
+        const action=path.split("/").at(-1)!,methods={"exam-save":programs.saveExam,"exam-delete":programs.deleteExam,bap:programs.bap,preview:programs.preview,commit:programs.commit};
+        if(!Object.hasOwn(methods,action))throw Error("FIXTURE_ROUTE_NOT_IMPLEMENTED");
+        data=await methods[action as keyof typeof methods].call(programs,token,input);
+      }
       else if (path === "/api/honorarium/read")
         data = await finance.read(token, q);
       else if (path.startsWith("/api/operations/"))

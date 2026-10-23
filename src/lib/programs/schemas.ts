@@ -28,7 +28,10 @@ export const examSaveSchema = z.discriminatedUnion("entity", [
           committeeJtm: jtm,
         })
         .strict()
-        .refine((v) => v.dateStart <= v.dateEnd),
+        .refine((v) => v.dateStart <= v.dateEnd, {
+          path: ["dateEnd"],
+          message: "Tanggal akhir harus sama atau setelah tanggal mulai.",
+        }),
     })
     .strict(),
   z
@@ -45,7 +48,10 @@ export const examSaveSchema = z.discriminatedUnion("entity", [
           jtm,
         })
         .strict()
-        .refine((v) => v.timeStart < v.timeEnd),
+        .refine((v) => v.timeStart < v.timeEnd, {
+          path: ["timeEnd"],
+          message: "Jam selesai harus setelah jam mulai.",
+        }),
     })
     .strict(),
   z
@@ -89,10 +95,16 @@ export const examSaveSchema = z.discriminatedUnion("entity", [
           exclusiveEnd: time.nullable(),
         })
         .strict()
-        .refine((v) =>
-          v.exclusiveStart === null
-            ? v.exclusiveEnd === null
-            : v.exclusiveEnd !== null && v.exclusiveStart < v.exclusiveEnd,
+        .refine(
+          (v) =>
+            v.exclusiveStart === null
+              ? v.exclusiveEnd === null
+              : v.exclusiveEnd !== null && v.exclusiveStart < v.exclusiveEnd,
+          {
+            path: ["exclusiveEnd"],
+            message:
+              "Isi kedua jam eksklusif; jam akhir harus setelah jam awal.",
+          },
         ),
     })
     .strict(),
@@ -249,8 +261,8 @@ export type Bap = {
   notes: string;
   version: string;
   state: string;
-  teacherName?: string;
-  date?: string;
+  teacherName?: string | undefined;
+  date?: string | undefined;
 };
 export type ExamOccurrence = Omit<DutyOccurrence, "kind"> & {
   kind: "EXAM_SUPERVISOR" | "EXAM_COMMITTEE";
