@@ -15,6 +15,7 @@ import { CalendarService } from "../../src/server/calendar/service";
 import { ScheduleService } from "../../src/server/schedules/service";
 import { journalSchema, journalListSchema, journalOptionsSchema, eligibleJournalsSchema, journalBlocksSchema } from "../../src/lib/activities/journal-contracts";
 import { confirmationListSchema, verifyConfirmationResult } from "../../src/lib/activities/confirmation-contracts";
+import { studentProgressSchema, studentSavedSchema, verifyStudentList } from "../../src/lib/activities/student-contracts";
 import { ActivityService } from "../../src/server/activities/service";
 import { createActivityHandler } from "../../src/server/activities/http";
 import { AccountLifecycleService } from "../../src/server/accounts/lifecycle";
@@ -580,13 +581,16 @@ test("Tahap 3 — occurrences, attendance, students and atomic JTM journals", as
       await assert.rejects(() =>
         command(admin, "students-save", { ...recap(c1.id), hadir: 28.5 }),
       );
-      await command(admin, "students-save", recap(c1.id));
+      studentSavedSchema.parse(await command(admin, "students-save", recap(c1.id)));
       await command(admin, "students-save", recap(extraClass.id));
       const p = await read<{
         complete: boolean;
         requiredCount: number;
         completedCount: number;
       }>(admin, "students-progress", { date });
+      studentProgressSchema.parse(p);
+      const rows = verifyStudentList(await read(admin,"students",{...filter,page:1,pageSize:100}),{...filter,page:1,pageSize:100,admin:true,userId:adminId});
+      assert.ok(rows.items.some(row => row.class_id === c1.id && row.submitted_by === adminId));
       assert.equal(p.requiredCount, 2);
       assert.equal(p.completedCount, 1);
       assert.equal(p.complete, false);

@@ -104,7 +104,7 @@ export const commandSchemas = {
       reason,
     })
     .strict()
-    .refine((v) => v.hadir + v.sakit + v.izin + v.alpa > 0),
+    .refine((v) => v.hadir + v.sakit + v.izin + v.alpa > 0 && v.hadir + v.sakit + v.izin + v.alpa <= 1000, {path:["hadir"], message:"Jumlah hadir, sakit, izin, dan alpa harus antara 1 dan 1000 siswa."}),
   "journal-create": z.object({ occurrenceId: uuid, ...journalFields }).strict(),
   "journal-edit": z
     .object({ journalId: uuid, version, ...journalFields })

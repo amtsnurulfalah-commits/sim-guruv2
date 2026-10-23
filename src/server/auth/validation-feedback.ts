@@ -58,6 +58,7 @@ export function validationFieldErrors(error: unknown): FieldErrors | undefined {
           "Tanggal akhir harus setelah atau sama dengan tanggal mulai, maksimal 366 hari.",
           "Jam pulang harus setelah jam masuk.",
           "Tanggal akhir blok harus setelah atau sama dengan tanggal mulai.",
+          "Jumlah hadir, sakit, izin, dan alpa harus antara 1 dan 1000 siswa.",
           "Isi waktu selesai pemeliharaan atau kosongkan kedua waktu.",
           "Isi waktu mulai pemeliharaan atau kosongkan kedua waktu.",
           "Waktu selesai harus setelah waktu mulai pemeliharaan.",

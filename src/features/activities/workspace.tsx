@@ -5,16 +5,12 @@ import { ActionIcon } from "@/components/ui/action-icon";
 
 import { JournalWorkspace } from "./journal-workspace";
 import { ConfirmationWorkspace } from "./confirmation-workspace";
+import { StudentWorkspace } from "./student-workspace";
 import { FormDialog } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { masterRequest } from "../masters/api";
 import { wibDate } from "../../lib/calendar/schemas";
-import type {
-  Attendance,
-  List,
-  Options,
-  StudentRecap,
-} from "../../lib/activities/schemas";
+import type { Attendance, List, Options } from "../../lib/activities/schemas";
 import {
   control as inputClass,
   primaryAction as buttonClass,
@@ -89,30 +85,6 @@ function Select({
     </Field>
   );
 }
-function Count({
-  label,
-  value,
-  set,
-}: {
-  label: string;
-  value: number;
-  set: (v: number) => void;
-}) {
-  return (
-    <Field label={label}>
-      <input
-        className={inputClass}
-        type="number"
-        min={0}
-        max={1000}
-        step={1}
-        value={value}
-        onChange={(e) => set(e.target.valueAsNumber)}
-        required
-      />
-    </Field>
-  );
-}
 type Mode = "occurrences" | "attendance" | "students" | "journals";
 const titles: Record<Mode, string> = {
   occurrences: "Kegiatan dan konfirmasi KBM",
@@ -124,9 +96,16 @@ export function ActivityWorkspace(props: {
   admin: boolean;
   userId: string;
   mode: Mode;
+  studentView?: "input" | "history";
 }) {
   return props.mode === "occurrences" ? (
     <ConfirmationWorkspace admin={props.admin} userId={props.userId} />
+  ) : props.mode === "students" ? (
+    <StudentWorkspace
+      admin={props.admin}
+      userId={props.userId}
+      initialView={props.studentView ?? "input"}
+    />
   ) : props.mode === "journals" ? (
     <JournalWorkspace admin={props.admin} userId={props.userId} />
   ) : (
@@ -139,7 +118,7 @@ function ActivityWorkspaceContent({
 }: {
   admin: boolean;
   userId: string;
-  mode: Exclude<Mode, "journals" | "occurrences">;
+  mode: "attendance";
 }) {
   const [manualEditor, setManualEditor] = useState(0),
     [leaveEditor, setLeaveEditor] = useState(0);
@@ -154,17 +133,12 @@ function ActivityWorkspaceContent({
       subjects: [],
       h1Enabled: false,
     }),
-    [rows, setRows] = useState<(Attendance | StudentRecap)[]>([]),
+    [rows, setRows] = useState<Attendance[]>([]),
     [total, setTotal] = useState(0),
     [loading, setLoading] = useState(true),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [message, setMessage] = useState("");
-  const [progress, setProgress] = useState<{
-    required: { id: string; name: string; complete: boolean }[];
-    completedCount: number;
-    requiredCount: number;
-  } | null>(null);
   const [teacher, setTeacher] = useState(""),
     [filterTeacher, setFilterTeacher] = useState("");
   const [templates, setTemplates] = useState<
@@ -198,11 +172,6 @@ function ActivityWorkspaceContent({
   const [attendanceId, setAttendanceId] = useState(""),
     [leaveTime, setLeaveTime] = useState(""),
     [returnTime, setReturnTime] = useState("");
-  const [classId, setClassId] = useState(""),
-    [hadir, setHadir] = useState(0),
-    [sakit, setSakit] = useState(0),
-    [izin, setIzin] = useState(0),
-    [alpa, setAlpa] = useState(0);
   useEffect(() => {
     const ctrl = new AbortController();
     let live = true;
@@ -223,7 +192,7 @@ function ActivityWorkspaceContent({
           pageSize: "25",
           ...(filterTeacher ? { userId: filterTeacher } : {}),
         });
-        const result = await masterRequest<List<Attendance | StudentRecap>>(
+        const result = await masterRequest<List<Attendance>>(
           `/api/activities/${mode}?${params}`,
           "GET",
           undefined,
@@ -241,15 +210,6 @@ function ActivityWorkspaceContent({
             ctrl.signal,
           );
           if (live) setTemplates(t.items);
-        }
-        if (mode === "students" && (admin || opts.canOperate)) {
-          const p = await masterRequest<NonNullable<typeof progress>>(
-            `/api/activities/students-progress?date=${date}`,
-            "GET",
-            undefined,
-            ctrl.signal,
-          );
-          if (live) setProgress(p);
         }
       } catch (e) {
         if (live)
@@ -308,9 +268,6 @@ function ActivityWorkspaceContent({
   const selectedAttendance = attendanceRows.find((r) => r.id === attendanceId);
   const currentManual = attendanceRows.find(
     (r) => r.userId === teacher && r.date === date,
-  );
-  const currentStudent = (rows as StudentRecap[]).find(
-    (r) => r.class_id === classId && r.date === date,
   );
   const selectedTemplate = templates.find(
     (t) => String(t.day_index) === day && t.sched_type === type,
@@ -882,114 +839,6 @@ function ActivityWorkspaceContent({
               </section>
             </>
           )}
-        </>
-      )}
-      {mode === "students" && (
-        <>
-          {(admin || options.canOperate) && (
-            <>
-              <section className={panel}>
-                <h2 className="font-semibold">Kelengkapan tanggal {date}</h2>
-                <p>
-                  {progress?.completedCount ?? 0} dari{" "}
-                  {progress?.requiredCount ?? 0} kelas wajib sudah diisi.
-                </p>
-                <ul>
-                  {progress?.required.map((c) => (
-                    <li key={c.id}>
-                      {c.name} — {c.complete ? "Lengkap" : "Belum diisi"}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-              <FormDialog
-                title="Rekap absensi siswa"
-                onDiscard={() => {
-                  setClassId("");
-                  setHadir(0);
-                  setSakit(0);
-                  setIzin(0);
-                  setAlpa(0);
-                  setReason("");
-                }}
-                busy={busy}
-                success={message}
-                error={error}
-              >
-                <form
-                  className={panel}
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    void run("students-save", {
-                      classId,
-                      date,
-                      hadir,
-                      sakit,
-                      izin,
-                      alpa,
-                      version: currentStudent?.version ?? "0",
-                      reason,
-                    });
-                  }}
-                >
-                  <h2 className="font-semibold">
-                    Input / perbarui rekap hari ini
-                  </h2>
-                  <Select
-                    label="Kelas"
-                    value={classId}
-                    set={(v) => {
-                      setClassId(v);
-                      const r = (rows as StudentRecap[]).find(
-                        (x) => x.class_id === v && x.date === date,
-                      );
-                      setHadir(r?.hadir ?? 0);
-                      setSakit(r?.sakit ?? 0);
-                      setIzin(r?.izin ?? 0);
-                      setAlpa(r?.alpa ?? 0);
-                    }}
-                    items={options.classes}
-                  />
-                  <div className="grid gap-3 sm:grid-cols-4">
-                    <Count label="Hadir" value={hadir} set={setHadir} />
-                    <Count label="Sakit" value={sakit} set={setSakit} />
-                    <Count label="Izin" value={izin} set={setIzin} />
-                    <Count label="Alpa" value={alpa} set={setAlpa} />
-                  </div>
-                  <Text
-                    label="Alasan pencatatan"
-                    value={reason}
-                    set={setReason}
-                    required
-                  />
-                  <button
-                    className={buttonClass}
-                    disabled={busy || loading || !classId}
-                  >
-                    <ActionIcon action="save" />
-                    Simpan rekap siswa
-                  </button>
-                </form>
-              </FormDialog>
-            </>
-          )}
-          <section className={panel}>
-            <h2 className="font-semibold">Riwayat rekap siswa</h2>
-            {!loading && !rows.length && (
-              <p>Belum ada rekap yang dapat ditampilkan.</p>
-            )}
-            {(rows as StudentRecap[]).map((r) => (
-              <article className="rounded border p-3" key={r.id}>
-                <h3>
-                  {r.className} · {r.date}
-                </h3>
-                <p>
-                  Hadir {r.hadir}; sakit {r.sakit}; izin {r.izin}; alpa {r.alpa}
-                </p>
-                <p className="text-sm">Dicatat oleh {r.submittedByName}</p>
-              </article>
-            ))}
-          </section>
         </>
       )}
       {pagination}

@@ -92,7 +92,7 @@ async function main() {
     data: { name: "Mata Pelajaran Pengujian Responsivitas" },
   });
   // Opt-in KBM fixture: disposable database only, isolated from the global UI matrix.
-  if (process.env.UI_CONFIRMATION_FIXTURE === "1") {
+  if (process.env.UI_CONFIRMATION_FIXTURE === "1" || process.env.UI_STUDENT_FIXTURE === "1") {
     const reason = "Fikstur konfirmasi KBM sintetis",
       today = new Intl.DateTimeFormat("en-CA", {
         timeZone: "Asia/Jakarta",

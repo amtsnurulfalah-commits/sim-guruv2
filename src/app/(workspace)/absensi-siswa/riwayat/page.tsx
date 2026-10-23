@@ -11,6 +11,7 @@ export default async function Page() {
         admin={result.session.role === "admin"}
         userId={result.session.user_id}
         mode="students"
+        studentView="history"
       />
     </>
   );
