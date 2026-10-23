@@ -100,9 +100,12 @@ export class ActivityService {
             sqlJson({ ...filter, page, pageSize: 100 }),
           ])
         ).rows[0]!.value;
+        if (v.total > 10000 || items.length + v.items.length > 10000)
+          throw new Error("EXPORT_TOO_LARGE");
+        if (!v.items.length && items.length < v.total)
+          throw new Error("INVALID_EXPORT_RESPONSE");
         items.push(...v.items);
         if (items.length >= v.total) break;
-        if (items.length >= 10000) throw new Error("EXPORT_TOO_LARGE");
       }
       return items;
     });

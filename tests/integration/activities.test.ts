@@ -1,3 +1,4 @@
+import { attendanceSchema, attendanceListSchema, attendancePreviewSchema, attendanceTemplatesSchema } from "../../src/lib/activities/attendance-contracts";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { randomBytes, randomUUID } from "node:crypto";
@@ -366,6 +367,9 @@ test("Tahap 3 — occurrences, attendance, students and atomic JTM journals", as
         "template-preview",
         { date, templateId: t.id },
       );
+      attendancePreviewSchema.parse(p);
+      attendanceTemplatesSchema.parse(await read(admin,"templates"));
+      attendanceListSchema.parse(await read(admin,"attendance",filter));
       assert.equal(p.participants.length, 2);
       await command(admin, "template-apply", {
         previewId: p.previewId,
@@ -399,6 +403,7 @@ test("Tahap 3 — occurrences, attendance, students and atomic JTM journals", as
         version: attendance.version,
         reason,
       });
+      attendanceSchema.parse(attendance);
       assert.equal(attendance.source, "admin");
       assert.equal(Number(attendance.ratio), 1);
       assert.equal(
