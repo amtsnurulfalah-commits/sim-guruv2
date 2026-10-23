@@ -49,7 +49,8 @@
     "test:ui:duties": "node tests/ui/duties.mjs",
     "test:ui:exams": "node tests/ui/exams.mjs",
     "test:ui:attendance": "node tests/ui/attendance.mjs",
-    "test:ui:events": "node tests/ui/events.mjs"
+    "test:ui:events": "node tests/ui/events.mjs",
+    "test:ui:finance": "node tests/ui/finance.mjs"
   },
   "dependencies": {
     "@next/env": "16.4.2",

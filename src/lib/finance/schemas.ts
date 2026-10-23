@@ -55,7 +55,20 @@ export const commandSchemas = {
     z
       .object({ userId: id.nullable(), from: date, to: date, reason })
       .strict()
-      .refine((v) => v.to >= v.from),
+      .superRefine((v, ctx) => {
+        if (v.to < v.from)
+          ctx.addIssue({
+            code: "custom",
+            path: ["to"],
+            message: "Tanggal akhir harus sama atau setelah tanggal mulai.",
+          });
+        if ((Date.parse(v.to) - Date.parse(v.from)) / 86400000 > 365)
+          ctx.addIssue({
+            code: "custom",
+            path: ["to"],
+            message: "Rentang blok transportasi maksimal 365 hari.",
+          });
+      }),
     z
       .object({ id, version: z.string().regex(/^[1-9][0-9]*$/), reason })
       .strict(),
@@ -69,14 +82,14 @@ export const verifySchema = z
   .strict();
 export type SourceLine = {
   component: string;
-  sourceRef?: string;
-  ledgerId?: string;
-  date?: string;
-  jtm?: string;
-  amount?: string;
-  raw?: string;
-  delta?: string;
-  name?: string;
+  sourceRef?: string | null | undefined;
+  ledgerId?: string | null | undefined;
+  date?: string | null | undefined;
+  jtm?: string | null | undefined;
+  amount?: string | null | undefined;
+  raw?: string | null | undefined;
+  delta?: string | null | undefined;
+  name?: string | null | undefined;
   [key: string]: unknown;
 };
 export type HonorSnapshot = {
@@ -111,16 +124,16 @@ export type HonorSnapshot = {
   total: string;
   lines: SourceLine[];
   pendingHolidays: SourceLine[];
-  statementId?: string;
-  trxId?: string;
-  finalizedAt?: string;
+  statementId?: string | undefined;
+  trxId?: string | undefined;
+  finalizedAt?: string | undefined;
 };
 export type HonorBundle = {
   period: string;
   mode: string;
   issues: string[];
   statements: HonorSnapshot[];
-  beneficiaries?: number;
+  beneficiaries?: number | undefined;
 };
 export type HonorStatement = {
   id: string;
