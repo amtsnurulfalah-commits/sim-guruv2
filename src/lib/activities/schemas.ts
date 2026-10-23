@@ -123,7 +123,7 @@ export const commandSchemas = {
       reason,
     })
     .strict()
-    .refine((v) => v.dateStart <= v.dateEnd),
+    .refine((v) => v.dateStart <= v.dateEnd, {path:["dateEnd"],message:"Tanggal akhir blok harus setelah atau sama dengan tanggal mulai."}),
 } as const;
 export type Command = keyof typeof commandSchemas;
 export const commands = Object.keys(commandSchemas) as Command[];

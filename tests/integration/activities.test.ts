@@ -13,6 +13,7 @@ import { LocalAuthService } from "../../src/server/auth/service";
 import { MasterService } from "../../src/server/masters/service";
 import { CalendarService } from "../../src/server/calendar/service";
 import { ScheduleService } from "../../src/server/schedules/service";
+import { journalSchema, journalListSchema, journalOptionsSchema, eligibleJournalsSchema, journalBlocksSchema } from "../../src/lib/activities/journal-contracts";
 import { ActivityService } from "../../src/server/activities/service";
 import { createActivityHandler } from "../../src/server/activities/http";
 import { AccountLifecycleService } from "../../src/server/accounts/lifecycle";
@@ -724,6 +725,15 @@ test("Tahap 3 — occurrences, attendance, students and atomic JTM journals", as
       );
     },
   );
+  await t.test("journal UI contracts match scoped SQL DTOs without changing exact credits", async () => {
+    assert.equal(journalSchema.parse(journal).creditedJtm,"3.0000");
+    const list=journalListSchema.parse(await service.read(guru,"journals",filter));
+    assert.equal(list.items.length,1);assert.equal(list.pageSize,25);
+    assert.equal(journalOptionsSchema.parse(await service.read(admin,"options",{})).h1Enabled,false);
+    const eligible=eligibleJournalsSchema.parse(await service.read(guru,"eligible",{date}));
+    assert.ok(eligible.items.every(row=>row.userId===guruId));
+    journalBlocksSchema.parse(await service.read(admin,"blocks",{}));
+  });
   await t.test(
     "A18 rekap edits cannot contradict existing journals",
     async () => {

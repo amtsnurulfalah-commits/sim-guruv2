@@ -1,17 +1,15 @@
 "use client";
 import { downloadFile } from "@/lib/feedback/api-error";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
-import { ChevronDown } from "lucide-react";
-import { Tabs } from "@/components/ui/tabs";
 import { ActionIcon } from "@/components/ui/action-icon";
 
+import { JournalWorkspace } from "./journal-workspace";
 import { FormDialog } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { masterRequest } from "../masters/api";
 import { wibDate } from "../../lib/calendar/schemas";
 import type {
   Attendance,
-  Journal,
   List,
   Occurrence,
   Options,
@@ -122,19 +120,11 @@ const titles: Record<Mode, string> = {
   students: "Rekap absensi siswa",
   journals: "Jurnal pembelajaran",
 };
-export function ActivityWorkspace({
-  admin,
-  userId,
-  mode,
-}: {
-  admin: boolean;
-  userId: string;
-  mode: Mode;
-}) {
-  const [journalTab, setJournalTab] = useState("input");
-  const [manualEditor, setManualEditor] = useState(0),
-    [journalEditor, setJournalEditor] = useState(0),
-    [leaveEditor, setLeaveEditor] = useState(0);
+export function ActivityWorkspace(props: {admin: boolean; userId: string; mode: Mode}) {
+  return props.mode === "journals" ? <JournalWorkspace admin={props.admin} userId={props.userId}/> : <ActivityWorkspaceContent {...props} mode={props.mode}/>;
+}
+function ActivityWorkspaceContent({admin, userId, mode}: {admin:boolean; userId:string; mode:Exclude<Mode,"journals">}) {
+  const [manualEditor, setManualEditor] = useState(0), [leaveEditor, setLeaveEditor] = useState(0);
   const [date, setDate] = useState(wibDate()),
     [from, setFrom] = useState(wibDate().slice(0, 7) + "-01"),
     [to, setTo] = useState(wibDate()),
@@ -147,22 +137,20 @@ export function ActivityWorkspace({
       h1Enabled: false,
     }),
     [rows, setRows] = useState<
-      (Attendance | Journal | StudentRecap | Occurrence)[]
+      (Attendance | StudentRecap | Occurrence)[]
     >([]),
     [total, setTotal] = useState(0),
     [loading, setLoading] = useState(true),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [message, setMessage] = useState("");
-  const [eligible, setEligible] = useState<Occurrence[]>([]),
-    [progress, setProgress] = useState<{
+  const [progress, setProgress] = useState<{
       required: { id: string; name: string; complete: boolean }[];
       completedCount: number;
       requiredCount: number;
     } | null>(null);
   const [teacher, setTeacher] = useState(""),
-    [filterTeacher, setFilterTeacher] = useState(""),
-    [query, setQuery] = useState("");
+    [filterTeacher, setFilterTeacher] = useState("");
   const [templates, setTemplates] = useState<
     {
       id: string;
@@ -199,27 +187,6 @@ export function ActivityWorkspace({
     [sakit, setSakit] = useState(0),
     [izin, setIzin] = useState(0),
     [alpa, setAlpa] = useState(0);
-  const [occurrenceId, setOccurrenceId] = useState(""),
-    [editing, setEditing] = useState<Journal | null>(null),
-    [material, setMaterial] = useState(""),
-    [present, setPresent] = useState(0),
-    [absent, setAbsent] = useState(0),
-    [notes, setNotes] = useState("");
-  const [subjectId, setSubjectId] = useState(""),
-    [blockFrom, setBlockFrom] = useState(wibDate()),
-    [blockTo, setBlockTo] = useState(wibDate()),
-    [blockMessage, setBlockMessage] = useState("");
-  const [blocks, setBlocks] = useState<
-    {
-      id: string;
-      subject_id: string;
-      date_start: string;
-      date_end: string;
-      message: string;
-      active: boolean;
-      version: string;
-    }[]
-  >([]);
   useEffect(() => {
     const ctrl = new AbortController();
     let live = true;
@@ -239,10 +206,9 @@ export function ActivityWorkspace({
           page: String(page),
           pageSize: "25",
           ...(filterTeacher ? { userId: filterTeacher } : {}),
-          ...(mode === "journals" && query ? { q: query } : {}),
         });
         const result = await masterRequest<
-          List<Attendance | Journal | StudentRecap | Occurrence>
+          List<Attendance | StudentRecap | Occurrence>
         >(
           mode === "occurrences"
             ? `/api/activities/occurrences?date=${date}`
@@ -255,24 +221,6 @@ export function ActivityWorkspace({
         setOptions(opts);
         setRows(result.items);
         setTotal(result.total ?? result.items.length);
-        if (mode === "journals") {
-          const e = await masterRequest<{ items: Occurrence[] }>(
-            `/api/activities/eligible?date=${date}`,
-            "GET",
-            undefined,
-            ctrl.signal,
-          );
-          if (live) setEligible(e.items);
-          if (admin) {
-            const b = await masterRequest<{ items: typeof blocks }>(
-              "/api/activities/blocks",
-              "GET",
-              undefined,
-              ctrl.signal,
-            );
-            if (live) setBlocks(b.items);
-          }
-        }
         if (mode === "attendance" && admin) {
           const t = await masterRequest<{ items: typeof templates }>(
             "/api/activities/templates",
@@ -303,7 +251,7 @@ export function ActivityWorkspace({
       live = false;
       ctrl.abort();
     };
-  }, [mode, date, from, to, page, revision, admin, filterTeacher, query]);
+  }, [mode, date, from, to, page, revision, admin, filterTeacher]);
   async function run(
     action: string,
     data: unknown,
@@ -356,11 +304,10 @@ export function ActivityWorkspace({
     (t) => String(t.day_index) === day && t.sched_type === type,
   );
   const exportQuery = new URLSearchParams({
-    kind: mode === "attendance" ? "attendance" : "journals",
+    kind: "attendance",
     from,
     to,
     ...(filterTeacher ? { userId: filterTeacher } : {}),
-    ...(mode === "journals" && query ? { q: query } : {}),
   });
   const activityFilters = (
     <>
@@ -396,7 +343,7 @@ export function ActivityWorkspace({
             />
           </>
         )}
-        {admin && ["attendance", "journals"].includes(mode) && (
+        {admin && mode === "attendance" && (
           <Select
             label="Filter guru (kosong: semua)"
             value={filterTeacher}
@@ -407,16 +354,6 @@ export function ActivityWorkspace({
             items={options.teachers}
           />
         )}{" "}
-        {mode === "journals" && (
-          <Text
-            label="Cari materi/catatan"
-            value={query}
-            set={(v) => {
-              setQuery(v);
-              setPage(1);
-            }}
-          />
-        )}
       </div>
       <button
         className={smallButton}
@@ -463,24 +400,10 @@ export function ActivityWorkspace({
       </header>
       {error && <ErrorFeedback message={error} />}
       {message && <p role="status">{message}</p>}
-      {mode === "journals" ? (
-        <details className="group/journal-filter rounded-2xl border bg-card shadow-xs">
-          <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 rounded-2xl px-5 py-4 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
-            <ActionIcon action="filter" />
-            <span className="min-w-0 flex-1">Tanggal dan filter jurnal</span>
-            <ChevronDown
-              aria-hidden="true"
-              className="size-4 shrink-0 transition-transform group-open/journal-filter:rotate-180 motion-reduce:transition-none"
-            />
-          </summary>
-          <div className="space-y-4 border-t p-5">{activityFilters}</div>
-        </details>
-      ) : (
-        <section className={panel}>
-          <h2 className="font-semibold">Tanggal dan filter kegiatan</h2>
-          {activityFilters}
-        </section>
-      )}
+      <section className={panel}>
+        <h2 className="font-semibold">Tanggal dan filter kegiatan</h2>
+        {activityFilters}
+      </section>
       {mode === "occurrences" && (
         <section className={panel}>
           <h2 className="font-semibold">Penugasan tanggal {date}</h2>
@@ -1128,455 +1051,7 @@ export function ActivityWorkspace({
           </section>
         </>
       )}
-      {mode === "journals" && (
-        <Tabs
-          label="Jurnal pembelajaran"
-          defaultValue="input"
-          value={journalTab}
-          onValueChange={setJournalTab}
-          items={[
-            {
-              value: "input",
-              label: "Input Jurnal Pembelajaran",
-              icon: <ActionIcon action="add" />,
-              content: (
-                <>
-                  <section className={panel}>
-                    <h2 className="font-semibold">Input jurnal pembelajaran</h2>
-                    <p className="text-sm text-muted-foreground">
-                      Tanggal kegiatan: {date}. Pilih kegiatan yang memenuhi
-                      syarat untuk mencatat materi dan kehadiran siswa.
-                    </p>
-                    <FormDialog
-                      title="Jurnal pembelajaran"
-                      onDiscard={() => {
-                        setEditing(null);
-                        setMaterial("");
-                        setNotes("");
-                        setOccurrenceId("");
-                        setPresent(0);
-                        setAbsent(0);
-                        setReason("");
-                      }}
-                      busy={busy}
-                      success={message}
-                      error={error}
-                      revealKey={
-                        editing ? editing.id + ":" + journalEditor : undefined
-                      }
-                    >
-                      <form
-                        className={panel}
-                        onSubmit={async (e) => {
-                          e.preventDefault();
-                          const r = await run(
-                            editing ? "journal-edit" : "journal-create",
-                            editing
-                              ? {
-                                  journalId: editing.id,
-                                  version: editing.version,
-                                  material,
-                                  present,
-                                  absent,
-                                  notes,
-                                  reason,
-                                }
-                              : {
-                                  occurrenceId,
-                                  material,
-                                  present,
-                                  absent,
-                                  notes,
-                                  reason,
-                                },
-                          );
-                          if (r) {
-                            setEditing(null);
-                            setMaterial("");
-                            setNotes("");
-                            setOccurrenceId("");
-                          }
-                        }}
-                      >
-                        <h2 className="font-semibold">
-                          {editing
-                            ? "Ubah jurnal " + editing.date
-                            : "Input jurnal tanggal " + date}
-                        </h2>
-                        {!editing && (
-                          <>
-                            <p className="text-sm">
-                              H-1:{" "}
-                              {options.h1Enabled
-                                ? "aktif, bobot 80% dibulatkan satu desimal"
-                                : "belum aktif"}
-                              . Rekap siswa yang tersedia wajib cocok dengan
-                              jurnal.
-                            </p>
-                            <Select
-                              label="Kegiatan"
-                              value={occurrenceId}
-                              set={(v) => {
-                                setOccurrenceId(v);
-                                const o = eligible.find((x) => x.id === v);
-                                setPresent(o?.expectedStudents ?? 0);
-                                setAbsent(0);
-                              }}
-                              items={eligible
-                                .filter(
-                                  (o) => !o.journalId && !o.eligibilityError,
-                                )
-                                .map((o) => ({
-                                  id: o.id,
-                                  name: `${o.subjectName} · ${o.className} · ${o.timeStart}–${o.timeEnd}`,
-                                }))}
-                            />
-                            {eligible
-                              .filter((o) => o.eligibilityError)
-                              .map((o) => (
-                                <p
-                                  className="text-sm text-amber-800"
-                                  key={o.id}
-                                >
-                                  {o.subjectName} · {o.className}:{" "}
-                                  {eligibilityText(o.eligibilityError)}
-                                </p>
-                              ))}
-                          </>
-                        )}
-                        <Field label="Materi pembelajaran">
-                          <textarea
-                            className={inputClass}
-                            maxLength={2000}
-                            required
-                            value={material}
-                            onChange={(e) => setMaterial(e.target.value)}
-                          />
-                        </Field>
-                        <div className="grid gap-3 sm:grid-cols-2">
-                          <Count
-                            label="Siswa hadir"
-                            value={present}
-                            set={setPresent}
-                          />
-                          <Count
-                            label="Siswa absen"
-                            value={absent}
-                            set={setAbsent}
-                          />
-                        </div>
-                        <Field label="Catatan">
-                          <textarea
-                            className={inputClass}
-                            maxLength={2000}
-                            value={notes}
-                            onChange={(e) => setNotes(e.target.value)}
-                          />
-                        </Field>
-                        <Text
-                          label="Alasan penyimpanan"
-                          value={reason}
-                          set={setReason}
-                          required
-                        />
-                        <div className="flex gap-2">
-                          <button
-                            className={buttonClass}
-                            disabled={busy || (!editing && !occurrenceId)}
-                          >
-                            <ActionIcon action="save" />
-                            Simpan jurnal
-                          </button>
-                          {editing && (
-                            <button
-                              type="button"
-                              className={smallButton}
-                              onClick={() => {
-                                setEditing(null);
-                                setMaterial("");
-                                setNotes("");
-                              }}
-                            >
-                              <ActionIcon action="close" />
-                              Batal edit
-                            </button>
-                          )}
-                        </div>
-                      </form>
-                    </FormDialog>
-                  </section>
-                </>
-              ),
-            },
-            {
-              value: "history",
-              label: "Riwayat dan Detail Jurnal",
-              icon: <ActionIcon action="history" />,
-              content: (
-                <>
-                  <section className={panel}>
-                    <h2 className="font-semibold">Riwayat dan detail jurnal</h2>
-                    <div className="flex gap-4 text-sm">
-                      <button
-                        type="button"
-                        className="ui-action ui-action-secondary"
-                        disabled={busy || loading}
-                        onClick={() => void download("csv")}
-                      >
-                        <ActionIcon action="download" />
-                        Unduh CSV
-                      </button>
-                      <button
-                        type="button"
-                        className="ui-action ui-action-secondary"
-                        disabled={busy || loading}
-                        onClick={() => void download("pdf")}
-                      >
-                        <ActionIcon action="download" />
-                        Unduh PDF
-                      </button>
-                    </div>
-                    {!loading && !rows.length && (
-                      <p>Belum ada jurnal pada rentang ini.</p>
-                    )}
-                    {rows.length > 0 && (
-                      <Text
-                        label="Alasan penghapusan jurnal"
-                        value={reason}
-                        set={setReason}
-                        required
-                      />
-                    )}
-                    {(rows as Journal[]).map((j) => (
-                      <article
-                        key={j.id}
-                        className="space-y-2 rounded border p-4"
-                      >
-                        <h3 className="font-semibold">
-                          {j.date} · {j.teacherName} · {j.subjectName} ·{" "}
-                          {j.className}
-                        </h3>
-                        <p className="whitespace-pre-wrap">{j.material}</p>
-                        <p>
-                          Hadir {j.present}; absen {j.absent} · {j.creditedJtm}{" "}
-                          JTM ·{" "}
-                          {j.inputType === "H_MINUS_1"
-                            ? "H-1 (80%)"
-                            : "Hari H (100%)"}
-                        </p>
-                        <p className="whitespace-pre-wrap text-sm">{j.notes}</p>
-                        <p className="text-sm">
-                          {j.recapAvailable
-                            ? "Rekap siswa tersedia"
-                            : "Belum ada rekap siswa; jumlah diperiksa terhadap standar kelas."}
-                        </p>
-                        <div className="flex gap-2">
-                          <button
-                            className={smallButton}
-                            onClick={() => {
-                              setJournalTab("input");
-                              setEditing(j);
-                              setJournalEditor((v) => v + 1);
-                              setMaterial(j.material);
-                              setPresent(j.present);
-                              setAbsent(j.absent);
-                              setNotes(j.notes);
-                            }}
-                          >
-                            <ActionIcon action="edit" />
-                            Ubah jurnal
-                          </button>
-                          <button
-                            className={smallButton}
-                            disabled={busy || reason.trim().length < 5}
-                            onClick={() => {
-                              if (
-                                window.confirm(
-                                  "Hapus jurnal ini? Kredit JTM akan dibalik dan riwayat penghapusan tetap tersimpan.",
-                                )
-                              )
-                                void run("journal-delete", {
-                                  journalId: j.id,
-                                  version: j.version,
-                                  reason,
-                                });
-                            }}
-                          >
-                            <ActionIcon action="delete" />
-                            Hapus jurnal dan batalkan JTM
-                          </button>
-                        </div>
-                      </article>
-                    ))}
-                  </section>
-                  {pagination}
-                </>
-              ),
-            },
-            {
-              value: "policy",
-              label: "Kebijakan dan Pemblokiran Jurnal",
-              icon: <ActionIcon action="section" />,
-              content: (
-                <>
-                  {admin ? (
-                    <section className={panel}>
-                      <h2 className="font-semibold">
-                        Kebijakan dan pemblokiran jurnal
-                      </h2>
-                      <Text
-                        label="Alasan perubahan kebijakan"
-                        value={reason}
-                        set={setReason}
-                        required
-                      />
-                      <button
-                        className={smallButton}
-                        disabled={busy || reason.trim().length < 5}
-                        onClick={() =>
-                          run("h1", { enabled: !options.h1Enabled, reason })
-                        }
-                      >
-                        <ActionIcon action="toggle" />
-                        {options.h1Enabled ? "Nonaktifkan" : "Aktifkan"} jurnal
-                        H-1
-                      </button>
-                      <FormDialog
-                        title="Blok pengisian jurnal"
-                        onDiscard={() => {
-                          setSubjectId("");
-                          setBlockMessage("");
-                          setReason("");
-                        }}
-                        busy={busy}
-                        success={message}
-                        error={error}
-                      >
-                        <form
-                          className="space-y-3"
-                          onSubmit={(e) => {
-                            e.preventDefault();
-                            void run("block", {
-                              subjectId,
-                              dateStart: blockFrom,
-                              dateEnd: blockTo,
-                              message: blockMessage,
-                              active: true,
-                              version: "0",
-                              reason,
-                            });
-                          }}
-                        >
-                          <Select
-                            label="Mata pelajaran"
-                            value={subjectId}
-                            set={setSubjectId}
-                            items={options.subjects}
-                          />
-                          <div className="grid gap-3 sm:grid-cols-2">
-                            <Text
-                              label="Blok mulai"
-                              value={blockFrom}
-                              set={setBlockFrom}
-                              type="date"
-                              required
-                            />
-                            <Text
-                              label="Blok sampai"
-                              value={blockTo}
-                              set={setBlockTo}
-                              type="date"
-                              required
-                            />
-                          </div>
-                          <Text
-                            label="Pesan pemblokiran"
-                            value={blockMessage}
-                            set={setBlockMessage}
-                            required
-                          />
-                          <button
-                            className={buttonClass}
-                            disabled={
-                              busy || !subjectId || reason.trim().length < 5
-                            }
-                          >
-                            <ActionIcon action="save" />
-                            Simpan blok jurnal
-                          </button>
-                        </form>
-                      </FormDialog>
-                      {blocks.map((b) => (
-                        <p className="text-sm" key={b.id}>
-                          {
-                            options.subjects.find((s) => s.id === b.subject_id)
-                              ?.name
-                          }{" "}
-                          · {b.date_start}–{b.date_end}: {b.message} (
-                          {b.active ? "Aktif" : "Nonaktif"}){" "}
-                          <button
-                            className="ui-action ui-action-secondary"
-                            disabled={busy || reason.trim().length < 5}
-                            onClick={() =>
-                              run("block", {
-                                id: b.id,
-                                subjectId: b.subject_id,
-                                dateStart: b.date_start,
-                                dateEnd: b.date_end,
-                                message: b.message,
-                                active: !b.active,
-                                version: b.version,
-                                reason,
-                              })
-                            }
-                          >
-                            <ActionIcon action="toggle" />
-                            {b.active
-                              ? "Nonaktifkan blok jurnal"
-                              : "Aktifkan blok jurnal"}
-                          </button>
-                        </p>
-                      ))}
-                    </section>
-                  ) : (
-                    <section className={panel}>
-                      <h2 className="font-semibold">
-                        Kebijakan dan pemblokiran jurnal
-                      </h2>
-                      <p>
-                        Jurnal H-1{" "}
-                        {options.h1Enabled
-                          ? "aktif dengan bobot 80%"
-                          : "belum aktif"}
-                        . Kegiatan harus memenuhi ketentuan konfirmasi dan batas
-                        waktu pengisian.
-                      </p>
-                      <p>
-                        Pengaturan kebijakan dan pemblokiran dikelola
-                        administrator. Kendala pengisian kegiatan ditampilkan
-                        pada tab Input Jurnal Pembelajaran.
-                      </p>
-                    </section>
-                  )}{" "}
-                </>
-              ),
-            },
-          ]}
-        />
-      )}
-      {mode !== "occurrences" && mode !== "journals" && pagination}
+      {mode !== "occurrences" && pagination}
     </div>
   );
-}
-function eligibilityText(code: string | null | undefined) {
-  const labels: Record<string, string> = {
-    H1_DISABLED: "Input H-1 belum diaktifkan.",
-    H1_NOT_CONFIRMED: "Konfirmasi kemarin belum tersedia.",
-    NO_ACTIVE_CONFIRMATION: "Menunggu konfirmasi kegiatan.",
-    DATE_EXPIRED: "Batas input sudah berakhir.",
-    FUTURE_DATE: "Tanggal kegiatan belum tiba.",
-    JOURNAL_BLOCKED: "Input sedang diblokir.",
-    FINAL_PERIOD: "Periode sudah final.",
-  };
-  return labels[code ?? ""] ?? "Kegiatan belum memenuhi syarat input.";
 }
