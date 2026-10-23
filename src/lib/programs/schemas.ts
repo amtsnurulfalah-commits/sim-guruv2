@@ -171,18 +171,35 @@ export const eventSaveSchema = z
         dateEnd: date,
       })
       .strict()
-      .refine(
-        (v) =>
-          v.timeStart < v.timeEnd &&
-          v.dateStart <= v.dateEnd &&
-          (Date.parse(v.dateEnd) - Date.parse(v.dateStart)) / 86400000 <= 365 &&
-          (v.type === "rutin"
-            ? v.days.length > 0 && v.dates.length === 0
-            : v.dates.length > 0 && v.days.length === 0) &&
-          new Set(v.days).size === v.days.length &&
-          new Set(v.dates).size === v.dates.length &&
-          v.dates.every((d) => d >= v.dateStart && d <= v.dateEnd),
-      ),
+      .superRefine((v, ctx) => {
+        const issue = (key: string, message: string) =>
+          ctx.addIssue({ code: "custom", path: [key], message });
+        if (v.timeStart >= v.timeEnd)
+          issue("timeEnd", "Jam selesai harus setelah jam mulai.");
+        if (v.dateStart > v.dateEnd)
+          issue(
+            "dateEnd",
+            "Tanggal akhir harus sama atau setelah tanggal mulai.",
+          );
+        if ((Date.parse(v.dateEnd) - Date.parse(v.dateStart)) / 86400000 > 365)
+          issue("dateEnd", "Rentang acara maksimal 365 hari.");
+        if (v.type === "rutin" && (!v.days.length || v.dates.length))
+          issue(
+            "days",
+            "Pilih minimal satu hari rutin dan kosongkan tanggal insidental.",
+          );
+        if (v.type === "insidental" && (!v.dates.length || v.days.length))
+          issue("dates", "Isi tanggal insidental dan kosongkan hari rutin.");
+        if (new Set(v.days).size !== v.days.length)
+          issue("days", "Hari rutin tidak boleh berulang.");
+        if (new Set(v.dates).size !== v.dates.length)
+          issue("dates", "Tanggal insidental tidak boleh berulang.");
+        if (v.dates.some((d) => d < v.dateStart || d > v.dateEnd))
+          issue(
+            "dates",
+            "Tanggal insidental harus berada dalam rentang berlaku acara.",
+          );
+      }),
   })
   .strict();
 export const eventAttendanceSchema = z.discriminatedUnion("operation", [
@@ -219,11 +236,18 @@ export const eventBlockSchema = z
     eventType: z.enum(["rutin", "insidental"]).nullable().default(null),
     dateStart: date,
     dateEnd: date,
-    message: z.string().trim().min(5).max(500),
+    message: z
+      .string()
+      .trim()
+      .min(5, "Pesan blok minimal 5 karakter.")
+      .max(500, "Pesan blok maksimal 500 karakter."),
     active: z.boolean(),
   })
   .strict()
-  .refine((v) => v.dateStart <= v.dateEnd);
+  .refine((v) => v.dateStart <= v.dateEnd, {
+    path: ["dateEnd"],
+    message: "Tanggal akhir harus sama atau setelah tanggal mulai.",
+  });
 export type Choice = { id: string; name: string };
 export type ExamPeriod = {
   id: string;
