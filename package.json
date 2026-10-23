@@ -41,7 +41,8 @@
     "test:ui:forgot-password": "node tests/ui/forgot-password.mjs",
     "test:ui:calendar": "node tests/ui/calendar.mjs",
     "test:ui:announcements": "node tests/ui/announcements.mjs",
-    "test:ui:operations": "node tests/ui/operations.mjs"
+    "test:ui:operations": "node tests/ui/operations.mjs",
+    "test:ui:migration": "node tests/ui/migration.mjs"
   },
   "dependencies": {
     "@next/env": "16.4.2",

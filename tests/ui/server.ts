@@ -172,8 +172,8 @@ async function main() {
         data = await finance.read(token, q);
       else if (path.startsWith("/api/operations/"))
         data = req.method === "GET" ? await operations.read(token, path.split("/").at(-1)!, q) : await operations.command(token, path.split("/").at(-1)!, input);
-      else if (path === "/api/migration/board")
-        data = await migration.read(token, "board", q);
+      else if (path.startsWith("/api/migration/"))
+        data = req.method === "GET" ? await migration.read(token, path.split("/").at(-1)!, q) : await migration.command(token, path.split("/").at(-1)!, input);
       else if (path === "/api/settings/calendar")
         data = await calendar.list(token, q);
       else if (path === "/api/settings/day-context")

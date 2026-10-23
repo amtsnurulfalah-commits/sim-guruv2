@@ -100,6 +100,11 @@ export const gateSchema = z
     reason: z.string().trim().min(5).max(500),
   })
   .strict();
+export const resolveSchema = z.object({
+  batchId: z.uuid(), version: z.string().regex(/^[1-9][0-9]*$/),
+  sequence: z.number().int().positive(),
+  evidence: z.string().trim().min(10).max(1000), reason: z.string().trim().min(5).max(500),
+}).strict();
 export type MigrationBoard = {
   batches: {
     id: string;

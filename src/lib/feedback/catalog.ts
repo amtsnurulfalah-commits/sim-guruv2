@@ -1,6 +1,8 @@
 /** User-facing labels only. Never include submitted values or raw database errors. */
 export const fieldLabels: Record<string, string> = {
   username: "Username",
+  gate: "Pemeriksaan kesiapan", passed: "Keputusan", batchId: "Batch migrasi", sequence: "Nomor temuan",
+  source: "Sumber ekspor", sheets: "Sheet ekspor", exportedAt: "Waktu ekspor", timezone: "Zona waktu ekspor", dateFormat: "Format tanggal ekspor", locale: "Locale ekspor",
   maintenanceStart: "Mulai pemeliharaan (WIB)",
   maintenanceEnd: "Selesai pemeliharaan (WIB)",
   sent: "Hasil pemeriksaan penerimaan email",

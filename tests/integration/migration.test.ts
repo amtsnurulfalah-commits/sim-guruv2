@@ -13,6 +13,7 @@ import { getPasswordService } from "../../src/server/auth/passwords";
 import { LocalAuthService } from "../../src/server/auth/service";
 import { MigrationService } from "../../src/server/migration/service";
 import { OperationsService } from "../../src/server/operations/service";
+import { migrationBoardSchema, migrationReportSchema } from "../../src/lib/migration/ui-contracts";
 import { type MigrationBoard } from "../../src/lib/migration/contracts";
 import { planHash, type ImportPlan } from "../../src/lib/migration/plan";
 import { applyImportPlan } from "../../scripts/migration/apply-plan";
@@ -200,6 +201,22 @@ test("Tahap 8 staging, operator import, reconciliation and isolated restore", as
       );
     },
   );
+  await t.test("migration UI contracts match private board/reports and review updates enforce CAS", async () => {
+    const staged = await service.command(admin, "stage", {...source,source:"review-ui-contract",sheets:[{name:"Unknown_Sheet",headers:["id"],rows:[["review-1"]]}]}) as {id:string};
+    let batch = migrationBoardSchema.parse(await service.read(admin,"board")).batches.find(row=>row.id===staged.id)!;
+    const report = migrationReportSchema.parse(await service.read(admin,"board",{id:batch.id}));
+    assert.equal(report.issues[0]!.severity,"review");
+    await assert.rejects(service.command(admin,"gate",{batchId:batch.id,version:batch.version,gate:"source_backup",passed:true,evidence:"Bukti sintetis belum memenuhi",reason}),{message:"MIGRATION_BLOCKED",status:422});
+    const input={batchId:batch.id,version:batch.version,sequence:report.issues[0]!.sequence,evidence:"a".repeat(1000),reason};
+    await service.command(admin,"resolve",input);
+    await assert.rejects(service.command(admin,"resolve",input),/VERSION_CONFLICT/);
+    batch=migrationBoardSchema.parse(await service.read(admin,"board")).batches.find(row=>row.id===batch.id)!;
+    assert.equal(batch.state,"validated");
+    await assert.rejects(service.command(admin,"resolve",{...input,version:batch.version}),{message:"REVIEW_NOT_ALLOWED",status:409});
+    await assert.rejects(service.command(admin,"gate",{batchId:batch.id,version:batch.version,gate:"reconciliation",passed:true,evidence:"Bukti sintetis sebelum impor",reason}),{message:"MIGRATION_NOT_IMPORTED",status:422});
+    const empty=await service.command(admin,"stage",{...source,source:"empty-ui-contract",sheets:[{name:"Config",headers:["key","value"],rows:[]}]}) as {id:string};
+    assert.deepEqual(migrationReportSchema.parse(await service.read(admin,"board",{id:empty.id})).counts,{});
+  });
   await t.test(
     "MIG04 plan fingerprint, maintenance and backup evidence are enforced",
     async () => {
