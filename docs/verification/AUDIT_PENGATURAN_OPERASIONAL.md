@@ -22,3 +22,8 @@ Alur tetap: sesi admin → GET operations → versi konfigurasi, status maintena
 Tes unit mencakup kontrak DTO dan konversi WIB; tes HTTP memeriksa kode 409 serta pesan validasi yang aman; tes database memastikan admin-only, konflik versi, retry failed dan state yang berubah. Browser mencakup penyimpanan konfigurasi nyata ke database disposable, 7 viewport 280–1920px, 100 baris, filter/pagination independen, retry/reconcile/job-retry, pemuatan gagal/DTO invalid, write ditolak/hasil tak pasti, double-submit, busy modal, write berhasil-refresh gagal, sentuh, pembesaran teks 200% dan landscape.
 
 Jumlah tes dan hasil akhir CI/regresi dicatat pada PR. Semua pemeriksaan memakai fixture/database disposable; tidak mengubah konfigurasi atau mengirim email produksi. Perangkat fisik belum diuji. Halaman dan badan modal tetap memiliki scroll vertikal yang wajar untuk isi panjang; perbaikan menghindari overflow horizontal dan pemotongan isi, bukan menyembunyikan scroll.
+
+
+### Stabilitas fixture regresi
+
+CI mengungkap fixture AU11 yang memakai beberapa clock_timestamp() dalam satu UPDATE. Jika eksekusi melintasi milidetik, idle_expires_at dapat lebih besar dari expires_at dan menabrak constraint sebelum assertion diuji. Fixture kini memakai satu statement_timestamp(); aturan sesi produksi dan assertion pencabutan sesi tidak berubah. Suite UI menyediakan UI_TIMEOUT_MS opsional (default tetap 20 detik); pengulangan pada lingkungan ini memakai 60 detik setelah timeout navigasi pada halaman lain, tanpa mengubah assertion atau waktu tunggu aplikasi.
