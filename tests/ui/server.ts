@@ -93,7 +93,7 @@ async function main() {
     data: { name: "Mata Pelajaran Pengujian Responsivitas" },
   });
   // Opt-in KBM fixture: disposable database only, isolated from the global UI matrix.
-  if (process.env.UI_CONFIRMATION_FIXTURE === "1" || process.env.UI_STUDENT_FIXTURE === "1" || process.env.UI_DUTY_FIXTURE === "1" || process.env.UI_EXAM_FIXTURE === "1" || process.env.UI_ATTENDANCE_FIXTURE === "1") {
+  if (process.env.UI_CONFIRMATION_FIXTURE === "1" || process.env.UI_STUDENT_FIXTURE === "1" || process.env.UI_DUTY_FIXTURE === "1" || process.env.UI_EXAM_FIXTURE === "1" || process.env.UI_ATTENDANCE_FIXTURE === "1" || process.env.UI_EVENT_FIXTURE === "1") {
     const reason = "Fikstur konfirmasi KBM sintetis",
       today = new Intl.DateTimeFormat("en-CA", {
         timeZone: "Asia/Jakarta",
@@ -282,7 +282,7 @@ async function main() {
       else if (path === "/api/programs/read")
         data = await programs.read(token, q);
       else if (path.startsWith("/api/programs/")) {
-        const action=path.split("/").at(-1)!,methods={"exam-save":programs.saveExam,"exam-delete":programs.deleteExam,bap:programs.bap,preview:programs.preview,commit:programs.commit};
+        const action=path.split("/").at(-1)!,methods={"event-save":programs.saveEvent,"event-delete":programs.deleteEvent,attendance:programs.attendance,journal:programs.journal,block:programs.block,"exam-save":programs.saveExam,"exam-delete":programs.deleteExam,bap:programs.bap,preview:programs.preview,commit:programs.commit};
         if(!Object.hasOwn(methods,action))throw Error("FIXTURE_ROUTE_NOT_IMPLEMENTED");
         data=await methods[action as keyof typeof methods].call(programs,token,input);
       }
