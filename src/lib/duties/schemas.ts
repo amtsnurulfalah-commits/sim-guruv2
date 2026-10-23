@@ -58,19 +58,41 @@ export const dutyScheduleSchema = z
     active: z.boolean(),
   })
   .strict()
-  .refine(
-    (v) =>
-      v.timeStart < v.timeEnd &&
-      v.validFrom <= v.validTo &&
-      (Date.parse(v.validTo) - Date.parse(v.validFrom)) / 86400000 <= 365 &&
-      (v.kind === "PIKET"
-        ? v.date === null
-        : v.dayIndex === 1 &&
-          v.date !== null &&
-          v.validFrom === v.date &&
-          v.validTo === v.date &&
-          new Date(v.date + "T00:00:00Z").getUTCDay() === 1),
-  );
+  .superRefine((v, ctx) => {
+    const issue = (path: string, message: string) =>
+      ctx.addIssue({ code: "custom", path: [path], message });
+    if (v.timeStart >= v.timeEnd)
+      issue("timeEnd", "Jam selesai harus setelah jam mulai.");
+    if (v.validFrom > v.validTo)
+      issue("validTo", "Tanggal akhir harus sama atau setelah tanggal mulai.");
+    if ((Date.parse(v.validTo) - Date.parse(v.validFrom)) / 86400000 > 365)
+      issue("validTo", "Rentang jadwal maksimal 366 hari.");
+    if (v.kind === "PIKET") {
+      if (v.date !== null)
+        issue(
+          "date",
+          "Piket menggunakan rentang tanggal, bukan tanggal tunggal.",
+        );
+      const offset =
+        (v.dayIndex - new Date(v.validFrom + "T00:00:00Z").getUTCDay() + 7) % 7;
+      if (Date.parse(v.validFrom) + offset * 86400000 > Date.parse(v.validTo))
+        issue(
+          "dayIndex",
+          "Hari piket tidak ditemukan dalam rentang tanggal yang dipilih.",
+        );
+    } else if (
+      v.dayIndex !== 1 ||
+      v.date === null ||
+      v.validFrom !== v.date ||
+      v.validTo !== v.date ||
+      new Date(v.date + "T00:00:00Z").getUTCDay() !== 1
+    ) {
+      issue(
+        "date",
+        "Upacara harus pada hari Senin dengan satu tanggal yang sama.",
+      );
+    }
+  });
 export const querySchema = z
   .object({ date: date.default(() => wibDate()) })
   .strict();
@@ -137,3 +159,5 @@ export type DutyPreview = {
   activeNetJtm: string;
   authorizesMutation: false;
 };
+
+export type DutyScheduleInput = z.infer<typeof dutyScheduleSchema>;

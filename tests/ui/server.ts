@@ -92,7 +92,7 @@ async function main() {
     data: { name: "Mata Pelajaran Pengujian Responsivitas" },
   });
   // Opt-in KBM fixture: disposable database only, isolated from the global UI matrix.
-  if (process.env.UI_CONFIRMATION_FIXTURE === "1" || process.env.UI_STUDENT_FIXTURE === "1") {
+  if (process.env.UI_CONFIRMATION_FIXTURE === "1" || process.env.UI_STUDENT_FIXTURE === "1" || process.env.UI_DUTY_FIXTURE === "1") {
     const reason = "Fikstur konfirmasi KBM sintetis",
       today = new Intl.DateTimeFormat("en-CA", {
         timeZone: "Asia/Jakarta",
@@ -257,6 +257,9 @@ async function main() {
             : await activities.command(token, kind, input);
       } else if (path === "/api/duties/board")
         data = await duties.read(token, q);
+      else if (path === "/api/duties/schedule") data = await duties.schedule(token,input);
+      else if (path === "/api/duties/preview") data = await duties.preview(token,input);
+      else if (path === "/api/duties/commit") data = await duties.commit(token,input);
       else if (path === "/api/programs/read")
         data = await programs.read(token, q);
       else if (path === "/api/honorarium/read")

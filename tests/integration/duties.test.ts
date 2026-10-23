@@ -16,6 +16,7 @@ import { ScheduleService } from "../../src/server/schedules/service";
 import { DutyService } from "../../src/server/duties/service";
 import type { DutyOccurrence, DutyBoard } from "../../src/lib/duties/schemas";
 import { confirmationListSchema, confirmationOptionsSchema, verifyConfirmationResult } from "../../src/lib/activities/confirmation-contracts";
+import { dutyBoardSchema, dutyPreviewSchema, dutyScheduleResultSchema } from "../../src/lib/duties/contracts";
 import { ActivityService } from "../../src/server/activities/service";
 import { createDutyHandler } from "../../src/server/duties/http";
 import { AccountLifecycleService } from "../../src/server/accounts/lifecycle";
@@ -242,7 +243,7 @@ test("Tahap 4 — duties, substitution and JTM conservation", async (t) => {
     receiver = await login("duty.receiver"),
     sub = await login("duty.substitute"),
     ceremony = await login("duty.ceremony");
-  const board = (token = admin) => duties.read(token, { date });
+  const board = async (token = admin) => dutyBoardSchema.parse(await duties.read(token, { date }));
   const get = async (id: string) =>
     (await board()).occurrences.find((o) => o.id === id)!;
   const mutate = async (
@@ -259,6 +260,7 @@ test("Tahap 4 — duties, substitution and JTM conservation", async (t) => {
       reason,
       ...extra,
     });
+    dutyPreviewSchema.parse(p);
     return duties.commit(token, { previewId: p.previewId });
   };
   const net = async (id: string, userId?: string) =>
@@ -303,6 +305,7 @@ test("Tahap 4 — duties, substitution and JTM conservation", async (t) => {
         }),
       );
       const createdDuty = await duties.schedule(admin, dutyData("PIKET", piketId)) as {id:string;version:string};
+      dutyScheduleResultSchema.parse(createdDuty);
       { // Regression: editing piket works; FINAL_PERIOD remains enforced.
         const changed = await duties.schedule(admin, {...dutyData("PIKET",piketId),id:createdDuty.id,version:createdDuty.version,timeStart:"07:20"}) as {id:string;version:string;time_start:string};
         assert.equal(changed.time_start,"07:20:00");

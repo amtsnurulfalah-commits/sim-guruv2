@@ -45,7 +45,8 @@
     "test:ui:migration": "node tests/ui/migration.mjs",
     "test:ui:journals": "node tests/ui/journals.mjs",
     "test:ui:confirmations": "node tests/ui/confirmations.mjs",
-    "test:ui:students": "node tests/ui/students.mjs"
+    "test:ui:students": "node tests/ui/students.mjs",
+    "test:ui:duties": "node tests/ui/duties.mjs"
   },
   "dependencies": {
     "@next/env": "16.4.2",
