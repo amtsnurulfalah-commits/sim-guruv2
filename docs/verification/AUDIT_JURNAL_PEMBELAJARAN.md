@@ -32,8 +32,8 @@ Nama API, role, ownership, CSRF, CAS versi, aturan Hari H/H-1, konfirmasi kegiat
 ## Validasi
 
 - `npm run check`: lint, TypeScript, 90 unit, 32 crypto/HTTP, 333 integrasi database, production build lulus (455 tes).
-- `npm run test:ui:journals`: tujuh lebar 280/320/375/768/1024/1440/1920; semua tab; batas modal; tambah/edit/hapus, H-1, blok dan toggle; angka kosong/jumlah tidak sesuai; klik ganda; modal saat sibuk; konflik; riwayat invalid independen; pencarian; CSV; hapus halaman terakhir; role guru; landscape dan teks 200%; tanpa page error. Interaksi browser memakai fixture API terkontrol.
+- `npm run test:ui:journals`: tujuh lebar 280/320/375/768/1024/1440/1920; semua tab; batas modal; tambah/edit/hapus, H-1, blok dan toggle; angka kosong/jumlah tidak sesuai; klik ganda; modal saat sibuk; konflik/penolakan/ack tidak valid; sukses simpan diikuti kegagalan refresh; teks panjang; riwayat invalid independen; pencarian; CSV; hapus halaman terakhir; role guru; landscape dan teks 200%; tanpa page error. Interaksi browser memakai fixture API terkontrol.
 - Tes integrasi database menjalankan SQL asli pada PostgreSQL WASM/PGlite: atomicity, duplicate, ownership, versi, reversal/repost, rekap siswa, blok, H-1, finalisasi dan ekspor. Kontrak DTO baru juga diuji terhadap hasil service nyata.
-- Regresi UI aplikasi: hasil akhir dicatat setelah suite selesai.
+- Regresi UI seluruh aplikasi: 252 kombinasi halaman/role/viewport dan interaksi pada empat lebar lulus; 0 page error dan 0 console error yang tidak diharapkan.
 
 Batas: pengujian lokal memakai browser Chromium dan database disposable; bukan data produksi, perangkat fisik, atau pengujian konkurensi PostgreSQL native. Tidak ada klaim bahwa semua kemungkinan bug telah dieliminasi. Tidak ada data produksi atau email yang diubah/dikirim oleh pengujian.

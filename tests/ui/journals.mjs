@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { mkdir } from 'node:fs/promises';
 const { chromium } = await import(process.env.UI_PLAYWRIGHT_MODULE ?? 'playwright');
 const child=spawn(process.execPath,['--conditions=react-server','--import','tsx','tests/ui/server.ts'],{stdio:['ignore','pipe','pipe']});
 let browser,logs='';child.stderr.on('data',b=>logs+=b);
@@ -8,6 +9,7 @@ try {
  browser=await chromium.launch({headless:true,...(process.env.UI_BROWSER_EXECUTABLE?{executablePath:process.env.UI_BROWSER_EXECUTABLE}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
  const page=await browser.newPage({hasTouch:true,reducedMotion:'reduce'});page.setDefaultTimeout(60000);
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const screenshots=process.env.UI_SCREENSHOT_DIR;if(screenshots)await mkdir(screenshots,{recursive:true});
  const admin='11111111-1111-4111-8111-111111111111',guru='22222222-2222-4222-8222-222222222222',occ='33333333-3333-4333-8333-333333333333',subject='44444444-4444-4444-8444-444444444444',jid='55555555-5555-4555-8555-555555555555';
  const date=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Jakarta'}).format(new Date());
  let role='admin',rows=[],blocks=[],h1=false,writeMode='ok',readMode='ok',writes=0,contextReads=0,blockReads=0,holdRelease,holdStarted,started,hold;
@@ -49,6 +51,7 @@ try {
  for(const width of [280,320,375,768,1024,1440,1920]){
   await page.setViewportSize({width,height:800});await go();await overflow();
   await page.getByRole('button',{name:'Jurnal pembelajaran',exact:true}).click();const d=page.getByRole('dialog');await d.getByLabel('Kegiatan',{exact:true}).waitFor();
+  if(screenshots&&[320,1440].includes(width)){await d.evaluate(async el=>Promise.all(el.getAnimations().map(a=>a.finished.catch(()=>{}))));await page.screenshot({path:screenshots+'/journal-modal-'+width+'.png'});}
   assert.equal(await d.evaluate(el=>{const r=el.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1&&r.top>=-1&&r.bottom<=innerHeight+1;}),true);await close();
   await tab('Riwayat dan Detail Jurnal');await overflow();await tab('Kebijakan dan Pemblokiran Jurnal');await overflow();
  }
@@ -66,6 +69,20 @@ try {
  await tab('Riwayat dan Detail Jurnal');await page.getByRole('button',{name:'Hapus jurnal dan batalkan JTM',exact:true}).click();d=page.getByRole('dialog');await d.getByLabel('Alasan penghapusan jurnal',{exact:true}).fill('Jurnal pengujian dibatalkan');await d.getByRole('button',{name:'Konfirmasi penghapusan jurnal',exact:true}).click();await d.waitFor({state:'hidden'});await page.getByText('Belum ada jurnal pada rentang ini.',{exact:true}).waitFor();
  await tab('Kebijakan dan Pemblokiran Jurnal');await page.getByRole('button',{name:'Aktifkan jurnal H-1',exact:true}).click();d=page.getByRole('dialog');await d.getByLabel('Alasan perubahan kebijakan',{exact:true}).fill('Membuka pengisian hari sebelumnya');await d.getByRole('button',{name:'Aktifkan jurnal H-1',exact:true}).click();await d.waitFor({state:'hidden'});await page.getByRole('button',{name:'Nonaktifkan jurnal H-1',exact:true}).waitFor();
  await page.getByRole('button',{name:'Blok pengisian jurnal',exact:true}).click();d=page.getByRole('dialog');await d.getByLabel('Mata pelajaran',{exact:true}).selectOption(subject);await d.getByLabel('Pesan pemblokiran',{exact:true}).fill('Pemblokiran sintetis');await d.getByLabel('Alasan perubahan blok',{exact:true}).fill('Pemeriksaan materi pembelajaran');await d.getByRole('button',{name:'Simpan blok jurnal',exact:true}).click();await d.waitFor({state:'hidden'});await page.getByRole('button',{name:'Nonaktifkan blok jurnal',exact:true}).click();d=page.getByRole('dialog');await d.getByLabel('Alasan perubahan blok',{exact:true}).fill('Pemeriksaan sudah selesai');await d.getByRole('button',{name:'Simpan status blok jurnal',exact:true}).click();await d.waitFor({state:'hidden'});await page.getByRole('button',{name:'Aktifkan blok jurnal',exact:true}).waitFor();
+ // Failed/uncertain writes retain the form; recovery never retries automatically.
+ await tab('Input Jurnal Pembelajaran');
+ for(const mode of ['reject','invalid']){
+  await page.getByRole('button',{name:'Jurnal pembelajaran',exact:true}).click();d=page.getByRole('dialog');
+  await d.getByLabel('Kegiatan',{exact:true}).selectOption(occ);await d.getByLabel('Materi pembelajaran',{exact:true}).fill('Isian tetap tersimpan');await d.getByLabel('Alasan penyimpanan',{exact:true}).fill('Pengujian penolakan server');writeMode=mode;
+  const beforeWrite=writes;await d.getByRole('button',{name:'Simpan jurnal',exact:true}).click();await d.getByRole('alert').waitFor();assert.equal(writes,beforeWrite+1);assert.equal(await d.getByLabel('Materi pembelajaran',{exact:true}).inputValue(),'Isian tetap tersimpan');
+  if(mode==='reject'){assert.equal(await d.getByRole('button',{name:'Simpan jurnal',exact:true}).isEnabled(),true);await close();}
+  else {assert.equal(await d.getByRole('button',{name:'Simpan jurnal',exact:true}).isDisabled(),true);await d.getByRole('button',{name:'Muat ulang dan periksa jurnal',exact:true}).click();await d.waitFor({state:'hidden'});}
+  writeMode='ok';await page.waitForFunction(()=>!document.querySelector('[aria-busy="true"]'));
+ }
+ // A saved edit must remain acknowledged even if subsequent history refresh fails.
+ rows=[{...record,material:'x'.repeat(2000),notes:'y'.repeat(2000)}];await reload();await tab('Riwayat dan Detail Jurnal');await page.setViewportSize({width:320,height:650});await overflow();if(screenshots)await page.screenshot({path:screenshots+'/journal-history-mobile.png'});
+ await page.getByRole('button',{name:'Ubah jurnal',exact:true}).click();d=page.getByRole('dialog');await d.getByLabel('Alasan penyimpanan',{exact:true}).fill('Simpan sebelum pemuatan gagal');readMode='error';await d.getByRole('button',{name:'Simpan jurnal',exact:true}).click();await d.waitFor({state:'hidden'});await page.getByRole('status').filter({hasText:'Jurnal berhasil disimpan'}).waitFor();await tab('Riwayat dan Detail Jurnal');await page.getByRole('alert').filter({hasText:'Riwayat belum tersedia'}).waitFor();assert.equal(await page.getByRole('button',{name:'Unduh CSV',exact:true}).isDisabled(),true);
+ readMode='ok';rows=[];await reload();
  // Invalid history must never prevent independent input or cause options refetch on search.
  readMode='invalid';await reload();await tab('Riwayat dan Detail Jurnal');await page.getByRole('alert').waitFor();await tab('Input Jurnal Pembelajaran');assert.equal(await page.getByRole('button',{name:'Jurnal pembelajaran',exact:true}).isEnabled(),true);
  readMode='ok';await reload();await page.locator('summary').filter({hasText:'Tanggal dan filter jurnal'}).click();const before=contextReads;await page.getByLabel('Cari materi/catatan',{exact:true}).fill('materi');await page.waitForTimeout(500);assert.equal(contextReads,before);
@@ -74,5 +91,5 @@ try {
  rows=Array.from({length:26},(_,i)=>({...record,id:`00000000-0000-4000-8000-${String(i+1).padStart(12,'0')}`,material:'Data '+i}));await reload();await page.getByRole('button',{name:'Berikutnya',exact:true}).click();await page.getByText('Data 25',{exact:true}).waitFor();await page.getByRole('button',{name:'Hapus jurnal dan batalkan JTM',exact:true}).click();d=page.getByRole('dialog');await d.getByLabel('Alasan penghapusan jurnal',{exact:true}).fill('Menghapus baris halaman akhir');await d.getByRole('button',{name:'Konfirmasi penghapusan jurnal',exact:true}).click();await d.waitFor({state:'hidden'});await page.getByText('Halaman 1 dari 1 · 25 catatan',{exact:true}).waitFor();await page.getByRole('button',{name:'Ubah jurnal',exact:true}).first().waitFor();assert.equal(await page.getByRole('button',{name:'Ubah jurnal',exact:true}).first().isEnabled(),true);
  role='guru';rows=[];const beforeBlocks=blockReads;await go();await tab('Kebijakan dan Pemblokiran Jurnal');assert.equal(await page.getByRole('button',{name:/jurnal H-1/}).count(),0);assert.equal(blockReads,beforeBlocks);
  await page.setViewportSize({width:844,height:390});await overflow();await page.addStyleTag({content:'html{font-size:32px}'});await overflow();assert.deepEqual(errors,[]);
- console.log('PASS: journals 7 widths/all tabs, modal bounds, create/edit/delete/H1/block commands, blank/count validation, double submit/busy close, conflict recovery, independent invalid history/search, CSV, last-page deletion, teacher permissions, touch/landscape/200% text; zero page errors. Browser commands use controlled API fixtures; database business rules tested separately.');
+ console.log('PASS: journals 7 widths/all tabs, modal bounds, create/edit/delete/H1/block commands, blank/count validation, double submit/busy close, conflict/rejected/malformed-ack recovery, saved edit with failed refresh, long text, independent invalid history/search, CSV, last-page deletion, teacher permissions, touch/landscape/200% text; zero page errors. Browser commands use controlled API fixtures; database business rules tested separately.');
 } finally {await browser?.close();child.kill('SIGTERM');}
