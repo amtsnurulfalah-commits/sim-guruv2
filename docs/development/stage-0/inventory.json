@@ -1,0 +1,820 @@
+{
+  "schemaVersion": 1,
+  "baselineCommit": "c3bced20922163d0abddae2358c3450a84437d9d",
+  "source": "scripts/audit-codebase.ts + static route scan",
+  "limitations": [
+    "Literal module graph only; framework routes are roots, not dead code. Dynamic expressions, SQL RPCs, operational entrypoints and exports require human review.",
+    "Observed route guard is not a complete authorization decision; review layouts/handler/SQL. No production database was queried."
+  ],
+  "counts": {
+    "analyzedFiles": 441,
+    "sourceFiles": 317,
+    "pages": 47,
+    "apiRouteFiles": 50,
+    "sqlMigrations": 27
+  },
+  "pages": [
+    {
+      "route": "/absensi-siswa/input",
+      "source": "src/app/(workspace)/absensi-siswa/input/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/absensi-siswa/riwayat",
+      "source": "src/app/(workspace)/absensi-siswa/riwayat/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/acara/jurnal",
+      "source": "src/app/(workspace)/acara/jurnal/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/acara/kehadiran",
+      "source": "src/app/(workspace)/acara/kehadiran/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/acara",
+      "source": "src/app/(workspace)/acara/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/acara/riwayat",
+      "source": "src/app/(workspace)/acara/riwayat/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/admin/acara",
+      "source": "src/app/(workspace)/admin/acara/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/honorarium/operasi",
+      "source": "src/app/(workspace)/admin/honorarium/operasi/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/honorarium",
+      "source": "src/app/(workspace)/admin/honorarium/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/honorarium/riwayat",
+      "source": "src/app/(workspace)/admin/honorarium/riwayat/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/jadwal-kehadiran",
+      "source": "src/app/(workspace)/admin/jadwal-kehadiran/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/jurnal",
+      "source": "src/app/(workspace)/admin/jurnal/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/kalender",
+      "source": "src/app/(workspace)/admin/kalender/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/kehadiran-harian",
+      "source": "src/app/(workspace)/admin/kehadiran-harian/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/laporan-kendala",
+      "source": "src/app/(workspace)/admin/laporan-kendala/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/master",
+      "source": "src/app/(workspace)/admin/master/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/migrasi",
+      "source": "src/app/(workspace)/admin/migrasi/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/operasional",
+      "source": "src/app/(workspace)/admin/operasional/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/pemulihan",
+      "source": "src/app/(workspace)/admin/pemulihan/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/pengguna",
+      "source": "src/app/(workspace)/admin/pengguna/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/pengumuman",
+      "source": "src/app/(workspace)/admin/pengumuman/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/piket",
+      "source": "src/app/(workspace)/admin/piket/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/ujian",
+      "source": "src/app/(workspace)/admin/ujian/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/admin/upacara",
+      "source": "src/app/(workspace)/admin/upacara/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": true
+    },
+    {
+      "route": "/akun",
+      "source": "src/app/(workspace)/akun/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/dashboard",
+      "source": "src/app/(workspace)/dashboard/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/honorarium",
+      "source": "src/app/(workspace)/honorarium/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/honorarium/riwayat",
+      "source": "src/app/(workspace)/honorarium/riwayat/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/jadwal",
+      "source": "src/app/(workspace)/jadwal/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/jurnal",
+      "source": "src/app/(workspace)/jurnal/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/kegiatan",
+      "source": "src/app/(workspace)/kegiatan/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/kehadiran",
+      "source": "src/app/(workspace)/kehadiran/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/kehadiran-saya",
+      "source": "src/app/(workspace)/kehadiran-saya/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/modul/[slug]",
+      "source": "src/app/(workspace)/modul/[slug]/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/onboarding",
+      "source": "src/app/(workspace)/onboarding/page.tsx",
+      "sessionGuardObserved": false,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/piket",
+      "source": "src/app/(workspace)/piket/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/profil",
+      "source": "src/app/(workspace)/profil/page.tsx",
+      "sessionGuardObserved": false,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/ujian/bap",
+      "source": "src/app/(workspace)/ujian/bap/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/ujian",
+      "source": "src/app/(workspace)/ujian/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/ujian/panitia",
+      "source": "src/app/(workspace)/ujian/panitia/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/upacara",
+      "source": "src/app/(workspace)/upacara/page.tsx",
+      "sessionGuardObserved": true,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/aktivasi",
+      "source": "src/app/aktivasi/page.tsx",
+      "sessionGuardObserved": false,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/kesiapan",
+      "source": "src/app/kesiapan/page.tsx",
+      "sessionGuardObserved": false,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/login",
+      "source": "src/app/login/page.tsx",
+      "sessionGuardObserved": false,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/lupa-password",
+      "source": "src/app/lupa-password/page.tsx",
+      "sessionGuardObserved": false,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/",
+      "source": "src/app/page.tsx",
+      "sessionGuardObserved": false,
+      "adminGuardObserved": false
+    },
+    {
+      "route": "/verifikasi-dokumen",
+      "source": "src/app/verifikasi-dokumen/page.tsx",
+      "sessionGuardObserved": false,
+      "adminGuardObserved": false
+    }
+  ],
+  "apiRoutes": [
+    {
+      "route": "/api/activities/[action]",
+      "source": "src/app/api/activities/[action]/route.ts",
+      "exportedMethods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/activities/export",
+      "source": "src/app/api/activities/export/route.ts",
+      "exportedMethods": [
+        "GET"
+      ]
+    },
+    {
+      "route": "/api/auth/activation",
+      "source": "src/app/api/auth/activation/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/auth/admin-recovery",
+      "source": "src/app/api/auth/admin-recovery/route.ts",
+      "exportedMethods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/auth/change-password",
+      "source": "src/app/api/auth/change-password/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/auth/complete-onboarding",
+      "source": "src/app/api/auth/complete-onboarding/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/auth/csrf",
+      "source": "src/app/api/auth/csrf/route.ts",
+      "exportedMethods": [
+        "GET"
+      ]
+    },
+    {
+      "route": "/api/auth/email-request",
+      "source": "src/app/api/auth/email-request/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/auth/email-verify",
+      "source": "src/app/api/auth/email-verify/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/auth/forgot-password",
+      "source": "src/app/api/auth/forgot-password/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/auth/login",
+      "source": "src/app/api/auth/login/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/auth/logout",
+      "source": "src/app/api/auth/logout/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/auth/profile",
+      "source": "src/app/api/auth/profile/route.ts",
+      "exportedMethods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/auth/reset-otp",
+      "source": "src/app/api/auth/reset-otp/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/auth/reset-password",
+      "source": "src/app/api/auth/reset-password/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/auth/security-question",
+      "source": "src/app/api/auth/security-question/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/auth/session",
+      "source": "src/app/api/auth/session/route.ts",
+      "exportedMethods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/dashboard",
+      "source": "src/app/api/dashboard/route.ts",
+      "exportedMethods": [
+        "GET"
+      ]
+    },
+    {
+      "route": "/api/day-context",
+      "source": "src/app/api/day-context/route.ts",
+      "exportedMethods": [
+        "GET"
+      ]
+    },
+    {
+      "route": "/api/duties/[action]",
+      "source": "src/app/api/duties/[action]/route.ts",
+      "exportedMethods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/health",
+      "source": "src/app/api/health/route.ts",
+      "exportedMethods": [
+        "GET"
+      ]
+    },
+    {
+      "route": "/api/honorarium/[action]",
+      "source": "src/app/api/honorarium/[action]/route.ts",
+      "exportedMethods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/internal/worker",
+      "source": "src/app/api/internal/worker/route.ts",
+      "exportedMethods": [
+        "GET"
+      ]
+    },
+    {
+      "route": "/api/migration/[action]",
+      "source": "src/app/api/migration/[action]/route.ts",
+      "exportedMethods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/operations/[action]",
+      "source": "src/app/api/operations/[action]/route.ts",
+      "exportedMethods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/programs/[action]",
+      "source": "src/app/api/programs/[action]/route.ts",
+      "exportedMethods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/schedules/[id]/history",
+      "source": "src/app/api/schedules/[id]/history/route.ts",
+      "exportedMethods": [
+        "GET"
+      ]
+    },
+    {
+      "route": "/api/schedules/[id]",
+      "source": "src/app/api/schedules/[id]/route.ts",
+      "exportedMethods": [
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "route": "/api/schedules/bulk-delete/preview",
+      "source": "src/app/api/schedules/bulk-delete/preview/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/schedules/bulk-delete",
+      "source": "src/app/api/schedules/bulk-delete/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/schedules/conflicts",
+      "source": "src/app/api/schedules/conflicts/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/schedules/mine",
+      "source": "src/app/api/schedules/mine/route.ts",
+      "exportedMethods": [
+        "GET"
+      ]
+    },
+    {
+      "route": "/api/schedules/recaps",
+      "source": "src/app/api/schedules/recaps/route.ts",
+      "exportedMethods": [
+        "GET"
+      ]
+    },
+    {
+      "route": "/api/schedules",
+      "source": "src/app/api/schedules/route.ts",
+      "exportedMethods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/schedules/today",
+      "source": "src/app/api/schedules/today/route.ts",
+      "exportedMethods": [
+        "GET"
+      ]
+    },
+    {
+      "route": "/api/settings/[group]/history/[id]",
+      "source": "src/app/api/settings/[group]/history/[id]/route.ts",
+      "exportedMethods": [
+        "GET"
+      ]
+    },
+    {
+      "route": "/api/settings/[group]",
+      "source": "src/app/api/settings/[group]/route.ts",
+      "exportedMethods": []
+    },
+    {
+      "route": "/api/settings/calendar/history",
+      "source": "src/app/api/settings/calendar/history/route.ts",
+      "exportedMethods": [
+        "GET"
+      ]
+    },
+    {
+      "route": "/api/settings/calendar/preview",
+      "source": "src/app/api/settings/calendar/preview/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/settings/calendar/range",
+      "source": "src/app/api/settings/calendar/range/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/settings/calendar",
+      "source": "src/app/api/settings/calendar/route.ts",
+      "exportedMethods": [
+        "DELETE",
+        "GET",
+        "PATCH",
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/settings/day-context/commit",
+      "source": "src/app/api/settings/day-context/commit/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/settings/day-context/preview",
+      "source": "src/app/api/settings/day-context/preview/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/settings/day-context",
+      "source": "src/app/api/settings/day-context/route.ts",
+      "exportedMethods": [
+        "GET"
+      ]
+    },
+    {
+      "route": "/api/users/[id]/activation",
+      "source": "src/app/api/users/[id]/activation/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/users/[id]/recovery",
+      "source": "src/app/api/users/[id]/recovery/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/users/[id]",
+      "source": "src/app/api/users/[id]/route.ts",
+      "exportedMethods": [
+        "DELETE",
+        "GET",
+        "PATCH"
+      ]
+    },
+    {
+      "route": "/api/users/[id]/status",
+      "source": "src/app/api/users/[id]/status/route.ts",
+      "exportedMethods": [
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/users/reset-requests",
+      "source": "src/app/api/users/reset-requests/route.ts",
+      "exportedMethods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "route": "/api/users",
+      "source": "src/app/api/users/route.ts",
+      "exportedMethods": [
+        "GET",
+        "POST"
+      ]
+    }
+  ],
+  "featureDomains": [
+    "activities",
+    "auth",
+    "calendar",
+    "dashboard",
+    "duties",
+    "finance",
+    "masters",
+    "migration",
+    "operations",
+    "programs",
+    "schedules",
+    "users"
+  ],
+  "serverDomains": [
+    "accounts",
+    "activities",
+    "auth",
+    "calendar",
+    "dashboard",
+    "db",
+    "duties",
+    "finance",
+    "mail",
+    "masters",
+    "migration",
+    "operations",
+    "programs",
+    "schedules",
+    "support",
+    "users"
+  ],
+  "migrations": [
+    "supabase/migrations/202610190001_roles_and_schemas.sql",
+    "supabase/migrations/202610190002_identity_tables.sql",
+    "supabase/migrations/202610190003_auth_routines_and_policies.sql",
+    "supabase/migrations/202610190004_account_activation.sql",
+    "supabase/migrations/202610190005_auth_http.sql",
+    "supabase/migrations/20261019055727_account_lifecycle.sql",
+    "supabase/migrations/20261019102819_user_management.sql",
+    "supabase/migrations/20261019111051_academic_masters.sql",
+    "supabase/migrations/20261019113611_calendar_day_context.sql",
+    "supabase/migrations/20261019115903_teaching_schedules.sql",
+    "supabase/migrations/20261019160412_security_otp_dispatch.sql",
+    "supabase/migrations/20261019170744_attendance_journals_stage3.sql",
+    "supabase/migrations/20261019174518_duties_substitution_jtm.sql",
+    "supabase/migrations/20261020014753_exams_bap_stage5.sql",
+    "supabase/migrations/20261020015111_events_journals_stage5.sql",
+    "supabase/migrations/20261020022247_exam_api_attendance_stage5.sql",
+    "supabase/migrations/20261020045419_exam_attendance_guards_stage5.sql",
+    "supabase/migrations/20261020055614_finance_holiday_transport_stage6.sql",
+    "supabase/migrations/20261020063050_exact_transport_settlement_stage6.sql",
+    "supabase/migrations/20261020065725_operations_stage7.sql",
+    "supabase/migrations/20261020092915_operations_finance_workers_stage7.sql",
+    "supabase/migrations/20261020100138_reminder_context_stage7.sql",
+    "supabase/migrations/20261020103452_migration_readiness_stage8.sql",
+    "supabase/migrations/20261020182241_pg_net_private_registration.sql",
+    "supabase/migrations/20261021135112_support_reports.sql",
+    "supabase/migrations/20261021161000_duty_final_guard_record_shape.sql",
+    "supabase/migrations/20261023094531_kbm_confirmation_operator_guard.sql"
+  ],
+  "tests": {
+    "tests/unit": [
+      "tests/unit/account-profile.test.ts",
+      "tests/unit/announcement-contracts.test.ts",
+      "tests/unit/api-feedback.test.ts",
+      "tests/unit/attendance-contracts.test.ts",
+      "tests/unit/calendar-contracts.test.ts",
+      "tests/unit/calendar.test.ts",
+      "tests/unit/confirmation-contracts.test.ts",
+      "tests/unit/dashboard-summary.test.ts",
+      "tests/unit/decimal.test.ts",
+      "tests/unit/duty-contracts.test.ts",
+      "tests/unit/environment.test.ts",
+      "tests/unit/event-contracts.test.ts",
+      "tests/unit/exam-contracts.test.ts",
+      "tests/unit/finance-contracts.test.ts",
+      "tests/unit/journal-contracts.test.ts",
+      "tests/unit/login.test.ts",
+      "tests/unit/masters.test.ts",
+      "tests/unit/migration-ui-contracts.test.ts",
+      "tests/unit/migration.test.ts",
+      "tests/unit/navigation.test.ts",
+      "tests/unit/operational-contracts.test.ts",
+      "tests/unit/recovery-contracts.test.ts",
+      "tests/unit/recovery.test.ts",
+      "tests/unit/schedule-contracts.test.ts",
+      "tests/unit/schedules.test.ts",
+      "tests/unit/student-contracts.test.ts",
+      "tests/unit/support-event.test.ts",
+      "tests/unit/ui-design.test.ts",
+      "tests/unit/user-contracts.test.ts"
+    ],
+    "tests/crypto": [
+      "tests/crypto/activation.test.ts",
+      "tests/crypto/activity-export.test.ts",
+      "tests/crypto/attendance-export-boundary.test.ts",
+      "tests/crypto/audit-regressions.test.ts",
+      "tests/crypto/feedback-http.test.ts",
+      "tests/crypto/finance-export.test.ts",
+      "tests/crypto/gmail-mail.test.ts",
+      "tests/crypto/lifecycle.test.ts",
+      "tests/crypto/migration-http.test.ts",
+      "tests/crypto/operational-http.test.ts",
+      "tests/crypto/passwords.test.ts",
+      "tests/crypto/support-record.test.ts"
+    ],
+    "tests/integration": [
+      "tests/integration/accounts.test.ts",
+      "tests/integration/activities.test.ts",
+      "tests/integration/auth-http.test.ts",
+      "tests/integration/calendar.test.ts",
+      "tests/integration/dashboard.test.ts",
+      "tests/integration/database.test.ts",
+      "tests/integration/duties.test.ts",
+      "tests/integration/finance.test.ts",
+      "tests/integration/lifecycle.test.ts",
+      "tests/integration/masters.test.ts",
+      "tests/integration/migration.test.ts",
+      "tests/integration/native-database.test.ts",
+      "tests/integration/native-schedules-race.test.ts",
+      "tests/integration/operations.test.ts",
+      "tests/integration/otp-dispatch.test.ts",
+      "tests/integration/password-transport.test.ts",
+      "tests/integration/programs.test.ts",
+      "tests/integration/schedules.test.ts",
+      "tests/integration/users.test.ts"
+    ]
+  },
+  "dependencyVersions": {
+    "@next/env": "16.4.2",
+    "@radix-ui/react-dialog": "1.3.1",
+    "@radix-ui/react-slot": "1.5.0",
+    "argon2": "0.45.1",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "decimal.js": "10.6.0",
+    "lucide-react": "1.59.0",
+    "next": "16.4.2",
+    "nodemailer": "10.1.7",
+    "pdfkit": "0.20.2",
+    "postgres": "3.4.9",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "0.0.1",
+    "tailwind-merge": "3.7.0",
+    "zod": "4.6.7"
+  },
+  "unreferencedModuleCandidates": [
+    "src/server/db/transaction.ts"
+  ],
+  "candidateNote": "Not deletion approval. No production source removed in Stage 0."
+}
