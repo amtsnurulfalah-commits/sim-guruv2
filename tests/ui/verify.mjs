@@ -50,7 +50,10 @@ try {
     consoleErrors = [],
     matrix = [],
     interactions = [];
-  page.setDefaultTimeout(20000);
+  const timeout = Number(process.env.UI_TIMEOUT_MS ?? "20000");
+  assert.ok(Number.isFinite(timeout) && timeout >= 20000 && timeout <= 120000, "UI_TIMEOUT_MS must be between 20000 and 120000");
+  page.setDefaultTimeout(timeout);
+  page.setDefaultNavigationTimeout(timeout);
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text());

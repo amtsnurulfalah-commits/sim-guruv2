@@ -167,7 +167,8 @@ test("Tahap1.4 login/session/logout — HTTP handlers + Argon2 + PostgreSQL WASM
         assert.equal((await handlers.logout(new Request(config.appUrl + '/api/auth/logout', { method: 'POST', headers: headers(cookie, csrf) }))).status, 200);
     });
     await t.test("AU11 expiry idle/absolut, auth_version dan status nonaktif mencabut akses", async () => {
-        for (const mutation of ["idle_expires_at=clock_timestamp()-interval '1 second',issued_at=clock_timestamp()-interval '3 hours',expires_at=clock_timestamp()+interval '20 hours'", "expires_at=clock_timestamp()-interval '1 second',issued_at=clock_timestamp()-interval '24 hours',idle_expires_at=clock_timestamp()-interval '1 second'"]) {
+        // One statement instant keeps idle expiry <= absolute expiry on millisecond boundaries.
+        for (const mutation of ["idle_expires_at=statement_timestamp()-interval '1 second',issued_at=statement_timestamp()-interval '3 hours',expires_at=statement_timestamp()+interval '20 hours'", "expires_at=statement_timestamp()-interval '1 second',issued_at=statement_timestamp()-interval '24 hours',idle_expires_at=statement_timestamp()-interval '1 second'"]) {
             const res = await signIn();
             const token = res.cookies.get('__Host-sim_guru_session')!.value;
             await db.query(`update auth_private.app_sessions set ${mutation} where token_hash=$1`, [tokenHash(token)]);

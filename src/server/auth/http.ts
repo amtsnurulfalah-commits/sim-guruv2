@@ -26,6 +26,8 @@ type Dependencies = {
   service: () => Promise<LocalAuthService>;
 };
 const messages: Record<string, string> = {
+  RETRY_NOT_ALLOWED: "Status antrean atau pekerjaan sudah berubah dan tidak dapat dijadwalkan ulang. Muat ulang lalu periksa data terbaru.",
+  RECONCILE_NOT_ALLOWED: "Status email sudah berubah. Muat ulang dan periksa hasil terbaru sebelum melakukan pemeriksaan kembali.",
   FINANCE_INVALID: "Data honorarium atau koreksi tidak sesuai aturan.",
   FINANCE_BLOCKED:
     "Finalisasi diblokir. Selesaikan seluruh temuan pada pratinjau.",
