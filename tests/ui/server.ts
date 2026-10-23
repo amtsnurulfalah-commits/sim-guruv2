@@ -91,6 +91,97 @@ async function main() {
     reason: "Fikstur antarmuka sintetis",
     data: { name: "Mata Pelajaran Pengujian Responsivitas" },
   });
+  // Opt-in KBM fixture: disposable database only, isolated from the global UI matrix.
+  if (process.env.UI_CONFIRMATION_FIXTURE === "1") {
+    const reason = "Fikstur konfirmasi KBM sintetis",
+      today = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Jakarta",
+      }).format(new Date());
+    const yearNumber = today.slice(0, 4),
+      start = yearNumber + "-01-01",
+      end = yearNumber + "-12-31";
+    await masters.save(token, "school", {
+      version: "0",
+      reason,
+      data: {
+        name: "Madrasah Konfirmasi",
+        address: "",
+        npsn: "",
+        level: "SMP",
+        useParallel: false,
+        parallelMax: 1,
+        minutesPerJtm: 40,
+        headmasterId: "",
+      },
+    });
+    const year = await masters.save(token, "academic-years", {
+      version: "0",
+      reason,
+      data: {
+        label: yearNumber + "/" + (Number(yearNumber) + 1),
+        dateStart: start,
+        dateEnd: end,
+      },
+    });
+    const period = await masters.save(token, "academic-periods", {
+      version: "0",
+      reason,
+      data: {
+        academicYearId: year.id,
+        semester: 1,
+        dateStart: start,
+        dateEnd: end,
+        isActive: true,
+      },
+    });
+    const klass = await masters.save(token, "classes", {
+      version: "0",
+      reason,
+      data: {
+        academicPeriodId: period.id,
+        name: "Kelas 7",
+        level: "SMP",
+        grade: 7,
+        parallel: "",
+        expectedStudents: 30,
+      },
+    });
+    const subject = await masters.save(token, "subjects", {
+      version: "0",
+      reason,
+      data: { name: "IPA Konfirmasi" },
+    });
+    const preview = await calendar.preview(token, "context", {
+      action: "override",
+      date: today,
+      version: "0",
+      academicPeriodId: period.id,
+      kbmEnabled: true,
+      examEnabled: false,
+      reason,
+    });
+    await calendar.commit(
+      token,
+      "context",
+      { previewId: preview.previewId },
+      "context",
+    );
+    await schedules.save(token, undefined, {
+      reason,
+      data: {
+        academicPeriodId: period.id,
+        userId: guru,
+        subjectId: subject.id,
+        classId: klass.id,
+        dayIndex: new Date(today + "T00:00:00Z").getUTCDay(),
+        timeStart: "07:30",
+        scheduledJtm: "2",
+        restMinutes: 0,
+        validFrom: today,
+        validTo: end,
+      },
+    });
+  }
   // A real disposable attendance row exercises repeated leave-editor selection.
   const fixtureDate = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Jakarta",

@@ -4,6 +4,7 @@ import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { JournalWorkspace } from "./journal-workspace";
+import { ConfirmationWorkspace } from "./confirmation-workspace";
 import { FormDialog } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { masterRequest } from "../masters/api";
@@ -11,7 +12,6 @@ import { wibDate } from "../../lib/calendar/schemas";
 import type {
   Attendance,
   List,
-  Occurrence,
   Options,
   StudentRecap,
 } from "../../lib/activities/schemas";
@@ -120,11 +120,29 @@ const titles: Record<Mode, string> = {
   students: "Rekap absensi siswa",
   journals: "Jurnal pembelajaran",
 };
-export function ActivityWorkspace(props: {admin: boolean; userId: string; mode: Mode}) {
-  return props.mode === "journals" ? <JournalWorkspace admin={props.admin} userId={props.userId}/> : <ActivityWorkspaceContent {...props} mode={props.mode}/>;
+export function ActivityWorkspace(props: {
+  admin: boolean;
+  userId: string;
+  mode: Mode;
+}) {
+  return props.mode === "occurrences" ? (
+    <ConfirmationWorkspace admin={props.admin} userId={props.userId} />
+  ) : props.mode === "journals" ? (
+    <JournalWorkspace admin={props.admin} userId={props.userId} />
+  ) : (
+    <ActivityWorkspaceContent {...props} mode={props.mode} />
+  );
 }
-function ActivityWorkspaceContent({admin, userId, mode}: {admin:boolean; userId:string; mode:Exclude<Mode,"journals">}) {
-  const [manualEditor, setManualEditor] = useState(0), [leaveEditor, setLeaveEditor] = useState(0);
+function ActivityWorkspaceContent({
+  admin,
+  mode,
+}: {
+  admin: boolean;
+  userId: string;
+  mode: Exclude<Mode, "journals" | "occurrences">;
+}) {
+  const [manualEditor, setManualEditor] = useState(0),
+    [leaveEditor, setLeaveEditor] = useState(0);
   const [date, setDate] = useState(wibDate()),
     [from, setFrom] = useState(wibDate().slice(0, 7) + "-01"),
     [to, setTo] = useState(wibDate()),
@@ -136,19 +154,17 @@ function ActivityWorkspaceContent({admin, userId, mode}: {admin:boolean; userId:
       subjects: [],
       h1Enabled: false,
     }),
-    [rows, setRows] = useState<
-      (Attendance | StudentRecap | Occurrence)[]
-    >([]),
+    [rows, setRows] = useState<(Attendance | StudentRecap)[]>([]),
     [total, setTotal] = useState(0),
     [loading, setLoading] = useState(true),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [message, setMessage] = useState("");
   const [progress, setProgress] = useState<{
-      required: { id: string; name: string; complete: boolean }[];
-      completedCount: number;
-      requiredCount: number;
-    } | null>(null);
+    required: { id: string; name: string; complete: boolean }[];
+    completedCount: number;
+    requiredCount: number;
+  } | null>(null);
   const [teacher, setTeacher] = useState(""),
     [filterTeacher, setFilterTeacher] = useState("");
   const [templates, setTemplates] = useState<
@@ -207,12 +223,8 @@ function ActivityWorkspaceContent({admin, userId, mode}: {admin:boolean; userId:
           pageSize: "25",
           ...(filterTeacher ? { userId: filterTeacher } : {}),
         });
-        const result = await masterRequest<
-          List<Attendance | StudentRecap | Occurrence>
-        >(
-          mode === "occurrences"
-            ? `/api/activities/occurrences?date=${date}`
-            : `/api/activities/${mode}?${params}`,
+        const result = await masterRequest<List<Attendance | StudentRecap>>(
+          `/api/activities/${mode}?${params}`,
           "GET",
           undefined,
           ctrl.signal,
@@ -321,7 +333,7 @@ function ActivityWorkspaceContent({admin, userId, mode}: {admin:boolean; userId:
           }}
           type="date"
         />
-        {mode !== "occurrences" && (
+        {
           <>
             <Text
               label="Riwayat mulai"
@@ -342,7 +354,7 @@ function ActivityWorkspaceContent({admin, userId, mode}: {admin:boolean; userId:
               type="date"
             />
           </>
-        )}
+        }
         {admin && mode === "attendance" && (
           <Select
             label="Filter guru (kosong: semua)"
@@ -404,77 +416,6 @@ function ActivityWorkspaceContent({admin, userId, mode}: {admin:boolean; userId:
         <h2 className="font-semibold">Tanggal dan filter kegiatan</h2>
         {activityFilters}
       </section>
-      {mode === "occurrences" && (
-        <section className={panel}>
-          <h2 className="font-semibold">Penugasan tanggal {date}</h2>
-          <p className="text-sm">
-            Klaim pribadi tidak memberi kredit JTM. Admin mengesahkan kegiatan
-            sebelum jurnal diisi.
-          </p>
-          <Text
-            label="Alasan klaim / konfirmasi"
-            value={reason}
-            set={setReason}
-            required
-          />
-          {!loading && rows.length === 0 && (
-            <p>Tidak ada penugasan pada tanggal ini.</p>
-          )}
-          {(rows as Occurrence[]).map((o) => (
-            <article className="space-y-2 rounded border p-4" key={o.id}>
-              <h3 className="font-semibold">
-                {o.teacherName} — {o.subjectName} · {o.className}
-              </h3>
-              <p>
-                {o.timeStart}–{o.timeEnd} · {o.scheduledJtm} JTM ·{" "}
-                {o.confirmed ? "Terkonfirmasi" : "Belum dikonfirmasi"}
-                {o.claimed ? " · Sudah diklaim" : ""}
-              </p>
-              <div className="flex gap-2">
-                {o.userId === userId && !o.claimed && (
-                  <button
-                    className={smallButton}
-                    disabled={busy || reason.trim().length < 5}
-                    onClick={() =>
-                      run("claim", {
-                        occurrenceId: o.id,
-                        version: o.version,
-                        reason,
-                      })
-                    }
-                  >
-                    <ActionIcon action="submit" />
-                    Ajukan klaim kehadiran
-                  </button>
-                )}
-                {admin && (
-                  <button
-                    className={smallButton}
-                    disabled={busy || reason.trim().length < 5}
-                    onClick={() => {
-                      if (
-                        o.confirmed &&
-                        !window.confirm(
-                          "Cabut konfirmasi kegiatan ini? Jurnal aktif harus dihapus terlebih dahulu.",
-                        )
-                      )
-                        return;
-                      void run(o.confirmed ? "revoke" : "confirm", {
-                        occurrenceId: o.id,
-                        version: o.version,
-                        reason,
-                      });
-                    }}
-                  >
-                    <ActionIcon action="confirm" />
-                    {o.confirmed ? "Cabut konfirmasi" : "Konfirmasi KBM"}
-                  </button>
-                )}
-              </div>
-            </article>
-          ))}
-        </section>
-      )}
       {mode === "attendance" && (
         <>
           <section className={panel}>
@@ -1051,7 +992,7 @@ function ActivityWorkspaceContent({admin, userId, mode}: {admin:boolean; userId:
           </section>
         </>
       )}
-      {mode !== "occurrences" && pagination}
+      {pagination}
     </div>
   );
 }
