@@ -2,12 +2,13 @@ import "server-only";
 import { z } from "zod";
 import { sqlJson, type SqlDatabase } from "../../../scripts/lib/sql-database";
 import { tokenHash } from "../auth/service";
+import { supportReferenceSchema } from "../../lib/feedback/support";
 import { commands } from "../../lib/operations/schemas";
 export class OperationsService {
   constructor(private readonly db: SqlDatabase) {}
   async read(token: string, kind: string, input: unknown = {}) {
     if (kind === "support") {
-      const query = z.object({ reference: z.uuid() }).strict().parse(input);
+      const query = z.object({ reference: supportReferenceSchema }).strict().parse(input);
       return this.db.transaction(async (tx) => (await tx.query<{value: unknown}>(
         "select ops.find_support_event($1,$2::uuid) as value", [tokenHash(token), query.reference],
       )).rows[0]!.value);
