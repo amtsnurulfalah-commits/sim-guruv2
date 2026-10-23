@@ -15,6 +15,7 @@ import { CalendarService } from "../../src/server/calendar/service";
 import { ScheduleService } from "../../src/server/schedules/service";
 import { DutyService } from "../../src/server/duties/service";
 import type { DutyOccurrence, DutyBoard } from "../../src/lib/duties/schemas";
+import { confirmationListSchema, confirmationOptionsSchema, verifyConfirmationResult } from "../../src/lib/activities/confirmation-contracts";
 import { ActivityService } from "../../src/server/activities/service";
 import { createDutyHandler } from "../../src/server/duties/http";
 import { AccountLifecycleService } from "../../src/server/accounts/lifecycle";
@@ -412,6 +413,32 @@ test("Tahap 4 — duties, substitution and JTM conservation", async (t) => {
   await t.test(
     "D06 piket operational can confirm KBM and submit rekap; cannot operate own assignment",
     async () => {
+      const list = confirmationListSchema.parse(
+        await read(piket, "occurrences", { date }),
+      );
+      const options = confirmationOptionsSchema.parse(
+        await read(piket, "options"),
+      );
+      assert.equal(options.canOperate, true);
+      const before = list.items.find((row) => row.id === k.id)!;
+      const confirmed = await command(piket, "confirm", {
+        occurrenceId: k.id,
+        version: before.version,
+        reason,
+      });
+      verifyConfirmationResult(confirmed, before, "confirm");
+      k = (await board()).occurrences.find((row) => row.id === k.id)!;
+      assert.equal(k.confirmed, true);
+      const revoked = await command(piket, "revoke", {
+        occurrenceId: k.id,
+        version: k.version,
+        reason,
+      });
+      verifyConfirmationResult(
+        revoked,
+        { ...before, confirmed: true, version: k.version },
+        "revoke",
+      );
       k = await mutate(piket, k.id, "confirm");
       assert.equal(k.confirmed, true);
       await command(piket, "students-save", {

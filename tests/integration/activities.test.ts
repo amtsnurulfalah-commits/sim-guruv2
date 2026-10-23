@@ -14,6 +14,7 @@ import { MasterService } from "../../src/server/masters/service";
 import { CalendarService } from "../../src/server/calendar/service";
 import { ScheduleService } from "../../src/server/schedules/service";
 import { journalSchema, journalListSchema, journalOptionsSchema, eligibleJournalsSchema, journalBlocksSchema } from "../../src/lib/activities/journal-contracts";
+import { confirmationListSchema, verifyConfirmationResult } from "../../src/lib/activities/confirmation-contracts";
 import { ActivityService } from "../../src/server/activities/service";
 import { createActivityHandler } from "../../src/server/activities/http";
 import { AccountLifecycleService } from "../../src/server/accounts/lifecycle";
@@ -238,6 +239,7 @@ test("Tahap 3 — occurrences, attendance, students and atomic JTM journals", as
     "A02 occurrence identity is source/date scoped, snapshots stable, owner-scoped list",
     async () => {
       const all = await occurrences();
+      confirmationListSchema.parse(all);
       assert.equal(all.items.length, 2);
       o = all.items.find((x) => x.userId === guruId)!;
       assert.equal(o.scheduledJtm, "3.0000");
@@ -305,11 +307,13 @@ test("Tahap 3 — occurrences, attendance, students and atomic JTM journals", as
           }),
         /NO_ACTIVE_CONFIRMATION/,
       );
+      const before = confirmationListSchema.parse(await occurrences()).items.find(row => row.id === o.id)!;
       o = await command<Occurrence>(admin, "confirm", {
         occurrenceId: o.id,
         version: o.version,
         reason,
       });
+      verifyConfirmationResult(o, before, "confirm");
       assert.equal(o.confirmed, true);
       const all = await occurrences();
       assert.equal(all.items.filter((x) => x.confirmed).length, 1);
