@@ -13,6 +13,7 @@ import { CalendarService } from "../../src/server/calendar/service";
 import { ScheduleService } from "../../src/server/schedules/service";
 import { ActivityService } from "../../src/server/activities/service";
 import { DutyService } from "../../src/server/duties/service";
+import { renderCsv, renderPdf } from "../../src/server/activities/export";
 import { ProgramService } from "../../src/server/programs/service";
 import { FinanceService } from "../../src/server/finance/service";
 import { OperationsService } from "../../src/server/operations/service";
@@ -92,7 +93,7 @@ async function main() {
     data: { name: "Mata Pelajaran Pengujian Responsivitas" },
   });
   // Opt-in KBM fixture: disposable database only, isolated from the global UI matrix.
-  if (process.env.UI_CONFIRMATION_FIXTURE === "1" || process.env.UI_STUDENT_FIXTURE === "1" || process.env.UI_DUTY_FIXTURE === "1" || process.env.UI_EXAM_FIXTURE === "1") {
+  if (process.env.UI_CONFIRMATION_FIXTURE === "1" || process.env.UI_STUDENT_FIXTURE === "1" || process.env.UI_DUTY_FIXTURE === "1" || process.env.UI_EXAM_FIXTURE === "1" || process.env.UI_ATTENDANCE_FIXTURE === "1") {
     const reason = "Fikstur konfirmasi KBM sintetis",
       today = new Intl.DateTimeFormat("en-CA", {
         timeZone: "Asia/Jakarta",
@@ -233,6 +234,14 @@ async function main() {
       let body = "";
       for await (const b of req) body += b;
       const input = body ? JSON.parse(body) : {};
+      if (path === "/api/activities/export") {
+        const {kind,format,...filter}=q;
+        if(kind!=="attendance")throw Error("FIXTURE_EXPORT_KIND");
+        const rows=await activities.exportRows(token,"attendance",filter);
+        res.setHeader("content-type",format==="pdf"?"application/pdf":"text/csv; charset=utf-8");
+        res.setHeader("content-disposition",'attachment; filename="attendance.'+(format==="pdf"?"pdf":"csv")+'"');
+        res.end(format==="pdf"?await renderPdf(rows,"attendance",filter.from+" – "+filter.to):renderCsv(rows,"attendance"));return;
+      }
       if (path === "/api/auth/csrf") data = { csrfToken: "fixture-csrf" };
       else if (path === "/api/auth/profile" && req.method === "GET")
         data = {

@@ -73,15 +73,32 @@ export const commandSchemas = {
       reason,
     })
     .strict()
-    .refine(
-      (v) =>
-        ((v.scheduledIn === null && v.scheduledOut === null) ||
+    .superRefine((v, ctx) => {
+      if (
+        !(
+          (v.scheduledIn === null && v.scheduledOut === null) ||
           (v.scheduledIn !== null &&
             v.scheduledOut !== null &&
-            v.scheduledOut > v.scheduledIn)) &&
-        (v.actualOut === null ||
-          (v.actualIn !== null && v.actualOut >= v.actualIn)),
-    ),
+            v.scheduledOut > v.scheduledIn)
+        )
+      )
+        ctx.addIssue({
+          code: "custom",
+          path: ["scheduledOut"],
+          message:
+            "Isi kedua jam jadwal; jadwal pulang harus setelah jadwal masuk.",
+        });
+      if (
+        v.actualOut !== null &&
+        (v.actualIn === null || v.actualOut < v.actualIn)
+      )
+        ctx.addIssue({
+          code: "custom",
+          path: ["actualOut"],
+          message:
+            "Aktual pulang memerlukan aktual masuk dan tidak boleh lebih awal.",
+        });
+    }),
   in: z.object(attendanceIdentity).strict(),
   out: z.object(attendanceIdentity).strict(),
   leave: z
@@ -104,7 +121,16 @@ export const commandSchemas = {
       reason,
     })
     .strict()
-    .refine((v) => v.hadir + v.sakit + v.izin + v.alpa > 0 && v.hadir + v.sakit + v.izin + v.alpa <= 1000, {path:["hadir"], message:"Jumlah hadir, sakit, izin, dan alpa harus antara 1 dan 1000 siswa."}),
+    .refine(
+      (v) =>
+        v.hadir + v.sakit + v.izin + v.alpa > 0 &&
+        v.hadir + v.sakit + v.izin + v.alpa <= 1000,
+      {
+        path: ["hadir"],
+        message:
+          "Jumlah hadir, sakit, izin, dan alpa harus antara 1 dan 1000 siswa.",
+      },
+    ),
   "journal-create": z.object({ occurrenceId: uuid, ...journalFields }).strict(),
   "journal-edit": z
     .object({ journalId: uuid, version, ...journalFields })
@@ -123,7 +149,11 @@ export const commandSchemas = {
       reason,
     })
     .strict()
-    .refine((v) => v.dateStart <= v.dateEnd, {path:["dateEnd"],message:"Tanggal akhir blok harus setelah atau sama dengan tanggal mulai."}),
+    .refine((v) => v.dateStart <= v.dateEnd, {
+      path: ["dateEnd"],
+      message:
+        "Tanggal akhir blok harus setelah atau sama dengan tanggal mulai.",
+    }),
 } as const;
 export type Command = keyof typeof commandSchemas;
 export const commands = Object.keys(commandSchemas) as Command[];
