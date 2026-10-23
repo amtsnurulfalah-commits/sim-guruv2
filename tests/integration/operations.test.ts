@@ -1,4 +1,5 @@
 import test from "node:test";
+import { operationsSchema } from "../../src/lib/operations/operational-contracts";
 import { deliverBatch } from "../../src/server/operations/batch";
 import assert from "node:assert/strict";
 import { randomBytes, randomUUID } from "node:crypto";
@@ -365,6 +366,26 @@ test("Tahap 7 announcements, maintenance, fenced worker and scheduler", async (t
       await service.command(admin, "retry", { id, reason });
     },
   );
+  await t.test("operational DTO and optimistic configuration updates preserve admin-only access", async () => {
+    const current = operationsSchema.parse(await service.read(admin, "operations"));
+    await assert.rejects(service.read(guru, "operations"), /FORBIDDEN/);
+    const input = {version: current.config.version, config: current.config.value, reason};
+    await assert.rejects(service.command(guru, "settings", input), /FORBIDDEN/);
+    await service.command(admin, "settings", input);
+    await assert.rejects(service.command(admin, "settings", input), /VERSION_CONFLICT/);
+    const latest = operationsSchema.parse(await service.read(admin, "operations"));
+    assert.equal(BigInt(latest.config.version), BigInt(current.config.version) + 1n);
+    assert.deepEqual(latest.config.value, current.config.value);
+  });
+  await t.test("manual job retry resets only failed work and reports changed state as a conflict", async () => {
+    const key = "audit-job:" + randomUUID();
+    await db.query("insert into ops.job_runs(business_key,kind,state,attempts,next_attempt_at) values($1,'honor','failed',5,clock_timestamp()+interval '1 hour')", [key]);
+    await service.command(admin, "job-retry", {key,reason});
+    const row = (await db.query<{attempts:number;state:string;ready:boolean}>("select attempts,state,next_attempt_at<=clock_timestamp() ready from ops.job_runs where business_key=$1",[key])).rows[0]!;
+    assert.equal(row.attempts,0); assert.equal(row.state,"failed"); assert.equal(row.ready,true);
+    await db.query("update ops.job_runs set state='completed' where business_key=$1",[key]);
+    await assert.rejects(service.command(admin,"job-retry",{key,reason}), {name:"Error",message:"RETRY_NOT_ALLOWED",status:409});
+  });
   await t.test(
     "OP10 immediate/scheduled maintenance denies business and pauses domain but keeps security accessible",
     async () => {

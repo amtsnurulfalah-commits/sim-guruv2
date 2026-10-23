@@ -19,7 +19,7 @@ const url = z
   }, { message: "Gunakan URL HTTP atau HTTPS tanpa kredensial atau spasi." })
   .nullable()
   .default(null);
-const config = z
+export const operationsConfigSchema = z
   .object({
     mailEnabled: z.boolean(),
     securityMailEnabled: z.boolean().default(false),
@@ -29,13 +29,15 @@ const config = z
     maintenanceEnd: z.iso.datetime({ offset: true }).nullable(),
   })
   .strict()
-  .refine(
-    (v) =>
-      (!v.maintenanceStart && !v.maintenanceEnd) ||
-      (!!v.maintenanceStart &&
-        !!v.maintenanceEnd &&
-        Date.parse(v.maintenanceStart) < Date.parse(v.maintenanceEnd)),
-  );
+  .superRefine((v, ctx) => {
+    if (v.maintenanceStart && !v.maintenanceEnd)
+      ctx.addIssue({ code: "custom", path: ["maintenanceEnd"], message: "Isi waktu selesai pemeliharaan atau kosongkan kedua waktu." });
+    if (!v.maintenanceStart && v.maintenanceEnd)
+      ctx.addIssue({ code: "custom", path: ["maintenanceStart"], message: "Isi waktu mulai pemeliharaan atau kosongkan kedua waktu." });
+    if (v.maintenanceStart && v.maintenanceEnd && Date.parse(v.maintenanceStart) >= Date.parse(v.maintenanceEnd))
+      ctx.addIssue({ code: "custom", path: ["maintenanceEnd"], message: "Waktu selesai harus setelah waktu mulai pemeliharaan." });
+  });
+
 export const commands = {
   "job-retry": z.object({ key: z.string().min(1).max(150), reason }).strict(),
   save: z
@@ -71,7 +73,7 @@ export const commands = {
     }),
   deactivate: z.object({ id, version, reason }).strict(),
   dismiss: z.object({ id, version }).strict(),
-  settings: z.object({ version, config, reason }).strict(),
+  settings: z.object({ version, config: operationsConfigSchema, reason }).strict(),
   retry: z.object({ id, reason }).strict(),
   reconcile: z.object({ id, sent: z.boolean(), reason }).strict(),
 };
@@ -97,7 +99,7 @@ export type Announcement = {
   canDismiss?: boolean;
 };
 export type Operations = {
-  config: { value: z.infer<typeof config>; version: string };
+  config: { value: z.infer<typeof operationsConfigSchema>; version: string };
   maintenanceActive: boolean;
   lastWorkerAt: string | null;
   outbox: {

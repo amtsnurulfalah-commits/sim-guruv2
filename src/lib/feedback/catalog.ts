@@ -1,6 +1,10 @@
 /** User-facing labels only. Never include submitted values or raw database errors. */
 export const fieldLabels: Record<string, string> = {
   username: "Username",
+  maintenanceStart: "Mulai pemeliharaan (WIB)",
+  maintenanceEnd: "Selesai pemeliharaan (WIB)",
+  sent: "Hasil pemeriksaan penerimaan email",
+
   ctaText: "Teks tautan",
   ctaUrl: "URL tautan",
   targetUsers: "Sasaran pengguna",

@@ -57,6 +57,9 @@ export function validationFieldErrors(error: unknown): FieldErrors | undefined {
           "Konfirmasi kata sandi harus sama dengan kata sandi baru.",
           "Tanggal akhir harus setelah atau sama dengan tanggal mulai, maksimal 366 hari.",
           "Jam pulang harus setelah jam masuk.",
+          "Isi waktu selesai pemeliharaan atau kosongkan kedua waktu.",
+          "Isi waktu mulai pemeliharaan atau kosongkan kedua waktu.",
+          "Waktu selesai harus setelah waktu mulai pemeliharaan.",
           "Jam kembali harus setelah jam keluar.",
         ].includes(issue.message)
       )
