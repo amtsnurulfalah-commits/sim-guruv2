@@ -43,7 +43,7 @@ Judul/isi tetap teks biasa, termasuk markup yang ditampilkan literal. Role, sasa
 ## D. Validasi
 
 - Lint, TypeScript, production build dan diff check.
-- 79 unit + 29 crypto/HTTP + 329 integrasi database: total 437 lulus. Run awal memiliki subtest keuangan F20 rate-limit gagal (beserta parent suite); pengujian ulang terpisah lulus 25/25, lalu suite database penuh terakhir lulus 329/329. CI GitHub belum dijalankan karena pengunggahan tertahan pemeriksaan persetujuan otomatis.
+- 79 unit + 29 crypto/HTTP + 329 integrasi database: total 437 lulus. Run awal memiliki subtest keuangan F20 rate-limit gagal (beserta parent suite); pengujian ulang terpisah lulus 25/25, lalu suite database penuh terakhir lulus 329/329. Status CI GitHub dan preview deployment mengikuti pemeriksaan pada PR.
 - Browser khusus: tujuh lebar 280, 320, 375, 768, 1024, 1440, 1920 × teks 100%/200% (14 kombinasi), dengan picker terbuka dan nama panjang. Pemeriksaan halaman/form tidak melebar keluar viewport.
 - Create/edit/cancel/nonaktif, konten 200/5.000/2.000, validasi URL/tanggal/CTA/overlap, penerima lintas pencarian/pagination/retry, lock serentak dan burst submit, email/reminder payload, success+refresh failure, VERSION_CONFLICT, response malformed/koneksi putus, recovery tanpa replay, daftar 45/kosong/filter/pagination menyusut, resize/orientasi, touch details, dashboard canDismiss/CTA 44px/double dismiss.
 - Regresi dashboard: 12 kombinasi role/viewport serta alur disclosure, data banyak, retry, pergantian tanggal WIB dan dismiss.
