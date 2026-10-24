@@ -1,3 +1,4 @@
+import {SemesterPreparationService} from "../../src/server/semester-preparation/service";
 /** Disposable localhost UI fixture. Never imported by app routes; no production DB or email. */
 import { createServer } from "node:http";
 import { randomUUID, createHash } from "node:crypto";
@@ -92,7 +93,18 @@ async function main() {
     finance = new FinanceService(db),
     operations = new OperationsService(db),
     reports=new ReportsService(db),
+    semesterPreparation=new SemesterPreparationService(db),
     migration = new MigrationService(db);
+  if(process.env.UI_SEMESTER_FIXTURE==='1'){
+   const reason='Fikstur persiapan semester sintetis';
+   await masters.save(token,'school',{version:'0',reason,data:{name:'Madrasah Semester',address:'',npsn:'',level:'SMP',useParallel:false,parallelMax:1,minutesPerJtm:40,headmasterId:''}});
+   const year=await masters.save(token,'academic-years',{version:'0',reason,data:{label:'2095/2096',dateStart:'2095-01-01',dateEnd:'2096-12-31'}});
+   const src=await masters.save(token,'academic-periods',{version:'0',reason,data:{academicYearId:year.id,semester:1,dateStart:'2095-01-01',dateEnd:'2095-06-30',isActive:true}});
+   await masters.save(token,'academic-periods',{version:'0',reason,data:{academicYearId:year.id,semester:2,dateStart:'2095-07-01',dateEnd:'2095-12-31',isActive:false}});
+   const cls=await masters.save(token,'classes',{version:'0',reason,data:{academicPeriodId:src.id,name:'Kelas Pengujian Semester',level:'SMP',grade:7,parallel:'',expectedStudents:30}});
+   const sub=await masters.save(token,'subjects',{version:'0',reason,data:{name:'IPA Semester'}});
+   await schedules.save(token,undefined,{reason,data:{academicPeriodId:src.id,userId:guru,subjectId:sub.id,classId:cls.id,dayIndex:1,timeStart:'07:00',scheduledJtm:'1',restMinutes:0,validFrom:'2095-01-01',validTo:'2095-06-30'}});
+  }
   await masters.save(token, "subjects", {
     version: "0",
     reason: "Fikstur antarmuka sintetis",
@@ -331,6 +343,7 @@ async function main() {
       else if (path === "/api/honorarium/read")
         data = await finance.read(token, q);
       else if(path.startsWith("/api/honorarium/")) data=await finance.command(token,path.split("/").at(-1)! as FinanceAction,input);
+      else if(path.startsWith('/api/semester-preparation/'))data=req.method==='GET'?await semesterPreparation.read(token,q):await semesterPreparation.command(token,path.split('/').at(-1)!,input);
       else if(path==='/api/reports/excel') {res.writeHead(200,{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="laporan-pimpinan.xlsx"'});res.end(reportWorkbook(await reports.export(token,q)));return;}
       else if(path.startsWith('/api/reports/'))data=req.method==='GET'?await reports.read(token,q):await reports.access(token,input);
       else if (path.startsWith("/api/operations/"))

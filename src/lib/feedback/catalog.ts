@@ -1,8 +1,16 @@
 /** User-facing labels only. Never include submitted values or raw database errors. */
 export const fieldLabels: Record<string, string> = {
   username: "Username",
-  gate: "Pemeriksaan kesiapan", passed: "Keputusan", batchId: "Batch migrasi", sequence: "Nomor temuan",
-  source: "Sumber ekspor", sheets: "Sheet ekspor", exportedAt: "Waktu ekspor", timezone: "Zona waktu ekspor", dateFormat: "Format tanggal ekspor", locale: "Locale ekspor",
+  gate: "Pemeriksaan kesiapan",
+  passed: "Keputusan",
+  batchId: "Batch migrasi",
+  sequence: "Nomor temuan",
+  source: "Sumber ekspor",
+  sheets: "Sheet ekspor",
+  exportedAt: "Waktu ekspor",
+  timezone: "Zona waktu ekspor",
+  dateFormat: "Format tanggal ekspor",
+  locale: "Locale ekspor",
   maintenanceStart: "Mulai pemeliharaan (WIB)",
   maintenanceEnd: "Selesai pemeliharaan (WIB)",
   sent: "Hasil pemeriksaan penerimaan email",
@@ -89,6 +97,9 @@ export const fieldLabels: Record<string, string> = {
   stopFrom: "Tanggal penghentian",
   version: "Versi data",
   previewId: "Pratinjau",
+  sourceId: "Sumber",
+  targetId: "Tujuan",
+  configuration: "Konfigurasi",
   challengeId: "Permintaan verifikasi",
   token: "Tautan verifikasi",
   evidence: "Bukti verifikasi",
@@ -104,7 +115,8 @@ export function fieldLabel(path: string) {
   return Object.hasOwn(fieldLabels, key) ? fieldLabels[key]! : "Isian formulir";
 }
 export const guidance: Record<string, string> = {
-  FORM_NOT_READY: "Coba kembali untuk menyiapkan formulir. Jika masih gagal, hubungi administrator dengan referensi bantuan bila tersedia.",
+  FORM_NOT_READY:
+    "Coba kembali untuk menyiapkan formulir. Jika masih gagal, hubungi administrator dengan referensi bantuan bila tersedia.",
   VALIDATION_ERROR:
     "Perbaiki isian yang disebutkan, lalu kirim kembali. Periksa kembali formulir sebelum mengirim ulang.",
   INVALID_CREDENTIALS:

@@ -55,6 +55,7 @@ export function validationFieldErrors(error: unknown): FieldErrors | undefined {
         issue.code === "custom" &&
         [
           "Konfirmasi kata sandi harus sama dengan kata sandi baru.",
+          "Pilih semester tujuan yang berbeda.",
           "Tanggal akhir harus setelah atau sama dengan tanggal mulai, maksimal 366 hari.",
           "Jam pulang harus setelah jam masuk.",
           "Tanggal akhir blok harus setelah atau sama dengan tanggal mulai.",

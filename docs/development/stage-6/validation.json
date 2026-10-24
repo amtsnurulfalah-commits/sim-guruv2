@@ -1,0 +1,79 @@
+{
+  "stage": "6",
+  "scope": [
+    "6.1",
+    "6.2",
+    "6.3",
+    "6.4",
+    "6.5"
+  ],
+  "dateWib": "2026-10-24",
+  "branch": "feature/professional-stage-6",
+  "checks": {
+    "lint": "pass",
+    "typecheck": "pass",
+    "build": "pass",
+    "unit": 145,
+    "cryptoHttp": 35,
+    "integration": 368,
+    "runnerResults": 548,
+    "targetedSqlResults": 9,
+    "targetedBrowser": {
+      "passed": true,
+      "widths": [
+        280,
+        320,
+        375,
+        768,
+        1024,
+        1440,
+        1920
+      ],
+      "dialogOrientations": 4,
+      "flows": [
+        "preview-ID-mapping",
+        "confirmation",
+        "commit-ack-loss",
+        "receipt-recovery",
+        "idempotent-retry",
+        "history-reload",
+        "occupied-target",
+        "guru-denied"
+      ],
+      "pageErrors": 0,
+      "pageHorizontalOverflow": 0
+    },
+    "globalBrowser": {
+      "matrix": 252,
+      "interactions": 45,
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "serverErrors": ""
+    }
+  },
+  "migration": {
+    "name": "20261024112506_semester_preparation.sql",
+    "checksum": "eec3a6a030f4c6a3018dc1ab0a280d08e039c0ce319b76d182a06376310e6674",
+    "batchSha256": "aee787161def59b229c7b8c15558001b4608913ac7f6caf46b4ca136a635becf",
+    "priorCount": 31,
+    "artifact": "docs/development/stage-6/release-batch.sql",
+    "exactBatchDisposable": "upgrade31-to32 and normal-runner replay no-op pass",
+    "preflightProductionCount": 31,
+    "preflightNewTableExists": false,
+    "preflightSecurityAdvisorLints": 0,
+    "production": "not-applied"
+  },
+  "release": {
+    "pr": "pending",
+    "ci": "pending",
+    "merge": "pending",
+    "productionDeployment": "pending"
+  },
+  "limits": [
+    "Synthetic PGlite/Chromium is not native concurrency, real devices, production load or UAT",
+    "Allowlist classes and optional KBM configuration only; no automatic semester activation",
+    "New class expected student count resets to0; admin must complete before operational use",
+    "No production configuration has been copied; production smoke must remain read-only",
+    "CLI telemetry previously rejected; migration file generated locally without transmitting telemetry, validated by canonical migration runner"
+  ]
+}

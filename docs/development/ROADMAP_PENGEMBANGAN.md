@@ -102,6 +102,8 @@ Hasil implementasi 5.1–5.5: [paket Tahap 5](stage-5/README.md), kamus indikato
 
 Dependency: Tahap 1, pola preview/commit dan master/jadwal. Selesai jika retry tidak menggandakan data, riwayat lama utuh dan kegagalan tidak menyisakan hasil parsial.
 
+Hasil implementasi 6.1–6.5: [paket Tahap6](stage-6/README.md), allowlist, kebijakan snapshot konfigurasi, pratinjau dan penerapan atomik.
+
 ## Tahap 7 — Draft otomatis dan pengalaman mobile
 
 - **7.1** Draft jurnal/BAP per akun/entity/versi.
@@ -129,4 +131,4 @@ Analisis source/dependency → kriteria penerimaan → implementasi terukur → 
 
 Uji normal/kosong/banyak/loading/error/stale/expired, kewenangan, desktop/tablet/mobile, resize/orientasi. Perubahan finansial/otorisasi memerlukan tes SQL. Hindari fungsi duplikat, perubahan fitur tak terkait dan penghapusan source tanpa bukti aman.
 
-Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap 0–4 merged dan terverifikasi produksi. Tahap 5 diimplementasikan; status tes/migrasi/merge/deployment mengikuti PR dan validation.json Tahap 5. Berikutnya **Tahap 6 / persiapan semester baru**, setelah rilis Tahap 5 dan instruksi pengguna.
+Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap0–5 merged dan terverifikasi produksi. Tahap6 diimplementasikan; status tes/migrasi/merge/deployment mengikuti PR dan validation.json Tahap6. Berikutnya **Tahap7 / draft otomatis dan pengalaman mobile**, setelah rilis Tahap6 dan instruksi pengguna.
