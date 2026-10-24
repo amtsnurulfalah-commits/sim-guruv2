@@ -1,5 +1,5 @@
 import "server-only";
-import { recordSupportEvent } from "../support/record";
+import { recordRequestMetric, recordSupportEvent } from "../support/record";
 import { supportEvent } from "@/lib/feedback/support";
 import { randomBytes, randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
@@ -38,6 +38,10 @@ const messages: Record<string, string> = {
     "Status antrean atau pekerjaan sudah berubah dan tidak dapat dijadwalkan ulang. Muat ulang lalu periksa data terbaru.",
   RECONCILE_NOT_ALLOWED:
     "Status email sudah berubah. Muat ulang dan periksa hasil terbaru sebelum melakukan pemeriksaan kembali.",
+  SUPPORT_INVALID:
+    "Data laporan kendala tidak sesuai. Periksa pelapor, penanggung jawab, referensi dan isian tanpa rahasia.",
+  SUPPORT_TRANSITION_INVALID:
+    "Perubahan status tidak diizinkan. Muat ulang laporan dan ikuti urutan penanganan; pembukaan kembali memerlukan alasan.",
   CORRECTION_PENDING:
     "Slip ini sudah memiliki pengajuan koreksi yang belum selesai. Muat ulang daftar pengajuan.",
   CORRECTION_REVIEW_REQUIRED:
@@ -148,11 +152,14 @@ export function authResponse(data: unknown, requestId: string) {
     { headers: { "Cache-Control": "no-store", Vary: "Cookie, Origin" } },
   );
 }
-export function handleModuleRequest(
+export async function handleModuleRequest(
   module: string,
   work: (requestId: string) => Promise<NextResponse>,
 ) {
-  return handleAuthRequest(work, module);
+  const started = Date.now();
+  const response = await handleAuthRequest(work, module);
+  recordRequestMetric(module, response.status, Date.now() - started);
+  return response;
 }
 export async function handleAuthRequest(
   work: (requestId: string) => Promise<NextResponse>,
@@ -219,6 +226,8 @@ export async function handleAuthRequest(
       ? dbMessage
       : null;
     const activityCode = [
+      "SUPPORT_INVALID",
+      "SUPPORT_TRANSITION_INVALID",
       "CORRECTION_PENDING",
       "CORRECTION_REVIEW_REQUIRED",
       "FINANCE_INVALID",

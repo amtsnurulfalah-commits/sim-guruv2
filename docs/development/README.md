@@ -9,3 +9,5 @@ Baca berurutan:
 Program lanjutan setelah audit halaman hingga PR #43, terpisah dari tahap pembangunan ulang lama. Periksa main/source/PR aktual sebelum bekerja, lalu perbarui checkpoint setelah tiap PR. Dokumentasi berada dalam Git agar tidak bergantung pada workspace sementara atau ingatan percakapan.
 
 - [Tahap 3 — kesiapan honorarium dan persetujuan koreksi](stage-3/README.md).
+
+- [Tahap 4 — penanganan kendala dan pemantauan](stage-4/README.md).

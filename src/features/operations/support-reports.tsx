@@ -1,4 +1,5 @@
 "use client";
+import { CaseWorkspace } from "./case-workspace";
 import { useEffect, useRef, useState } from "react";
 import { Search, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -71,5 +72,6 @@ export function SupportReports() {
         {Object.entries({"Referensi":result.requestId,"Waktu (WIB)":new Intl.DateTimeFormat("id-ID",{dateStyle:"medium",timeStyle:"medium",timeZone:"Asia/Jakarta"}).format(new Date(result.occurredAt)),"Modul":Object.hasOwn(moduleLabels,result.module) ? moduleLabels[result.module] : result.module,"Kode kesalahan":result.code,"Status HTTP":String(result.status)}).map(([label,value])=><div key={label} className="min-w-0 rounded-lg bg-muted/30 p-3"><dt className="text-sm text-muted-foreground">{label}</dt><dd className="mt-1 font-medium [overflow-wrap:anywhere]">{value}</dd></div>)}
         </dl><h3 className="font-semibold">Langkah penanganan</h3><p>{Object.hasOwn(adminGuidance,result.code) ? adminGuidance[result.code] : Object.hasOwn(guidance,result.code) ? guidance[result.code] : "Periksa pesan lengkap pengguna, hak akses, dan kondisi data pada modul terkait. Eskalasi ke admin teknis dengan kode referensi jika penyebab belum jelas."}</p><p className="text-sm text-muted-foreground">Laporan merekam kegagalan permintaan, bukan bukti masalah sudah diselesaikan. Setelah perbaikan, verifikasi kembali bersama pengguna; periksa riwayat sebelum mengulangi penyimpanan.</p></article>}
     </div>
+    <CaseWorkspace reference={result?.requestId ?? null} searchedReference={searched ? reference : null} />
   </section>;
 }

@@ -36,3 +36,5 @@ UI-01–05/API-01 dilaksanakan melalui [Tahap 1: fondasi bersama dan pilot](../s
 OPS-01/02 memerlukan proses operator sesuai akses sebelum rilis terkait. Tidak otomatis menghalangi pekerjaan UI yang tidak bergantung produksi. Setiap item mencatat masalah/aktor/sumber, dependency, API/schema/SQL terdampak, penerimaan, tes, migrasi/rollback jika perlu, PR/commit dan sisa pekerjaan.
 
 Belum ada janji tanggal/durasi; estimasi dibuat setelah scope dan dependency diperiksa. Tahap 1–8 belum dilaksanakan dalam Tahap 0.
+
+HONOR-01 / Tahap 3 telah dirilis melalui PR #47. Implementasi Tahap 4 mengikuti paket stage-4; status rilis aktual pada checkpoint/PR. Setelah rilis, prioritas berikutnya Tahap 5.

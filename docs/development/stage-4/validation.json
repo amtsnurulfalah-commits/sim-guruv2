@@ -1,0 +1,100 @@
+{
+  "stage": 4,
+  "scope": [
+    "4.1",
+    "4.2",
+    "4.3",
+    "4.4",
+    "4.5",
+    "4.6"
+  ],
+  "dateWib": "2026-10-24",
+  "baseMain": "e8891eacf2570386adc7a6c66e95e730fd153929",
+  "branch": "feature/professional-stage-4",
+  "checks": {
+    "lint": "passed, zero warnings",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "unit": 141,
+    "cryptoHttp": 35,
+    "pgliteIntegration": 350,
+    "runnerResults": 526,
+    "targetedOperationsAfterFinalMigration": {
+      "passed": 22,
+      "failed": 0
+    },
+    "browser": {
+      "globalMatrix": 252,
+      "globalInteractions": 45,
+      "documentOverflow": 0,
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "serverErrors": 0,
+      "legacySupportWidths": [
+        280,
+        320,
+        375,
+        768,
+        1024,
+        1440,
+        1920
+      ],
+      "newCaseFlow": "passed real SQL disposable: reference/create, verified context, owner/status, required resolution proof, reopen history, uncertain write lock/recovery, empty state and responsive modal",
+      "visualInspection": "320px case form inspected",
+      "latestTargetedRuns": "see PR release notes"
+    }
+  },
+  "migration": {
+    "name": "20261024062231_support_case_lifecycle_and_monitoring.sql",
+    "migrationSha256": "e139ca081aa4a81b9a6e1dfa573402a9e7fed6c3281af13f96dc6088ec1eaadd",
+    "batchSha256": "693daa5540a6ef05a91d47d891d70ac7eba3ce80eff14bbe3c43f11d5e5c8b96",
+    "priorLedgerCount": 29,
+    "expectedLedgerCount": 30,
+    "disposableUpgrade": "exact production batch 29→30 passed; normal runner replay no-op; finance gateway/calculate hashes unchanged",
+    "production": {
+      "status": "APPLIED after explicit user authorization for Stage4 production migration",
+      "preflightLedger": 29,
+      "preflightChecksums": "all29 match source",
+      "preflightRecorderHash": "d6058de179e9c321aabe2ad412357bc6",
+      "newCasesInstalled": true,
+      "next": "Merge after final checks; verify matching production deployment and anonymous HTTP guard smoke",
+      "verifiedLedger": 30,
+      "checksumVerified": true,
+      "allFourTablesEnableForceRls": true,
+      "businessDirectReadDenied": true,
+      "businessGatewaysVerified": true,
+      "privatePurgeDenied": true,
+      "authMetricRecorderGranted": true,
+      "securityAdvisorsAfter": [],
+      "previousConnectorErrors": "Two prior Invalid or expired requestState responses; current authorized apply succeeded"
+    }
+  },
+  "privacy": {
+    "automatic": "minute/module/status class/count/sum-ms/max-ms only; support UUID/time/module/code/status allowlist unchanged",
+    "internalNotes": "admin only, not copied into long-lived business audit",
+    "retention": "raw metadata/metrics30d; closed cases365d from last close; active cases retained; bounded physical purge and read-time expiry"
+  },
+  "boundaries": [
+    "Synthetic PGlite tests do not establish native concurrency, production capacity or restore guarantees",
+    "Browser fixtures use disposable SQL; no production admin/guru account used",
+    "No external messages, SMTP delivery, financial decisions or job retries executed for validation",
+    "API timing covers server wrapper samples, not browser/network/full-auth endpoints or delivery",
+    "Provider runtime-log retention is not changed",
+    "Source migration is not proof of production application; verify PR CI/migration/deployment outcome"
+  ],
+  "next": "Tahap 5 / laporan kepala madrasah, setelah rilis Tahap4 dan instruksi pengguna",
+  "pullRequest": {
+    "number": 48,
+    "url": "https://github.com/amtsnurulfalah-commits/sim-guruv2/pull/48",
+    "codeHead": "d0c9a9f90a8507d7a02c20982c9fc81c637095e5",
+    "codeCiRun": 40072027592,
+    "codeCiConclusion": "success",
+    "previewDeployment": "dpl_G4WfwCN5evbwrTV7S5njaHzbd61v",
+    "previewStatus": "READY",
+    "merged": false,
+    "latestCheckedHead": "590e3697b6ca6a6494545f2dfc1482d535f0d2cc",
+    "latestCheckedCiRun": 40073274405,
+    "latestCheckedCiConclusion": "success"
+  },
+  "merge": "Production migration verified; merge/deployment outcome follows PR48 release notes"
+}

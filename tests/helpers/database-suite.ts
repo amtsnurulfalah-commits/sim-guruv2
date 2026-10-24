@@ -65,7 +65,7 @@ export async function runDatabaseSuite(t: TestContext, db: SqlDatabase) {
   });
   await t.test("DB03 seluruh tabel domain mempunyai ENABLE+FORCE RLS",async () => {
     const result=await db.query<{ relrowsecurity:boolean; relforcerowsecurity:boolean }>("select c.relrowsecurity,c.relforcerowsecurity from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('app','auth_private','ops') and c.relkind='r'");
-    assert.equal(result.rows.length,67);assert.equal(result.rows.every((r)=>r.relrowsecurity&&r.relforcerowsecurity),true);
+    assert.equal(result.rows.length,71);assert.equal(result.rows.every((r)=>r.relrowsecurity&&r.relforcerowsecurity),true);
   });
   await t.test("DB04 tanpa context atau UUID actor palsu menghasilkan nol profil",async () => {
     const noContext=await asRole("business",null,(tx)=>tx.query("select id from app.app_users"));assert.equal(noContext.rows.length,0);
