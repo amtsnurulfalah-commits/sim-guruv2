@@ -112,6 +112,19 @@ try {
   await page.locator("summary").filter({ hasText: "Isi BAP" }).click();
   await page.getByRole("button", { name: "Isi BAP", exact: true }).click();
   d = page.getByRole("dialog");
+  await d.getByLabel("Catatan").fill("Draft BAP sebelum reload");
+  await d.getByLabel("Hadir").fill("28");
+  await d.getByLabel("Absen").fill("2");
+  await d.getByText(/Draft tersimpan di tab ini/).waitFor();
+  await go("guru");
+  await page.locator("summary").filter({ hasText: "Isi BAP" }).click();
+  await page.getByRole("button", { name: "Isi BAP", exact: true }).click();
+  d = page.getByRole("dialog");
+  await d.getByRole("button", { name: "Pulihkan draft", exact: true }).click();
+  assert.equal(await d.getByLabel("Catatan").inputValue(), "Draft BAP sebelum reload");
+  assert.equal(await d.getByLabel("Hadir").inputValue(), "28");
+  assert.equal(await d.getByLabel("Absen").inputValue(), "2");
+  await d.getByLabel("Absen").fill("0");
   await d.getByLabel("Hadir").fill("29");
   await d.getByRole("button", { name: "Kirim BAP", exact: true }).click();
   await d
@@ -372,6 +385,7 @@ try {
       result: "passed",
       flows: [
         "confirm",
+        "BAP-draft-reload-restore",
         "BAP-count-validation",
         "BAP-create-edit",
         "master-create-edit-delete",

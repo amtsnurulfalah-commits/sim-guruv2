@@ -14,7 +14,9 @@ Diperbarui 24 Oktober 2026 WIB. Persetujuan roadmap dan instruksi Tahap 0 berasa
 - **Tahap 4 merged**, PR #48 main `e79a74a1747d0edc025002dfd88b0bcb8af3424b`, produksi READY `dpl_BnmYVNq4JWdeQrjCUVUYRtDY5Zar`; health200 dan API anonim401 telah diverifikasi pada rilis sebelumnya.
 - **Tahap 5.1–5.5 selesai dan merged**, PR49 main `d8c274e08efd84ba0c7828294442944721723781`; migrasi produksi ledger31/checksum/RLS/grants/advisor terverifikasi setelah izin pengguna. Produksi `dpl_G3ckE38VxNUQEC5svHjRgDHYLvvY` READY, health200 dan API laporan anonim401. Detail rilis pada PR49 dan [paket Tahap5](stage-5/README.md).
 - **Tahap 6.1–6.5 diimplementasikan**, branch `feature/professional-stage-6`, [PR50](https://github.com/amtsnurulfalah-commits/sim-guruv2/pull/50): allowlist kelas/jadwal KBM, preview pemetaan ID/rentang, pemeriksaan sumber/target/bentrok, commit atomik/idempotent dan pemulihan receipt. [Paket Tahap6](stage-6/README.md). 548 hasil runner (145unit/35crypto-HTTP/368integrasi), lint/typecheck/build, UI252+45 serta halaman baru7lebar/4orientasi lulus. Head89295016 CI40091177860/quality120863994344 seluruh langkah success dan preview Vercel success. **Migrasi produksi Tahap6 berhasil** setelah izin pengguna dan konfirmasi konektor telah diperbarui. Ledger32/checksum cocok, ENABLE/FORCE RLS, grant tiga gateway dan penolakan helper/direct read terverifikasi; advisor tanpa lint. Hash schedule_candidate/finance.bundle/finance.calculate tetap sama. Error requestState/retry block sebelumnya terselesaikan setelah pemulihan konektor. Status merge/deployment akhir mengikuti PR50.
-- **Tahap 7–8 belum dimulai.** Berikutnya draft otomatis dan pengalaman mobile setelah rilis Tahap6 serta instruksi pengguna.
+- **Tahap6 merged PR50**, main `8dc29ca7027838d46b409e1cc6511330aa57a73b`, CI40093089085 sukses, produksi `dpl_ByfRVfXinmCBjH256gLf2KVJy8iA` READY; health200/API anonim401. Tidak menyalin konfigurasi semester nyata saat smoke.
+- **Tahap7.1–7.5 diimplementasikan** pada branch `feature/professional-stage-7`: draft lokal per tab/account/entity/basis untuk jurnal/BAP, waktu WIB/TTL24jam, restore/hapus/cleanup, konflik sumber/uncertain write dan mobile. 552hasil runner(149unit/35crypto-HTTP/368integrasi), lint/typecheck/build, UI252+45 dan draft/jurnal/BAP lulus tanpa page errors. Tidak memerlukan migrasi DB. [Paket Tahap7](stage-7/README.md) dan validation.json menyimpan kontrak/bukti/batas. Periksa PR/checks/merge/deployment aktual sebelum melanjutkan.
+- **Tahap8 belum dimulai.** Berikutnya audit keamanan/pemulihan/rilis sesuai roadmap setelah rilis Tahap7 dan instruksi pengguna.
 
 ## Konteks wajib
 
@@ -39,7 +41,7 @@ Diperbarui 24 Oktober 2026 WIB. Persetujuan roadmap dan instruksi Tahap 0 berasa
 
 1. Baca roadmap/checkpoint/paket Tahap 0/backlog lalu source terkait permintaan terbaru.
 2. Periksa working tree, main, branch dan PR; jangan menimpa pekerjaan lain.
-3. Untuk tahap berikutnya, mulai kontrak Tahap 7/draft otomatis dan pengalaman mobile dan kriteria penerimaannya; perluasan mengikuti dependency. Adopsi UI modul lain dilakukan saat modul tersebut disentuh, bukan dianggap sudah selesai serentak.
+3. Untuk tahap berikutnya, mulai kontrak Tahap 8/keamanan, pemulihan dan rilis dan kriteria penerimaannya; perluasan mengikuti dependency. Adopsi UI modul lain dilakukan saat modul tersebut disentuh, bukan dianggap sudah selesai serentak.
 4. Catat ID selesai, hasil/batas tes, PR/commit dan pekerjaan berikutnya setelah setiap PR.
 
 Persetujuan roadmap tidak berarti seluruh Tahap 1–8 otomatis dijalankan oleh PR Tahap 0. Eksekusi berikutnya mengikuti instruksi pengguna; persetujuan yang sudah ada tidak perlu diminta ulang untuk scope yang sama.

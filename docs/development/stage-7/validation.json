@@ -1,0 +1,135 @@
+{
+  "stage": "7.1–7.5",
+  "dateWib": "2026-10-24",
+  "baseCommit": "8dc29ca7027838d46b409e1cc6511330aa57a73b",
+  "storage": {
+    "kind": "sessionStorage per tab",
+    "format": 1,
+    "ttlHours": 24,
+    "serverDraftOrOfflineQueue": false,
+    "productionMigrationRequired": false
+  },
+  "checks": {
+    "lint": "passed",
+    "typecheck": "passed",
+    "unit": 149,
+    "cryptoHttp": 35,
+    "integrationPGlite": 368,
+    "totalRunnerResults": 552,
+    "productionBuild": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "browser": {
+    "journals": {
+      "result": "passed",
+      "widths": [
+        280,
+        320,
+        375,
+        768,
+        1024,
+        1440,
+        1920
+      ],
+      "flows": "all tabs; create/edit/delete/H1/blocks; blank/count validation; double-submit/busy; conflict/rejection/invalid ack recovery; failed refresh; pagination; role guard; touch/landscape/200% text",
+      "pageErrors": 0
+    },
+    "examsBap": {
+      "result": "passed",
+      "widths": [
+        1440,
+        768,
+        320,
+        740
+      ],
+      "flows": [
+        "confirm",
+        "BAP draft reload/restore",
+        "BAP count validation",
+        "BAP create/edit",
+        "master CRUD",
+        "preview expiry",
+        "uncertain write",
+        "malformed response",
+        "pagination",
+        "WIB midnight"
+      ],
+      "pageErrors": 0
+    },
+    "drafts": {
+      "result": "passed",
+      "viewports": [
+        [
+          280,
+          640
+        ],
+        [
+          320,
+          568
+        ],
+        [
+          375,
+          812
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          1024,
+          768
+        ],
+        [
+          1440,
+          900
+        ],
+        [
+          1920,
+          1080
+        ],
+        [
+          812,
+          375
+        ]
+      ],
+      "flows": [
+        "reload/explicit restore",
+        "controlled counts",
+        "offline/no autosubmit",
+        "uncertain ack/manual review",
+        "verified success purge",
+        "source conflict",
+        "TTL",
+        "account switch",
+        "tab isolation",
+        "discard purge",
+        "login purge",
+        "logout success",
+        "broadcast logout",
+        "expired session",
+        "live account switch",
+        "storage denied"
+      ],
+      "pageErrors": 0
+    },
+    "globalMatrix": {
+      "result": "passed",
+      "matrix": 252,
+      "interactions": 45,
+      "pageErrors": 0,
+      "consoleErrors": 0
+    }
+  },
+  "release": {
+    "repository": "amtsnurulfalah-commits/sim-guruv2",
+    "branch": "feature/professional-stage-7",
+    "pr": null,
+    "status": "local checks passed; await GitHub CI/merge/production smoke"
+  },
+  "limits": [
+    "PGlite and Chromium fixtures are synthetic, not physical-device or screen-reader UAT.",
+    "SessionStorage is not backup, cross-device sync or offline submission.",
+    "No real production journal/BAP submission during smoke.",
+    "No SQL/auth/finance business rule changes."
+  ]
+}

@@ -1,3 +1,4 @@
+import { SessionBoundary } from "../../src/features/auth/session-boundary";
 import {SemesterPreparationWorkspace} from "../../src/features/semester-preparation/workspace";
 import {ReportsWorkspace} from "../../src/features/reports/workspace";
 import { TaskCenter } from "../../src/features/tasks/task-center";
@@ -226,7 +227,7 @@ const components: Record<string, React.ReactNode> = {
 };
 createRoot(document.getElementById("root")!).render(
   <>
-    {view === "recovery" || view === "activation" ? <AuthLayout title={view === "recovery" ? "Pemulihan akun" : "Aktivasi akun"} description="Pulihkan akses akun madrasah Anda.">{view === "recovery" ? <RecoveryForm /> : <ActivationForm />}</AuthLayout> : view === "login" ? (
+    {view === "draft-session" ? <SessionBoundary>{(_session, logout) => <Button onClick={logout}>Uji keluar sesi</Button>}</SessionBoundary> : view === "recovery" || view === "activation" ? <AuthLayout title={view === "recovery" ? "Pemulihan akun" : "Aktivasi akun"} description="Pulihkan akses akun madrasah Anda.">{view === "recovery" ? <RecoveryForm /> : <ActivationForm />}</AuthLayout> : view === "login" ? (
       <AuthLayout
         title="Masuk ke SiM-Guru"
         description="Gunakan username dan kata sandi akun madrasah Anda."

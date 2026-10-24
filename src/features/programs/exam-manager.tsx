@@ -600,6 +600,8 @@ export function ExamManager({
                 <BapForm
                   key={o.id + ":" + o.bap?.version}
                   occurrence={o}
+                  userId={userId}
+                  periodEnd={board.periods.find(p => p.id === o.periodId)?.date_end ?? ""}
                   busy={busy}
                   blocked={uncertain}
                   unavailable={bapAvailability(o, board, userId, now)}
@@ -1117,12 +1119,16 @@ export function ExamManager({
 }
 function BapForm({
   occurrence: o,
+  userId,
+  periodEnd,
   busy,
   save,
   blocked,
   unavailable,
   onVisibilityChange,
 }: {
+  userId: string;
+  periodEnd: string;
   blocked: boolean;
   unavailable: string;
   onVisibilityChange: (open: boolean) => void;
@@ -1132,7 +1138,7 @@ function BapForm({
 }) {
   return (
     <details>
-      <summary className="cursor-pointer text-primary">
+      <summary className="min-h-11 cursor-pointer py-3 font-medium text-primary focus-visible:outline-2 focus-visible:outline-ring">
         {o.bap ? "Ubah BAP" : "Isi BAP"} (total siswa: {o.expectedStudents})
       </summary>
       {unavailable && (
@@ -1140,6 +1146,7 @@ function BapForm({
       )}
       <DataForm
         successMessage={false}
+        draftConfig={{ scope: { account: userId, module: "bap", entity: o.id, basis: JSON.stringify({ occurrence: o, periodEnd }) }, fields: { present: 4, absent: 4, notes: 1000 } }}
         locked={blocked || !!unavailable}
         onVisibilityChange={onVisibilityChange}
         busy={busy}
