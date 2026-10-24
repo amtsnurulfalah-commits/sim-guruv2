@@ -40,3 +40,7 @@ Migrasi: `20261024104102_leadership_reports.sql`. Penambahan satu tabel dan tiga
 Bukti tes dan status rilis aktual ada pada `validation.json` dan checkpoint. PGlite/Chromium sintetis tidak menggantikan native concurrency, perangkat fisik, UAT kepala madrasah, capacity produksi atau uji pembaca layar. Tahap 6 tidak dijalankan oleh rilis ini.
 
 Temuan lanjutan: pembacaan readiness Tahap 3 masih menerima BAP locked sebagai bukti; tindak lanjut perlu ditinjau terpisah pada pengujian lintas modul Tahap 8, tanpa mengubah engine/readiness di PR laporan ini.
+
+PR: [#49](https://github.com/amtsnurulfalah-commits/sim-guruv2/pull/49). CI/preview head awal lulus; pengujian ekspor >1.000 baris dan penolakan >10.000 baris ditambahkan sebelum rilis. **Gate tertahan:** automatic approval review menolak penerapan produksi karena belum ada persetujuan eksplisit migrasi Tahap5. Kode belum merge/deploy; jangan menerapkan DDL lewat jalur lain. Setelah pengguna memberi izin konkret, terapkan batch manifest yang sama lalu verifikasi dan lanjutkan merge.
+
+Batch konkret untuk persetujuan dan kelanjutan tersimpan di `release-batch.sql` (artifact hasil generasi, bukan migration runner kedua). Batch memeriksa seluruh 30 checksum sebelumnya, mengambil advisory lock dan timeout, menjalankan migrasi kanonis persis, lalu menulis satu entri ledger. SHA256 batch dan migration sumber tercatat di validation.json. Jangan edit copy batch terpisah dari sumber; bila sumber berubah, buat ulang dan uji checksum/batch sebelum meminta penerapan.

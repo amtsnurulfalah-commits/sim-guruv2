@@ -14,7 +14,7 @@
     "typecheck": "pass",
     "unit": 143,
     "cryptoHttp": 35,
-    "finalReportIntegration": 8,
+    "finalReportIntegration": 9,
     "build": "pass",
     "targetedBrowser": {
       "pass": true,
@@ -52,7 +52,8 @@
       "serverErrors": ""
     },
     "integrationFull": 358,
-    "runnerResults": 536
+    "runnerResults": 537,
+    "additionalMultiPageExportAndLimitTest": "pass; final report integration9, effective total537; final CI rerun pending"
   },
   "migration": {
     "name": "20261024104102_leadership_reports.sql",
@@ -60,14 +61,27 @@
     "batchSha256": "365fdbaebc67842d194b851b464f4178fdf0924de3bd593467c2088f698f4b25",
     "priorCount": 30,
     "disposableUpgrade": "pass; exact release batch upgrade30-to31 and normal runner replay no-op",
-    "production": "not-applied",
+    "production": "blocked by automatic approval review; user explicitly authorized merge, separate concrete Stage5 production schema/privilege approval required",
     "preflightPriorLedger": 30,
-    "preflightSecurityAdvisorLints": 0
+    "preflightSecurityAdvisorLints": 0,
+    "batchArtifact": "docs/development/stage-5/release-batch.sql",
+    "postRejectionReadback": {
+      "migrationCount": 30,
+      "reportReadersTableExists": false
+    }
   },
   "release": {
-    "pr": "pending",
-    "merge": "pending",
-    "productionDeployment": "pending"
+    "pr": 49,
+    "url": "https://github.com/amtsnurulfalah-commits/sim-guruv2/pull/49",
+    "firstCi": {
+      "head": "7da20bd20445c64e41a63b061cbeb108e1d38b7b",
+      "run": 40087903307,
+      "job": 120854471913,
+      "checkSteps": "all success",
+      "vercelPreview": "success"
+    },
+    "merge": "blocked until production migration approved/applied/verified",
+    "productionDeployment": "not-started"
   },
   "limits": [
     "Synthetic PGlite and Chromium emulation, not physical-device/native concurrency/production UAT",

@@ -452,4 +452,27 @@ test("Stage 5 explicit reporting, canonical data and export", async (t) => {
       await assert.rejects(() => reports.read(admin, { ...q, pageSize: 999 }));
     },
   );
+  await t.test(
+    "export traverses multiple scoped pages and rejects oversized results",
+    async () => {
+      const bulk = async (from: number, to: number) => {
+        await db.query(
+          "insert into app.app_users(username,full_name,role,status) select 'report.bulk.'||s,'Synthetic bulk '||s,'guru','disabled' from generate_series($1::int,$2::int)s",
+          [from, to],
+        );
+        await db.query(
+          "insert into app.daily_attendance(user_id,date) select u.id,date '2090-01-01'+s from app.app_users u cross join generate_series(0,25)s where u.username like 'report.bulk.%' and not exists(select 1 from app.daily_attendance d where d.user_id=u.id and d.date=date '2090-01-01'+s)",
+        );
+      };
+      await bulk(1, 40);
+      const r = await reports.read(admin, q);
+      assert.ok(r.total > 1000);
+      const all = await reports.export(admin, q);
+      assert.equal(all.items.length, r.total);
+      assert.deepEqual(all.summary, r.summary);
+      assert.equal(new Set(all.items.map((x) => x.id)).size, r.total);
+      await bulk(41, 400);
+      await assert.rejects(() => reports.export(admin, q), /EXPORT_TOO_LARGE/);
+    },
+  );
 });
