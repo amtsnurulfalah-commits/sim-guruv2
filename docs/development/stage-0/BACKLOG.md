@@ -31,7 +31,7 @@ P0 = gate operasional/keamanan sebelum rilis terkait; P1 = fondasi/pekerjaan uta
 
 ## Langkah berikutnya
 
-UI-01–05/API-01 dilaksanakan melalui [Tahap 1: fondasi bersama dan pilot](../stage-1/README.md). Berikutnya **TASK-01 / Tahap 2.1**, mulai kontrak identitas/sumber/deadline/kewenangan setelah instruksi kelanjutan pengguna. Tidak mengulang audit halaman yang sudah lulus tanpa perubahan/temuan baru.
+UI-01–05/API-01 dilaksanakan melalui [Tahap 1: fondasi bersama dan pilot](../stage-1/README.md). TASK-01/NOTIF-01 dilaksanakan pada [Tahap 2](../stage-2/README.md). Berikutnya **HONOR-01 / Tahap 3.1**, mulai kamus kesiapan dari engine finance setelah instruksi kelanjutan pengguna. Tidak mengulang audit halaman yang sudah lulus tanpa perubahan/temuan baru.
 
 OPS-01/02 memerlukan proses operator sesuai akses sebelum rilis terkait. Tidak otomatis menghalangi pekerjaan UI yang tidak bergantung produksi. Setiap item mencatat masalah/aktor/sumber, dependency, API/schema/SQL terdampak, penerimaan, tes, migrasi/rollback jika perlu, PR/commit dan sisa pekerjaan.
 

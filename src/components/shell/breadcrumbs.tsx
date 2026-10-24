@@ -5,6 +5,8 @@ import { modulesFor } from "@/lib/navigation/modules";
 import type { SessionDto } from "@/types/auth";
 type Role = SessionDto["user"]["role"];
 const pages: Record<string, string> = {
+  tugas: "Pusat tugas",
+  notifikasi: "Notifikasi",
   akun: "Akun dan profil",
   profil: "Profil",
   onboarding: "Pengamanan akun",

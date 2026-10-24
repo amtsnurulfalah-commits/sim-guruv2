@@ -378,7 +378,7 @@ try {
       assert.ok(
         await context.evaluate((element) =>
           element.previousElementSibling?.textContent.includes(
-            "Akun sudah terlindungi",
+            "Tugas hari ini dan tertunda",
           ),
         ),
       );

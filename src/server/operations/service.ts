@@ -1,4 +1,9 @@
 import "server-only";
+import {
+  inboxQuery,
+  preferenceCommand,
+  readCommand,
+} from "../../lib/tasks/contracts";
 import { z } from "zod";
 import { sqlJson, type SqlDatabase } from "../../../scripts/lib/sql-database";
 import { AuthError } from "../auth/service";
@@ -6,43 +11,115 @@ import { tokenHash } from "../auth/service";
 import { supportReferenceSchema } from "../../lib/feedback/support";
 import { commands } from "../../lib/operations/schemas";
 export class OperationsService {
-    constructor(private readonly db: SqlDatabase) { }
-    async read(token: string, kind: string, input: unknown = {}) {
-        if (kind === "support") {
-            const query = z.object({ reference: supportReferenceSchema }).strict().parse(input);
-            return this.db.transaction(async (tx) => (await tx.query<{
-                value: unknown;
-            }>("select ops.find_support_event($1,$2::uuid) as value", [tokenHash(token), query.reference])).rows[0]!.value);
-        }
-        z.object({}).strict().parse(input);
-        z.enum(["announcements", "manage", "operations"]).parse(kind);
-        return this.db.transaction(async (tx) => (await tx.query<{
+  constructor(private readonly db: SqlDatabase) {}
+  async read(token: string, kind: string, input: unknown = {}) {
+    if (kind === "tasks" || kind === "inbox") {
+      const query =
+        kind === "inbox"
+          ? inboxQuery.parse(input)
+          : z.object({}).strict().parse(input);
+      return this.db.transaction(
+        async (tx) =>
+          (
+            await tx.query<{ value: unknown }>(
+              kind === "tasks"
+                ? "select app.tasks_read($1) as value"
+                : "select app.notifications_read($1,$2,$3) as value",
+              kind === "tasks"
+                ? [tokenHash(token)]
+                : [
+                    tokenHash(token),
+                    (query as { page: number }).page,
+                    (query as { unread: string }).unread === "true",
+                  ],
+            )
+          ).rows[0]!.value,
+      );
+    }
+    if (kind === "support") {
+      const query = z
+        .object({ reference: supportReferenceSchema })
+        .strict()
+        .parse(input);
+      return this.db.transaction(
+        async (tx) =>
+          (
+            await tx.query<{
+              value: unknown;
+            }>("select ops.find_support_event($1,$2::uuid) as value", [
+              tokenHash(token),
+              query.reference,
+            ])
+          ).rows[0]!.value,
+      );
+    }
+    z.object({}).strict().parse(input);
+    z.enum(["announcements", "manage", "operations"]).parse(kind);
+    return this.db.transaction(
+      async (tx) =>
+        (
+          await tx.query<{
             value: unknown;
-        }>("select app.operations_read($1,$2) as value", [tokenHash(token), kind])).rows[0]!.value);
+          }>("select app.operations_read($1,$2) as value", [
+            tokenHash(token),
+            kind,
+          ])
+        ).rows[0]!.value,
+    );
+  }
+  async command(token: string, kind: string, input: unknown) {
+    if (kind === "notification-preferences" || kind === "notification-read") {
+      const data = (
+        kind === "notification-read" ? readCommand : preferenceCommand
+      ).parse(input);
+      return this.db.transaction(
+        async (tx) =>
+          (
+            await tx.query<{ value: unknown }>(
+              "select app.notification_command($1,$2,$3::jsonb) as value",
+              [tokenHash(token), kind, sqlJson(data)],
+            )
+          ).rows[0]!.value,
+      );
     }
-    async command(token: string, kind: string, input: unknown) {
-        const k = z
-            .enum([
-            "job-retry",
-            "save",
-            "deactivate",
-            "dismiss",
-            "settings",
-            "retry",
-            "reconcile",
-        ])
-            .parse(kind);
-        const data = commands[k].parse(input);
-        try {
-            return await this.db.transaction(async (tx) => (await tx.query<{
-                value: unknown;
-            }>("select app.operations_command($1,$2,$3::jsonb) as value", [tokenHash(token), k, sqlJson(data)])).rows[0]!.value);
-        }
-        catch (error) {
-            if (error && typeof error === "object" && "code" in error && error.code === "42501" && "message" in error &&
-                ["RETRY_NOT_ALLOWED", "RECONCILE_NOT_ALLOWED"].includes(String(error.message)))
-                throw new AuthError(String(error.message), 409);
-            throw error;
-        }
+    const k = z
+      .enum([
+        "job-retry",
+        "save",
+        "deactivate",
+        "dismiss",
+        "settings",
+        "retry",
+        "reconcile",
+      ])
+      .parse(kind);
+    const data = commands[k].parse(input);
+    try {
+      return await this.db.transaction(
+        async (tx) =>
+          (
+            await tx.query<{
+              value: unknown;
+            }>("select app.operations_command($1,$2,$3::jsonb) as value", [
+              tokenHash(token),
+              k,
+              sqlJson(data),
+            ])
+          ).rows[0]!.value,
+      );
+    } catch (error) {
+      if (
+        error &&
+        typeof error === "object" &&
+        "code" in error &&
+        error.code === "42501" &&
+        "message" in error &&
+        ["RETRY_NOT_ALLOWED", "RECONCILE_NOT_ALLOWED"].includes(
+          String(error.message),
+        )
+      )
+        throw new AuthError(String(error.message), 409);
+      throw error;
     }
+  }
 }

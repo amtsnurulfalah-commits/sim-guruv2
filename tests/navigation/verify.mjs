@@ -259,6 +259,28 @@ try {
   assert.equal(new URL(page.url()).search, "");
   await page.goto(baseUrl + "/jadwal?page=-1&state=bad");
   await context.getByText("active:1", { exact: true }).waitFor();
+  // Task source links restore date through the real App Router; empty input stays editable.
+  await page.goto(baseUrl + "/jurnal?date=2090-01-02");
+  const sourceDate = page.getByLabel("Tanggal sumber fixture");
+  await sourceDate.waitFor();
+  await page.waitForFunction(
+    () => document.querySelector('input[type="date"]')?.value === "2090-01-02",
+  );
+  await sourceDate.fill("2090-01-03");
+  await page.waitForURL("**date=2090-01-03");
+  await sourceDate.fill("");
+  assert.equal(await sourceDate.inputValue(), "");
+  await page.goBack();
+  await page.waitForURL("**date=2090-01-02");
+  assert.equal(await sourceDate.inputValue(), "2090-01-02");
+  await page.goForward();
+  await page.waitForURL("**date=2090-01-03");
+  assert.equal(await sourceDate.inputValue(), "2090-01-03");
+  await page.reload();
+  await sourceDate.waitFor();
+  await page.waitForFunction(
+    () => document.querySelector('input[type="date"]')?.value === "2090-01-03",
+  );
   // Revocation still discards the entire protected tree and redirects to login.
   await page.route("**/api/auth/session", (route) =>
     route.request().method() === "GET"
@@ -294,6 +316,7 @@ try {
     accountAndBackNavigation: true,
     mobileDrawer: true,
     currentMenuClosesDrawer: true,
+    taskSourceDateHistoryReload: true,
     expiredSessionRedirect: true,
     urlFiltersBackForwardReloadShareReset: true,
     mobileResizeReleasesModal: true,

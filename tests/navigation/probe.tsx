@@ -1,4 +1,5 @@
 "use client";
+import { ActivityDateProbe } from "./filter-probe";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 export function Probe({ name }: { name: string }) {
@@ -13,6 +14,7 @@ export function Probe({ name }: { name: string }) {
   return (
     <section>
       <h1>{name}</h1>
+      {name === "jurnal" && <ActivityDateProbe />}
       <p role="status">{loaded ? "Data halaman siap" : "Memuat data tujuan"}</p>
       <Link prefetch={false} href="/jurnal">
         Navigasi isi ke jurnal

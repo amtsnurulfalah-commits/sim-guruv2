@@ -1,4 +1,5 @@
 "use client";
+import { useActivityDate } from "@/lib/navigation/use-activity-date";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
@@ -78,7 +79,7 @@ export function ExamManager({
       clearInterval(timer);
     };
   }, []);
-  const [date, setDate] = useState(wibDate()),
+  const [date, setDate] = useActivityDate(),
     [period, setPeriod] = useState(""),
     [board, setBoard] = useState<ExamBoard | null>(null),
     [revision, setRevision] = useState(0),

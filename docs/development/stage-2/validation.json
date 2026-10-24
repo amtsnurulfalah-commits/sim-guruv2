@@ -1,0 +1,133 @@
+{
+  "stage": 2,
+  "dateWib": "2026-10-24",
+  "baseMain": "08380e2a7d28c12fc02a8b1b0cb3824f019420eb",
+  "scope": [
+    "2.1 stable source task contracts",
+    "2.2 role/urgency task center",
+    "2.3 source date deep links",
+    "2.4 personal inbox/preferences",
+    "2.5 daily digest/recheck/stop",
+    "2.6 dashboard task priority"
+  ],
+  "checks": {
+    "lint": "passed without warnings",
+    "typecheck": "passed",
+    "unit": 138,
+    "cryptoHttp": 35,
+    "pgliteIntegration": 346,
+    "totalRunnerResults": 519,
+    "failed": 0,
+    "productionBuild": "passed; GitHub verifies final PR head"
+  },
+  "globalBrowser": {
+    "command": "npm run test:ui",
+    "matrix": 252,
+    "interactions": 45,
+    "widths": [
+      320,
+      375,
+      767,
+      768,
+      1024,
+      1440,
+      1920
+    ],
+    "documentOverflowFailures": 0,
+    "pageErrors": [],
+    "consoleErrors": [],
+    "serverErrors": ""
+  },
+  "newBrowser": {
+    "command": "npm run test:ui:tasks",
+    "result": "passed",
+    "viewRoleViewportCases": 24,
+    "covered": [
+      "tasks filter/page/empty/malformed/error/retry",
+      "source date href",
+      "long text/no document overflow",
+      "personal inbox/read UI",
+      "preference draft retained while reading",
+      "double submit guard",
+      "uncertain write locks until reload",
+      "actual SQL fixture envelope"
+    ],
+    "pageErrors": []
+  },
+  "regressionBrowser": {
+    "passed": [
+      "confirmations",
+      "journals",
+      "students",
+      "attendance",
+      "duties",
+      "exams",
+      "events",
+      "dashboard"
+    ],
+    "covered": "existing CRUD, guards, modal, pagination, error/stale/uncertain paths, responsive/zoom/orientation, WIB midnight according to each suite",
+    "pageErrors": []
+  },
+  "realNextNavigation": {
+    "result": "passed",
+    "mode": "production-build",
+    "clickFeedbackMs": 51,
+    "delayedResponseMs": 1800,
+    "immediateDestinationState": true,
+    "latestClickWins": true,
+    "initialDocumentRequests": 1,
+    "persistentSidebar": true,
+    "persistentTopbar": true,
+    "persistentMain": true,
+    "targetDataOnly": true,
+    "searchAndCollapseRetained": true,
+    "accountAndBackNavigation": true,
+    "mobileDrawer": true,
+    "currentMenuClosesDrawer": true,
+    "taskSourceDateHistoryReload": true,
+    "expiredSessionRedirect": true,
+    "urlFiltersBackForwardReloadShareReset": true,
+    "mobileResizeReleasesModal": true,
+    "pageErrors": []
+  },
+  "releaseBatch": {
+    "tested": "exact batch upgrades disposable DB 26 to 28 and ordinary migration runner is a no-op",
+    "baselineMigrations": 26,
+    "migrations": [
+      {
+        "name": "20261023094531_kbm_confirmation_operator_guard.sql",
+        "checksum": "1bef1ac096c78e373caa4d4435c220fabed099f18aa3c456521e8a03a4d1caaa"
+      },
+      {
+        "name": "20261024000945_task_center_and_notification_preferences.sql",
+        "checksum": "67538e3fadd12d81620ce59e8ed853f7d19b4926bd23fb6713e8b049cd864608"
+      }
+    ],
+    "batchSha256": "f407d69d336248c71b348888b88b5f54f8d708b59c329c74cb0f363e4fa990be"
+  },
+  "production": {
+    "preflight": "read-only metadata verified: 26 ledger entries; new tasks function absent; prior KBM guard present, operator guard absent; domain_claim/reminders fingerprints match baseline",
+    "securityAdvisorBefore": [],
+    "apply": "blocked_by_automatic_approval_review",
+    "applied": false,
+    "reason": "User instruction to run Stage 2 did not explicitly authorize production table/access/worker changes and cancellation of queued reminders with this blast radius.",
+    "requiresExplicitAuthorization": [
+      "apply pending KBM operator guard migration",
+      "apply task center/preference migration",
+      "replace reminder generation and worker claim wrapper",
+      "cancel legacy reminder messages in pending/retry_wait states"
+    ],
+    "afterApplyVerification": "not run because mutation was blocked",
+    "merge": "held until database release is authorized and verified; check current GitHub PR for CI state"
+  },
+  "boundaries": [
+    "PGlite/Chromium synthetic data only, no production account/financial content read",
+    "No SMTP, cron, worker delivery or user-message sending was invoked",
+    "Security email outbox unchanged",
+    "No new honor calculation or task completion ledger",
+    "Cancellation rechecks before claim; in-flight SMTP cannot be recalled",
+    "Task API aggregates relevant source tasks before UI pagination; production load/SQL pagination remains PERF-01",
+    "Not physical device/screen-reader or WCAG certification",
+    "Fixture preview lease alignment affects disposable tests only"
+  ]
+}

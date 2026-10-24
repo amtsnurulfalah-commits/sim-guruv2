@@ -1,4 +1,5 @@
 "use client";
+import { useActivityDate } from "@/lib/navigation/use-activity-date";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { Tabs } from "@/components/ui/tabs";
@@ -24,7 +25,7 @@ export function JournalWorkspace({ admin, userId }: {
     admin: boolean;
     userId: string;
 }) {
-    const [tab, setTab] = useState("input"), [date, setDate] = useState(wibDate());
+    const [tab, setTab] = useState("input"), [date, setDate] = useActivityDate();
     const [from, setFrom] = useState(wibDate().slice(0, 7) + "-01"), [to, setTo] = useState(wibDate()), [teacher, setTeacher] = useState(""), [q, setQ] = useState(""), [page, setPage] = useState(1);
     const [context, setContext] = useState<Context | null>(null), [history, setHistory] = useState<History | null>(null);
     const [contextLoading, setContextLoading] = useState(true), [historyLoading, setHistoryLoading] = useState(true);

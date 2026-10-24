@@ -1,4 +1,5 @@
 "use client";
+import { useActivityDate } from "@/lib/navigation/use-activity-date";
 import {
   useCallback,
   useEffect,
@@ -50,7 +51,7 @@ export function ConfirmationWorkspace({
 }) {
   const prefix = useId();
   const opener = useRef<HTMLButtonElement | null>(null);
-  const [date, setDate] = useState(wibDate),
+  const [date, setDate] = useActivityDate(),
     [today, setToday] = useState(wibDate);
   const [rows, setRows] = useState<ConfirmationOccurrence[] | null>(null);
   const [canOperate, setCanOperate] = useState(false),

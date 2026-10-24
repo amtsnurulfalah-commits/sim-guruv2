@@ -1,4 +1,5 @@
 "use client";
+import { TaskCenter } from "@/features/tasks/task-center";
 import { useDashboardDay } from "./use-dashboard-day";
 import Link from "next/link";
 import { LiveSummary } from "./live-summary";
@@ -28,6 +29,9 @@ export function DashboardView({
             : "Ruang kerja guru. Pantau jadwal, catat kehadiran, lengkapi jurnal, dan lihat honorarium Anda."}
         </p>
       </header>
+      <TaskCenter key={date + "-tasks"} compact />
+      <DayContextCard key={date} date={date} />
+      <LiveSummary key={date} />
       <section
         className={data.user.role === "admin" ? "grid min-w-0 gap-4 lg:grid-cols-2" : "grid min-w-0 gap-4"}
         aria-label="Akses yang tersedia"
@@ -61,8 +65,7 @@ export function DashboardView({
           </section>
         )}
       </section>
-      <DayContextCard key={date} date={date} />
-      <LiveSummary key={date} />
+
     </div>
   );
 }

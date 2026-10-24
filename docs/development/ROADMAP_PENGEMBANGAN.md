@@ -53,6 +53,8 @@ Hasil implementasi 1.1–1.6: [paket Tahap 1](stage-1/README.md), termasuk batas
 
 Dependency: Tahap 1. Selesai jika tugas sinkron dengan sumber, akses tidak bocor dan notifikasi tidak mengganda. Antrean tidak dinyatakan sebagai pesan diterima.
 
+Hasil implementasi 2.1–2.6: [paket Tahap 2](stage-2/README.md), sumber, kebijakan reminder dan bukti/batas rilis.
+
 ## Tahap 3 — Kesiapan honorarium dan persetujuan koreksi
 
 - **3.1** Pemeriksaan kesiapan per periode/per guru dari engine honor yang sama.
@@ -121,4 +123,4 @@ Analisis source/dependency → kriteria penerimaan → implementasi terukur → 
 
 Uji normal/kosong/banyak/loading/error/stale/expired, kewenangan, desktop/tablet/mobile, resize/orientasi. Perubahan finansial/otorisasi memerlukan tes SQL. Hindari fungsi duplikat, perubahan fitur tak terkait dan penghapusan source tanpa bukti aman.
 
-Status: Tahap 0 tercatat pada checkpoint; **Tahap 1–8 belum dimulai**. Langkah berikutnya **1.1 / UI-01**, setelah instruksi kelanjutan pengguna. Tidak ada estimasi waktu selesai sebelum scope/dependency diperiksa.
+Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap 0–1 merged; kode Tahap 2 diimplementasikan, rilis tertahan izin produksi (lihat checkpoint); setelah rilis, berikutnya **3.1 / HONOR-01**, setelah instruksi kelanjutan pengguna. Tidak ada estimasi waktu selesai sebelum scope/dependency diperiksa.

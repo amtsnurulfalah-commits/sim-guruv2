@@ -1,3 +1,5 @@
+import { TaskCenter } from "../../src/features/tasks/task-center";
+import { NotificationInbox } from "../../src/features/tasks/notification-inbox";
 import React, { useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { DashboardView } from "../../src/features/dashboard/dashboard-view";
@@ -180,6 +182,8 @@ const components: Record<string, React.ReactNode> = {
   recoveryAdmin: <><h1 className="mb-6 text-3xl">Verifikasi pemulihan akun</h1><AdminRecovery /></>,
   account: <AccountLifecycle isAdmin={admin} onboarding={false} />,
   onboarding: <AccountLifecycle isAdmin={false} onboarding />,
+  tasks: <TaskCenter />,
+  inbox: <NotificationInbox />,
   lab: <Lab />,
   requiredChoices: <RequiredChoices />,
   dashboard: (

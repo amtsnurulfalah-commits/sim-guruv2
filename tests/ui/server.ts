@@ -185,6 +185,15 @@ async function main() {
       },
     });
   }
+  // Browser suites freeze at noon WIB. Preview leases must be valid for both
+  // that synthetic browser clock and the real disposable DB clock (any host hour).
+  if (process.env.UI_ATTENDANCE_FIXTURE === "1") {
+    await db.exec("alter table ops.attendance_previews alter column expires_at set default greatest(clock_timestamp(),(app.activity_today()+time '12:00') at time zone 'Asia/Jakarta')+interval '10 minutes'");
+  }
+  if (process.env.UI_EXAM_FIXTURE === "1" || process.env.UI_EVENT_FIXTURE === "1") {
+    await db.exec("alter table ops.module_previews alter column expires_at set default greatest(clock_timestamp(),(app.activity_today()+time '12:00') at time zone 'Asia/Jakarta')+interval '10 minutes'");
+    await db.exec("alter table ops.duty_previews alter column expires_at set default greatest(clock_timestamp(),(app.activity_today()+time '12:00') at time zone 'Asia/Jakarta')+interval '10 minutes'");
+  }
   if(process.env.UI_EXAM_FIXTURE === "1"){
     const today=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Jakarta"}).format(new Date()),reason="Fikstur ujian sintetis";
     // Fixed clock in the disposable test database only.

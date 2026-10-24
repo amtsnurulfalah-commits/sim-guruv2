@@ -151,6 +151,8 @@ export function Workspace({
   );
   const activeHref = [
     "/dashboard",
+    "/tugas",
+    "/notifikasi",
     "/akun",
     "/admin/pemulihan",
     "/kesiapan",
@@ -228,6 +230,8 @@ export function Workspace({
         {session ? (
           <>
             {ready && item("/dashboard", "Dashboard", LayoutDashboard)}
+            {ready && item("/tugas", "Pusat tugas", ClipboardCheck)}
+            {ready && item("/notifikasi", "Notifikasi", Megaphone)}
             {item("/akun", "Akun dan profil", UserRound)}
             {role === "admin" &&
               ready &&

@@ -1,4 +1,5 @@
 "use client";
+import { useActivityDate } from "../../src/lib/navigation/use-activity-date";
 import { useUrlFilters } from "../../src/lib/navigation/use-url-filters";
 const defaults = { page: "1", state: "active" };
 const rules = {
@@ -32,5 +33,19 @@ export function FilterProbe() {
         Reset fixture
       </button>
     </section>
+  );
+}
+
+export function ActivityDateProbe() {
+  const [date, setDate] = useActivityDate();
+  return (
+    <label>
+      Tanggal sumber fixture
+      <input
+        type="date"
+        value={date}
+        onChange={(event) => setDate(event.target.value)}
+      />
+    </label>
   );
 }
