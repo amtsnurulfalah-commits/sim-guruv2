@@ -23,6 +23,15 @@ export const readSchema = z.discriminatedUnion("kind", [
     .strict(),
   z.object({ kind: z.literal("statement"), id }).strict(),
   z.object({ kind: z.literal("operations"), period }).strict(),
+  z.object({ kind: z.literal("readiness"), period }).strict(),
+  z
+    .object({
+      kind: z.literal("requests"),
+      period,
+      statementId: id.optional(),
+      page: z.coerce.number().int().min(1).max(100000).default(1),
+    })
+    .strict(),
 ]);
 export const previewSchema = z.discriminatedUnion("operation", [
   z.object({ operation: z.literal("holiday-waive"), date, reason }).strict(),
@@ -33,6 +42,8 @@ export const previewSchema = z.discriminatedUnion("operation", [
   z
     .object({
       operation: z.literal("correction"),
+      requestId: id,
+      requestVersion: z.string().regex(/^[1-9][0-9]*$/),
       statementId: id,
       targetPeriod: period,
       correctedJtm: z.string().regex(/^(0|[1-9][0-9]{0,7})(\.[0-9]{1,4})?$/),
@@ -73,7 +84,22 @@ export const commandSchemas = {
       .object({ id, version: z.string().regex(/^[1-9][0-9]*$/), reason })
       .strict(),
   ]),
-  request: z.object({ statementId: id, reason }).strict(),
+  request: z
+    .object({
+      statementId: id,
+      reason,
+      evidence: z.string().trim().min(5).max(1000),
+      requestKey: id,
+    })
+    .strict(),
+  review: z
+    .object({
+      requestId: id,
+      version: z.string().regex(/^[1-9][0-9]*$/),
+      decision: z.enum(["claim", "reject"]),
+      reason,
+    })
+    .strict(),
   token: z.object({ statementId: id }).strict(),
 };
 export type FinanceAction = keyof typeof commandSchemas;
@@ -166,7 +192,7 @@ export type FinancePreview = {
         delta: string;
         sequence: number;
       }
-    | { count: number; jtm: string; operation?: string };
+    | { count: number; jtm: string; operation?: string | undefined };
 };
 export type Operations = {
   holidays: {

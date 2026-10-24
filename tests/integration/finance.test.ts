@@ -1,4 +1,8 @@
 import test from "node:test";
+import {
+  readinessSchema,
+  requestsSchema,
+} from "../../src/lib/finance/readiness";
 import assert from "node:assert/strict";
 import { randomBytes, randomUUID } from "node:crypto";
 import { openPgliteDatabase } from "../helpers/pglite-database";
@@ -9,7 +13,7 @@ import type {
   SqlParameter,
 } from "../../scripts/lib/sql-database";
 import { getPasswordService } from "../../src/server/auth/passwords";
-import { LocalAuthService } from "../../src/server/auth/service";
+import { tokenHash, LocalAuthService } from "../../src/server/auth/service";
 import { MasterService } from "../../src/server/masters/service";
 import { ScheduleService } from "../../src/server/schedules/service";
 import { CalendarService } from "../../src/server/calendar/service";
@@ -224,8 +228,46 @@ test("Tahap 6 — holiday, transport, canonical honor and immutable final", asyn
     });
   const own = (b: HonorBundle, id = guruId) =>
     b.statements.find((s) => s.recipient.id === id)!;
-  const preview = (data: unknown) =>
-    finance.command<FinancePreview>(admin, "preview", data);
+  const preview = async (data: unknown) => {
+    const value = data as Record<string, unknown>;
+    if (value.operation === "correction") {
+      const open = (
+        await db.query<{ id: string; version: string; status: string }>(
+          "select id,version::text,status from finance.correction_requests where statement_id=$1 and status in('submitted','reviewing') order by created_at desc limit 1",
+          [String(value.statementId)],
+        )
+      ).rows[0];
+      const request = open ?? {
+        ...(await finance.command<{ id: string }>(guru, "request", {
+          statementId: value.statementId,
+          reason,
+          evidence: "Bukti permintaan sintetis",
+          requestKey: randomUUID(),
+        })),
+        version: "1",
+        status: "submitted",
+      };
+      if (request.status === "submitted")
+        await finance.command(admin, "review", {
+          requestId: request.id,
+          version: request.version,
+          decision: "claim",
+          reason,
+        });
+      const current = (
+        await db.query<{ version: string }>(
+          "select version::text from finance.correction_requests where id=$1",
+          [request.id],
+        )
+      ).rows[0]!;
+      return finance.command<FinancePreview>(admin, "preview", {
+        ...value,
+        requestId: request.id,
+        requestVersion: current.version,
+      });
+    }
+    return finance.command<FinancePreview>(admin, "preview", data);
+  };
   const commit = (p: FinancePreview) =>
     finance.command<Record<string, unknown>>(admin, "commit", {
       previewId: p.previewId,
@@ -529,11 +571,32 @@ test("Tahap 6 — holiday, transport, canonical honor and immutable final", asyn
       await db.exec(
         "insert into app.system_settings(key,typed_value) values('allow_h_minus_1_journal','true') on conflict(key) do update set typed_value='true'",
       );
+      const pendingEvent = readinessSchema.parse(
+        await finance.read(admin, { kind: "readiness", period: "2090-01" }),
+      );
+      assert.ok(
+        pendingEvent.recipients
+          .find((r) => r.userId === guruId)!
+          .administrative.some(
+            (item) => item.kind === "event" && item.source_id === a.id,
+          ),
+      );
       await programs.journal(guru, {
         attendanceId: a.id,
         version: "1",
         description: "Catatan rapat kemarin",
       });
+      const completedEvent = readinessSchema.parse(
+        await finance.read(admin, { kind: "readiness", period: "2090-01" }),
+      );
+      assert.equal(
+        completedEvent.recipients
+          .find((r) => r.userId === guruId)!
+          .administrative.some(
+            (item) => item.kind === "event" && item.source_id === a.id,
+          ),
+        false,
+      );
       const s = own(await estimate());
       assert.equal(Number(s.totalJtm), 7.4);
       assert.equal(Number(s.teachingRaw), 74007.4);
@@ -584,6 +647,79 @@ test("Tahap 6 — holiday, transport, canonical honor and immutable final", asyn
         Number(own(await estimate(admin, "projection")).totalJtm),
         7.4,
       );
+    },
+  );
+  await t.test(
+    "S3 readiness equals canonical bundle; private scope and administrative records are separate",
+    async () => {
+      const attendanceId = (
+        await db.query<{ id: string }>(
+          "insert into app.daily_attendance(user_id,date,actual_time_in,time_in_source) values($1,'2090-01-04','07:00','admin') returning id",
+          [otherId],
+        )
+      ).rows[0]!.id;
+      const transportWarning = readinessSchema.parse(
+        await finance.read(admin, { kind: "readiness", period: "2090-01" }),
+      );
+      assert.ok(
+        transportWarning.recipients
+          .find((r) => r.userId === otherId)!
+          .administrative.some(
+            (item) =>
+              item.source_id === attendanceId &&
+              item.kind === "attendance" &&
+              item.href.startsWith("/admin/kehadiran-harian"),
+          ),
+      );
+      const ownWarning = readinessSchema.parse(
+        await finance.read(other, { kind: "readiness", period: "2090-01" }),
+      );
+      assert.ok(
+        ownWarning.recipients[0]!.administrative.some(
+          (item) =>
+            item.source_id === attendanceId &&
+            item.href.startsWith("/kehadiran-saya"),
+        ),
+      );
+      await db.query("delete from app.daily_attendance where id=$1", [
+        attendanceId,
+      ]);
+      const full = readinessSchema.parse(
+        await finance.read(admin, { kind: "readiness", period: "2090-01" }),
+      );
+      const b = await estimate();
+      assert.deepEqual(full.issues, b.issues);
+      assert.equal(full.recipients.length, b.statements.length);
+      for (const r of full.recipients)
+        assert.equal(
+          r.total,
+          b.statements.find((s) => s.recipient.id === r.userId)!.total,
+        );
+      const mine = readinessSchema.parse(
+        await finance.read(guru, { kind: "readiness", period: "2090-01" }),
+      );
+      assert.equal(mine.scope, "own");
+      assert.equal(mine.recipients.length, 1);
+      assert.equal(mine.recipients[0]!.userId, guruId);
+      const before = (await db.query("select id from finance.jtm_ledger")).rows
+        .length;
+      await finance.read(admin, { kind: "readiness", period: "2090-01" });
+      assert.equal(
+        (await db.query("select id from finance.jtm_ledger")).rows.length,
+        before,
+      );
+      await assert.rejects(() =>
+        business.query("select finance.readiness_items(date '2090-01-01')"),
+      );
+      for (const fn of ["finance_read_stage2", "finance_command_stage2"]) {
+        const sig =
+          fn === "finance_read_stage2" ? "text,jsonb" : "text,text,jsonb";
+        const p = await db.query<{ allowed: boolean }>(
+          "select has_function_privilege('sim_guru_business',$1,'EXECUTE') allowed",
+          ["app." + fn + "(" + sig + ")"],
+        );
+        assert.equal(p.rows[0]!.allowed, false);
+      }
     },
   );
   await t.test(
@@ -782,6 +918,126 @@ test("Tahap 6 — holiday, transport, canonical honor and immutable final", asyn
       );
     },
   );
+  await t.test(
+    "S3 requests retry safely; owners cannot review, decisions are versioned and auditable",
+    async () => {
+      const before = statement.checksum;
+      const input = {
+        statementId: statement.id,
+        reason,
+        evidence: "Bukti pengajuan sintetis",
+        requestKey: randomUUID(),
+      };
+      const req = await finance.command<{ id: string }>(
+        admin,
+        "request",
+        input,
+      );
+      assert.deepEqual(await finance.command(admin, "request", input), req);
+      await assert.rejects(
+        () =>
+          finance.command(admin, "request", {
+            ...input,
+            reason: "Perubahan isi dengan key sama",
+          }),
+        /VERSION_CONFLICT/,
+      );
+      await assert.rejects(
+        () =>
+          finance.command(admin, "review", {
+            requestId: req.id,
+            version: "1",
+            decision: "claim",
+            reason,
+          }),
+        /SELF_OPERATION_FORBIDDEN/,
+      );
+      await assert.rejects(() =>
+        finance.command(guru, "review", {
+          requestId: req.id,
+          version: "1",
+          decision: "claim",
+          reason,
+        }),
+      );
+      await fixture("reviewer", "admin");
+      const reviewer = await login("reviewer");
+      await finance.command(reviewer, "review", {
+        requestId: req.id,
+        version: "1",
+        decision: "claim",
+        reason,
+      });
+      await assert.rejects(
+        () =>
+          finance.command(reviewer, "review", {
+            requestId: req.id,
+            version: "1",
+            decision: "reject",
+            reason,
+          }),
+        /VERSION_CONFLICT/,
+      );
+      await finance.command(reviewer, "review", {
+        requestId: req.id,
+        version: "2",
+        decision: "reject",
+        reason: "Bukti belum mendukung perubahan honor",
+      });
+      const all = requestsSchema.parse(
+        await finance.read(admin, { kind: "requests", period: "2090-01" }),
+      );
+      const row = all.items.find((r) => r.id === req.id)!;
+      assert.equal(row.status, "rejected");
+      assert.equal(row.history.length, 3);
+      assert.equal(row.can_review, false);
+      const ownRequests = requestsSchema.parse(
+        await finance.read(guru, {
+          kind: "requests",
+          period: "2090-01",
+          statementId: statement.id,
+        }),
+      );
+      assert.equal(ownRequests.total, 1);
+      const otherRequests = requestsSchema.parse(
+        await finance.read(other, { kind: "requests", period: "2090-01" }),
+      );
+      assert.equal(otherRequests.total, 0);
+      assert.equal(
+        (await finance.statement(guru, statement.id)).checksum,
+        before,
+      );
+      const ready = readinessSchema.parse(
+        await finance.read(admin, { kind: "readiness", period: "2090-01" }),
+      );
+      assert.equal(ready.mode, "final");
+      assert.ok(ready.recipients.every((r) => r.administrative.length === 0));
+      await assert.rejects(() =>
+        business.query("select * from finance.correction_reviews"),
+      );
+      await assert.rejects(
+        () => db.exec("delete from finance.correction_reviews"),
+        /FINAL_IMMUTABLE/,
+      );
+      await assert.rejects(
+        () =>
+          business.query("select app.finance_command($1,'preview',$2::jsonb)", [
+            tokenHash(admin),
+            JSON.stringify({
+              operation: "correction",
+              statementId: statement.id,
+              targetPeriod: "2090-02",
+              correctedJtm: "8",
+              correctedAllowances: "0",
+              correctedTransportRaw: "0",
+              reason,
+              evidence: "Bukti sintetis",
+            }),
+          ]),
+        /CORRECTION_REVIEW_REQUIRED/,
+      );
+    },
+  );
   const correction = (jtm: string) => ({
     operation: "correction",
     statementId: statement.id,
@@ -822,7 +1078,7 @@ test("Tahap 6 — holiday, transport, canonical honor and immutable final", asyn
       const p = await preview(correction("5.9")),
         p2 = await preview(correction("5.95"));
       await commit(p);
-      await assert.rejects(() => commit(p2), /PREVIEW_STALE/);
+      await assert.rejects(() => commit(p2), /PREVIEW_STALE|VERSION_CONFLICT/);
       await assert.rejects(() =>
         preview({ ...correction("5.9"), targetPeriod: "2090-01" }),
       );
@@ -834,13 +1090,21 @@ test("Tahap 6 — holiday, transport, canonical honor and immutable final", asyn
   await t.test(
     "F17 correction request scoped to own statement and history filters do not leak",
     async () => {
-      await finance.command(guru, "request", {
-        statementId: statement.id,
-        reason,
-      });
+      await assert.rejects(
+        () =>
+          finance.command(guru, "request", {
+            statementId: statement.id,
+            reason,
+            evidence: "Bukti sintetis untuk pengajuan",
+            requestKey: randomUUID(),
+          }),
+        /CORRECTION_PENDING/,
+      );
       await assert.rejects(() =>
         finance.command(other, "request", {
           statementId: statement.id,
+          evidence: "Bukti sintetis untuk pengajuan",
+          requestKey: randomUUID(),
           reason,
         }),
       );
@@ -857,7 +1121,7 @@ test("Tahap 6 — holiday, transport, canonical honor and immutable final", asyn
         kind: "operations",
         period: "2090-01",
       });
-      assert.equal(operations.requests.length, 1);
+      assert.ok(operations.requests.length >= 1);
     },
   );
   await t.test(

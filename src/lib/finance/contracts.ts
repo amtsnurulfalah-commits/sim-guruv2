@@ -230,7 +230,7 @@ export function validateFinancePreview(
   return v;
 }
 export function validateFinanceCommand(
-  action: "holiday" | "block" | "request" | "token",
+  action: "holiday" | "block" | "request" | "review" | "token",
   raw: unknown,
   today: string,
 ) {

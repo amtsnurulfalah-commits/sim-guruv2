@@ -10,6 +10,7 @@ import {
 import type { z } from "zod";
 export function FinancePreviewDialog({
   preview,
+  recipientName,
   request,
   hidden,
   busy,
@@ -20,6 +21,7 @@ export function FinancePreviewDialog({
   onConfirm,
 }: {
   preview: FinancePreview;
+  recipientName?: string | undefined;
   request: z.infer<typeof previewSchema>;
   hidden: boolean;
   busy: boolean;
@@ -67,6 +69,27 @@ export function FinancePreviewDialog({
       }
     >
       <div className="min-w-0 space-y-4 [overflow-wrap:anywhere]">
+        {request.operation === "correction" && (
+          <section className="space-y-2 rounded-xl border p-3 text-sm">
+            <h3 className="font-semibold">
+              Persetujuan koreksi{recipientName ? " · " + recipientName : ""}
+            </h3>
+            <p>
+              Periode tujuan: {request.targetPeriod}. Slip asli tetap utuh;
+              hanya selisih yang diposting.
+            </p>
+            <p className="whitespace-pre-wrap">
+              Alasan keputusan: {request.reason}
+            </p>
+            <p className="whitespace-pre-wrap">
+              Bukti keputusan: {request.evidence}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Referensi pengajuan: {request.requestId}
+            </p>
+          </section>
+        )}
+
         {"statements" in result ? (
           <>
             <p>

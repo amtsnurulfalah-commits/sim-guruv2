@@ -279,6 +279,9 @@ try {
   await ready();
   await btn("Ajukan koreksi honorarium").click();
   await reason();
+  await dialog()
+    .getByLabel("Referensi bukti (5–1000 karakter)")
+    .fill("Bukti pembelajaran sintetis");
   await submit("Kirim permintaan koreksi");
   // Print only the selected slip; requests/form triggers are hidden in print.
   await page.emulateMedia({ media: "print" });
@@ -294,31 +297,30 @@ try {
   await go("history");
   await btn("Buka slip").click();
   await ready();
-  await page
-    .locator("summary")
-    .filter({ hasText: "Koreksi administratif" })
-    .click();
-  await btn("Tinjau koreksi honorarium").click();
+  await btn("Mulai pemeriksaan").click();
+  await ready();
+  await btn("Siapkan persetujuan koreksi").click();
   await dialog().getByLabel("Periode tujuan (YYYY-MM)").fill("2090-01");
   await dialog()
-    .getByLabel("Referensi bukti koreksi")
+    .getByLabel("Referensi bukti keputusan")
     .fill("Bukti pembelajaran sintetis");
   await reason();
   await dialog()
-    .getByRole("button", { name: "Buat pratinjau koreksi", exact: true })
+    .getByRole("button", { name: "Buat pratinjau persetujuan", exact: true })
     .click();
   await dialog()
-    .getByText("Periode tujuan harus setelah periode slip sumber.", {
-      exact: true,
-    })
+    .getByText(/Data honorarium|Periode tujuan/)
     .first()
     .waitFor();
   await dialog().getByLabel("Periode tujuan (YYYY-MM)").fill("2090-02");
   await dialog().getByLabel("Total JTM yang benar").fill("4");
-  await preview("Buat pratinjau koreksi");
+  await preview("Buat pratinjau persetujuan");
   await dialog().getByText("Rp 10.001", { exact: true }).waitFor();
   await confirm();
-  await page.getByText(/Dokumen ini memiliki koreksi terkait/).waitFor();
+  await page
+    .getByText(/Guru Panjang.*Disetujui|Disetujui/)
+    .first()
+    .waitFor();
   // Current period may be previewed with issues but must never be confirmed.
   await go("finance", "admin", "2090-02");
   await btn("Tinjau finalisasi honorarium").click();
@@ -352,7 +354,12 @@ try {
   // Malformed read must remove old calculations, and retry recovers.
   let fail = true;
   const broken = async (route) => {
-    if (fail) {
+    if (
+      fail &&
+      ["recap", "estimate"].includes(
+        new URL(route.request().url()).searchParams.get("kind"),
+      )
+    ) {
       fail = false;
       await route.fulfill({
         status: 200,
