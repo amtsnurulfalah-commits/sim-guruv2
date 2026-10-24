@@ -61,8 +61,13 @@
     "preflightProductionCount": 31,
     "preflightNewTableExists": false,
     "preflightSecurityAdvisorLints": 0,
-    "production": "automatic approval review rejected persistent Stage6 schema/RLS/privilege migration; separate explicit user approval required",
+    "production": "explicitly approved by user; two apply_migration calls failed with Invalid or expired requestState; third retry rejected by automatic review to prevent repeated mutations without connector recovery",
     "postRejectionReadback": {
+      "migrations": 31,
+      "preparationTableExists": false
+    },
+    "explicitProductionApproval": true,
+    "readbackAfterConnectorFailure": {
       "migrations": 31,
       "preparationTableExists": false
     }
@@ -77,7 +82,7 @@
       "steps": "all success",
       "previewVercel": "success"
     },
-    "merge": "blocked by production migration approval gate",
+    "merge": "blocked by connector recovery and migration verification, not missing user consent",
     "productionDeployment": "not-started"
   },
   "limits": [
