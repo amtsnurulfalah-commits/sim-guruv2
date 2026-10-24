@@ -40,3 +40,9 @@ Pengujian PGlite/Chromium sintetis tidak membuktikan native multi-process concur
 Migrasi menambah satu tabel private dan lima fungsi (basis, plan, read, preview, commit), serta dua indeks pada tabel baru. Tidak backfill/salin konfigurasi pengguna atau mengubah routine lama. Produksi harus menerapkan migrasi sebelum aplikasi baru dirilis. Artifact batch rilis memeriksa checksum seluruh 31 migrasi sebelumnya, advisory lock dan timeout, lalu menulis ledger32. Uji batch dilakukan disposable dan normal runner replay harus no-op.
 
 Jika perlu rollback aplikasi, gunakan deployment sebelumnya; schema tambahan boleh tinggal. Jangan menghapus semester/riwayat secara otomatis untuk membatalkan hasil yang telah dipakai. Koreksi konfigurasi melalui modul master/jadwal dengan pemeriksaan referensi yang sudah ada.
+
+## Status persetujuan produksi
+
+[PR50](https://github.com/amtsnurulfalah-commits/sim-guruv2/pull/50) belum merge. Automatic approval review menolak penerapan migrasi persistent schema/RLS/privilege Tahap6 karena belum ada izin eksplisit pengguna untuk batch ini. Persetujuan migrasi Tahap5 tidak berlaku otomatis. Produksi masih ledger31 dan tabel preparation belum ada; tidak ada penyalinan data nyata.
+
+Setelah pengguna menyetujui migrasi produksi Tahap6:terapkan `release-batch.sql` yang sama (SHA dalam validation.json), verifikasi ledger32/checksum/RLS/gateway/helper/advisor dan routine lama, lalu update bukti, tunggu checks dan merge expected-head PR50. Verifikasi commit deployment produksi READY, health serta API anonim401; jangan menjalankan penyalinan semester nyata sebagai smoke.

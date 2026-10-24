@@ -61,13 +61,24 @@
     "preflightProductionCount": 31,
     "preflightNewTableExists": false,
     "preflightSecurityAdvisorLints": 0,
-    "production": "not-applied"
+    "production": "automatic approval review rejected persistent Stage6 schema/RLS/privilege migration; separate explicit user approval required",
+    "postRejectionReadback": {
+      "migrations": 31,
+      "preparationTableExists": false
+    }
   },
   "release": {
-    "pr": "pending",
-    "ci": "pending",
-    "merge": "pending",
-    "productionDeployment": "pending"
+    "pr": 50,
+    "url": "https://github.com/amtsnurulfalah-commits/sim-guruv2/pull/50",
+    "firstCi": {
+      "head": "89295016447004e438df4408ce75e94dccce2d0f",
+      "run": 40091177860,
+      "job": 120863994344,
+      "steps": "all success",
+      "previewVercel": "success"
+    },
+    "merge": "blocked by production migration approval gate",
+    "productionDeployment": "not-started"
   },
   "limits": [
     "Synthetic PGlite/Chromium is not native concurrency, real devices, production load or UAT",
