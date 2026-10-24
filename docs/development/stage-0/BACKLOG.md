@@ -38,3 +38,11 @@ OPS-01/02 memerlukan proses operator sesuai akses sebelum rilis terkait. Tidak o
 Belum ada janji tanggal/durasi; estimasi dibuat setelah scope dan dependency diperiksa. Tahap 1–8 belum dilaksanakan dalam Tahap 0.
 
 HONOR-01 / Tahap 3 telah dirilis melalui PR #47. Implementasi Tahap 4 mengikuti paket stage-4; status rilis aktual pada checkpoint/PR. Setelah rilis, prioritas berikutnya Tahap 5.
+
+## Hasil program sampai Tahap8
+
+Tahap0–7 dirilis; Tahap8 menyediakan native recovery/release gate, lihat checkpoint/PR untuk status rilis final. OPS-02 kini memiliki bukti pg_dump/pg_restore sintetis native, bukan lagi hanya snapshot WASM. Bukti/cakupan pada stage-8/native-results.json; Storage/secret/provider dan RPO/RTO produksi tidak disimpulkan dari fixture.
+
+PERF-02 (P2, owner pengembang/operator): riwayat kehadiran global12.060baris dan4request akun sama mencapai lock_timeout pada profil awal. Single global2327ms; filter guru p95=119ms pada40request/concurrency4 pada runner sintetis. Sebelum memperluas beban global, ukur query plan dan lock pada dataset operasional terisolasi, kaji predicate/context tanpa melemahkan otorisasi, lalu regresi role/concurrency. Mitigasi sekarang: filter guru/rentang dan hindari request global overlap. Tidak ada target kapasitas produksi yang diklaim.
+
+OPS-03 (operasional): tentukan cadence/retensi backup privat, inventori Storage/secret/provider serta RPO/RTO produksi dan latihan operator. QA-02 (operasional): UAT perangkat fisik/pembaca layar dan email penerima uji yang disetujui. Ini bukan fitur yang otomatis diaktifkan oleh merge kode.

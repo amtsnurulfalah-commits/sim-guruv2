@@ -1,0 +1,41 @@
+{
+  "native": {
+    "kind": "native-synthetic-filtered-adapter-read",
+    "scope": "explicit per-teacher attendance filter",
+    "globalRead": {
+      "scope": "all teachers / one request",
+      "durationMs": 2327,
+      "error": null
+    },
+    "users": 201,
+    "attendanceRows": 12060,
+    "statementRows": 201,
+    "requests": 40,
+    "concurrency": 4,
+    "errors": 0,
+    "p50Ms": 69,
+    "p95Ms": 119,
+    "wallMs": 1153,
+    "meanPayloadBytes": 9070
+  },
+  "browser": {
+    "kind": "localhost-chromium-fixture-profile",
+    "samples": 30,
+    "p50ReadyMs": 728,
+    "p95ReadyMs": 929,
+    "pageErrors": 0,
+    "overflow": false,
+    "limits": "Includes a 500ms network-idle wait; small synthetic fixture, no TLS/WAN, not production Core Web Vitals/SLO or physical device UAT."
+  },
+  "targets": {
+    "filteredReadP95Ms": 5000,
+    "reason": "Bounded synthetic regression gate below the existing10s statement timeout; observed119ms baseline, not production SLO.",
+    "productionSlo": "Not established by synthetic benchmarks"
+  },
+  "finding": {
+    "scope": "unfiltered attendance,12060rows,4parallel requests same account",
+    "observed": "Initial native drill hit lock_timeout; single global request on successful drill2327ms.",
+    "status": "documented capacity follow-up; source lifecycle/account locking unchanged",
+    "mitigation": "explicit per-teacher filter and avoid overlapping broad global requests; profile actual workload before expansion"
+  }
+}

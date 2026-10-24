@@ -9,8 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -18,3 +20,49 @@ jobs:
       - run: npm run check
         env:
           NEXT_TELEMETRY_DISABLED: '1'
+
+  native-release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      SIM_GURU_TEST_DATABASE_URL: postgresql://postgres@127.0.0.1:55439/identity_test
+      SIM_GURU_SCHEDULE_TEST_DATABASE_URL: postgresql://postgres@127.0.0.1:55439/race_test
+      RELEASE_DRILL_DATABASE_URL: postgresql://postgres@127.0.0.1:55439/release_drill_test
+      RESTORE_DATABASE_URL: postgresql://postgres@127.0.0.1:55439/release_restore_test
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Start isolated PostgreSQL (loopback only, disposable runner)
+        shell: bash
+        run: |
+          set -euo pipefail
+          pg_bin=/usr/lib/postgresql/16/bin
+          test -x "$pg_bin/initdb"
+          echo "$pg_bin" >> "$GITHUB_PATH"
+          "$pg_bin/initdb" -D "$RUNNER_TEMP/sim-guru-postgres" -U postgres -A trust > "$RUNNER_TEMP/initdb.log"
+          "$pg_bin/pg_ctl" -D "$RUNNER_TEMP/sim-guru-postgres" -l "$RUNNER_TEMP/postgres.log" -o "-h 127.0.0.1 -p 55439 -k $RUNNER_TEMP" -w start
+          for name in identity_test race_test release_drill_test release_restore_test; do
+            "$pg_bin/createdb" -h 127.0.0.1 -p 55439 -U postgres "$name"
+          done
+      - name: Native identity, role isolation and concurrency
+        run: npm run test:db:native && npm run test:schedules:native
+      - name: Encrypted backup, native restore, isolation and read profile
+        run: npm run release:drill
+        env:
+          STAGE8_REPORT_FILE: ${{ runner.temp }}/stage8-native-results.json
+      - name: Save synthetic evidence only (no archive or key)
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: stage8-native-results
+          path: ${{ runner.temp }}/stage8-native-results.json
+          retention-days: 14
+      - name: Stop disposable PostgreSQL
+        if: always()
+        run: /usr/lib/postgresql/16/bin/pg_ctl -D "$RUNNER_TEMP/sim-guru-postgres" -m immediate stop || true

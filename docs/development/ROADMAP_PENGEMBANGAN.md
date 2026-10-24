@@ -127,10 +127,12 @@ Hasil implementasi 7.1–7.5: [paket Tahap7](stage-7/README.md), keputusan sessi
 
 Dependency: tahap yang dirilis. Keamanan/pemulihan diperhatikan sejak Tahap 0. Selesai jika temuan kritis cakupan rilis tertangani, tes wajib lulus dan latihan pemulihan berbukti.
 
+Hasil implementasi8.1–8.6: [paket Tahap8](stage-8/README.md), audit dan native recovery gate, profil/batas kapasitas, runbook serta bukti rilis. Kesiapan operasional produksi tetap dibedakan dari hasil sintetis.
+
 ## Cara menyelesaikan satu sub-tahap
 
 Analisis source/dependency → kriteria penerimaan → implementasi terukur → tes sesuai risiko → perbarui checkpoint/bukti → PR + checks → merge → verifikasi rilis sesuai cakupan akses.
 
 Uji normal/kosong/banyak/loading/error/stale/expired, kewenangan, desktop/tablet/mobile, resize/orientasi. Perubahan finansial/otorisasi memerlukan tes SQL. Hindari fungsi duplikat, perubahan fitur tak terkait dan penghapusan source tanpa bukti aman.
 
-Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap0–6 merged dan terverifikasi produksi. Tahap7 diimplementasikan; status tes/merge/deployment mengikuti PR dan validation.json Tahap7. Berikutnya **Tahap8 / keamanan, pemulihan dan rilis**, setelah rilis Tahap7 dan instruksi pengguna.
+Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap0–7 merged. Tahap8 diimplementasikan; periksa PR/validation.json untuk gate final/merge/deployment. Pekerjaan operasional yang belum terbukti dan temuan kapasitas tetap dicatat, bukan dinyatakan selesai oleh keberadaan source.

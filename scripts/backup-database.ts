@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { openNativeDatabase } from "./lib/native-database";
 import { encryptBackup, decryptBackup } from "./migration/backup-crypto";
 import { restoreInventory } from "./migration/restore-inventory";
+import { backupContext, compareRestoredInventory, isolateRestoredDatabase } from "./migration/recovery";
 import { checksum } from "../src/lib/migration/profile";
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 function connection(value: string | undefined, localOnly = false) {
@@ -105,7 +106,8 @@ async function main() {
       const after = await restoreInventory(db);
       if (checksum(before) !== checksum(after))
         throw new Error("SOURCE_CHANGED_DURING_BACKUP");
-      const encrypted = encryptBackup(dump, key);
+      const metadata = { version: 2, createdAt: new Date().toISOString(), inventory: before };
+      const encrypted = encryptBackup(dump, key, backupContext(metadata));
       await mkdir(path, { mode: 0o700 });
       await writeFile(resolve(path, "database.enc"), encrypted.data, {
         mode: 0o600,
@@ -117,9 +119,7 @@ async function main() {
           {
             ...encrypted,
             data: undefined,
-            version: 1,
-            createdAt: new Date().toISOString(),
-            inventory: before,
+            ...metadata,
           },
           null,
           2,
@@ -138,6 +138,7 @@ async function main() {
         await readFile(resolve(path, "database.enc")),
         manifest,
         key,
+        manifest.version === 2 ? backupContext(manifest) : "sim-guru-backup-v1",
       );
     if (action === "verify") {
       console.log(
@@ -186,16 +187,10 @@ async function main() {
     const restored = openNativeDatabase(c.url);
     try {
       const inventory = await restoreInventory(restored);
-      if (checksum(inventory) !== checksum(manifest.inventory))
-        throw new Error("RESTORE_INVENTORY_MISMATCH");
-      await restored.transaction(async (tx) => {
-        await tx.exec("SET LOCAL ROLE sim_guru_owner");
-        await tx.exec(
-          "UPDATE app.system_settings SET typed_value=typed_value||'{\"maintenance\":true,\"jobsEnabled\":false,\"mailEnabled\":false,\"securityMailEnabled\":false}'::jsonb,version=version+1 WHERE key='operations.config';UPDATE auth_private.app_sessions SET revoked_at=coalesce(revoked_at,clock_timestamp());UPDATE ops.domain_outbox SET state='cancelled' WHERE state IN('pending','retry_wait');UPDATE ops.notification_outbox SET state='cancelled' WHERE state IN('pending','retry_wait')",
-        );
-      });
+      compareRestoredInventory(inventory, manifest);
+      await isolateRestoredDatabase(restored);
       console.log(
-        "Restore lokal, inventory, total finansial, checksum slip, role dan RLS cocok. Pengiriman dijeda dan sesi dicabut.",
+        manifest.version === 2 ? "Restore lokal: isi, skema, ledger migrasi, izin, finansial dan RLS cocok. Pengiriman dijeda dan sesi dicabut." : "Restore backup legacy: jumlah baris/finansial/role/RLS cocok; belum memverifikasi fingerprint isi/skema. Pengiriman dijeda dan sesi dicabut.",
       );
     } finally {
       await restored.close();
