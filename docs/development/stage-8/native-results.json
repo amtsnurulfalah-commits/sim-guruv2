@@ -1,0 +1,51 @@
+{
+  "kind": "stage8-native-recovery",
+  "ok": true,
+  "postgres": "16.15 (Ubuntu 16.15-1.pgdg24.04+2)",
+  "migrations": 32,
+  "tables": 89,
+  "backupMs": 1062,
+  "recoveryMs": 1798,
+  "archiveBytes": 1172426,
+  "rpo": "0 fixture transactions lost at frozen snapshot; not a production RPO",
+  "inventory": "v2 full-content/schema/ACL/migration comparison before isolation passed in CLI",
+  "checks": [
+    "transaction-rollback",
+    "corrupt-restore-no-write",
+    "wrong-key",
+    "manifest-tamper",
+    "archive-truncation",
+    "empty-target",
+    "permissions",
+    "revoked-session",
+    "dispatch-isolation",
+    "exact-NUMERIC",
+    "immutable-final",
+    "credential-hash-verify"
+  ],
+  "profile": {
+    "kind": "native-synthetic-filtered-adapter-read",
+    "scope": "explicit per-teacher attendance filter",
+    "globalRead": {
+      "scope": "all teachers / one request",
+      "durationMs": 2327,
+      "error": null
+    },
+    "users": 201,
+    "attendanceRows": 12060,
+    "statementRows": 201,
+    "requests": 40,
+    "concurrency": 4,
+    "errors": 0,
+    "p50Ms": 69,
+    "p95Ms": 119,
+    "wallMs": 1153,
+    "meanPayloadBytes": 9070
+  },
+  "evidence": {
+    "kind": "synthetic-only GitHub Actions",
+    "run": 40111751508,
+    "job": 120924755413,
+    "sourceHead": "6f49005468670b0743848b6bf21cb9add5864fa9"
+  }
+}

@@ -80,3 +80,7 @@ Modernisasi UI mempertahankan auth internal, hak akses dan kontrak API. Layout, 
 ### Adaptasi UI UX Pro Max
 
 Master UI tetap berada di [docs/ui/DESIGN_SYSTEM.md](docs/ui/DESIGN_SYSTEM.md). Lihat [audit penerapan](docs/ui/AUDIT_UI_UX.md), [riset generator](docs/ui/references/pro-max-research.json), dan [verifikasi adaptasi](docs/ui/VERIFIKASI_PRO_MAX.md). UI memakai komponen bersama untuk tabel, metrik, ringkasan error, dan visibilitas isian rahasia; autentikasi internal serta kontrak backend tetap mengikuti implementasi aplikasi.
+
+## Keamanan dan pemulihan lanjutan
+
+Program roadmap profesional sampai Tahap8 mempunyai [runbook rilis/backup/rollback](docs/development/stage-8/RUNBOOK.md), [audit keamanan](docs/development/stage-8/SECURITY_AUDIT.md), [panduan pengguna/admin](docs/development/stage-8/PANDUAN.md) dan [bukti/batas pengujian](docs/development/stage-8/README.md). `npm run release:drill` hanya untuk database lokal disposable; `npm run release:smoke` hanya probe anonim read-only ke origin HTTPS yang ditentukan. Hasil sintetis bukan RPO/RTO atau SLO produksi.

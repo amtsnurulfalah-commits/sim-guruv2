@@ -1,0 +1,65 @@
+{
+  "stage": "8.1–8.6",
+  "dateWib": "2026-10-24",
+  "base": "Tahap7/PR51 merged",
+  "source": {
+    "analyzedFiles": 499,
+    "sourceFiles": 352,
+    "pages": 51,
+    "apiRouteFiles": 56,
+    "sqlMigrations": 32,
+    "method": "literal import graph plus manual security/entrypoint review, not proof of semantic dead-code safety",
+    "unreferencedModuleReview": "src/server/db/transaction.ts is an operational/internal context adapter; preserved, no deletion authorized by graph alone"
+  },
+  "checks": {
+    "localLint": "passed",
+    "localTypecheck": "passed",
+    "unit": 149,
+    "cryptoHttp": 35,
+    "integrationPGlite": 375,
+    "totalRunnerResults": 559,
+    "CIQuality": {
+      "run": 40111751508,
+      "job": 120924755671,
+      "result": "success: npm run check including production build"
+    },
+    "native": {
+      "identityResults": 25,
+      "scheduleRaceResults": 3,
+      "drill": "passed",
+      "report": "native-results.json"
+    },
+    "prodDependencyAdvisories": 0,
+    "browserProfile": "30 navigations,320/1440,no page errors/overflow",
+    "fullBrowserRegression": {
+      "result": "passed",
+      "matrix": 252,
+      "interactions": 45,
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "drafts": "passed: reload/offline/conflicts/TTL/logout/account-switch/storage-denied"
+    },
+    "productionBuildEvidence": "CI quality success including completed npm run check/build; local compile log was incomplete and is not the release gate"
+  },
+  "recovery": {
+    "format": 2,
+    "contentSchemaAclMigrations": true,
+    "manifestAad": true,
+    "legacyV1LimitedCompatibility": true,
+    "postRestoreIsolation": true,
+    "productionBackupOrRestorePerformed": false,
+    "productionRpoRto": "not measured; drill values are synthetic"
+  },
+  "release": {
+    "branch": "feature/professional-stage-8",
+    "pr": 52,
+    "productionMigrationRequired": false,
+    "status": "implementation/local and initial native CI passed; actual final head checks/merge/deployment follow PR52"
+  },
+  "limits": [
+    "ASVS-based review, not full certification/pentest.",
+    "Global parallel attendance read capacity finding remains documented; not disguised as a passing performance SLO.",
+    "Physical device/screen-reader/email delivery/production capacity UAT not performed.",
+    "Storage/secret/provider backups and production backup cadence require private operator evidence."
+  ]
+}
