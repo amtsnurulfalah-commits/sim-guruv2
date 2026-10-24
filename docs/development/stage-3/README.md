@@ -46,3 +46,9 @@ Status final: `approved` atau `rejected`. Pemilik melihat status, pemeriksa, ala
 `npm run check`, `npm run test:ui:finance`, `npm run test:ui:honor-readiness`, `npm run test:ui`; rincian dan batas di validation.json. Pengujian SQL memakai PGlite sintetis, browser memakai fixture SQL nyata disposable, termasuk role/ownership, ledger, pengajuan/penolakan/persetujuan, preview stale/replay, checksum, PDF/Excel dan dimensi 1440/768/320/landscape. Ini bukan UAT perangkat fisik, native race, pengiriman SMTP atau ukuran beban produksi.
 
 Berikutnya Tahap 4 / penanganan kendala dan pemantauan, setelah instruksi pengguna.
+
+## Status rilis PR #47
+
+Kode commit `bbee014285a19a6bb1efafdda8f7fa34af7decb8`: CI run `40069187868` success, Vercel preview `dpl_9dHKFzKqxNiYapAC9CqvoGQMUcrK` READY. PR [#47](https://github.com/amtsnurulfalah-commits/sim-guruv2/pull/47) masih terbuka.
+
+**Migrasi produksi belum dijalankan dan merge belum dilakukan.** Auto-review menolak mutasi produksi karena instruksi menjalankan Tahap 3/merge belum dianggap izin spesifik untuk menambah metadata/tabel/constraint dan mengganti gateway finansial. Tidak dicoba melalui jalur alternatif. Setelah izin spesifik pengguna: verifikasi ulang baseline → terapkan exact batch → cek ledger29/RLS/grants/advisor → merge setelah checks → verifikasi deployment. Batch SHA256 `5ecec93b55e76aa428bacdd483edec2a9f9f54ac9324781c296921360cefcc76`; migrasi SHA256 `56ca7c9fe9e4ebd7e5afd134bbd90ceb1e1c8c314fecca280d1201ba1545f51a`. Jangan merge frontend sebelum migration gate terpenuhi.
