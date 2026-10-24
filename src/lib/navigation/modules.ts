@@ -110,6 +110,17 @@ export const modules: readonly AppModule[] = [
     stage: "Pengembangan 5",
   },
   {
+    slug: "persiapan-semester",
+    href: "/admin/persiapan-semester",
+    available: true,
+    title: "Persiapan semester",
+    description:
+      "Pratinjau dan salin konfigurasi kelas serta jadwal ke semester baru.",
+    group: "Administrasi",
+    stage: "Pengembangan 6",
+    adminOnly: true,
+  },
+  {
     slug: "pengguna",
     href: "/admin/pengguna",
     available: true,

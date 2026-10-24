@@ -26,6 +26,12 @@ type Dependencies = {
   service: () => Promise<LocalAuthService>;
 };
 const messages: Record<string, string> = {
+  SEMESTER_INVALID:
+    "Permintaan persiapan semester tidak sesuai. Periksa sumber, tujuan, konfigurasi dan alasan.",
+  SEMESTER_PREVIEW_STALE:
+    "Pratinjau kedaluwarsa, memiliki temuan, atau sumber/tujuan berubah. Tidak ada penyalinan yang diterapkan. Buat pratinjau baru.",
+  SEMESTER_PREVIEW_LIMIT:
+    "Terlalu banyak pratinjau aktif. Tunggu pratinjau lama kedaluwarsa sebelum membuat yang baru.",
   REPORT_INVALID:
     "Filter atau izin laporan tidak sesuai. Periksa bulan, guru, lingkup dan alasan perubahan.",
   REVIEW_NOT_ALLOWED:
@@ -228,6 +234,9 @@ export async function handleAuthRequest(
       ? dbMessage
       : null;
     const activityCode = [
+      "SEMESTER_INVALID",
+      "SEMESTER_PREVIEW_STALE",
+      "SEMESTER_PREVIEW_LIMIT",
       "REPORT_INVALID",
       "SUPPORT_INVALID",
       "SUPPORT_TRANSITION_INVALID",
@@ -269,6 +278,7 @@ export async function handleAuthRequest(
       ? new AuthError(
           activityCode,
           [
+            "SEMESTER_PREVIEW_STALE",
             "ACTIVITY_REFERENCED",
             "PREVIEW_STALE",
             "DUPLICATE_JOURNAL",

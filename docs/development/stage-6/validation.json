@@ -1,0 +1,113 @@
+{
+  "stage": "6",
+  "scope": [
+    "6.1",
+    "6.2",
+    "6.3",
+    "6.4",
+    "6.5"
+  ],
+  "dateWib": "2026-10-24",
+  "branch": "feature/professional-stage-6",
+  "checks": {
+    "lint": "pass",
+    "typecheck": "pass",
+    "build": "pass",
+    "unit": 145,
+    "cryptoHttp": 35,
+    "integration": 368,
+    "runnerResults": 548,
+    "targetedSqlResults": 9,
+    "targetedBrowser": {
+      "passed": true,
+      "widths": [
+        280,
+        320,
+        375,
+        768,
+        1024,
+        1440,
+        1920
+      ],
+      "dialogOrientations": 4,
+      "flows": [
+        "preview-ID-mapping",
+        "confirmation",
+        "commit-ack-loss",
+        "receipt-recovery",
+        "idempotent-retry",
+        "history-reload",
+        "occupied-target",
+        "guru-denied"
+      ],
+      "pageErrors": 0,
+      "pageHorizontalOverflow": 0
+    },
+    "globalBrowser": {
+      "matrix": 252,
+      "interactions": 45,
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "serverErrors": ""
+    }
+  },
+  "migration": {
+    "name": "20261024112506_semester_preparation.sql",
+    "checksum": "eec3a6a030f4c6a3018dc1ab0a280d08e039c0ce319b76d182a06376310e6674",
+    "batchSha256": "aee787161def59b229c7b8c15558001b4608913ac7f6caf46b4ca136a635becf",
+    "priorCount": 31,
+    "artifact": "docs/development/stage-6/release-batch.sql",
+    "exactBatchDisposable": "upgrade31-to32 and normal-runner replay no-op pass",
+    "preflightProductionCount": 31,
+    "preflightNewTableExists": false,
+    "preflightSecurityAdvisorLints": 0,
+    "production": "applied after explicit user approval and confirmed connector refresh; ledger32/checksum/RLS/grants/helper/advisor verified",
+    "postRejectionReadback": {
+      "migrations": 31,
+      "preparationTableExists": false
+    },
+    "explicitProductionApproval": true,
+    "readbackAfterConnectorFailure": {
+      "migrations": 31,
+      "preparationTableExists": false
+    },
+    "verifiedProduction": {
+      "migrations": 32,
+      "sourceChecksumMatches": true,
+      "enableRls": true,
+      "forceRls": true,
+      "businessDirectSelect": false,
+      "gatewayExecute": [
+        true,
+        true,
+        true
+      ],
+      "privateHelperExecute": [
+        false,
+        false
+      ],
+      "securityAdvisorLints": 0,
+      "priorRoutineHashesUnchanged": true
+    }
+  },
+  "release": {
+    "pr": 50,
+    "url": "https://github.com/amtsnurulfalah-commits/sim-guruv2/pull/50",
+    "firstCi": {
+      "head": "89295016447004e438df4408ce75e94dccce2d0f",
+      "run": 40091177860,
+      "job": 120863994344,
+      "steps": "all success",
+      "previewVercel": "success"
+    },
+    "merge": "ready after final documentation CI",
+    "productionDeployment": "awaiting merge"
+  },
+  "limits": [
+    "Synthetic PGlite/Chromium is not native concurrency, real devices, production load or UAT",
+    "Allowlist classes and optional KBM configuration only; no automatic semester activation",
+    "New class expected student count resets to0; admin must complete before operational use",
+    "No production configuration has been copied; production smoke must remain read-only",
+    "CLI telemetry previously rejected; migration file generated locally without transmitting telemetry, validated by canonical migration runner"
+  ]
+}

@@ -54,6 +54,7 @@ const moduleIcons: Record<string, typeof LayoutDashboard> = {
   acara: CalendarDays,
   honorarium: Wallet,
   pengguna: Users,
+  "persiapan-semester": CalendarDays,
   master: Database,
   kalender: CalendarDays,
   pengumuman: Megaphone,

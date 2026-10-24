@@ -1,3 +1,4 @@
+import {SemesterPreparationWorkspace} from "../../src/features/semester-preparation/workspace";
 import {ReportsWorkspace} from "../../src/features/reports/workspace";
 import { TaskCenter } from "../../src/features/tasks/task-center";
 import { NotificationInbox } from "../../src/features/tasks/notification-inbox";
@@ -185,6 +186,7 @@ const components: Record<string, React.ReactNode> = {
   onboarding: <AccountLifecycle isAdmin={false} onboarding />,
   tasks: <TaskCenter />,
   reports:<ReportsWorkspace/>,
+  semesterPreparation:<SemesterPreparationWorkspace/>,
   inbox: <NotificationInbox />,
   lab: <Lab />,
   requiredChoices: <RequiredChoices />,
