@@ -51,9 +51,9 @@
       "consoleErrors": 0,
       "serverErrors": ""
     },
-    "integrationFull": 358,
+    "integrationFull": 359,
     "runnerResults": 537,
-    "additionalMultiPageExportAndLimitTest": "pass; final report integration9, effective total537; final CI rerun pending"
+    "additionalMultiPageExportAndLimitTest": "pass on final CI40088171265"
   },
   "migration": {
     "name": "20261024104102_leadership_reports.sql",
@@ -61,14 +61,16 @@
     "batchSha256": "365fdbaebc67842d194b851b464f4178fdf0924de3bd593467c2088f698f4b25",
     "priorCount": 30,
     "disposableUpgrade": "pass; exact release batch upgrade30-to31 and normal runner replay no-op",
-    "production": "blocked by automatic approval review; user explicitly authorized merge, separate concrete Stage5 production schema/privilege approval required",
+    "production": "applied after explicit user approval; ledger31/checksum/RLS/grants/private helper and security advisor verified",
     "preflightPriorLedger": 30,
     "preflightSecurityAdvisorLints": 0,
     "batchArtifact": "docs/development/stage-5/release-batch.sql",
     "postRejectionReadback": {
       "migrationCount": 30,
       "reportReadersTableExists": false
-    }
+    },
+    "securityAdvisorLints": 0,
+    "financeRoutineHashesUnchanged": true
   },
   "release": {
     "pr": 49,
@@ -80,8 +82,8 @@
       "checkSteps": "all success",
       "vercelPreview": "success"
     },
-    "merge": "blocked until production migration approved/applied/verified",
-    "productionDeployment": "not-started"
+    "merge": "ready after documentation CI",
+    "productionDeployment": "awaiting merge"
   },
   "limits": [
     "Synthetic PGlite and Chromium emulation, not physical-device/native concurrency/production UAT",
