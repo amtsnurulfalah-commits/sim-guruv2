@@ -1,4 +1,5 @@
 "use client";
+import { resetBrowserDrafts } from "@/lib/drafts/storage";
 import { ActionIcon } from "@/components/ui/action-icon";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
@@ -62,6 +63,7 @@ export function LoginForm() {
   }, []);
 
   useEffect(() => {
+    resetBrowserDrafts();
     mounted.current = true;
     async function init() {
       setNotice(loginNotice(new URLSearchParams(window.location.search).get("status")));

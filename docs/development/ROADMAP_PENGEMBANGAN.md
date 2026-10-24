@@ -114,6 +114,8 @@ Hasil implementasi 6.1–6.5: [paket Tahap6](stage-6/README.md), allowlist, kebi
 
 Dependency: Tahap 1–2. Selesai jika draft tidak tertukar akun, tidak dianggap telah terkirim, tidak menyimpan token/rahasia, dan tetap divalidasi server. Putuskan penyimpanan lokal/server sebelum implementasi; jangan mengasumsikan transaksi offline.
 
+Hasil implementasi 7.1–7.5: [paket Tahap7](stage-7/README.md), keputusan sessionStorage per tab, konflik/pemulihan dan bukti/batas rilis.
+
 ## Tahap 8 — Keamanan, pemulihan dan rilis
 
 - **8.1** Audit sesi, otorisasi API/SQL, akses data dan log; acuan OWASP ASVS.
@@ -131,4 +133,4 @@ Analisis source/dependency → kriteria penerimaan → implementasi terukur → 
 
 Uji normal/kosong/banyak/loading/error/stale/expired, kewenangan, desktop/tablet/mobile, resize/orientasi. Perubahan finansial/otorisasi memerlukan tes SQL. Hindari fungsi duplikat, perubahan fitur tak terkait dan penghapusan source tanpa bukti aman.
 
-Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap0–5 merged dan terverifikasi produksi. Tahap6 diimplementasikan; status tes/migrasi/merge/deployment mengikuti PR dan validation.json Tahap6. Berikutnya **Tahap7 / draft otomatis dan pengalaman mobile**, setelah rilis Tahap6 dan instruksi pengguna.
+Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap0–6 merged dan terverifikasi produksi. Tahap7 diimplementasikan; status tes/merge/deployment mengikuti PR dan validation.json Tahap7. Berikutnya **Tahap8 / keamanan, pemulihan dan rilis**, setelah rilis Tahap7 dan instruksi pengguna.

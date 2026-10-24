@@ -58,7 +58,8 @@
     "test:ui:honor-readiness": "node tests/ui/honor-readiness.mjs",
     "test:ui:foundation": "node tests/ui/foundation.mjs",
     "test:ui:reports": "node tests/ui/reports.mjs",
-    "test:ui:semester-preparation": "node tests/ui/semester-preparation.mjs"
+    "test:ui:semester-preparation": "node tests/ui/semester-preparation.mjs",
+    "test:ui:drafts": "node tests/ui/drafts.mjs"
   },
   "dependencies": {
     "@next/env": "16.4.2",

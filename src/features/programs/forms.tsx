@@ -1,4 +1,5 @@
 "use client";
+import { DraftStatus, useFormDraft, type FormDraftConfig } from "@/features/drafts/form-draft";
 import { serverFieldErrors } from "@/lib/feedback/api-error";
 import { ActionIcon } from "@/components/ui/action-icon";
 
@@ -51,7 +52,9 @@ export function DataForm({
   locked = false,
   onVisibilityChange,
   successMessage = "Permintaan berhasil diproses.",
+  draftConfig,
 }: {
+  draftConfig?: FormDraftConfig;
   locked?: boolean;
   onVisibilityChange?: (open: boolean) => void;
   successMessage?: string | false;
@@ -74,8 +77,10 @@ export function DataForm({
   const focusFeedback = () =>
     requestAnimationFrame(() => feedback.current?.focus());
   const prefix = useId();
+  const { formRef: attachDraftForm, ...draft } = useFormDraft(prefix + "-form", draftConfig ?? null, inline || open);
   const form = (
     <form
+      ref={attachDraftForm}
       id={prefix + "-form"}
       className="ui-form"
       aria-busy={saving || busy}
@@ -139,6 +144,7 @@ export function DataForm({
         }
         setError("");
         setFieldErrors({});
+        let draftTicket: number | undefined;
         try {
           z.record(z.string(), z.unknown())
             .superRefine((value, ctx) => {
@@ -184,11 +190,14 @@ export function DataForm({
             .parse(data);
           pending.current = true;
           setSaving(true);
+          draftTicket = draft.beforeSubmit();
           await onSave(data);
+          draft.submitted(draftTicket);
           setOpen(false);
           onVisibilityChange?.(false);
           if (successMessage) notifySuccess(successMessage);
         } catch (e) {
+          draft.failed(e);
           setError(
             e instanceof z.ZodError
               ? (e.issues[0]?.message ?? "Periksa isian formulir.")
@@ -224,7 +233,8 @@ export function DataForm({
             message: fieldErrors[field.key]!,
           }))}
       />
-      <fieldset disabled={busy || saving || locked} className="contents">
+      {draftConfig && <DraftStatus draft={draft} disabled={busy || saving}/>}
+      <fieldset disabled={busy || saving || locked || !!draft.candidate} className="contents">
         {fields.map((x) => (
           <div
             key={x.key}
@@ -338,7 +348,7 @@ export function DataForm({
         ))}
         <div className="flex flex-wrap items-center gap-3 border-t pt-4 sm:col-span-2">
           {inline && (
-            <button className={button} disabled={busy || saving || locked}>
+            <button className={button} disabled={busy || saving || locked || !!draft.candidate}>
               <ActionIcon action="submit" />
               {busy || saving ? "Memproses…" : submitLabel}
             </button>
@@ -351,6 +361,7 @@ export function DataForm({
   return (
     <FormDialog
       title={label}
+      {...(draftConfig ? { onDiscard: draft.remove } : {})}
       {...(description ? { description } : {})}
       trigger={label}
       footer={
@@ -358,7 +369,7 @@ export function DataForm({
           className={button}
           type="submit"
           form={prefix + "-form"}
-          disabled={busy || saving || locked}
+          disabled={busy || saving || locked || !!draft.candidate}
         >
           <ActionIcon action="submit" />
           {busy || saving ? "Memproses…" : submitLabel}

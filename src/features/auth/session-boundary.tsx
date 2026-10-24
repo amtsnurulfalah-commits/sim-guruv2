@@ -1,4 +1,5 @@
 "use client";
+import { claimDraftAccount, resetBrowserDrafts } from "@/lib/drafts/storage";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -47,11 +48,13 @@ export function SessionBoundary({
         }
         const nextIdentity = data.user.id + ":" + data.user.role;
         if (identity.current !== null && identity.current !== nextIdentity) {
+          resetBrowserDrafts();
           setSession(null);
           setLogoutRequested(false);
           window.location.reload();
           return;
         }
+        try { claimDraftAccount(sessionStorage, data.user.id); } catch { /* Form reports storage failures. */ }
         identity.current = nextIdentity;
         setSession(data);
         setMessage("");
@@ -63,6 +66,7 @@ export function SessionBoundary({
         ) {
           setSession(null);
           setLogoutRequested(false);
+          resetBrowserDrafts();
           window.location.replace("/login?status=expired");
           return;
         }
@@ -112,6 +116,7 @@ export function SessionBoundary({
       channel.current = new BroadcastChannel("sim-guru-auth");
       channel.current.onmessage = (event) => {
         if (event.data === "logout") {
+          resetBrowserDrafts();
           setSession(null);
           setLogoutRequested(false);
           window.location.replace("/login?status=logout");
@@ -149,6 +154,7 @@ export function SessionBoundary({
         headers: { "X-CSRF-Token": csrf.csrfToken },
         signal: AbortSignal.timeout(15000),
       });
+      resetBrowserDrafts();
       setSession(null);
       setLogoutRequested(false);
       channel.current?.postMessage("logout");
@@ -157,6 +163,7 @@ export function SessionBoundary({
       if (error instanceof ApiRequestError && error.status === 401) {
         setSession(null);
         setLogoutRequested(false);
+        resetBrowserDrafts();
         window.location.replace("/login?status=expired");
         return;
       }
@@ -215,7 +222,7 @@ export function SessionBoundary({
           className="mt-3 text-sm leading-7 text-muted-foreground"
         >
           Sesi pada browser ini akan diakhiri. Anda dapat masuk kembali
-          menggunakan akun Anda.
+          menggunakan akun Anda. Draft lokal jurnal dan BAP di tab ini akan dihapus.
         </p>
         <ErrorFeedback message={logoutError} autoFocus className="mt-4" />
         <div className="mt-6 flex justify-end gap-3">
@@ -249,7 +256,7 @@ function SessionExpiry({ session }: { session: SessionDto }) {
       new Date(session.idleExpiresAt).getTime(),
     ) - now;
   useEffect(() => {
-    if (remaining <= 0) window.location.replace("/login?status=expired");
+    if (remaining <= 0) { resetBrowserDrafts(); window.location.replace("/login?status=expired"); }
   }, [remaining]);
   return remaining <= 60000 ? (
     <p

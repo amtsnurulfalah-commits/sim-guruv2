@@ -1,4 +1,5 @@
 "use client";
+import { DraftStatus, useFormDraft } from "@/features/drafts/form-draft";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { FormDialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -32,8 +33,9 @@ export type JournalAction = {
     block: JournalBlock;
     subject: string;
 };
-export function JournalEditor({ action, blocked, onSave, onClose, onRecover }: {
+export function JournalEditor({ action, userId, blocked, onSave, onClose, onRecover }: {
     action: JournalAction;
+    userId: string;
     blocked: boolean;
     onSave: (input: unknown, signal: AbortSignal) => Promise<void>;
     onClose: () => void;
@@ -41,9 +43,16 @@ export function JournalEditor({ action, blocked, onSave, onClose, onRecover }: {
 }) {
     const edit = action.kind === "edit" ? action.journal : null;
     const [present, setPresent] = useState(String(edit?.present ?? 0)), [absent, setAbsent] = useState(String(edit?.absent ?? 0));
+    const [occurrence, setOccurrence] = useState("");
     const [saving, setSaving] = useState(false), [error, setError] = useState("");
     const mounted = useRef(false), pending = useRef(false), controller = useRef<AbortController | null>(null);
     const prefix = useId(), formId = prefix + "form";
+    const selected = action.kind === "create" ? action.eligible.find(row => row.id === occurrence) : null;
+    const { formRef: attachDraftForm, ...draft } = useFormDraft(formId, edit || selected ? {
+        scope: { account: userId, module: "journal", entity: edit ? "edit:" + edit.id : "create:" + selected!.id,
+            basis: JSON.stringify(edit ?? { row: selected, h1: action.kind === "create" && action.h1 }) },
+        fields: { material: 2000, present: 4, absent: 4, notes: 2000, reason: 500 },
+    } : null, true, values => { setPresent(values.present!); setAbsent(values.absent!); });
     useEffect(() => { mounted.current = true; return () => { mounted.current = false; controller.current?.abort(); }; }, []);
     const isJournal = action.kind === "create" || action.kind === "edit";
     const title = isJournal ? "Jurnal pembelajaran" : action.kind === "delete" ? "Hapus jurnal pembelajaran" : action.kind === "h1" ? "Kebijakan jurnal H-1" : action.kind === "block-new" ? "Blok pengisian jurnal" : "Ubah status blok jurnal";
@@ -58,6 +67,7 @@ export function JournalEditor({ action, blocked, onSave, onClose, onRecover }: {
         setSaving(true);
         setError("");
         const text = (name: string) => String(data.get(name) ?? "");
+        let draftTicket: number | undefined;
         try {
             applyFieldErrors(form, {});
             const reason = text("reason");
@@ -78,9 +88,12 @@ export function JournalEditor({ action, blocked, onSave, onClose, onRecover }: {
                 input = validateAccount(commandSchemas.h1, { enabled: action.enabled, reason });
             else
                 input = validateAccount(commandSchemas.block, action.kind === "block-new" ? { subjectId: text("subjectId"), dateStart: text("dateStart"), dateEnd: text("dateEnd"), message: text("message"), active: true, version: "0", reason } : { id: action.block.id, subjectId: action.block.subject_id, dateStart: action.block.date_start, dateEnd: action.block.date_end, message: action.block.message, active: !action.block.active, version: action.block.version, reason }, true);
+            draftTicket = draft.beforeSubmit();
             await onSave(input, request.signal);
+            draft.submitted(draftTicket);
         }
         catch (e) {
+            draft.failed(e);
             if (mounted.current && !request.signal.aborted) {
                 const fields = serverFieldErrors(e);
                 if (e instanceof ApiRequestError && ["STUDENT_COUNT_MISMATCH", "STUDENT_ATTENDANCE_MISMATCH"].includes(e.code)) {
@@ -98,14 +111,15 @@ export function JournalEditor({ action, blocked, onSave, onClose, onRecover }: {
                 setSaving(false);
         }
     }
-    return <FormDialog title={title} trigger="" open busy={saving} description="Periksa kegiatan dan isian sebelum menyimpan. Alasan dicatat untuk riwayat audit." onOpenChange={open => { if (!open && !pending.current)
-        onClose(); }} footer={<Button type="submit" form={formId} variant={action.kind === "delete" ? "destructive" : "default"} disabled={saving || blocked || (action.kind === "create" && !action.eligible.length)}>{saving ? "Menyimpan…" : submitLabel}</Button>}>
-    <form method="post" id={formId} onSubmit={event => void submit(event)} className="min-w-0 space-y-5 [overflow-wrap:anywhere]" aria-busy={saving}>
+    return <FormDialog title={title} trigger="" open busy={saving} onDiscard={draft.remove} description="Periksa kegiatan dan isian sebelum menyimpan. Alasan dicatat untuk riwayat audit." onOpenChange={open => { if (!open && !pending.current)
+        onClose(); }} footer={<Button type="submit" form={formId} variant={action.kind === "delete" ? "destructive" : "default"} disabled={saving || blocked || (action.kind === "create" && !action.eligible.length) || !!draft.candidate}>{saving ? "Menyimpan…" : submitLabel}</Button>}>
+    <form ref={attachDraftForm} method="post" id={formId} onSubmit={event => void submit(event)} className="min-w-0 space-y-5 [overflow-wrap:anywhere]" aria-busy={saving}>
       <fieldset disabled={saving || blocked} className="min-w-0 space-y-5">
         {isJournal && <>
           <h2 className="font-semibold">{action.kind === "edit" ? `Ubah jurnal ${action.journal.date}` : action.kind === "create" ? `Input jurnal tanggal ${action.date}` : ""}</h2>
-          {action.kind === "create" && <><p className="text-sm">H-1: {action.h1 ? "aktif, bobot 80% dibulatkan satu desimal" : "belum aktif"}. Jumlah siswa wajib cocok dengan rekap yang tersedia.</p><div className="min-w-0 space-y-2 text-sm"><label htmlFor={prefix + "occurrence"} className="block font-medium">Kegiatan</label><select id={prefix + "occurrence"} name="occurrenceId" className="ui-control" defaultValue="" required onChange={event => { const row = action.eligible.find(value => value.id === event.target.value); setPresent(String(row?.expectedStudents ?? 0)); setAbsent("0"); }}><option value="" disabled>Pilih kegiatan…</option>{action.eligible.map(row => <option key={row.id} value={row.id}>{row.subjectName} · {row.className} · {row.timeStart}–{row.timeEnd}</option>)}</select></div></>}
+          {action.kind === "create" && <><p className="text-sm">H-1: {action.h1 ? "aktif, bobot 80% dibulatkan satu desimal" : "belum aktif"}. Jumlah siswa wajib cocok dengan rekap yang tersedia.</p><div className="min-w-0 space-y-2 text-sm"><label htmlFor={prefix + "occurrence"} className="block font-medium">Kegiatan</label><select id={prefix + "occurrence"} name="occurrenceId" className="ui-control" defaultValue="" required onChange={event => { const row = action.eligible.find(value => value.id === event.target.value); setOccurrence(event.target.value); for (const name of ["material", "notes", "reason"]) { const field = event.target.form?.elements.namedItem(name); if (field instanceof HTMLTextAreaElement || field instanceof HTMLInputElement) field.value = ""; } setPresent(String(row?.expectedStudents ?? 0)); setAbsent("0"); }}><option value="" disabled>Pilih kegiatan…</option>{action.eligible.map(row => <option key={row.id} value={row.id}>{row.subjectName} · {row.className} · {row.timeStart}–{row.timeEnd}</option>)}</select></div></>}
           {edit && <p className="rounded-xl border bg-muted/30 p-3 text-sm">{edit.teacherName} · {edit.subjectName} · {edit.className} · versi {edit.version}. Bobot dan kredit JTM tetap dihitung oleh server.</p>}
+          {(edit || selected) && <DraftStatus draft={draft} disabled={saving || blocked}/>}
           <Field name="material" label="Materi pembelajaran" value={edit?.material ?? ""} maxLength={2000} multiline/>
           <div className="grid min-w-0 gap-4 sm:grid-cols-2">{([['present', 'Siswa hadir', present, setPresent], ['absent', 'Siswa absen', absent, setAbsent]] as const).map(([name, label, value, set]) => <div key={name} className="min-w-0 space-y-2 text-sm"><label className="block font-medium" htmlFor={prefix + name}>{label}</label><input id={prefix + name} className="ui-control" type="number" name={name} min={0} max={1000} step={1} value={value} onChange={e => set(e.target.value)} required/></div>)}</div>
           <Field name="notes" label="Catatan" value={edit?.notes ?? ""} maxLength={2000} required={false} multiline/>
@@ -117,7 +131,7 @@ export function JournalEditor({ action, blocked, onSave, onClose, onRecover }: {
         <Field name="reason" label={action.kind === "delete" ? "Alasan penghapusan jurnal" : action.kind === "h1" ? "Alasan perubahan kebijakan" : action.kind.startsWith("block") ? "Alasan perubahan blok" : "Alasan penyimpanan"} minLength={5} maxLength={500} multiline/>
       </fieldset>
       <ErrorFeedback message={error} autoFocus/>
-      {blocked && <div className="space-y-3"><p className="text-sm">Muat ulang dan periksa hasil terbaru sebelum menyimpan kembali. Formulir akan ditutup dan isian yang belum tersimpan dikosongkan.</p><Button type="button" variant="outline" onClick={onRecover}>Muat ulang dan periksa jurnal</Button></div>}
+      {blocked && <div className="space-y-3"><p className="text-sm">Muat ulang dan periksa hasil terbaru sebelum menyimpan kembali. Formulir akan ditutup. Draft lokal dapat ditinjau saat kegiatan yang sama dibuka kembali.</p><Button type="button" variant="outline" onClick={onRecover}>Muat ulang dan periksa jurnal</Button></div>}
     </form>
   </FormDialog>;
 }
