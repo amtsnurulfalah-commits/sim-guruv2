@@ -16,6 +16,10 @@ async function probe(path: string, status: number) {
   else assert.equal(body.data?.status,"alive");
   return {path,status};
 }
+async function main() {
 const results = [await probe("/api/health",200)];
 for(let n=0;n<paths.length;n+=4) results.push(...await Promise.all(paths.slice(n,n+4).map(path=>probe(path,401))));
 console.log(JSON.stringify({kind:"anonymous-release-smoke",ok:true,checks:results,limits:"Liveness and anonymous denial only; not authenticated business UAT or database readiness."},null,2));
+
+}
+main().catch(error => { console.error("SMOKE_FAILED", error instanceof Error ? error.message : "UNKNOWN"); process.exitCode=1; });
