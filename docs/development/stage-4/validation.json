@@ -52,18 +52,21 @@
     "expectedLedgerCount": 30,
     "disposableUpgrade": "exact production batch 29→30 passed; normal runner replay no-op; finance gateway/calculate hashes unchanged",
     "production": {
-      "status": "NOT APPLIED: Supabase connector returned Invalid or expired requestState twice",
+      "status": "APPLIED after explicit user authorization for Stage4 production migration",
       "preflightLedger": 29,
       "preflightChecksums": "all29 match source",
       "preflightRecorderHash": "d6058de179e9c321aabe2ad412357bc6",
-      "newCasesInstalled": false,
-      "verifiedAfterAttempts": {
-        "ledger": 29,
-        "caseTable": null,
-        "metricTable": null,
-        "checksum": null
-      },
-      "next": "Fresh confirmation for specific production Stage4 migration, then recheck connector/baseline and apply exact batch; no alternative execution attempted"
+      "newCasesInstalled": true,
+      "next": "Merge after final checks; verify matching production deployment and anonymous HTTP guard smoke",
+      "verifiedLedger": 30,
+      "checksumVerified": true,
+      "allFourTablesEnableForceRls": true,
+      "businessDirectReadDenied": true,
+      "businessGatewaysVerified": true,
+      "privatePurgeDenied": true,
+      "authMetricRecorderGranted": true,
+      "securityAdvisorsAfter": [],
+      "previousConnectorErrors": "Two prior Invalid or expired requestState responses; current authorized apply succeeded"
     }
   },
   "privacy": {
@@ -88,7 +91,10 @@
     "codeCiConclusion": "success",
     "previewDeployment": "dpl_G4WfwCN5evbwrTV7S5njaHzbd61v",
     "previewStatus": "READY",
-    "merged": false
+    "merged": false,
+    "latestCheckedHead": "590e3697b6ca6a6494545f2dfc1482d535f0d2cc",
+    "latestCheckedCiRun": 40073274405,
+    "latestCheckedCiConclusion": "success"
   },
-  "merge": "Not performed because frontend/API require the migration"
+  "merge": "Production migration verified; merge/deployment outcome follows PR48 release notes"
 }
