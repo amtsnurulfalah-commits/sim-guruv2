@@ -53,3 +53,9 @@ Migrasi `20261024062231_support_case_lifecycle_and_monitoring.sql`, precondition
 UI utama: `case-workspace.tsx`, terintegrasi di `support-reports.tsx`. Kontrak tunggal Zod, service/gateway existing. Lihat [validation.json](validation.json) dan status PR untuk bukti rilis. Validasi lokal sintetis bukan bukti penerapan migrasi, UAT produksi, native race, beban produksi atau delivery nyata.
 
 Berikutnya Tahap 5 — laporan kepala madrasah, setelah rilis ini dan instruksi pengguna. Izin pembaca laporan harus eksplisit; jabatan tambahan tidak otomatis mendapat akses seluruh data.
+
+## Status rilis PR #48
+
+Kode `d0c9a9f90a8507d7a02c20982c9fc81c637095e5`: CI run `40072027592` success, preview `dpl_G4WfwCN5evbwrTV7S5njaHzbd61v` READY. [PR #48](https://github.com/amtsnurulfalah-commits/sim-guruv2/pull/48) terbuka dan belum di-merge.
+
+Dua percobaan penerapan exact batch melalui konektor Supabase mengembalikan `Invalid or expired requestState`. Pemeriksaan metadata setelahnya memastikan ledger tetap29, tabel kasus/metrik belum ada dan checksum Tahap4 belum tercatat. Tidak ada klaim bahwa auto-review menolak: hasil yang diterima adalah error konektor/request state, bukan alasan penolakan risiko. Tidak mengeksekusi via jalur lain. Izin eksplisit produksi yang terbaru menyebut Tahap3; minta konfirmasi langkah produksi Tahap4, lalu periksa konektor/baseline, apply batch, cek ledger30/RLS/grants/advisor, merge setelah checks dan verifikasi produksi. Frontend tidak di-merge sebelum gateway tersedia.

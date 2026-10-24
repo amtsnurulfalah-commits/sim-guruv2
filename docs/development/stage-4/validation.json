@@ -1,6 +1,13 @@
 {
   "stage": 4,
-  "scope": ["4.1", "4.2", "4.3", "4.4", "4.5", "4.6"],
+  "scope": [
+    "4.1",
+    "4.2",
+    "4.3",
+    "4.4",
+    "4.5",
+    "4.6"
+  ],
   "dateWib": "2026-10-24",
   "baseMain": "e8891eacf2570386adc7a6c66e95e730fd153929",
   "branch": "feature/professional-stage-4",
@@ -23,7 +30,15 @@
       "pageErrors": 0,
       "consoleErrors": 0,
       "serverErrors": 0,
-      "legacySupportWidths": [280, 320, 375, 768, 1024, 1440, 1920],
+      "legacySupportWidths": [
+        280,
+        320,
+        375,
+        768,
+        1024,
+        1440,
+        1920
+      ],
       "newCaseFlow": "passed real SQL disposable: reference/create, verified context, owner/status, required resolution proof, reopen history, uncertain write lock/recovery, empty state and responsive modal",
       "visualInspection": "320px case form inspected",
       "latestTargetedRuns": "see PR release notes"
@@ -37,11 +52,18 @@
     "expectedLedgerCount": 30,
     "disposableUpgrade": "exact production batch 29→30 passed; normal runner replay no-op; finance gateway/calculate hashes unchanged",
     "production": {
-      "status": "pending; follow PR release outcome",
+      "status": "NOT APPLIED: Supabase connector returned Invalid or expired requestState twice",
       "preflightLedger": 29,
       "preflightChecksums": "all29 match source",
       "preflightRecorderHash": "d6058de179e9c321aabe2ad412357bc6",
-      "newCasesInstalled": false
+      "newCasesInstalled": false,
+      "verifiedAfterAttempts": {
+        "ledger": 29,
+        "caseTable": null,
+        "metricTable": null,
+        "checksum": null
+      },
+      "next": "Fresh confirmation for specific production Stage4 migration, then recheck connector/baseline and apply exact batch; no alternative execution attempted"
     }
   },
   "privacy": {
@@ -57,5 +79,16 @@
     "Provider runtime-log retention is not changed",
     "Source migration is not proof of production application; verify PR CI/migration/deployment outcome"
   ],
-  "next": "Tahap 5 / laporan kepala madrasah, setelah rilis Tahap4 dan instruksi pengguna"
+  "next": "Tahap 5 / laporan kepala madrasah, setelah rilis Tahap4 dan instruksi pengguna",
+  "pullRequest": {
+    "number": 48,
+    "url": "https://github.com/amtsnurulfalah-commits/sim-guruv2/pull/48",
+    "codeHead": "d0c9a9f90a8507d7a02c20982c9fc81c637095e5",
+    "codeCiRun": 40072027592,
+    "codeCiConclusion": "success",
+    "previewDeployment": "dpl_G4WfwCN5evbwrTV7S5njaHzbd61v",
+    "previewStatus": "READY",
+    "merged": false
+  },
+  "merge": "Not performed because frontend/API require the migration"
 }
