@@ -1,4 +1,5 @@
 import "server-only";
+import { caseCommand, caseQuery } from "../../lib/operations/support-cases";
 import {
   inboxQuery,
   preferenceCommand,
@@ -13,6 +14,25 @@ import { commands } from "../../lib/operations/schemas";
 export class OperationsService {
   constructor(private readonly db: SqlDatabase) {}
   async read(token: string, kind: string, input: unknown = {}) {
+    if (kind === "support-cases" || kind === "support-monitor") {
+      const query =
+        kind === "support-cases"
+          ? caseQuery.parse(input)
+          : z.object({}).strict().parse(input);
+      return this.db.transaction(
+        async (tx) =>
+          (
+            await tx.query<{ value: unknown }>(
+              kind === "support-cases"
+                ? "select app.support_cases_read($1,$2::jsonb) value"
+                : "select app.support_monitor_read($1) value",
+              kind === "support-cases"
+                ? [tokenHash(token), sqlJson(query)]
+                : [tokenHash(token)],
+            )
+          ).rows[0]!.value,
+      );
+    }
     if (kind === "tasks" || kind === "inbox") {
       const query =
         kind === "inbox"
@@ -68,6 +88,18 @@ export class OperationsService {
     );
   }
   async command(token: string, kind: string, input: unknown) {
+    if (kind === "support-case") {
+      const data = caseCommand.parse(input);
+      return this.db.transaction(
+        async (tx) =>
+          (
+            await tx.query<{ value: unknown }>(
+              "select app.support_case_command($1,$2::jsonb) value",
+              [tokenHash(token), sqlJson(data)],
+            )
+          ).rows[0]!.value,
+      );
+    }
     if (kind === "notification-preferences" || kind === "notification-read") {
       const data = (
         kind === "notification-read" ? readCommand : preferenceCommand

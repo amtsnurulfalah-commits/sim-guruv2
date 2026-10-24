@@ -50,7 +50,7 @@
     "disposableUpgrade": "passed; exact production batch; normal migration runner after batch no-op",
     "financeCalculateUnchanged": true,
     "production": {
-      "status": "NOT APPLIED: automatic approval review rejected specific production schema/routine mutation; waiting for explicit user authorization",
+      "status": "APPLIED after explicit user authorization",
       "preflightLedger": 28,
       "preflightChecksums": "all 28 match repository",
       "preflightRoutineHashes": "match migration preconditions",
@@ -62,7 +62,11 @@
         "created_at"
       ],
       "securityAdvisorsBefore": [],
-      "rejectionReason": "Tahap 3 + merge instruction did not explicitly authorize this production migration replacing financial gateways and adding table/columns/constraints."
+      "ledgerVerified": 29,
+      "checksumVerified": true,
+      "forceRlsVerified": true,
+      "privateGatewayDenied": true,
+      "securityAdvisorsAfter": []
     }
   },
   "boundaries": [
@@ -78,12 +82,26 @@
   "pullRequest": {
     "number": 47,
     "url": "https://github.com/amtsnurulfalah-commits/sim-guruv2/pull/47",
-    "status": "open; release blocked by production migration approval",
+    "status": "merged",
     "headCodeCommit": "bbee014285a19a6bb1efafdda8f7fa34af7decb8",
     "codeCiRun": 40069187868,
     "codeCiConclusion": "success",
     "codePreviewDeployment": "dpl_9dHKFzKqxNiYapAC9CqvoGQMUcrK",
-    "codePreviewState": "READY"
+    "codePreviewState": "READY",
+    "head": "afbe840f788abcf2e554ef024c987e3669e659af",
+    "finalCiRun": 40069465897,
+    "finalCiConclusion": "success"
   },
-  "merge": "not performed: frontend contracts require the production migration; direct merge would break new finance workflows"
+  "merge": {
+    "pr": 47,
+    "sha": "e8891eacf2570386adc7a6c66e95e730fd153929"
+  },
+  "deployment": {
+    "id": "dpl_5t6GVPT3vzEvCp1mJ8UzperW7Zkm",
+    "status": "READY",
+    "target": "production",
+    "sha": "e8891eacf2570386adc7a6c66e95e730fd153929",
+    "health": 200,
+    "anonymousFinanceApi": 401
+  }
 }

@@ -49,6 +49,4 @@ Berikutnya Tahap 4 / penanganan kendala dan pemantauan, setelah instruksi penggu
 
 ## Status rilis PR #47
 
-Kode commit `bbee014285a19a6bb1efafdda8f7fa34af7decb8`: CI run `40069187868` success, Vercel preview `dpl_9dHKFzKqxNiYapAC9CqvoGQMUcrK` READY. PR [#47](https://github.com/amtsnurulfalah-commits/sim-guruv2/pull/47) masih terbuka.
-
-**Migrasi produksi belum dijalankan dan merge belum dilakukan.** Auto-review menolak mutasi produksi karena instruksi menjalankan Tahap 3/merge belum dianggap izin spesifik untuk menambah metadata/tabel/constraint dan mengganti gateway finansial. Tidak dicoba melalui jalur alternatif. Setelah izin spesifik pengguna: verifikasi ulang baseline → terapkan exact batch → cek ledger29/RLS/grants/advisor → merge setelah checks → verifikasi deployment. Batch SHA256 `5ecec93b55e76aa428bacdd483edec2a9f9f54ac9324781c296921360cefcc76`; migrasi SHA256 `56ca7c9fe9e4ebd7e5afd134bbd90ceb1e1c8c314fecca280d1201ba1545f51a`. Jangan merge frontend sebelum migration gate terpenuhi.
+Pengguna memberi izin eksplisit migrasi produksi. Exact batch berhasil diterapkan, ledger29/checksum/RLS/grants terverifikasi, advisor tanpa lint. PR #47 merged ke `e8891eacf2570386adc7a6c66e95e730fd153929`; deployment produksi `dpl_5t6GVPT3vzEvCp1mJ8UzperW7Zkm` READY. Health200; API readiness/requests tanpa login401. Tidak menguji koreksi/finalisasi/email produksi. Penolakan sebelumnya telah diselesaikan lewat izin pengguna.

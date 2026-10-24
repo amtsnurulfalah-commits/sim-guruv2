@@ -78,6 +78,8 @@ Hasil implementasi 3.1–3.5: [paket Tahap 3](stage-3/README.md), kontrak kesiap
 
 Dependency: Tahap 1–2. Selesai jika penanganan dapat ditelusuri, catatan internal terlindungi dan retensi diuji.
 
+Hasil implementasi 4.1–4.6: [paket Tahap 4](stage-4/README.md), lifecycle, kewenangan, pengukuran, retensi dan bukti rilis.
+
 ## Tahap 5 — Laporan kepala madrasah
 
 - **5.1** Kamus indikator: sumber, rentang, denominator, status final/proyeksi dan waktu pembaruan.
@@ -125,4 +127,4 @@ Analisis source/dependency → kriteria penerimaan → implementasi terukur → 
 
 Uji normal/kosong/banyak/loading/error/stale/expired, kewenangan, desktop/tablet/mobile, resize/orientasi. Perubahan finansial/otorisasi memerlukan tes SQL. Hindari fungsi duplikat, perubahan fitur tak terkait dan penghapusan source tanpa bukti aman.
 
-Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap 0–2 merged; Tahap 3 diimplementasikan dan divalidasi, status merge/migrasi/deployment mengikuti PR dan validation.json Tahap 3. Berikutnya **Tahap 4 / penanganan kendala dan pemantauan**, setelah instruksi kelanjutan pengguna. Tidak ada estimasi waktu selesai sebelum scope/dependency diperiksa.
+Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap 0–3 merged dan Tahap 3 terverifikasi produksi; Tahap 4 diimplementasikan, status pemeriksaan/migrasi/merge/deployment mengikuti PR dan validation.json Tahap 4. Berikutnya **Tahap 5 / laporan kepala madrasah**, setelah rilis Tahap 4 dan instruksi pengguna.
