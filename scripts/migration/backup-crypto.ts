@@ -4,12 +4,12 @@ import {
   createHash,
   randomBytes,
 } from "node:crypto";
-export function encryptBackup(bytes: Uint8Array, key: string) {
+export function encryptBackup(bytes: Uint8Array, key: string, context = "sim-guru-backup-v1") {
   if (!/^[a-f0-9]{64}$/i.test(key))
     throw new Error("BACKUP_ENCRYPTION_KEY_REQUIRED");
   const iv = randomBytes(12),
     cipher = createCipheriv("aes-256-gcm", Buffer.from(key, "hex"), iv);
-  cipher.setAAD(Buffer.from("sim-guru-backup-v1"));
+  cipher.setAAD(Buffer.from(context));
   const data = Buffer.concat([cipher.update(bytes), cipher.final()]);
   return {
     data,
@@ -23,6 +23,7 @@ export function decryptBackup(
   data: Uint8Array,
   m: { iv: string; tag: string; checksum: string; plainChecksum: string },
   key: string,
+  context = "sim-guru-backup-v1",
 ) {
   if (!/^[a-f0-9]{64}$/i.test(key))
     throw new Error("BACKUP_ENCRYPTION_KEY_REQUIRED");
@@ -33,7 +34,7 @@ export function decryptBackup(
     Buffer.from(key, "hex"),
     Buffer.from(m.iv, "hex"),
   );
-  decipher.setAAD(Buffer.from("sim-guru-backup-v1"));
+  decipher.setAAD(Buffer.from(context));
   decipher.setAuthTag(Buffer.from(m.tag, "hex"));
   const bytes = Buffer.concat([decipher.update(data), decipher.final()]);
   if (createHash("sha256").update(bytes).digest("hex") !== m.plainChecksum)
