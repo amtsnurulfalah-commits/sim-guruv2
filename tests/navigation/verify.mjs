@@ -216,10 +216,49 @@ try {
       () => document.documentElement.scrollWidth <= innerWidth + 1,
     ),
   );
-  await page.getByRole("button", { name: "Buka navigasi", exact: true }).click();
-  await drawer.getByRole("link", { name: "Jurnal pembelajaran", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Buka navigasi", exact: true })
+    .click();
+  await drawer
+    .getByRole("link", { name: "Jurnal pembelajaran", exact: true })
+    .click();
   await drawer.waitFor({ state: "hidden" });
-  assert.equal(await page.locator('[data-slot="navigation-pending"]').count(), 0);
+  assert.equal(
+    await page.locator('[data-slot="navigation-pending"]').count(),
+    0,
+  );
+  // Resizing an open mobile modal must release its inert desktop background.
+  await page
+    .getByRole("button", { name: "Buka navigasi", exact: true })
+    .click();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await drawer.waitFor({ state: "hidden" });
+  await page
+    .getByRole("link", { name: "Jadwal mengajar", exact: true })
+    .click();
+  const context = page.getByTestId("url-context");
+  await context.getByText("active:1", { exact: true }).waitFor();
+  await page.getByLabel("Status fixture").selectOption("closed");
+  await context.getByText("closed:1", { exact: true }).waitFor();
+  await page
+    .getByRole("button", { name: "Halaman fixture berikutnya" })
+    .click();
+  await context.getByText("closed:2", { exact: true }).waitFor();
+  assert.equal(await sidebar.evaluate((node) => node.isConnected), true);
+  await page.goBack();
+  await context.getByText("closed:1", { exact: true }).waitFor();
+  await page.goForward();
+  await context.getByText("closed:2", { exact: true }).waitFor();
+  await page.reload();
+  await context.getByText("closed:2", { exact: true }).waitFor();
+  const sharedUrl = page.url();
+  await page.goto(sharedUrl);
+  await context.getByText("closed:2", { exact: true }).waitFor();
+  await page.getByRole("button", { name: "Reset fixture" }).click();
+  await context.getByText("active:1", { exact: true }).waitFor();
+  assert.equal(new URL(page.url()).search, "");
+  await page.goto(baseUrl + "/jadwal?page=-1&state=bad");
+  await context.getByText("active:1", { exact: true }).waitFor();
   // Revocation still discards the entire protected tree and redirects to login.
   await page.route("**/api/auth/session", (route) =>
     route.request().method() === "GET"
@@ -256,6 +295,8 @@ try {
     mobileDrawer: true,
     currentMenuClosesDrawer: true,
     expiredSessionRedirect: true,
+    urlFiltersBackForwardReloadShareReset: true,
+    mobileResizeReleasesModal: true,
     pageErrors: errors,
   };
   await writeFile(

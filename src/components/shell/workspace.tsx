@@ -40,7 +40,7 @@ import { Breadcrumbs } from "./breadcrumbs";
 import { NavigationLoading } from "./navigation-loading";
 import { Brand } from "@/components/brand";
 import { Button } from "@/components/ui/button";
-import { modulesFor } from "@/lib/navigation/modules";
+import { modulesFor, navigationGroups } from "@/lib/navigation/modules";
 import { cn } from "@/lib/utils";
 import type { SessionDto } from "@/types/auth";
 const moduleIcons: Record<string, typeof LayoutDashboard> = {
@@ -110,6 +110,17 @@ export function Workspace({
     return () => {
       active = false;
     };
+  }, []);
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const closeOnDesktop = () => {
+      if (desktop.matches && drawer.current?.open) {
+        drawer.current.close();
+        document.getElementById("konten-utama")?.focus();
+      }
+    };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
   }, []);
   function toggle() {
     setQuery("");
@@ -228,11 +239,16 @@ export function Workspace({
             {item("/login", "Masuk ke akun", UserRound)}
           </>
         )}
-        {(["Kegiatan", "Administrasi"] as const).map((group) => {
+        {navigationGroups.map((group) => {
           const list = filteredLinks.filter((m) => m.group === group);
           if (!list.length) return null;
           return compact ? (
-            <div key={group} className="border-t pt-2">
+            <div
+              key={group}
+              role="group"
+              aria-label={group}
+              className="border-t pt-2"
+            >
               {list.map((m) =>
                 item(
                   m.href ?? "/modul/" + m.slug,
@@ -243,7 +259,7 @@ export function Workspace({
             </div>
           ) : (
             <details key={group} open className="border-t pt-2">
-              <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between px-3 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase [overflow-wrap:anywhere]">
                 {group}
                 <ChevronDown className="size-4" aria-hidden="true" />
               </summary>
@@ -390,7 +406,10 @@ export function Workspace({
         ref={drawer}
         aria-labelledby="mobile-navigation-title"
         className="fixed inset-y-0 left-0 m-0 h-svh max-h-none w-[min(20rem,calc(100%-2rem))] max-w-none border-r bg-card p-0 text-foreground shadow-xl backdrop:bg-black/45"
-        onClose={() => mobileTrigger.current?.focus()}
+        onClose={() => {
+          if (!window.matchMedia("(min-width: 1024px)").matches)
+            mobileTrigger.current?.focus();
+        }}
       >
         <div className="flex min-h-20 items-center justify-between gap-2 border-b px-5">
           <h2 id="mobile-navigation-title" className="font-bold">

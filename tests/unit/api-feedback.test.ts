@@ -153,3 +153,54 @@ test("Interrupted download reports a safe retry instruction", async (t) => {
     },
   );
 });
+
+for (const name of ["TimeoutError", "TypeError"] as const)
+  test(`Interrupted response body ${name} keeps uncertain write feedback without replay`, async (t) => {
+    let calls = 0;
+    t.mock.method(globalThis, "fetch", async () => {
+      calls++;
+      return new Response(
+        new ReadableStream({
+          start(controller) {
+            controller.error(
+              name === "TimeoutError"
+                ? new DOMException("private", name)
+                : new TypeError("private"),
+            );
+          },
+        }),
+      );
+    });
+    await assert.rejects(
+      requestJson("/api/synthetic", { method: "PATCH" }),
+      (error) => {
+        assert.ok(error instanceof ApiRequestError);
+        assert.equal(
+          error.code,
+          name === "TimeoutError" ? "TIMEOUT" : "NETWORK_ERROR",
+        );
+        assert.match(
+          error.message,
+          /Status penyimpanan belum dapat dipastikan/,
+        );
+        assert.doesNotMatch(error.message, /private/);
+        return true;
+      },
+    );
+    assert.equal(calls, 1);
+  });
+test("Deliberately cancelled response body preserves cancellation", async () => {
+  const controller = new AbortController();
+  controller.abort();
+  const response = new Response(
+    new ReadableStream({
+      start(stream) {
+        stream.error(controller.signal.reason);
+      },
+    }),
+  );
+  await assert.rejects(
+    readApiResponse(response, { signal: controller.signal }),
+    (error) => error === controller.signal.reason,
+  );
+});

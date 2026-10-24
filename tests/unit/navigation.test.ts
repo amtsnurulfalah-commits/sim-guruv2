@@ -17,3 +17,12 @@ test("navigation registry has unique slugs and enforces role visibility independ
   assert.equal(canViewModule("admin", users), true);
   assert.equal(moduleBySlug("unknown-module"), undefined);
 });
+
+test("four navigation groups retain the complete role-specific module registry", () => {
+  assert.deepEqual(
+    [...new Set(modulesFor("admin").map((m) => m.group))],
+    ["Pembelajaran", "Kehadiran & Penugasan", "Keuangan", "Administrasi"],
+  );
+  assert.equal(moduleBySlug("honorarium")?.group, "Keuangan");
+  assert.ok(modulesFor("guru").every((m) => m.group !== "Administrasi"));
+});

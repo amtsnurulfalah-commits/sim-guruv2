@@ -1,9 +1,15 @@
+export const navigationGroups = [
+  "Pembelajaran",
+  "Kehadiran & Penugasan",
+  "Keuangan",
+  "Administrasi",
+] as const;
 export type AppRole = "admin" | "guru";
 export type AppModule = {
   slug: string;
   title: string;
   description: string;
-  group: "Kegiatan" | "Administrasi";
+  group: (typeof navigationGroups)[number];
   stage: string;
   adminOnly?: boolean;
   href?: string;
@@ -16,7 +22,7 @@ export const modules: readonly AppModule[] = [
     available: true,
     title: "Jadwal mengajar",
     description: "Jadwal KBM, waktu mengajar dan pemeriksaan bentrok jadwal.",
-    group: "Kegiatan",
+    group: "Pembelajaran",
     stage: "2.4",
   },
   {
@@ -25,7 +31,7 @@ export const modules: readonly AppModule[] = [
     available: true,
     title: "Jurnal pembelajaran",
     description: "Catatan pembelajaran, rekap siswa dan riwayat jurnal.",
-    group: "Kegiatan",
+    group: "Pembelajaran",
     stage: "3.6",
   },
   {
@@ -34,7 +40,7 @@ export const modules: readonly AppModule[] = [
     available: true,
     title: "Konfirmasi KBM",
     description: "Penugasan bertanggal dan konfirmasi kegiatan mengajar.",
-    group: "Kegiatan",
+    group: "Pembelajaran",
     stage: "3.1",
   },
   {
@@ -43,7 +49,7 @@ export const modules: readonly AppModule[] = [
     available: true,
     title: "Absensi siswa",
     description: "Rekap kelas dan progres kelengkapan harian.",
-    group: "Kegiatan",
+    group: "Pembelajaran",
     stage: "3.4",
   },
   {
@@ -53,7 +59,7 @@ export const modules: readonly AppModule[] = [
     title: "Piket dan upacara",
     description:
       "Penugasan, konfirmasi dan pencatatan kegiatan piket serta upacara.",
-    group: "Kegiatan",
+    group: "Kehadiran & Penugasan",
     stage: "4.1–4.4",
   },
   {
@@ -63,7 +69,7 @@ export const modules: readonly AppModule[] = [
     title: "Ujian dan BAP",
     description:
       "Penugasan panitia/pengawas dan berita acara pelaksanaan ujian.",
-    group: "Kegiatan",
+    group: "Kehadiran & Penugasan",
     stage: "5.1–5.3",
   },
   {
@@ -72,7 +78,7 @@ export const modules: readonly AppModule[] = [
     available: true,
     title: "Kehadiran",
     description: "Kehadiran, waktu masuk/keluar dan izin sesuai kewenangan.",
-    group: "Kegiatan",
+    group: "Kehadiran & Penugasan",
     stage: "3.2–3.3",
   },
   {
@@ -81,7 +87,7 @@ export const modules: readonly AppModule[] = [
     available: true,
     title: "Kegiatan dan acara",
     description: "Penugasan peserta, kehadiran dan jurnal kegiatan madrasah.",
-    group: "Kegiatan",
+    group: "Kehadiran & Penugasan",
     stage: "5.4–5.5",
   },
   {
@@ -91,7 +97,7 @@ export const modules: readonly AppModule[] = [
     title: "Honorarium",
     description:
       "Perhitungan, finalisasi dan slip honorarium dari kegiatan yang sah.",
-    group: "Kegiatan",
+    group: "Keuangan",
     stage: "6",
   },
   {

@@ -53,6 +53,23 @@ try {
   }
  }
  await page.setViewportSize({width:375,height:812});recapFail=true;await go();await page.getByRole('region',{name:'Jadwal mengajar',exact:true}).waitFor();await page.getByText('Rekap belum tersedia; daftar jadwal tetap dapat digunakan.',{exact:true}).waitFor();recapFail=false;
+ // URL context survives history, reload and sharing; free-text searches remain local.
+ const urlFilter = page.locator('details').filter({has:page.getByText('Filter jadwal mingguan',{exact:true})});
+ await urlFilter.locator('summary').first().click();
+ await urlFilter.getByLabel('Status jadwal',{exact:false}).selectOption('closed');
+ await page.waitForURL('**state=closed');
+ await page.reload();await page.getByRole('region',{name:'Jadwal mengajar',exact:true}).waitFor();
+ await urlFilter.locator('summary').first().click();
+ assert.equal(await urlFilter.getByLabel('Status jadwal',{exact:false}).inputValue(),'closed');
+ await urlFilter.getByRole('button',{name:'Reset filter',exact:true}).click();
+ await page.waitForURL(url=>!url.searchParams.has('state'));
+ await page.goBack();await page.waitForURL('**state=closed');
+ assert.equal(await urlFilter.getByLabel('Status jadwal',{exact:false}).inputValue(),'closed');
+ await page.goForward();await page.waitForURL(url=>!url.searchParams.has('state'));
+ await urlFilter.getByLabel('Cari guru / kelas / mata pelajaran / periode',{exact:true}).fill('Guru 21');
+ assert.equal(new URL(page.url()).searchParams.has('q'),false);
+ await urlFilter.getByRole('button',{name:'Reset filter',exact:true}).click();
+ await urlFilter.locator('summary').first().click();
  // Daily error/retry and changed date never present a stale date's rows.
  const daily=page.locator('details').filter({has:page.getByRole('heading',{name:'Jadwal pribadi pada tanggal',exact:true})});await daily.locator('summary').click();dailyFail=true;await daily.getByLabel('Tanggal (WIB)',{exact:true}).fill('2090-01-02');await daily.getByRole('alert').waitFor();dailyFail=false;await daily.getByRole('button',{name:'Coba muat jadwal harian',exact:true}).click();await daily.getByText('VII · 2090-01-02',{exact:true}).waitFor();dailyDelay=500;await daily.getByLabel('Tanggal (WIB)',{exact:true}).fill('2090-01-03');await daily.getByText('Memuat jadwal harian…',{exact:true}).waitFor();assert.equal(await daily.getByText('VII · 2090-01-02',{exact:true}).count(),0);await daily.getByText('VII · 2090-01-03',{exact:true}).waitFor();dailyDelay=0;
  // Editor validation, conflict invalidation, duplicate submission, busy modal guard.

@@ -45,11 +45,20 @@ function statusCode(status: number) {
           ? "UNAVAILABLE"
           : "INVALID_RESPONSE";
 }
-export async function readApiResponse<T>(response: Response): Promise<T> {
+export async function readApiResponse<T>(
+  response: Response,
+  init: RequestInit = {},
+): Promise<T> {
   let value: unknown;
   try {
     value = await response.json();
-  } catch {
+  } catch (error) {
+    if (
+      init.signal?.aborted ||
+      (error instanceof Error &&
+        ["TimeoutError", "AbortError", "TypeError"].includes(error.name))
+    )
+      throw transportError(error, init);
     throw new ApiRequestError(
       statusCode(response.status),
       "Jawaban layanan belum dapat dibaca. Muat ulang data; jika tadi menyimpan, periksa riwayat sebelum mengirim ulang.",
@@ -91,6 +100,20 @@ export async function readApiResponse<T>(response: Response): Promise<T> {
     Number.isFinite(retry) && retry > 0 ? retry : undefined,
   );
 }
+/** Normalize headers and body transport failures identically, never retry writes. */
+function transportError(error: unknown, init: RequestInit): unknown {
+  if (error instanceof ApiRequestError) return error;
+  if (init.signal?.aborted && init.signal.reason?.name !== "TimeoutError")
+    return error;
+  const timeout =
+    init.signal?.reason?.name === "TimeoutError" ||
+    (error instanceof Error && error.name === "TimeoutError");
+  const write = !["GET", "HEAD"].includes(init.method?.toUpperCase() ?? "GET");
+  return new ApiRequestError(
+    timeout ? "TIMEOUT" : "NETWORK_ERROR",
+    `${timeout ? "Layanan belum menjawab dalam batas waktu." : "Koneksi ke layanan terputus."} Periksa koneksi internet Anda.${write ? " Status penyimpanan belum dapat dipastikan. Periksa riwayat atau muat ulang data sebelum mengirim ulang agar tidak membuat data ganda." : " Coba muat ulang data setelah koneksi kembali stabil."}`,
+  );
+}
 /** Never retry writes automatically: a lost response can follow a successful commit. */
 export async function requestResponse(
   path: string,
@@ -99,24 +122,14 @@ export async function requestResponse(
   try {
     return await fetch(path, { cache: "no-store", ...init });
   } catch (error) {
-    if (error instanceof ApiRequestError) throw error;
-    if (init.signal?.aborted && init.signal.reason?.name !== "TimeoutError")
-      throw error;
-    const timeout = error instanceof Error && error.name === "TimeoutError";
-    const write = !["GET", "HEAD"].includes(
-      init.method?.toUpperCase() ?? "GET",
-    );
-    throw new ApiRequestError(
-      timeout ? "TIMEOUT" : "NETWORK_ERROR",
-      `${timeout ? "Layanan belum menjawab dalam batas waktu." : "Koneksi ke layanan terputus."} Periksa koneksi internet Anda.${write ? " Status penyimpanan belum dapat dipastikan. Periksa riwayat atau muat ulang data sebelum mengirim ulang agar tidak membuat data ganda." : " Coba muat ulang data setelah koneksi kembali stabil."}`,
-    );
+    throw transportError(error, init);
   }
 }
 export async function requestJson<T>(
   path: string,
   init: RequestInit = {},
 ): Promise<T> {
-  return readApiResponse<T>(await requestResponse(path, init));
+  return readApiResponse<T>(await requestResponse(path, init), init);
 }
 export async function downloadFile(
   path: string,

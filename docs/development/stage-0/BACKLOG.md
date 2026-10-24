@@ -31,7 +31,7 @@ P0 = gate operasional/keamanan sebelum rilis terkait; P1 = fondasi/pekerjaan uta
 
 ## Langkah berikutnya
 
-Mulai **UI-01 / Tahap 1.1** setelah instruksi kelanjutan pengguna: baca design system existing, inventaris pemakai/gap, tetapkan keputusan serta pilot sebelum perluasan. Tidak mengulang audit halaman yang sudah lulus tanpa perubahan/temuan baru.
+UI-01–05/API-01 dilaksanakan melalui [Tahap 1: fondasi bersama dan pilot](../stage-1/README.md). Berikutnya **TASK-01 / Tahap 2.1**, mulai kontrak identitas/sumber/deadline/kewenangan setelah instruksi kelanjutan pengguna. Tidak mengulang audit halaman yang sudah lulus tanpa perubahan/temuan baru.
 
 OPS-01/02 memerlukan proses operator sesuai akses sebelum rilis terkait. Tidak otomatis menghalangi pekerjaan UI yang tidak bergantung produksi. Setiap item mencatat masalah/aktor/sumber, dependency, API/schema/SQL terdampak, penerimaan, tes, migrasi/rollback jika perlu, PR/commit dan sisa pekerjaan.
 

@@ -1,4 +1,7 @@
 "use client";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { Pagination } from "@/components/ui/pagination";
+import { useUrlFilters } from "@/lib/navigation/use-url-filters";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 import { ChevronDown } from "lucide-react";
@@ -8,7 +11,9 @@ import {
   ManagedDialog,
   requestDialogClose,
 } from "@/components/ui/managed-dialog";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  useCallback, useEffect, useMemo, useRef, useState, type FormEvent,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { masterRequest } from "@/features/masters/api";
 import {
@@ -343,6 +348,17 @@ const initial = {
   validTo: "",
   state: "active",
 };
+// Free-text teacher searches stay local; only non-sensitive list context is shared.
+const urlDefaults = {
+  dayIndex: "", validFrom: "", validTo: "", state: "active", page: "1",
+};
+const urlRules = {
+  dayIndex: (value: string) => scheduleFilters.shape.dayIndex.safeParse(value).success,
+  validFrom: (value: string) => scheduleFilters.shape.validFrom.safeParse(value).success,
+  validTo: (value: string) => scheduleFilters.shape.validTo.safeParse(value).success,
+  state: (value: string) => scheduleFilters.shape.state.safeParse(value).success,
+  page: (value: string) => /^[1-9]\d{0,5}$/.test(value) && scheduleFilters.shape.page.safeParse(value).success,
+};
 type BulkPreview = {
   previewId: string;
   expiresAt: string;
@@ -358,9 +374,19 @@ type BulkPreview = {
   }[];
 };
 export function ScheduleManager({ admin }: { admin: boolean }) {
-  const [filters, setFilters] = useState(initial),
-    [page, setPage] = useState(1),
-    [list, setList] = useState<ScheduleList | null>(null),
+  const [urlFilters, updateUrl] = useUrlFilters(urlDefaults, urlRules);
+  const [localFilters, setLocalFilters] = useState(initial);
+  const { page: urlPage } = urlFilters;
+  const page = Number(urlPage);
+  const filters = useMemo(() => {
+    const { page: _page, ...shared } = urlFilters;
+    void _page;
+    return { ...localFilters, ...shared };
+  }, [localFilters, urlFilters]);
+  const setPage = useCallback(
+    (value: number) => updateUrl({ page: String(value) }, "replace"), [updateUrl],
+  );
+  const [list, setList] = useState<ScheduleList | null>(null),
     [recap, setRecap] = useState<{
       rowCount: number;
       totalScheduledJtm: string;
@@ -490,7 +516,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
       active = false;
       c.abort();
     };
-  }, [filters, page, revision, admin]);
+  }, [filters, page, revision, admin, setPage]);
   useEffect(() => {
     let active=true;const c=new AbortController();
     async function load(){
@@ -513,8 +539,8 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
     if (historyId && !historyDialog.current?.open) historyDialog.current?.showModal();
   }, [historyId]);
   function filter(key: string, value: string) {
-    setFilters((v) => ({ ...v, [key]: value }));
-    setPage(1);
+    if (Object.hasOwn(urlDefaults, key)) updateUrl({ [key]: value, page: "1" });
+    else { setLocalFilters((v) => ({ ...v, [key]: value })); updateUrl({ page: "1" }, "replace"); }
     setSelected({});
     setPrintRows(null);
   }
@@ -751,7 +777,8 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             />
           </summary>
           <fieldset disabled={busy} className="min-w-0 space-y-4 border-t p-4">
-            <Button type="button" variant="outline" onClick={()=>{setFilters(initial);setPage(1);setSelected({});setPrintRows(null);}}>Reset filter</Button>
+            <p className="text-sm leading-6 text-muted-foreground">Tautan halaman menyimpan hari, status, rentang tanggal, dan nomor halaman. Pencarian nama serta pilihan relasi tetap hanya di halaman ini.</p>
+            <Button type="button" variant="outline" onClick={()=>{setLocalFilters(initial);updateUrl(urlDefaults);setSelected({});setPrintRows(null);}}>Reset filter</Button>
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block space-y-2 text-sm">
                 <span>Cari guru / kelas / mata pelajaran / periode</span>
@@ -953,11 +980,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                             </p>
                             <p className="mt-1 text-xs text-muted-foreground">
                               {r.periodLabel} ·{" "}
-                              {r.state === "active"
-                                ? "Aktif"
-                                : r.state === "closed"
-                                  ? "Ditutup"
-                                  : "Diarsipkan"}
+                              <StatusBadge tone={r.state === "active" ? "success" : "neutral"} label={r.state === "active" ? "Aktif" : r.state === "closed" ? "Ditutup" : "Diarsipkan"}/>
                             </p>
                           </td>
                           <td className="p-3">
@@ -1038,24 +1061,8 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   </table>
                 </TableRegion>
               )}
-              <nav aria-label="Halaman daftar jadwal" className="flex flex-wrap justify-between gap-3">
-                <Button
-                  variant="outline"
-                  disabled={busy || page === 1}
-                  onClick={() => setPage((v) => v - 1)}
-                >
-                  <ActionIcon action="previous" />
-                  Sebelumnya
-                </Button>
-                <Button
-                  variant="outline"
-                  disabled={busy || page * 20 >= list.total}
-                  onClick={() => setPage((v) => v + 1)}
-                >
-                  <ActionIcon action="next" />
-                  Berikutnya
-                </Button>
-              </nav>
+              <Pagination label="Halaman daftar jadwal" page={page} pageSize={20} total={list.total} disabled={busy || loading} onPageChange={next => updateUrl({ page: String(next) })}/>
+
             </>
           )
         )}

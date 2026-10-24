@@ -1,6 +1,6 @@
 # SiM-Guru — Pembangunan Ulang
 
-Pengembangan lanjutan: [Roadmap Tahap 0–8](docs/development/ROADMAP_PENGEMBANGAN.md) · [Checkpoint](docs/development/CHECKPOINT.md) · [Hasil Tahap 0](docs/development/stage-0/README.md). Penomoran program baru terpisah dari pembangunan ulang historis di bawah.
+Pengembangan lanjutan: [Roadmap Tahap 0–8](docs/development/ROADMAP_PENGEMBANGAN.md) · [Checkpoint](docs/development/CHECKPOINT.md) · [Hasil Tahap 0](docs/development/stage-0/README.md) · [Hasil Tahap 1](docs/development/stage-1/README.md). Penomoran program baru terpisah dari pembangunan ulang historis di bawah.
 
 Fondasi pembangunan ulang mencakup **8.1–8.5: kesiapan migrasi dan cutover**. Migrasi data nyata, restore native dan UAT/cutover masih memerlukan bukti operasional. Stack: Next.js App Router, TypeScript strict, Tailwind CSS, shadcn/ui source components, Zod, Postgres.js dan Argon2id. Vercel untuk hosting; Supabase PostgreSQL/Storage untuk data. Autentikasi dikelola SiM-Guru sendiri, tanpa Central SSO dan tanpa Supabase Auth.
 
