@@ -27,6 +27,7 @@ import {
   type HonorSnapshot,
 } from "../../lib/finance/schemas";
 import { z } from "zod";
+import { CorrectionWorkflow, HonorReadiness } from "./honor-readiness";
 import { FinancePreviewDialog } from "./finance-preview-dialog";
 import {
   commandSchemas,
@@ -576,6 +577,17 @@ export function FinanceManager({
         </button>
       </div>
       {error && !preview && <ErrorFeedback message={error} />}
+      {view === "estimate" && (
+        <HonorReadiness admin={admin} period={period} revision={revision} />
+      )}
+      {view === "operations" && admin && (
+        <CorrectionWorkflow
+          key={period}
+          admin={admin}
+          period={period}
+          onLockChange={setActiveForm}
+        />
+      )}
       {message && <p role="status">{message}</p>}
       {hidden && (
         <p className="text-sm text-muted-foreground">
@@ -899,80 +911,14 @@ export function FinanceManager({
               Tutup slip
             </button>
           </div>
-          <div className="print:hidden">
-            <DataForm
-              key={slip.id + ":request"}
-              fields={[reason]}
-              label="Ajukan koreksi honorarium"
-              submitLabel="Kirim permintaan koreksi"
-              description={
-                "Slip " + slip.trxId + ". Jelaskan alasan permintaan koreksi."
-              }
-              {...formProps}
-              onSave={(data) =>
-                formRun(() =>
-                  post("request", { ...data, statementId: slip.id }),
-                )
-              }
-            />
-          </div>
-          {admin && (
-            <details className="print:hidden">
-              <summary>Koreksi administratif ke periode berikutnya</summary>
-              <p className="my-2 text-sm">
-                Isi seluruh basis yang benar. Sistem memakai tarif saat
-                penerbitan dan menghitung selisih terhadap koreksi terakhir.
-              </p>
-              <DataForm
-                successMessage={false}
-                key={slip.id}
-                fields={[
-                  {
-                    key: "targetPeriod",
-                    label: "Periode tujuan (YYYY-MM)",
-                    value: period > slip.snapshot.period ? period : undefined,
-                  },
-                  {
-                    key: "correctedJtm",
-                    label: "Total JTM yang benar",
-                    value: slip.snapshot.totalJtm,
-                  },
-                  {
-                    key: "correctedAllowances",
-                    label: "Total tunjangan yang benar (rupiah)",
-                    value: slip.snapshot.allowances,
-                  },
-                  {
-                    key: "correctedTransportRaw",
-                    label: "Transport mentah yang benar",
-                    value: slip.snapshot.transportRaw,
-                  },
-                  {
-                    key: "evidence",
-                    label: "Referensi bukti koreksi",
-                    type: "textarea",
-                  },
-                  reason,
-                ]}
-                label="Tinjau koreksi honorarium"
-                submitLabel="Buat pratinjau koreksi"
-                {...formProps}
-                onSave={(data) =>
-                  formRun(
-                    async () =>
-                      setPreview(
-                        await post<FinancePreview>("preview", {
-                          ...data,
-                          operation: "correction",
-                          statementId: slip.id,
-                        }),
-                      ),
-                    false,
-                  )
-                }
-              />
-            </details>
-          )}
+          <CorrectionWorkflow
+            key={slip.id}
+            admin={admin}
+            period={slip.snapshot.period}
+            statement={slip}
+            hidden={hidden}
+            onLockChange={setActiveForm}
+          />
         </section>
       )}
       {view === "operations" &&
@@ -1169,25 +1115,6 @@ export function FinanceManager({
                     />
                   </details>
                 ))}
-            </section>
-            <section className={panel}>
-              <h2 className="font-semibold">Permintaan koreksi</h2>
-              {operations.requests.length === 0 && (
-                <EmptyState title="Belum ada permintaan koreksi." />
-              )}
-              {operations?.requests.map((r) => (
-                <div className="border-t p-2" key={r.id}>
-                  <p>{r.reason}</p>
-                  <button
-                    className={secondary}
-                    disabled={locked || activeForm}
-                    onClick={() => void showSlip(r.statement_id)}
-                  >
-                    <ActionIcon action="preview" />
-                    Tinjau slip sumber
-                  </button>
-                </div>
-              ))}
             </section>
           </>
         )}

@@ -65,6 +65,8 @@ Hasil implementasi 2.1–2.6: [paket Tahap 2](stage-2/README.md), sumber, kebija
 
 Dependency: Tahap 1–2. Selesai jika tidak ada engine honor kedua di frontend, snapshot/checksum asli tetap utuh dan koreksi masuk periode tujuan yang sah.
 
+Hasil implementasi 3.1–3.5: [paket Tahap 3](stage-3/README.md), kontrak kesiapan/keputusan, kompatibilitas dan bukti rilis.
+
 ## Tahap 4 — Penanganan kendala dan pemantauan
 
 - **4.1** Hubungkan referensi bantuan ke laporan penanganan dan konteks pelapor yang diizinkan.
@@ -123,4 +125,4 @@ Analisis source/dependency → kriteria penerimaan → implementasi terukur → 
 
 Uji normal/kosong/banyak/loading/error/stale/expired, kewenangan, desktop/tablet/mobile, resize/orientasi. Perubahan finansial/otorisasi memerlukan tes SQL. Hindari fungsi duplikat, perubahan fitur tak terkait dan penghapusan source tanpa bukti aman.
 
-Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap 0–1 merged; kode Tahap 2 diimplementasikan dan migrasi produksi terverifikasi setelah izin eksplisit; status frontend mengikuti PR #46 (lihat checkpoint); setelah rilis, berikutnya **3.1 / HONOR-01**, setelah instruksi kelanjutan pengguna. Tidak ada estimasi waktu selesai sebelum scope/dependency diperiksa.
+Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap 0–2 merged; Tahap 3 diimplementasikan dan divalidasi, status merge/migrasi/deployment mengikuti PR dan validation.json Tahap 3. Berikutnya **Tahap 4 / penanganan kendala dan pemantauan**, setelah instruksi kelanjutan pengguna. Tidak ada estimasi waktu selesai sebelum scope/dependency diperiksa.

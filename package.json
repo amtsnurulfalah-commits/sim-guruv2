@@ -54,6 +54,7 @@
     "audit:inventory": "node --import tsx scripts/audit-codebase.ts",
     "test:ui:baseline": "node tests/ui/baseline.mjs",
     "test:ui:tasks": "node tests/ui/tasks.mjs",
+    "test:ui:honor-readiness": "node tests/ui/honor-readiness.mjs",
     "test:ui:foundation": "node tests/ui/foundation.mjs"
   },
   "dependencies": {

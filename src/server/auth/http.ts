@@ -26,12 +26,22 @@ type Dependencies = {
   service: () => Promise<LocalAuthService>;
 };
 const messages: Record<string, string> = {
-  REVIEW_NOT_ALLOWED: "Temuan ini sudah ditinjau atau tidak dapat diselesaikan melalui formulir tinjauan. Muat ulang laporan dan periksa status terbaru.",
-  MIGRATION_BLOCKED: "Batch masih memiliki kesalahan atau temuan yang belum selesai. Perbaiki sumber untuk kesalahan data, atau selesaikan tinjauan yang diizinkan sebelum menyetujui bukti.",
-  MIGRATION_NOT_IMPORTED: "Batch belum diimpor. Rekonsiliasi, pencocokan perubahan terakhir, dan persetujuan pemindahan layanan baru dapat dipenuhi setelah impor melalui prosedur operator.",
-  CUTOVER_GATES_INCOMPLETE: "Sembilan pemeriksaan pendukung belum seluruhnya disetujui dengan bukti. Lengkapi pemeriksaan tersebut sebelum menyetujui pemindahan layanan.",
-  RETRY_NOT_ALLOWED: "Status antrean atau pekerjaan sudah berubah dan tidak dapat dijadwalkan ulang. Muat ulang lalu periksa data terbaru.",
-  RECONCILE_NOT_ALLOWED: "Status email sudah berubah. Muat ulang dan periksa hasil terbaru sebelum melakukan pemeriksaan kembali.",
+  REVIEW_NOT_ALLOWED:
+    "Temuan ini sudah ditinjau atau tidak dapat diselesaikan melalui formulir tinjauan. Muat ulang laporan dan periksa status terbaru.",
+  MIGRATION_BLOCKED:
+    "Batch masih memiliki kesalahan atau temuan yang belum selesai. Perbaiki sumber untuk kesalahan data, atau selesaikan tinjauan yang diizinkan sebelum menyetujui bukti.",
+  MIGRATION_NOT_IMPORTED:
+    "Batch belum diimpor. Rekonsiliasi, pencocokan perubahan terakhir, dan persetujuan pemindahan layanan baru dapat dipenuhi setelah impor melalui prosedur operator.",
+  CUTOVER_GATES_INCOMPLETE:
+    "Sembilan pemeriksaan pendukung belum seluruhnya disetujui dengan bukti. Lengkapi pemeriksaan tersebut sebelum menyetujui pemindahan layanan.",
+  RETRY_NOT_ALLOWED:
+    "Status antrean atau pekerjaan sudah berubah dan tidak dapat dijadwalkan ulang. Muat ulang lalu periksa data terbaru.",
+  RECONCILE_NOT_ALLOWED:
+    "Status email sudah berubah. Muat ulang dan periksa hasil terbaru sebelum melakukan pemeriksaan kembali.",
+  CORRECTION_PENDING:
+    "Slip ini sudah memiliki pengajuan koreksi yang belum selesai. Muat ulang daftar pengajuan.",
+  CORRECTION_REVIEW_REQUIRED:
+    "Koreksi memerlukan pengajuan yang sedang diperiksa oleh admin yang berbeda dari pengaju dan penerima honor.",
   FINANCE_INVALID: "Data honorarium atau koreksi tidak sesuai aturan.",
   FINANCE_BLOCKED:
     "Finalisasi diblokir. Selesaikan seluruh temuan pada pratinjau.",
@@ -138,7 +148,10 @@ export function authResponse(data: unknown, requestId: string) {
     { headers: { "Cache-Control": "no-store", Vary: "Cookie, Origin" } },
   );
 }
-export function handleModuleRequest(module: string, work: (requestId: string) => Promise<NextResponse>) {
+export function handleModuleRequest(
+  module: string,
+  work: (requestId: string) => Promise<NextResponse>,
+) {
   return handleAuthRequest(work, module);
 }
 export async function handleAuthRequest(
@@ -206,6 +219,8 @@ export async function handleAuthRequest(
       ? dbMessage
       : null;
     const activityCode = [
+      "CORRECTION_PENDING",
+      "CORRECTION_REVIEW_REQUIRED",
       "FINANCE_INVALID",
       "FINANCE_BLOCKED",
       "FINAL_IMMUTABLE",
@@ -247,9 +262,11 @@ export async function handleAuthRequest(
             "DUPLICATE_JOURNAL",
             "DUTY_COLLISION",
             "FINAL_PERIOD",
+            "CORRECTION_PENDING",
           ].includes(activityCode)
             ? 409
             : [
+                  "CORRECTION_REVIEW_REQUIRED",
                   "TODAY_ONLY",
                   "SELF_OPERATION_FORBIDDEN",
                   "ASSIGNMENT_REQUIRED",

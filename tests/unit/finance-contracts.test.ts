@@ -104,6 +104,8 @@ test("transport block dates match SQL inclusive window and field errors", () => 
 test("correction target must follow original slip and decimals remain strings", () => {
   const input = {
     operation: "correction",
+    requestId: id,
+    requestVersion: "2",
     statementId: id,
     targetPeriod: "2090-02",
     correctedJtm: "2.4",

@@ -7,3 +7,5 @@ Baca berurutan:
 3. [Paket Tahap 0](stage-0/README.md): arsitektur/inventaris, kewenangan/alur, baseline dan backlog.
 
 Program lanjutan setelah audit halaman hingga PR #43, terpisah dari tahap pembangunan ulang lama. Periksa main/source/PR aktual sebelum bekerja, lalu perbarui checkpoint setelah tiap PR. Dokumentasi berada dalam Git agar tidak bergantung pada workspace sementara atau ingatan percakapan.
+
+- [Tahap 3 — kesiapan honorarium dan persetujuan koreksi](stage-3/README.md).
