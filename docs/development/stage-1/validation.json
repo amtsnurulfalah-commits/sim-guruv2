@@ -110,7 +110,8 @@
       "pagination clamp",
       "empty/malformed/expired rows",
       "long names/200% text/orientation",
-      "101-row print"
+      "101-row print",
+      "history navigation clears bulk selection/prepared print; normal pagination retains cross-page selection"
     ],
     "pageErrors": []
   },

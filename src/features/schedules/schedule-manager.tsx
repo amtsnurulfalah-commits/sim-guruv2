@@ -425,6 +425,16 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
   function editorBusy(value:boolean){operation.current=value;if(mounted.current)setBusy(value);}
   const [printRows, setPrintRows] = useState<ScheduleRow[] | null>(null);
   useEffect(() => {
+    // History can restore a different filter context. Never carry a bulk selection
+    // or prepared print into that context; normal pagination still keeps selection.
+    const clearHistorySelection = () => {
+      setSelected({});
+      setPrintRows(null);
+    };
+    window.addEventListener("popstate", clearHistorySelection);
+    return () => window.removeEventListener("popstate", clearHistorySelection);
+  }, []);
+  useEffect(() => {
     if (!printRows) return;
     const clear = () => setPrintRows(null);
     window.addEventListener("afterprint",clear,{once:true});

@@ -63,7 +63,9 @@ try {
  assert.equal(await urlFilter.getByLabel('Status jadwal',{exact:false}).inputValue(),'closed');
  await urlFilter.getByRole('button',{name:'Reset filter',exact:true}).click();
  await page.waitForURL(url=>!url.searchParams.has('state'));
+ await page.getByRole('checkbox').first().check();
  await page.goBack();await page.waitForURL('**state=closed');
+ assert.equal(await page.getByRole('checkbox').first().isChecked(),false);
  assert.equal(await urlFilter.getByLabel('Status jadwal',{exact:false}).inputValue(),'closed');
  await page.goForward();await page.waitForURL(url=>!url.searchParams.has('state'));
  await urlFilter.getByLabel('Cari guru / kelas / mata pelajaran / periode',{exact:true}).fill('Guru 21');
