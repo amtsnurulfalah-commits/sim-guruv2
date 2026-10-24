@@ -141,7 +141,38 @@ export function Workspace({
   }
   const role = session?.user.role,
     ready = session?.scope === "business";
-  const links = role && ready ? modulesFor(role) : [];
+  const [reportReader, setReportReader] = useState<{
+    id: string;
+    allowed: boolean;
+  } | null>(null);
+  const userId = session?.user.id;
+  useEffect(() => {
+    if (!ready || !userId || role === "admin") return;
+    const c = new AbortController();
+    fetch("/api/reports/read?kind=capabilities", {
+      cache: "no-store",
+      signal: c.signal,
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((r) => {
+        if (!c.signal.aborted)
+          setReportReader({
+            id: userId,
+            allowed:
+              r?.ok === true &&
+              (r.data.academic === true || r.data.finance === true),
+          });
+      })
+      .catch(() => {});
+    return () => c.abort();
+  }, [ready, role, userId, pathname]);
+  const links =
+    role && ready
+      ? modulesFor(
+          role,
+          reportReader?.id === userId && reportReader?.allowed === true,
+        )
+      : [];
   const matches = (label: string) =>
     label
       .toLocaleLowerCase("id-ID")

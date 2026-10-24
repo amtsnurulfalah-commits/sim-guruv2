@@ -101,6 +101,15 @@ export const modules: readonly AppModule[] = [
     stage: "6",
   },
   {
+    slug: "laporan-pimpinan",
+    href: "/laporan-pimpinan",
+    available: true,
+    title: "Laporan pimpinan",
+    description: "Ringkasan akademik dan honorarium sesuai izin laporan.",
+    group: "Administrasi",
+    stage: "Pengembangan 5",
+  },
+  {
     slug: "pengguna",
     href: "/admin/pengguna",
     available: true,
@@ -173,12 +182,18 @@ export const modules: readonly AppModule[] = [
     adminOnly: true,
   },
 ];
-export function modulesFor(role: AppRole) {
-  return modules.filter((module) => !module.adminOnly || role === "admin");
+export function modulesFor(role: AppRole, reportAccess = false) {
+  return modules.filter((module) => canViewModule(role, module, reportAccess));
 }
 export function moduleBySlug(slug: string) {
   return modules.find((module) => module.slug === slug);
 }
-export function canViewModule(role: AppRole, module: AppModule) {
+export function canViewModule(
+  role: AppRole,
+  module: AppModule,
+  reportAccess = false,
+) {
+  if (module.slug === "laporan-pimpinan")
+    return role === "admin" || reportAccess;
   return !module.adminOnly || role === "admin";
 }

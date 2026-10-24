@@ -69,7 +69,7 @@ function xml(value: unknown) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&apos;");
 }
-export function workbook(rows: unknown[][]) {
+export function workbook(rows: unknown[][], sheetName = "Riwayat honor") {
   const declaration = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
   return zip({
     "[Content_Types].xml":
@@ -80,7 +80,9 @@ export function workbook(rows: unknown[][]) {
       '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
     "xl/workbook.xml":
       declaration +
-      '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Riwayat honor" sheetId="1" r:id="rId1"/></sheets></workbook>',
+      '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="' +
+      xml(sheetName) +
+      '" sheetId="1" r:id="rId1"/></sheets></workbook>',
     "xl/_rels/workbook.xml.rels":
       declaration +
       '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>',

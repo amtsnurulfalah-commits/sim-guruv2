@@ -90,6 +90,8 @@ Hasil implementasi 4.1–4.6: [paket Tahap 4](stage-4/README.md), lifecycle, kew
 
 Dependency: Tahap 1–3 dan pemantauan Tahap 4. Selesai jika ringkasan=rincian=ekspor dan jabatan tambahan tidak diasumsikan mengizinkan seluruh data.
 
+Hasil implementasi 5.1–5.5: [paket Tahap 5](stage-5/README.md), kamus indikator, izin eksplisit, sumber dan batas rilis.
+
 ## Tahap 6 — Persiapan semester baru
 
 - **6.1** Allowlist konfigurasi yang dapat disalin; transaksi/kehadiran/jurnal/ledger/slip tidak ikut disalin.
@@ -127,4 +129,4 @@ Analisis source/dependency → kriteria penerimaan → implementasi terukur → 
 
 Uji normal/kosong/banyak/loading/error/stale/expired, kewenangan, desktop/tablet/mobile, resize/orientasi. Perubahan finansial/otorisasi memerlukan tes SQL. Hindari fungsi duplikat, perubahan fitur tak terkait dan penghapusan source tanpa bukti aman.
 
-Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap 0–3 merged dan Tahap 3 terverifikasi produksi; Tahap 4 diimplementasikan, status pemeriksaan/migrasi/merge/deployment mengikuti PR dan validation.json Tahap 4. Berikutnya **Tahap 5 / laporan kepala madrasah**, setelah rilis Tahap 4 dan instruksi pengguna.
+Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap 0–4 merged dan terverifikasi produksi. Tahap 5 diimplementasikan; status tes/migrasi/merge/deployment mengikuti PR dan validation.json Tahap 5. Berikutnya **Tahap 6 / persiapan semester baru**, setelah rilis Tahap 5 dan instruksi pengguna.
