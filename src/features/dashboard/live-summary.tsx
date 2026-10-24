@@ -40,7 +40,6 @@ export function LiveSummary() {
   const activePage = Math.min(page,pages);
   return (
     <div className="space-y-5">
-      <Announcements />
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div><h2 className="text-lg font-bold">Ringkasan kegiatan</h2><p className="text-sm text-muted-foreground">Data pribadi hari ini dan perhitungan honorarium berjalan.</p></div>
         <Button type="button" variant="outline" disabled={!value && !error} onClick={() => { setValue(null); setPage(1); setError(""); setRevision(v => v + 1); }}><RotateCcw aria-hidden="true" />Muat ulang ringkasan</Button>
@@ -57,6 +56,29 @@ export function LiveSummary() {
         />
       ) : (
         <>
+          <section className="ui-panel space-y-3">
+            <h2 className="font-bold">
+              Jadwal dan penugasan hari ini
+            </h2>
+            <p className="text-sm">
+              Jadwal yang belum dibentuk sebagai kegiatan dapat diperiksa pada
+              menu Jadwal.
+            </p>
+            {value.tasks.length === 0 && value.planned.length === 0 && (
+              <p className="rounded-xl border border-dashed p-5 text-sm text-muted-foreground">Belum ada jadwal atau penugasan untuk Anda pada hari ini. Periksa menu Jadwal jika ada penugasan yang belum tampil.</p>
+            )}
+            {value.pendingEventJournals > 0 && <p className="rounded-lg border bg-accent/40 p-3">{value.pendingEventJournals} jurnal acara perlu dilengkapi · <Link prefetch={false} className="ui-text-link" href="/acara/jurnal">Buka jurnal acara</Link></p>}
+            {value.planned.length > 0 && <Link prefetch={false} className="ui-text-link" href="/jadwal"><CalendarDays aria-hidden="true" className="size-4" />Periksa jadwal mengajar</Link>}
+            <ul className="space-y-2" aria-label="Daftar jadwal dan penugasan">
+              {rows.slice((activePage-1)*8,activePage*8).map(t=><li key={t.key} className="min-w-0 break-words rounded-lg border bg-muted/20 p-3 text-sm leading-6"><span className="font-semibold">{activityLabel(t.kind)}</span> · {t.start.slice(0,5)}–{t.end.slice(0,5)} WIB<p className="text-muted-foreground">{t.status}</p></li>)}
+            </ul>
+            {pages > 1 && <nav aria-label="Halaman penugasan" className="flex flex-wrap items-center gap-3">
+              <Button type="button" variant="outline" disabled={activePage===1} onClick={()=>setPage(activePage-1)}><ChevronLeft aria-hidden="true" />Sebelumnya</Button>
+              <p role="status" className="text-sm">Halaman {activePage} dari {pages} · {rows.length} penugasan</p>
+              <Button type="button" variant="outline" disabled={activePage===pages} onClick={()=>setPage(activePage+1)}>Berikutnya<ChevronRight aria-hidden="true" /></Button>
+            </nav>}
+          </section>
+          <Announcements />
           <section className="grid min-w-0 gap-4 md:grid-cols-2 xl:grid-cols-3">
             <MetricCard
               title="Kehadiran hari ini"
@@ -133,28 +155,6 @@ export function LiveSummary() {
               </Link>
             </MetricCard>
           </section>
-          <section className="ui-panel space-y-3">
-            <h2 className="font-bold">
-              Jadwal dan penugasan hari ini
-            </h2>
-            <p className="text-sm">
-              Jadwal yang belum dibentuk sebagai kegiatan dapat diperiksa pada
-              menu Jadwal.
-            </p>
-            {value.tasks.length === 0 && value.planned.length === 0 && (
-              <p className="rounded-xl border border-dashed p-5 text-sm text-muted-foreground">Belum ada jadwal atau penugasan untuk Anda pada hari ini. Periksa menu Jadwal jika ada penugasan yang belum tampil.</p>
-            )}
-            {value.pendingEventJournals > 0 && <p className="rounded-lg border bg-accent/40 p-3">{value.pendingEventJournals} jurnal acara perlu dilengkapi · <Link prefetch={false} className="ui-text-link" href="/acara/jurnal">Buka jurnal acara</Link></p>}
-            {value.planned.length > 0 && <Link prefetch={false} className="ui-text-link" href="/jadwal"><CalendarDays aria-hidden="true" className="size-4" />Periksa jadwal mengajar</Link>}
-            <ul className="space-y-2" aria-label="Daftar jadwal dan penugasan">
-              {rows.slice((activePage-1)*8,activePage*8).map(t=><li key={t.key} className="min-w-0 break-words rounded-lg border bg-muted/20 p-3 text-sm leading-6"><span className="font-semibold">{activityLabel(t.kind)}</span> · {t.start.slice(0,5)}–{t.end.slice(0,5)} WIB<p className="text-muted-foreground">{t.status}</p></li>)}
-            </ul>
-            {pages > 1 && <nav aria-label="Halaman penugasan" className="flex flex-wrap items-center gap-3">
-              <Button type="button" variant="outline" disabled={activePage===1} onClick={()=>setPage(activePage-1)}><ChevronLeft aria-hidden="true" />Sebelumnya</Button>
-              <p role="status" className="text-sm">Halaman {activePage} dari {pages} · {rows.length} penugasan</p>
-              <Button type="button" variant="outline" disabled={activePage===pages} onClick={()=>setPage(activePage+1)}>Berikutnya<ChevronRight aria-hidden="true" /></Button>
-            </nav>}
-          </section>
           {value.admin && (
             <section className="ui-panel space-y-3">
               <h2 className="font-bold">Ringkasan administrasi</h2>
@@ -174,6 +174,7 @@ export function LiveSummary() {
           )}
         </>
       )}
+      {!value && <Announcements />}
     </div>
   );
 }

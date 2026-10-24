@@ -1,4 +1,5 @@
 "use client";
+import { useActivityDate } from "@/lib/navigation/use-activity-date";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { Tabs } from "@/components/ui/tabs";
@@ -50,7 +51,7 @@ export function AttendanceWorkspace({
   userId: string;
 }) {
   const [tab, setTab] = useState("daily"),
-    [date, setDate] = useState(wibDate),
+    [date, setDate] = useActivityDate(),
     [from, setFrom] = useState(wibDate().slice(0, 7) + "-01"),
     [to, setTo] = useState(wibDate),
     [filterTeacher, setFilterTeacher] = useState(""),

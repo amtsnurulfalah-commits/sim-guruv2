@@ -1,4 +1,5 @@
 "use client";
+import { useActivityDate } from "@/lib/navigation/use-activity-date";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Tabs } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -46,7 +47,7 @@ export function StudentWorkspace({
   initialView?: "input" | "history";
 }) {
   const [tab, setTab] = useState(initialView),
-    [date, setDate] = useState(wibDate),
+    [date, setDate] = useActivityDate(),
     [today, setToday] = useState(wibDate);
   const [from, setFrom] = useState(wibDate().slice(0, 7) + "-01"),
     [to, setTo] = useState(wibDate),

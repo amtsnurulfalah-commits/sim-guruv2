@@ -1,4 +1,5 @@
 "use client";
+import { useActivityDate } from "@/lib/navigation/use-activity-date";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
@@ -44,7 +45,7 @@ export function EventManager({
   admin: boolean;
   userId: string;
 }) {
-  const [date, setDate] = useState(wibDate()),
+  const [date, setDate] = useActivityDate(),
     [board, setBoard] = useState<EventBoard | null>(null),
     [revision, setRevision] = useState(0),
     [busy, setBusy] = useState(false),
