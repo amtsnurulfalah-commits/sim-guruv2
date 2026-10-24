@@ -123,8 +123,8 @@
   "release": {
     "repository": "amtsnurulfalah-commits/sim-guruv2",
     "branch": "feature/professional-stage-7",
-    "pr": null,
-    "status": "local checks passed; await GitHub CI/merge/production smoke"
+    "pr": 51,
+    "status": "implementation and local validation complete; actual final CI/merge/deployment evidence follows PR51"
   },
   "limits": [
     "PGlite and Chromium fixtures are synthetic, not physical-device or screen-reader UAT.",
