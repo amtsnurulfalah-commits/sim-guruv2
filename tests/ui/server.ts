@@ -18,6 +18,8 @@ import { ProgramService } from "../../src/server/programs/service";
 import { renderHonorExcel,renderHonorPdf } from "../../src/server/finance/export";
 import type { FinanceAction, FinancePreview } from "../../src/lib/finance/schemas";
 import { FinanceService } from "../../src/server/finance/service";
+import {ReportsService} from "../../src/server/reports/service";
+import {reportWorkbook} from "../../src/server/reports/export";
 import { OperationsService } from "../../src/server/operations/service";
 import { MigrationService } from "../../src/server/migration/service";
 async function main() {
@@ -80,6 +82,7 @@ async function main() {
     "select auth_private.issue_session($1,$2,'1','1',$3,'business')",
     [guru, hash, createHash("sha256").update("B".repeat(43)).digest("hex")],
   );
+  if(process.env.UI_REPORT_FIXTURE==='1')await db.query("insert into app.daily_attendance(user_id,date,actual_time_in,actual_time_out,time_in_source) select $1,date_trunc('month',app.activity_today())::date+s,time '07:00',time '13:00','admin' from generate_series(0,extract(day from app.activity_today())::int-2)s",[guru]);
   const masters = new MasterService(db),
     calendar = new CalendarService(db),
     schedules = new ScheduleService(db),
@@ -88,6 +91,7 @@ async function main() {
     programs = new ProgramService(db),
     finance = new FinanceService(db),
     operations = new OperationsService(db),
+    reports=new ReportsService(db),
     migration = new MigrationService(db);
   await masters.save(token, "subjects", {
     version: "0",
@@ -327,6 +331,8 @@ async function main() {
       else if (path === "/api/honorarium/read")
         data = await finance.read(token, q);
       else if(path.startsWith("/api/honorarium/")) data=await finance.command(token,path.split("/").at(-1)! as FinanceAction,input);
+      else if(path==='/api/reports/excel') {res.writeHead(200,{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="laporan-pimpinan.xlsx"'});res.end(reportWorkbook(await reports.export(token,q)));return;}
+      else if(path.startsWith('/api/reports/'))data=req.method==='GET'?await reports.read(token,q):await reports.access(token,input);
       else if (path.startsWith("/api/operations/"))
         data = req.method === "GET" ? await operations.read(token, path.split("/").at(-1)!, q) : await operations.command(token, path.split("/").at(-1)!, input);
       else if (path.startsWith("/api/migration/"))

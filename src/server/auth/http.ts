@@ -26,6 +26,8 @@ type Dependencies = {
   service: () => Promise<LocalAuthService>;
 };
 const messages: Record<string, string> = {
+  REPORT_INVALID:
+    "Filter atau izin laporan tidak sesuai. Periksa bulan, guru, lingkup dan alasan perubahan.",
   REVIEW_NOT_ALLOWED:
     "Temuan ini sudah ditinjau atau tidak dapat diselesaikan melalui formulir tinjauan. Muat ulang laporan dan periksa status terbaru.",
   MIGRATION_BLOCKED:
@@ -226,6 +228,7 @@ export async function handleAuthRequest(
       ? dbMessage
       : null;
     const activityCode = [
+      "REPORT_INVALID",
       "SUPPORT_INVALID",
       "SUPPORT_TRANSITION_INVALID",
       "CORRECTION_PENDING",
@@ -312,7 +315,7 @@ export async function handleAuthRequest(
             ? new AuthError(
                 masterCode,
                 masterCode === "MASTER_OVERLAP" ||
-                masterCode === "MASTER_REFERENCED"
+                  masterCode === "MASTER_REFERENCED"
                   ? 409
                   : 422,
               )

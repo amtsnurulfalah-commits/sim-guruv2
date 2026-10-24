@@ -11,7 +11,9 @@ Diperbarui 24 Oktober 2026 WIB. Persetujuan roadmap dan instruksi Tahap 0 berasa
 - **Tahap 2.1–2.6 selesai dan merged**: pusat tugas dari sumber, inbox pribadi/preferensi, digest harian/recheck sumber, deep link tanggal dan prioritas dashboard. [Paket Tahap 2](stage-2/README.md) dan validation.json menyimpan hasil/batas/rollout aktual. Branch `feature/professional-stage-2`; periksa PR/commit/checks aktual pada GitHub. **Migrasi produksi diterapkan setelah izin eksplisit pengguna:** ledger 28/checksum cocok, RLS dan privilege/guard terverifikasi, security advisor tanpa lint. PR #46 merged ke main `b4e2cfbf4064afa7ae29a17ff40e516999b1843c`, deployment produksi READY dan health/API anonim terverifikasi. Penolakan sebelumnya diselesaikan oleh izin pengguna, bukan bypass.
 - **Tahap 3.1–3.5 selesai dan merged**, PR #47 main `e8891eacf2570386adc7a6c66e95e730fd153929`. Izin eksplisit pengguna diterima; migrasi produksi berhasil, ledger29/checksum/RLS/grants/advisor terverifikasi. Deployment `dpl_5t6GVPT3vzEvCp1mJ8UzperW7Zkm` READY; health200 dan API anonim readiness/requests401. Penolakan sebelumnya diselesaikan lewat izin pengguna. [Paket Tahap 3](stage-3/README.md).
 - **Tahap 4.1–4.6 diimplementasikan dan divalidasi**, branch `feature/professional-stage-4`, PR #48: lifecycle penanganan, konteks pelapor, status/penanggung jawab/catatan/riwayat, bukti keputusan, referensi berulang, metrik modul dan retensi bounded. [Paket Tahap 4](stage-4/README.md) dan validation.json menyimpan bukti/batas. **Migrasi produksi berhasil diterapkan setelah izin eksplisit pengguna:** ledger30/checksum cocok, empat tabel ENABLE/FORCE RLS, grant gateway dan penolakan akses langsung/helper terverifikasi; advisor tanpa lint. Error requestState terdahulu telah terselesaikan pada penerapan ini. Head `590e3697b6ca6a6494545f2dfc1482d535f0d2cc` CI run `40073274405` success, preview success; status merge/deployment akhir mengikuti PR #48. Periksa status rilis aktual sebelum Tahap 5.
-- **Tahap 5–8 belum dimulai.** Berikutnya Tahap 5 / laporan kepala madrasah setelah rilis Tahap 4 dan instruksi pengguna.
+- **Tahap 4 merged**, PR #48 main `e79a74a1747d0edc025002dfd88b0bcb8af3424b`, produksi READY `dpl_BnmYVNq4JWdeQrjCUVUYRtDY5Zar`; health200 dan API anonim401 telah diverifikasi pada rilis sebelumnya.
+- **Tahap 5.1–5.5 diimplementasikan**, branch `feature/professional-stage-5`: laporan pimpinan, izin akademik/finance eksplisit, ringkasan/rincian/filter/Excel dari sumber sama. [Paket Tahap 5](stage-5/README.md). Status tes/migrasi/merge/deployment mengikuti `validation.json` dan PR aktual.
+- **Tahap 6–8 belum dimulai.** Berikutnya persiapan semester baru setelah rilis Tahap 5 dan instruksi pengguna.
 
 ## Konteks wajib
 
@@ -36,7 +38,7 @@ Diperbarui 24 Oktober 2026 WIB. Persetujuan roadmap dan instruksi Tahap 0 berasa
 
 1. Baca roadmap/checkpoint/paket Tahap 0/backlog lalu source terkait permintaan terbaru.
 2. Periksa working tree, main, branch dan PR; jangan menimpa pekerjaan lain.
-3. Untuk tahap berikutnya, mulai kontrak Tahap 5/laporan kepala madrasah dan kriteria penerimaannya; perluasan mengikuti dependency. Adopsi UI modul lain dilakukan saat modul tersebut disentuh, bukan dianggap sudah selesai serentak.
+3. Untuk tahap berikutnya, mulai kontrak Tahap 6/persiapan semester baru dan kriteria penerimaannya; perluasan mengikuti dependency. Adopsi UI modul lain dilakukan saat modul tersebut disentuh, bukan dianggap sudah selesai serentak.
 4. Catat ID selesai, hasil/batas tes, PR/commit dan pekerjaan berikutnya setelah setiap PR.
 
 Persetujuan roadmap tidak berarti seluruh Tahap 1–8 otomatis dijalankan oleh PR Tahap 0. Eksekusi berikutnya mengikuti instruksi pengguna; persetujuan yang sudah ada tidak perlu diminta ulang untuk scope yang sama.

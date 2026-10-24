@@ -1,0 +1,79 @@
+{
+  "stage": "5",
+  "scope": [
+    "5.1",
+    "5.2",
+    "5.3",
+    "5.4",
+    "5.5"
+  ],
+  "dateWib": "2026-10-24",
+  "branch": "feature/professional-stage-5",
+  "checks": {
+    "lint": "pass",
+    "typecheck": "pass",
+    "unit": 143,
+    "cryptoHttp": 35,
+    "finalReportIntegration": 8,
+    "build": "pass",
+    "targetedBrowser": {
+      "pass": true,
+      "widths": [
+        280,
+        320,
+        375,
+        768,
+        1024,
+        1440,
+        1920
+      ],
+      "dialogOrientations": 4,
+      "flows": [
+        "academic",
+        "finance",
+        "projection",
+        "detail",
+        "excel",
+        "empty",
+        "loading",
+        "error",
+        "stale-response",
+        "grant-academic-only",
+        "revoke"
+      ],
+      "pageErrors": 0,
+      "pageHorizontalOverflow": 0
+    },
+    "globalBrowser": {
+      "matrix": 252,
+      "interactions": 45,
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "serverErrors": ""
+    },
+    "integrationFull": 358,
+    "runnerResults": 536
+  },
+  "migration": {
+    "name": "20261024104102_leadership_reports.sql",
+    "checksum": "e5386a3082dfb3281d9449fc44e5954e12494b7d7844b833d8274258e884a6ef",
+    "batchSha256": "365fdbaebc67842d194b851b464f4178fdf0924de3bd593467c2088f698f4b25",
+    "priorCount": 30,
+    "disposableUpgrade": "pass; exact release batch upgrade30-to31 and normal runner replay no-op",
+    "production": "not-applied",
+    "preflightPriorLedger": 30,
+    "preflightSecurityAdvisorLints": 0
+  },
+  "release": {
+    "pr": "pending",
+    "merge": "pending",
+    "productionDeployment": "pending"
+  },
+  "limits": [
+    "Synthetic PGlite and Chromium emulation, not physical-device/native concurrency/production UAT",
+    "Academic denominator is formed active records under current day context, not all planned schedules",
+    "Excel rereads current canonical source in repeatable-read, not persistent snapshot of previous browser display",
+    "No production readers granted, no real financial/attendance writes or SMTP delivery",
+    "Existing stage-3 readiness locked-BAP rule flagged for separate review"
+  ]
+}
