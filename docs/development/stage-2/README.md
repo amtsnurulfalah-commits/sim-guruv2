@@ -4,9 +4,9 @@ Acuan awal: main `08380e2a7d28c12fc02a8b1b0cb3824f019420eb` (PR #45). Implementa
 
 ## Status rilis
 
-Kode dan pengujian selesai secara lokal. **Penerapan produksi dan merge tertahan izin eksplisit.** Review persetujuan otomatis menolak batch yang menambah tabel/kebijakan akses, mengganti worker/reminder, serta membatalkan reminder legacy pending/retry karena instruksi “jalankan Tahap 2” belum mengotorisasi cakupan mutasi produksi tersebut. Batch tidak dijalankan dan tidak dicoba melalui jalur lain. Main tetap PR #45 sampai batch disetujui, diterapkan, diverifikasi dan PR Tahap 2 melewati checks.
+Pengguna memberikan izin eksplisit pada 24 Oktober 2026 WIB untuk dua migrasi, perubahan worker/reminder dan pembatalan reminder legacy pending/retry. Batch berhasil diterapkan ke produksi setelah checksum baseline diverifikasi. Ledger kini 28 migrasi, kedua checksum cocok, dua tabel baru ENABLE/FORCE RLS, helper privat/legacy claim tidak dapat dipanggil role bisnis/worker, dan guard KBM aktif. Security advisor sesudah penerapan: tidak ada lint.
 
-Langkah saat dilanjutkan: verifikasi head PR/metadata terbaru → minta/terima izin eksplisit untuk dua migrasi dan perubahan antrean/worker → bangun ulang batch dari file repo (bukan mengandalkan file sementara) → cek checksum baseline → apply atomik + ledger → metadata/advisors → merge → tunggu deployment → smoke publik tanpa credentials. Persetujuan merge yang sudah ada tidak perlu diminta ulang.
+Penolakan auto-review pada giliran sebelumnya sudah diselesaikan dengan izin eksplisit pengguna, bukan bypass. SQL yang diterapkan identik dengan batch yang diuji. Tidak menjalankan SMTP/worker sebagai pengujian. Status merge/deployment frontend diperiksa pada PR #46; jangan mengasumsikan status dari file ini.
 
 ## Hasil
 

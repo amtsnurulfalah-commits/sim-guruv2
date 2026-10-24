@@ -108,17 +108,19 @@
   "production": {
     "preflight": "read-only metadata verified: 26 ledger entries; new tasks function absent; prior KBM guard present, operator guard absent; domain_claim/reminders fingerprints match baseline",
     "securityAdvisorBefore": [],
-    "apply": "blocked_by_automatic_approval_review",
-    "applied": false,
-    "reason": "User instruction to run Stage 2 did not explicitly authorize production table/access/worker changes and cancellation of queued reminders with this blast radius.",
-    "requiresExplicitAuthorization": [
-      "apply pending KBM operator guard migration",
-      "apply task center/preference migration",
-      "replace reminder generation and worker claim wrapper",
-      "cancel legacy reminder messages in pending/retry_wait states"
-    ],
-    "afterApplyVerification": "not run because mutation was blocked",
-    "merge": "held until database release is authorized and verified; check current GitHub PR for CI state"
+    "apply": "success_after_explicit_user_authorization",
+    "applied": true,
+    "afterApplyVerification": "metadata/ledger/checksums/RLS/privileges/guard verified",
+    "merge": "verify GitHub PR #46 and its current head; application rollout follows database verification",
+    "authorization": "User explicitly approved the two production migrations, worker changes and cancellation of legacy pending/retry reminders on 2026-10-24 WIB",
+    "ledgerCountAfter": 28,
+    "checksumsMatch": true,
+    "enableForceRls": true,
+    "privateTaskHelperDenied": true,
+    "legacyClaimDenied": true,
+    "workerClaimAllowed": true,
+    "kbmOperatorGuard": true,
+    "securityAdvisorAfter": []
   },
   "boundaries": [
     "PGlite/Chromium synthetic data only, no production account/financial content read",

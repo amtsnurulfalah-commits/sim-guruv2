@@ -123,4 +123,4 @@ Analisis source/dependency → kriteria penerimaan → implementasi terukur → 
 
 Uji normal/kosong/banyak/loading/error/stale/expired, kewenangan, desktop/tablet/mobile, resize/orientasi. Perubahan finansial/otorisasi memerlukan tes SQL. Hindari fungsi duplikat, perubahan fitur tak terkait dan penghapusan source tanpa bukti aman.
 
-Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap 0–1 merged; kode Tahap 2 diimplementasikan, rilis tertahan izin produksi (lihat checkpoint); setelah rilis, berikutnya **3.1 / HONOR-01**, setelah instruksi kelanjutan pengguna. Tidak ada estimasi waktu selesai sebelum scope/dependency diperiksa.
+Status terkini mengikuti [checkpoint](CHECKPOINT.md): Tahap 0–1 merged; kode Tahap 2 diimplementasikan dan migrasi produksi terverifikasi setelah izin eksplisit; status frontend mengikuti PR #46 (lihat checkpoint); setelah rilis, berikutnya **3.1 / HONOR-01**, setelah instruksi kelanjutan pengguna. Tidak ada estimasi waktu selesai sebelum scope/dependency diperiksa.
