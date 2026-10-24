@@ -23,6 +23,8 @@
   --surface-hover: #f0f7f4;
   --success-surface: #edf7f1;
   --success-border: #add5bd;
+  --warning-surface: #fff8e8;
+  --warning-border: #ddc184;
   --error-surface: #fff1f2;
   --error-border: #efb4bc;
   --motion-fast: 160ms;

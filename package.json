@@ -52,7 +52,8 @@
     "test:ui:events": "node tests/ui/events.mjs",
     "test:ui:finance": "node tests/ui/finance.mjs",
     "audit:inventory": "node --import tsx scripts/audit-codebase.ts",
-    "test:ui:baseline": "node tests/ui/baseline.mjs"
+    "test:ui:baseline": "node tests/ui/baseline.mjs",
+    "test:ui:foundation": "node tests/ui/foundation.mjs"
   },
   "dependencies": {
     "@next/env": "16.4.2",

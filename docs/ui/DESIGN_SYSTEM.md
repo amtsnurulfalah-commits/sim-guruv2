@@ -207,3 +207,12 @@ Halaman jurnal memakai komponen `Tabs` bersama dengan tiga panel Input, Riwayat/
 ### Feedback error yang dapat ditindaklanjuti
 
 Gunakan `ErrorFeedback` untuk ringkasan penolakan, gangguan, atau gagal memuat data. Pesan harus menjelaskan penyebab yang diketahui dan langkah perbaikan; sertakan referensi bantuan bila server memberikannya. Gunakan `FormFeedback` dengan tautan kolom pada DataForm. Jangan menghapus isian setelah penolakan, menampilkan error internal mentah, atau mengirim ulang perubahan secara otomatis saat koneksi putus. Pesan berhasil tetap memakai role status, terpisah dari role alert. Untuk formulir bernama, gunakan detail server untuk menandai dan memfokuskan kolom yang salah. Detail implementasi dan verifikasi: `docs/verification/FEEDBACK_KESALAHAN.md`.
+
+## Fondasi Tahap 1 (24 Oktober 2026)
+
+- `Button` memakai `ui-action` bersama tombol form; varian default/outline memakai token primary/secondary yang sama. Ukuran besar memakai min-height agar label multiline tidak terpotong.
+- `StatusBadge({ label, tone })`: tone neutral/success/warning/error, label eksplisit wajib; jangan mengganti status domain/API. Warna selalu dilengkapi teks.
+- `Pagination({ page, pageSize, total, onPageChange, disabled, label })`: tombol previous/next, status halaman/jumlah, wrapping mobile. Pemakai harus memberikan integer page/pageSize positif dan total tervalidasi; server/pemakai mengoreksi halaman di luar hasil. Pilot ScheduleManager.
+- `useUrlFilters(defaults, rules)`: allowlist per layar, default/rules stabil, validasi schema existing. Pilihan eksplisit push, clamp replace. Data sensitif/free-text/draft tetap lokal. Pilot jadwal memulihkan hari/status/rentang/halaman saja; petunjuk cakupan tampil pada filter. Lihat [paket Tahap 1](../development/stage-1/README.md).
+- `DataForm` memvalidasi array kosong pada pilihan wajib days/multi; tautan ringkasan error memfokuskan grup. Tetap gunakan pending guard dan onSave yang reject saat gagal.
+- Gangguan body respons API dinormalisasi seperti headers; write tidak diulang otomatis, pembatalan disengaja tetap dibedakan.

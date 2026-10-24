@@ -146,7 +146,10 @@ export function DataForm({
                 const v = value[field.key];
                 if (
                   !field.optional &&
-                  (v === "" || v === null || v === undefined)
+                  (v === "" ||
+                    v === null ||
+                    v === undefined ||
+                    (Array.isArray(v) && v.length === 0))
                 )
                   ctx.addIssue({
                     code: "custom",
@@ -242,9 +245,10 @@ export function DataForm({
                 id={prefix + x.key}
                 tabIndex={-1}
                 aria-invalid={Boolean(fieldErrors[x.key])}
-                aria-describedby={
-                  fieldErrors[x.key] ? prefix + x.key + "-error" : undefined
-                }
+                aria-describedby={[
+                  prefix + x.key + "-hint",
+                  fieldErrors[x.key] ? prefix + x.key + "-error" : "",
+                ].filter(Boolean).join(" ")}
                 aria-labelledby={prefix + x.key + "-label"}
                 className="grid max-h-52 gap-1 overflow-y-auto rounded-lg border bg-muted/30 p-2"
               >
@@ -326,8 +330,8 @@ export function DataForm({
               </p>
             )}
             {x.type === "multi" || x.type === "days" ? (
-              <span className="font-normal text-slate-500">
-                Centang pilihan yang diperlukan.
+              <span id={prefix + x.key + "-hint"} className="font-normal text-muted-foreground">
+                {x.optional ? "Centang pilihan yang diperlukan." : "Wajib: centang minimal satu pilihan."}
               </span>
             ) : null}
           </div>

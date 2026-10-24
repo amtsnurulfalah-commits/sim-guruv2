@@ -172,11 +172,16 @@ function Lab() {
     </div>
   );
 }
+function RequiredChoices() {
+  const [saves, setSaves] = useState(0);
+  return <><h1>Validasi pilihan wajib</h1><output aria-label="Jumlah simpan">{saves}</output><DataForm label="Simpan pilihan" busy={false} fields={[{ key: "days", label: "Hari wajib", type: "days", options: [{ id: "1", name: "Senin" }] }, { key: "people", label: "Peserta wajib", type: "multi", options: [{ id: "teacher", name: "Guru sintetis" }] }]} onSave={async () => { setSaves(value => value + 1); }}/></>;
+}
 const components: Record<string, React.ReactNode> = {
   recoveryAdmin: <><h1 className="mb-6 text-3xl">Verifikasi pemulihan akun</h1><AdminRecovery /></>,
   account: <AccountLifecycle isAdmin={admin} onboarding={false} />,
   onboarding: <AccountLifecycle isAdmin={false} onboarding />,
   lab: <Lab />,
+  requiredChoices: <RequiredChoices />,
   dashboard: (
     <DashboardView
       data={{

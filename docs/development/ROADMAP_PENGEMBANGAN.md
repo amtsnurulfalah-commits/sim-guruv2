@@ -40,6 +40,8 @@ Hasil: [paket Tahap 0](stage-0/README.md). Selesai jika semua modul dan rencana 
 
 Dependency: Tahap 0. Selesai jika komponen/pilot halaman lulus desktop/mobile serta regresi dan fungsi lama tetap utuh.
 
+Hasil implementasi 1.1–1.6: [paket Tahap 1](stage-1/README.md), termasuk batas adopsi pilot dan validasi.
+
 ## Tahap 2 — Pusat tugas dan notifikasi
 
 - **2.1** Identitas tugas stabil, sumber, alasan, prioritas, deadline WIB dan kewenangan guru/petugas/admin.

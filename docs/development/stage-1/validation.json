@@ -1,0 +1,145 @@
+{
+  "stage": 1,
+  "dateWib": "2026-10-24",
+  "baseMain": "900ac39d05df412f626f73a920fc9bb4db020010",
+  "scope": "Shared UI/API foundations and schedule pilot (1.1–1.6)",
+  "checks": {
+    "lint": "passed: zero warnings",
+    "typecheck": "passed",
+    "unit": {
+      "passed": 135,
+      "failed": 0
+    },
+    "cryptoHttp": {
+      "passed": 35,
+      "failed": 0
+    },
+    "pgliteIntegration": {
+      "passed": 333,
+      "failed": 0
+    },
+    "totalRunnerResults": 503,
+    "productionBuild": "passed"
+  },
+  "globalBrowser": {
+    "command": "npm run test:ui",
+    "matrixCases": 252,
+    "interactionCases": 45,
+    "widths": [
+      320,
+      375,
+      767,
+      768,
+      1024,
+      1440,
+      1920
+    ],
+    "roles": [
+      "admin",
+      "guru"
+    ],
+    "views": [
+      "account",
+      "announcements",
+      "attendance",
+      "calendar",
+      "dashboard",
+      "duties",
+      "events",
+      "exams",
+      "finance",
+      "financeOperations",
+      "guide",
+      "history",
+      "home",
+      "journals",
+      "lab",
+      "login",
+      "masters",
+      "migration",
+      "occurrences",
+      "onboarding",
+      "operations",
+      "schedules",
+      "students",
+      "users"
+    ],
+    "documentOverflowFailures": 0,
+    "pageErrors": [],
+    "consoleErrors": [],
+    "serverErrors": ""
+  },
+  "navigation": {
+    "command": "NAV_FIXTURE_PRODUCTION=1 npm run test:navigation",
+    "developmentAlsoPassed": true,
+    "result": "passed",
+    "mode": "production-build",
+    "clickFeedbackMs": 60,
+    "delayedResponseMs": 1800,
+    "immediateDestinationState": true,
+    "latestClickWins": true,
+    "initialDocumentRequests": 1,
+    "persistentSidebar": true,
+    "persistentTopbar": true,
+    "persistentMain": true,
+    "targetDataOnly": true,
+    "searchAndCollapseRetained": true,
+    "accountAndBackNavigation": true,
+    "mobileDrawer": true,
+    "currentMenuClosesDrawer": true,
+    "expiredSessionRedirect": true,
+    "urlFiltersBackForwardReloadShareReset": true,
+    "mobileResizeReleasesModal": true,
+    "pageErrors": []
+  },
+  "schedulePilot": {
+    "command": "npm run test:ui:schedules",
+    "result": "passed",
+    "roleViewportCases": 12,
+    "covered": [
+      "URL status reload/reset/back/forward and private search exclusion",
+      "create/edit/search/reset",
+      "daily failure/retry/stale prevention",
+      "independent recap failure",
+      "validation and conflict invalidation",
+      "duplicate writes and busy close guard",
+      "picker failure/retry",
+      "history cancellation/null snapshot",
+      "cross-page selection",
+      "bulk preview/back/stale/commit",
+      "pagination clamp",
+      "empty/malformed/expired rows",
+      "long names/200% text/orientation",
+      "101-row print",
+      "history navigation clears bulk selection/prepared print; normal pagination retains cross-page selection"
+    ],
+    "pageErrors": []
+  },
+  "requiredChoices": {
+    "command": "npm run test:ui:foundation",
+    "result": "passed",
+    "width": 320,
+    "covered": [
+      "required days/multi cannot submit empty",
+      "error anchor focuses group",
+      "valid submission increments once on double click",
+      "no document overflow"
+    ],
+    "pageErrors": []
+  },
+  "textContrastRatios": {
+    "primaryOnWhite": 6.86,
+    "mutedOnMutedSurface": 5.25,
+    "success": 6.41,
+    "warning": 5.98,
+    "error": 5.92
+  },
+  "boundaries": [
+    "Synthetic localhost fixtures and disposable PGlite only",
+    "No production credentials, data mutation, schema or migration changes",
+    "Global UI fixture aliases Next navigation; separate production-build fixture validates real App Router",
+    "Not WCAG certification or physical screen-reader/device verification",
+    "Filter URL/pagination/status adoption pilot is schedules, not all modules",
+    "CI and merge status must be verified against GitHub PR and commit"
+  ]
+}

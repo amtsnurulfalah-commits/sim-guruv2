@@ -125,7 +125,7 @@ export function FormDialog({
             inert={discard}
             className="flex items-start justify-between gap-4 border-b px-5 py-5 sm:px-7"
           >
-            <div>
+            <div className="min-w-0 [overflow-wrap:anywhere]">
               <Primitive.Title className="text-xl font-bold">
                 {title}
               </Primitive.Title>
