@@ -41,8 +41,8 @@ Migrasi menambah satu tabel private dan lima fungsi (basis, plan, read, preview,
 
 Jika perlu rollback aplikasi, gunakan deployment sebelumnya; schema tambahan boleh tinggal. Jangan menghapus semester/riwayat secara otomatis untuk membatalkan hasil yang telah dipakai. Koreksi konfigurasi melalui modul master/jadwal dengan pemeriksaan referensi yang sudah ada.
 
-## Status persetujuan dan konektor produksi
+## Status migrasi produksi
 
-[PR50](https://github.com/amtsnurulfalah-commits/sim-guruv2/pull/50) belum merge. **Pengguna sudah memberi izin eksplisit migrasi produksi Tahap6.** Dua penerapan gagal dengan error teknis konektor `Invalid or expired requestState`. Percobaan ketiga ditolak automatic approval review karena pengulangan mutasi tanpa recovery berisiko loop. Ini bukan kekurangan persetujuan produksi. Readback setelahnya tetap ledger31, tabel preparation belum ada. Tidak ada konfigurasi semester nyata yang disalin.
+Pengguna memberi izin eksplisit dan mengonfirmasi koneksi Supabase telah diperbarui. Batch yang sama berhasil diterapkan; ledger32/checksum/RLS/grants/helper/advisor terverifikasi dan hash routine jadwal/honorarium tetap sama. Error requestState dan blok pengulangan sebelumnya terselesaikan setelah pemulihan konektor. Tidak ada konfigurasi semester nyata yang disalin sebagai smoke.
 
-Pulihkan/segarkan koneksi Supabase sebelum percobaan mutasi selanjutnya. Jangan meminta izin migrasi yang sama ulang, jangan memakai jalur DDL lain untuk melewati blok review. Setelah konektor pulih:terapkan batch `release-batch.sql` yang sama, verifikasi ledger32/checksum/ENABLE-FORCE RLS/grants/helper/advisor dan hash routine lama, update bukti, tunggu checks dan merge expected-head PR50, lalu verifikasi produksi READY/health/API anonim401 tanpa menyalin semester nyata.
+Status merge/deployment akhir mengikuti [PR50](https://github.com/amtsnurulfalah-commits/sim-guruv2/pull/50). Setelah final checks:merge expected-head dan verifikasi produksi READY/health/API anonim401. Tahap7 menunggu instruksi pengguna.
