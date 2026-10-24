@@ -45,6 +45,9 @@ async function main() {
     await db.exec("insert into app.daily_attendance(user_id,date,sched_time_in,sched_time_out,actual_time_in,actual_time_out,time_in_source) select id,'2025-01-01'::date+n,'07:30','14:00','07:30','14:00','self' from app.app_users cross join generate_series(0,59)n");
     await db.exec("insert into finance.honor_periods(period_start,state,finalized_at,formula_version) values('2024-01-01','final','2024-02-01','legacy')");
     await db.query(`insert into finance.honor_statements(period_id,user_id,trx_id,snapshot,total_jtm,total_honor,checksum) select p.id,u.id,'SYNTHETIC-'||u.username,jsonb_build_object('formulaVersion','legacy','recipient',jsonb_build_object('name',u.full_name),'period','2024-01','total','9007199254740993','totalJtm','1.2345'),1.2345,9007199254740993,repeat('b',64) from finance.honor_periods p cross join app.app_users u`);
+    const rollbackBefore=await restoreInventory(db);
+    await assert.rejects(()=>db.transaction(async tx=>{await tx.exec("update app.system_settings set version=version+1 where key='operations.config'");throw Error("SYNTHETIC_ROLLBACK");}));
+    assert.deepEqual(await restoreInventory(db),rollbackBefore);
     await db.query("insert into ops.domain_outbox(dedupe_key,recipient_id,subject,body,state,lease_token,lease_until) values('drill-mail',$1,'Synthetic','Synthetic','sending',gen_random_uuid(),clock_timestamp()+interval '1 hour')",[actor]);
     await db.exec("ANALYZE app.app_users; ANALYZE app.daily_attendance; ANALYZE finance.honor_statements");
     // Bounded concurrent reads through the actual business adapter, not superuser bypass.
@@ -52,11 +55,14 @@ async function main() {
     const wrapped=databaseFromClient(client);
     const business={...wrapped,transaction:<T>(work:Parameters<typeof wrapped.transaction<T>>[0])=>wrapped.transaction(async tx=>{await tx.exec("SET LOCAL ROLE sim_guru_business");return work(tx);})};
     const service=new ActivityService(business),durations:number[]=[]; let bytes=0;
+    const baselineStart=performance.now(); let globalRead: {scope:string;durationMs:number;error:string|null};
+    try {await service.read(token,"attendance",{from:"2025-01-01",to:"2025-03-01",page:1,pageSize:25});globalRead={scope:"all teachers / one request",durationMs:Math.round(performance.now()-baselineStart),error:null};}
+    catch(error){globalRead={scope:"all teachers / one request",durationMs:Math.round(performance.now()-baselineStart),error:typeof error==='object' && error!==null && 'code' in error ? String(error.code) : 'READ_FAILED'};}
     const start=performance.now();
-    try { for(let batch=0;batch<10;batch++) await Promise.all(Array.from({length:4},async()=>{const t=performance.now();const data=await service.read(token,"attendance",{from:"2025-01-01",to:"2025-03-01",page:1,pageSize:25});durations.push(performance.now()-t);bytes+=Buffer.byteLength(JSON.stringify(data));})); }
+    try { for(let batch=0;batch<10;batch++) await Promise.all(Array.from({length:4},async()=>{const t=performance.now();const data=await service.read(token,"attendance",{from:"2025-01-01",to:"2025-03-01",page:1,pageSize:25,userId:actor});durations.push(performance.now()-t);bytes+=Buffer.byteLength(JSON.stringify(data));})); }
     finally {await client.end();}
     durations.sort((a,b)=>a-b);
-    const profile={kind:"native-synthetic-adapter-read",users:201,attendanceRows:12060,statementRows:201,requests:40,concurrency:4,errors:0,p50Ms:Math.round(durations[19]!),p95Ms:Math.round(durations[37]!),wallMs:Math.round(performance.now()-start),meanPayloadBytes:Math.round(bytes/40)};
+    const profile={kind:"native-synthetic-filtered-adapter-read",scope:"explicit per-teacher attendance filter",globalRead,users:201,attendanceRows:12060,statementRows:201,requests:40,concurrency:4,errors:0,p50Ms:Math.round(durations[19]!),p95Ms:Math.round(durations[37]!),wallMs:Math.round(performance.now()-start),meanPayloadBytes:Math.round(bytes/40)};
     assert.ok(profile.p95Ms<5000,"SYNTHETIC_READ_BUDGET_5S_EXCEEDED");
     // Freeze only the disposable fixture. No source traffic or worker exists here.
     await db.exec(`update app.system_settings set typed_value=typed_value||'{"maintenance":true,"jobsEnabled":false,"mailEnabled":false,"securityMailEnabled":false}'::jsonb where key='operations.config'`);
@@ -65,7 +71,9 @@ async function main() {
     await cli("verify"); const wrong=await cli("verify",{BACKUP_ENCRYPTION_KEY:randomBytes(32).toString("hex")},1);assert.match(wrong,/BACKUP_OPERATION_FAILED/);
     const originalManifest=await readFile(join(archive,"manifest.json"),"utf8"),manifest=JSON.parse(originalManifest);
     await writeFile(join(archive,"manifest.json"),JSON.stringify({...manifest,createdAt:"2000-01-01T00:00:00Z"}));await cli("verify",{},1);await writeFile(join(archive,"manifest.json"),originalManifest);
-    const dump=await readFile(join(archive,"database.enc"));await writeFile(join(archive,"database.enc"),dump.subarray(1));await cli("verify",{},1);await writeFile(join(archive,"database.enc"),dump);
+    const dump=await readFile(join(archive,"database.enc"));await writeFile(join(archive,"database.enc"),dump.subarray(1));await cli("verify",{},1);await cli("restore-local",{},1);
+    assert.equal((await restored.query<{n:number}>("select count(*)::int n from pg_class c join pg_namespace n on n.oid=c.relnamespace where c.relkind='r' and n.nspname not in('pg_catalog','information_schema')")).rows[0]!.n,0);
+    await writeFile(join(archive,"database.enc"),dump);
     assert.equal((await stat(archive)).mode&0o777,0o700);assert.equal((await stat(join(archive,"database.enc"))).mode&0o777,0o600);
     const restoreStarted=performance.now();await cli("restore-local");
     assert.deepEqual(await cli("restore-local",{},1).then(s=>s.includes("EMPTY_RESTORE_DATABASE_REQUIRED")),true);
@@ -76,9 +84,9 @@ async function main() {
     await assert.rejects(()=>restored.transaction(async tx=>{await tx.exec("SET LOCAL ROLE sim_guru_business");await tx.query("select * from auth_private.user_credentials");}));
     const restoredHash=(await restored.query<{password_hash:string}>("select password_hash from auth_private.user_credentials where user_id=$1",[actor])).rows[0]!.password_hash;
     assert.equal((await passwords.verify(restoredHash,"Native9!rL8#qW4$vZ2@kD7")).valid,true);
-    assert.deepEqual((await restored.query("select auth_private.session_snapshot($1) value",[digest])).rows[0]!.value,null);
+    assert.equal((await restored.query("select * from auth_private.session_snapshot($1,false)",[digest])).rows.length,0);
     const after=await restoreInventory(restored);assert.deepEqual(after.migrations,before.migrations);assert.equal(after.rls,true);assert.equal(after.schemaDigest,before.schemaDigest);
-    const result={kind:"stage8-native-recovery",ok:true,postgres:(await db.query<{v:string}>("select current_setting('server_version') v")).rows[0]!.v,migrations:migration.length,tables:Object.keys(before.counts).length,backupMs,recoveryMs:Math.round(performance.now()-restoreStarted),archiveBytes:dump.length,rpo:"0 fixture transactions lost at frozen snapshot; not a production RPO",inventory:"v2 full-content/schema/ACL/migration comparison before isolation passed in CLI",checks:["wrong-key","manifest-tamper","archive-truncation","empty-target","permissions","revoked-session","dispatch-isolation","exact-NUMERIC","immutable-final","credential-hash-verify"],profile};
+    const result={kind:"stage8-native-recovery",ok:true,postgres:(await db.query<{v:string}>("select current_setting('server_version') v")).rows[0]!.v,migrations:migration.length,tables:Object.keys(before.counts).length,backupMs,recoveryMs:Math.round(performance.now()-restoreStarted),archiveBytes:dump.length,rpo:"0 fixture transactions lost at frozen snapshot; not a production RPO",inventory:"v2 full-content/schema/ACL/migration comparison before isolation passed in CLI",checks:["transaction-rollback","corrupt-restore-no-write","wrong-key","manifest-tamper","archive-truncation","empty-target","permissions","revoked-session","dispatch-isolation","exact-NUMERIC","immutable-final","credential-hash-verify"],profile};
     if(process.env.STAGE8_REPORT_FILE)await writeFile(process.env.STAGE8_REPORT_FILE,JSON.stringify(result,null,2)+"\n");
     console.log("STAGE8_NATIVE_RESULT "+JSON.stringify(result));
   } finally {await db.close();await restored.close();await rm(directory,{recursive:true,force:true});}
