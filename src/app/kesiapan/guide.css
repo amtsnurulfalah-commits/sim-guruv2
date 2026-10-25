@@ -1,0 +1,29 @@
+/* Public guide print rules do not alter the finance print view. */
+@media print {
+  .application-guide,
+  .application-guide * {
+    visibility: visible;
+  }
+  body:has(.application-guide) .ui-sidebar,
+  body:has(.application-guide) .ui-topbar,
+  body:has(.application-guide) footer,
+  body:has(.application-guide) .workspace-content > nav,
+  .application-guide nav,
+  .application-guide [data-slot="button"] {
+    display: none;
+  }
+  body:has(.application-guide) .workspace-content {
+    max-width: none;
+    padding: 0;
+  }
+  .application-guide .guide-question > p {
+    display: block !important;
+  }
+  .application-guide .guide-question::details-content {
+    content-visibility: visible;
+  }
+  .application-guide article,
+  .application-guide .guide-question {
+    break-inside: avoid;
+  }
+}

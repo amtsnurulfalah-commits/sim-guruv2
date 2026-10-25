@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./kesiapan/guide.css";
 
 :root {
   color-scheme: light;

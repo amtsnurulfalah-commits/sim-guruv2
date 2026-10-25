@@ -5,12 +5,20 @@ import type { AppModule } from "@/lib/navigation/modules";
 export function ModuleCards({
   items,
   linked = true,
+  describeAccess = false,
 }: {
   items: readonly AppModule[];
   linked?: boolean;
+  describeAccess?: boolean;
 }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div
+      className={
+        describeAccess
+          ? "grid gap-4 @min-[34rem]:grid-cols-2 @min-[60rem]:grid-cols-3"
+          : "grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+      }
+    >
       {items.map((module) => (
         <article
           key={module.slug}
@@ -20,6 +28,15 @@ export function ModuleCards({
             <Badge>{module.available ? "Tersedia" : "Belum tersedia"}</Badge>
           </div>
           <h3 className="font-semibold">{module.title}</h3>
+          {describeAccess && (
+            <p className="mt-2 text-xs font-semibold text-primary">
+              {module.adminOnly
+                ? "Khusus administrator"
+                : module.slug === "laporan-pimpinan"
+                  ? "Administrator atau pemegang izin laporan"
+                  : "Sesuai peran dan penugasan akun"}
+            </p>
+          )}
           <p className="mt-2 flex-1 text-sm leading-7 text-muted-foreground">
             {module.description}
           </p>
