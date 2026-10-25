@@ -23,7 +23,7 @@ Ekspor membaca semua halaman dalam REPEATABLE READ, maksimal 10.000 baris, lalu 
 
 ## B. Implementasi
 
-- Capabilities memakai hook GET tunggal yang sudah digunakan Dashboard/Pusat Tugas, dengan status/error terpisah. Read laporan tetap dibatalkan saat filter berubah; response lama diabaikan. Perubahan scope menutup/menghapus snapshot dan rincian yang tidak lagi diizinkan.
+- Capabilities memakai hook GET tunggal yang sudah digunakan Dashboard/Pusat Tugas, dengan status/error terpisah. Read laporan tetap dibatalkan saat filter berubah; response lama diabaikan. Perubahan scope menutup/menghapus snapshot dan rincian yang tidak lagi diizinkan. Pemeriksaan akses latar belakang dengan lingkup yang tetap tidak memuat ulang laporan atau menutup rincian; pemuatan ulang data laporan tetap melalui filter/tombol Muat ulang, dengan timestamp sumber yang ditampilkan.
 - Decoder bersama `readReportResponse` memverifikasi bentuk akademik/keuangan, jumlah baris halaman, unique IDs/guru, lingkup guru/tanggal, kind/period/teacher/page/pageSize/mode. Mode final tetap boleh menggantikan realisasi/proyeksi sesuai SQL.
 - `ReportAccess` dipisahkan menjadi komponen terfokus. Pemilihan pengguna memuat izin tersimpan; versi yang dibaca dibekukan untuk save. Field dan alasan 5–500 karakter divalidasi. Single-flight POST, acknowledgment `{ok:true}`, lock hasil tidak pasti/konflik, recovery melalui reload dan feedback berhasil-terpisah-dari-read dipertahankan. Background read tidak menimpa draft/versi edit.
 - Rincian hanya terlihat untuk snapshot/query yang masih valid. Trigger kosong dihapus dan fokus dikembalikan setelah tutup. Form izin menjaga fokus dan tidak dapat ditutup/dikirim ulang saat write berlangsung.

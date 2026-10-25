@@ -32,7 +32,7 @@ const errorText = (e: unknown) =>
       : "Laporan belum dapat dimuat. Coba kembali.";
 const yes = (v: boolean | undefined) => (v ? "Ya" : "Belum");
 export function ReportsWorkspace() {
-  const {value:caps,error:capsError,loading:capsLoading,updatedAt:capsUpdatedAt,refresh:refreshCaps}=useReadResource(endpoint+"read?kind=capabilities",parseCapabilities);
+  const {value:caps,error:capsError,loading:capsLoading,refresh:refreshCaps}=useReadResource(endpoint+"read?kind=capabilities",parseCapabilities);
   const [report, setReport] = useState<Report | null>(null),
     [loadedQuery, setLoadedQuery] = useState(""),
     [teachers, setTeachers] = useState<{ id: string; name: string }[]>([]),
@@ -107,7 +107,7 @@ export function ReportsWorkspace() {
       active = false;
       c.abort();
     };
-  }, [query, allowed, permitted, refresh, page, capsUpdatedAt]);
+  }, [query, allowed, permitted, refresh, page]);
   async function download() {
     if (exportLock.current || loadedQuery !== query || !report || loading || !allowed) return;
     exportLock.current = true;

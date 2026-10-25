@@ -167,13 +167,14 @@ try {
     .waitFor();
 
   const uid=n=>`55555555-5555-4555-8555-${String(n).padStart(12,"0")}`;
-  let caps={admin:true,academic:true,finance:true},capBad=false,accessBad=false,readBad=false,wrongMode=false,delay=0,total=56,postMode="ok",postCount=0,lastPost,exports=0,exportFail=false;
+  let caps={admin:true,academic:true,finance:true},capBad=false,accessBad=false,readBad=false,wrongMode=false,delay=0,total=56,postMode="ok",postCount=0,lastPost,exports=0,exportFail=false,reportReads=0;
   let reader={id:uid(1),name:"Guru panjang "+"NamaTanpaSpasi".repeat(25),academic:true,finance:true,version:"7"};
   const ok=(r,data)=>r.fulfill({contentType:"application/json",body:JSON.stringify({ok:true,data})});
   await page.route("**/api/reports/read?**",async r=>{
     const q=new URL(r.request().url()).searchParams;
     if(q.get("kind")==="capabilities")return ok(r,capBad?{}:caps);
     if(q.get("kind")==="access")return ok(r,accessBad?{items:null}:{items:[reader]});
+    reportReads++;
     if(delay)await new Promise(resolve=>setTimeout(resolve,delay));
     const fin=q.get("kind")==="finance",count=fin?1:total,p=Number(q.get("page")),size=Number(q.get("pageSize"));
     const items=Array.from({length:Math.min(size,Math.max(0,count-(p-1)*size))},(_,n)=>fin?{id:uid(1),name:reader.name,jtm:"1",teaching:"9007199254740993",allowances:"0",transport:"0",corrections:"0",total:"9007199254740993",cutoff:q.get("period")+"-01"}:{id:uid((p-1)*size+n+1),name:reader.name,category:"ATTENDANCE",date:q.get("period")+"-01",user_id:uid(1),confirmed:true,documented:false});
@@ -202,7 +203,7 @@ try {
   await btn("Atur izin laporan").click();const modal=page.getByRole("dialog");await modal.getByLabel("Pengguna").selectOption(uid(1));assert.equal(await modal.getByLabel("Laporan akademik").inputValue(),"true");assert.equal(await modal.getByLabel("Laporan honorarium").inputValue(),"true");await modal.getByLabel("Laporan akademik").selectOption("false");await modal.getByLabel("Alasan (5–500 karakter)").fill("     ");await modal.getByRole("button",{name:"Atur izin laporan",exact:true}).click();await modal.getByRole("alert").filter({hasText:"Alasan perubahan"}).waitFor();assert.equal(postCount,0);await modal.getByLabel("Alasan (5–500 karakter)").fill("Ubah akademik tanpa mencabut honorarium");await modal.getByRole("button",{name:"Atur izin laporan",exact:true}).evaluate(b=>{b.click();b.click();});await modal.waitFor({state:"hidden"});assert.equal(postCount,1);assert.equal(lastPost.finance,true);assert.equal(lastPost.version,"7");
   for(const mode of ["conflict","bad","network"]){postMode=mode;await btn("Atur izin laporan").click();await modal.getByLabel("Pengguna").selectOption(uid(1));await modal.getByLabel("Alasan (5–500 karakter)").fill("Periksa status izin sintetis");await modal.getByRole("button",{name:"Atur izin laporan",exact:true}).click();await modal.getByRole("alert").waitFor();assert.equal(await modal.getByRole("button",{name:"Atur izin laporan",exact:true}).isDisabled(),true);await modal.getByRole("button",{name:"Tutup formulir",exact:true}).click();await page.getByRole("button",{name:"Buang perubahan",exact:true}).click();await modal.waitFor({state:"hidden"});assert.equal(await btn("Atur izin laporan").isDisabled(),true);await btn("Muat ulang izin").click();await page.waitForFunction(()=>Array.from(document.querySelectorAll('button')).some(b=>b.textContent==='Atur izin laporan'&&!b.disabled));}postMode="ok";
   accessBad=true;await btn("Muat ulang izin").click();await page.getByRole("alert").filter({hasText:"Daftar izin belum sesuai"}).waitFor();assert.equal(await btn("Atur izin laporan").isDisabled(),true);accessBad=false;await btn("Muat ulang izin").click();
-  await ready();await page.getByRole("button",{name:/Lihat rincian/}).first().click();await modal.waitFor();caps={admin:false,academic:false,finance:false};await page.evaluate(()=>window.dispatchEvent(new Event("focus")));await page.getByRole("heading",{name:"Akses laporan belum diberikan",exact:true}).waitFor();await modal.waitFor({state:"hidden"});assert.equal(await page.getByRole("heading",{name:"Rincian sumber",exact:true}).count(),0);
+  await ready();await page.getByRole("button",{name:/Lihat rincian/}).first().click();await modal.waitFor();const beforeAccessCheck=reportReads;const checked=page.waitForResponse(r=>new URL(r.url()).searchParams.get("kind")==="capabilities");await page.evaluate(()=>window.dispatchEvent(new Event("focus")));await checked;await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));assert.equal(await modal.isVisible(),true);assert.equal(reportReads,beforeAccessCheck);caps={admin:false,academic:false,finance:false};await page.evaluate(()=>window.dispatchEvent(new Event("focus")));await page.getByRole("heading",{name:"Akses laporan belum diberikan",exact:true}).waitFor();await modal.waitFor({state:"hidden"});assert.equal(await page.getByRole("heading",{name:"Rincian sumber",exact:true}).count(),0);
   caps={admin:false,academic:false,finance:true};await btn("Periksa ulang akses").click();await ready();assert.equal(await btn("Akademik").count(),0);assert.equal(await page.getByRole("heading",{name:"Izin pembaca laporan",exact:true}).count(),0);
   capBad=true;await page.evaluate(()=>window.dispatchEvent(new Event("focus")));await page.getByRole("alert").filter({hasText:"Data izin laporan belum sesuai"}).waitFor();assert.equal(await page.getByRole("heading",{name:"Rincian sumber",exact:true}).count(),0);
   assert.deepEqual(errors, []);
@@ -220,7 +221,7 @@ try {
         "empty",
         "grant-academic-only",
         "revoke",
-        "responsive-modal", "blank-month", "56-row-pagination-shrink-to-zero", "strict-mode-and-summary", "download-failure-and-double-click", "preserve-reader-scopes-and-version", "conflict-malformed-network-write-lock", "invalid-readers", "revoke-open-detail", "finance-only-and-invalid-capabilities",
+        "responsive-modal", "blank-month", "56-row-pagination-shrink-to-zero", "strict-mode-and-summary", "download-failure-and-double-click", "preserve-reader-scopes-and-version", "conflict-malformed-network-write-lock", "invalid-readers", "stable-open-detail-on-access-refresh", "revoke-open-detail", "finance-only-and-invalid-capabilities",
       ],
       pageErrors: errors,
     }),
