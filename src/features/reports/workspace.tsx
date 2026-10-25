@@ -30,6 +30,7 @@ const errorText = (e: unknown) =>
     : e instanceof Error
       ? e.message
       : "Laporan belum dapat dimuat. Coba kembali.";
+const categoryLabels:Record<string,string>={KBM:"KBM",EXAM_SUPERVISOR:"Pengawasan ujian",ATTENDANCE:"Kehadiran"};
 const yes = (v: boolean | undefined) => (v ? "Ya" : "Belum");
 export function ReportsWorkspace() {
   const {value:caps,error:capsError,loading:capsLoading,refresh:refreshCaps}=useReadResource(endpoint+"read?kind=capabilities",parseCapabilities);
@@ -286,8 +287,7 @@ export function ReportsWorkspace() {
                   <ul className="list-inside list-disc text-sm">
                     {report.issues.map((i) => (
                       <li key={i}>
-                        {issueLabels[i] ??
-                          "Periksa temuan periode pada halaman Honorarium."}
+                        {Object.hasOwn(issueLabels,i) ? issueLabels[i] : "Periksa temuan periode pada halaman Honorarium."}
                       </li>
                     ))}
                   </ul>
@@ -459,7 +459,7 @@ export function ReportsWorkspace() {
                   )[k] ?? k}
                 </dt>
                 <dd className="min-w-0 [overflow-wrap:anywhere]">
-                  {typeof v === "boolean" ? yes(v) : ["teaching","allowances","transport","corrections","total"].includes(k) ? formatHonorAmount(String(v)) : k==="category" ? ({KBM:"KBM",EXAM_SUPERVISOR:"Pengawasan ujian",ATTENDANCE:"Kehadiran"}[String(v)]??String(v)) : (v ?? "—")}
+                  {typeof v === "boolean" ? yes(v) : ["teaching","allowances","transport","corrections","total"].includes(k) ? formatHonorAmount(String(v)) : k==="category" ? (Object.hasOwn(categoryLabels,String(v))?categoryLabels[String(v)]:String(v)) : (v ?? "—")}
                 </dd>
               </div>
             ))}

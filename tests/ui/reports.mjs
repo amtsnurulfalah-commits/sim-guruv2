@@ -178,7 +178,7 @@ try {
     if(delay)await new Promise(resolve=>setTimeout(resolve,delay));
     const fin=q.get("kind")==="finance",count=fin?1:total,p=Number(q.get("page")),size=Number(q.get("pageSize"));
     const items=Array.from({length:Math.min(size,Math.max(0,count-(p-1)*size))},(_,n)=>fin?{id:uid(1),name:reader.name,jtm:"1",teaching:"9007199254740993",allowances:"0",transport:"0",corrections:"0",total:"9007199254740993",cutoff:q.get("period")+"-01"}:{id:uid((p-1)*size+n+1),name:reader.name,category:"ATTENDANCE",date:q.get("period")+"-01",user_id:uid(1),confirmed:true,documented:false});
-    return ok(r,{kind:q.get("kind"),period:q.get("period"),teacher:q.get("teacher")||null,mode:fin?(wrongMode?"realized":q.get("mode")):"recorded",cutoff:q.get("period")+"-01",updatedAt:new Date().toISOString(),summary:readBad?{}:fin?{beneficiaries:1,jtm:"1",total:"9007199254740993"}:{kbm:0,confirmed:0,journals:0,exams:0,baps:0,attendance:count,present:count,complete:0},issues:[],items,total:count,page:p,pageSize:size,teachers:[{id:uid(1),name:reader.name}]});
+    return ok(r,{kind:q.get("kind"),period:q.get("period"),teacher:q.get("teacher")||null,mode:fin?(wrongMode?"realized":q.get("mode")):"recorded",cutoff:q.get("period")+"-01",updatedAt:new Date().toISOString(),summary:readBad?{}:fin?{beneficiaries:1,jtm:"1",total:"9007199254740993"}:{kbm:0,confirmed:0,journals:0,exams:0,baps:0,attendance:count,present:count,complete:0},issues:["__proto__"],items,total:count,page:p,pageSize:size,teachers:[{id:uid(1),name:reader.name}]});
   });
   await page.route("**/api/reports/access",async r=>{
     postCount++;lastPost=r.request().postDataJSON();await new Promise(resolve=>setTimeout(resolve,350));
