@@ -14,10 +14,13 @@ import type { SessionDto } from "@/types/auth";
 export function SessionBoundary({
   children,
   business = false,
+  publicFallback,
 }: {
   children: (session: SessionDto, requestLogout: () => void) => ReactNode;
   business?: boolean;
+  publicFallback?: (message: string, retry: () => void) => ReactNode;
 }) {
+  const isPublic = publicFallback !== undefined;
   const [logoutRequested, setLogoutRequested] = useState(false);
   const [logoutError, setLogoutError] = useState("");
   const [resolved, setResolved] = useState(false);
@@ -54,7 +57,11 @@ export function SessionBoundary({
           window.location.reload();
           return;
         }
-        try { claimDraftAccount(sessionStorage, data.user.id); } catch { /* Form reports storage failures. */ }
+        try {
+          claimDraftAccount(sessionStorage, data.user.id);
+        } catch {
+          /* Form reports storage failures. */
+        }
         identity.current = nextIdentity;
         setSession(data);
         setMessage("");
@@ -66,12 +73,18 @@ export function SessionBoundary({
         ) {
           setSession(null);
           setLogoutRequested(false);
+          if (isPublic) {
+            if (identity.current !== null) resetBrowserDrafts();
+            identity.current = null;
+            setMessage("");
+            return;
+          }
           resetBrowserDrafts();
           window.location.replace("/login?status=expired");
           return;
         }
         if (active) {
-          setSession(null);
+          if (!isPublic) setSession(null);
           setLogoutRequested(false);
           setMessage(
             error instanceof Error
@@ -86,6 +99,7 @@ export function SessionBoundary({
     }
     async function activity() {
       if (
+        (isPublic && identity.current === null) ||
         Date.now() - lastActivity.current < 60000 ||
         document.visibilityState !== "visible"
       )
@@ -133,7 +147,7 @@ export function SessionBoundary({
       channel.current?.close();
       channel.current = null;
     };
-  }, [revision, business]);
+  }, [revision, business, isPublic]);
   useEffect(() => {
     if (logoutRequested) dialog.current?.showModal();
   }, [logoutRequested]);
@@ -177,6 +191,11 @@ export function SessionBoundary({
     }
   }
   if (!session && !resolved) return <PageSkeleton />;
+  if (!session && publicFallback)
+    return publicFallback(message, () => {
+      setResolved(false);
+      setRevision((v) => v + 1);
+    });
   if (!session)
     return (
       <ServiceState
@@ -202,7 +221,12 @@ export function SessionBoundary({
   return (
     <>
       <SessionExpiry session={session} />
-      {message && <p role="status">{message}</p>}
+      {message &&
+        (isPublic ? (
+          <ErrorFeedback message={message} />
+        ) : (
+          <p role="status">{message}</p>
+        ))}
       {children(session, requestLogout)}
       <dialog
         ref={dialog}
@@ -222,7 +246,8 @@ export function SessionBoundary({
           className="mt-3 text-sm leading-7 text-muted-foreground"
         >
           Sesi pada browser ini akan diakhiri. Anda dapat masuk kembali
-          menggunakan akun Anda. Draft lokal jurnal dan BAP di tab ini akan dihapus.
+          menggunakan akun Anda. Draft lokal jurnal dan BAP di tab ini akan
+          dihapus.
         </p>
         <ErrorFeedback message={logoutError} autoFocus className="mt-4" />
         <div className="mt-6 flex justify-end gap-3">
@@ -256,7 +281,10 @@ function SessionExpiry({ session }: { session: SessionDto }) {
       new Date(session.idleExpiresAt).getTime(),
     ) - now;
   useEffect(() => {
-    if (remaining <= 0) { resetBrowserDrafts(); window.location.replace("/login?status=expired"); }
+    if (remaining <= 0) {
+      resetBrowserDrafts();
+      window.location.replace("/login?status=expired");
+    }
   }, [remaining]);
   return remaining <= 60000 ? (
     <p
