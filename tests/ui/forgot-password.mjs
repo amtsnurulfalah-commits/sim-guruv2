@@ -8,11 +8,13 @@ try {
  await new Promise((resolve,reject)=>{const t=setTimeout(()=>reject(Error(stderr||'fixture timeout')),60000);child.stdout.on('data',b=>{if(b.toString().includes('UI_FIXTURE_READY')){clearTimeout(t);resolve();}});child.on('exit',()=>{clearTimeout(t);reject(Error(stderr));});});
  browser=await chromium.launch({headless:true,...(process.env.UI_BROWSER_EXECUTABLE?{executablePath:process.env.UI_BROWSER_EXECUTABLE}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
  const page=await browser.newPage();page.setDefaultTimeout(12000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ let lastOtpChallenge='';
  const id='33333333-3333-4333-8333-333333333333';let mode='ok',csrf='ok',writes=0,delay=0;
  const ok=(r,data)=>r.fulfill({contentType:'application/json',body:JSON.stringify({ok:true,data})});
  const fail=(r,code,status)=>r.fulfill({status,headers:code==='RATE_LIMITED'?{'retry-after':'120'}:{},contentType:'application/json',body:JSON.stringify({ok:false,error:{code,message:'Penolakan sintetis'},requestId:'recovery-help-123'})});
  await page.route('**/api/auth/csrf?*',r=>csrf==='network'?r.abort():ok(r,csrf==='bad'?{}:{csrfToken:'fixture-csrf'}));
  for(const action of ['forgot-password','reset-otp','reset-password'])await page.route('**/api/auth/'+action,async r=>{
+  if(action==='reset-otp')lastOtpChallenge=r.request().postDataJSON().challengeId;
   writes++;if(delay)await new Promise(resolve=>setTimeout(resolve,delay));
   if(mode===action+'-network')return r.abort();
   if(mode===action+'-503')return fail(r,'INTERNAL_ERROR',503);
@@ -70,5 +72,17 @@ try {
  await go();await ask();await verify();await reset().waitFor();await password();
  assert.equal(await page.evaluate(()=>localStorage.length+sessionStorage.length),0);assert.equal(await page.locator('input[value="'+ 'A'.repeat(43)+'"]').count(),0);
  await page.setViewportSize({width:812,height:375});await bounds();await reset().getByRole('button',{name:'Reset kata sandi',exact:true}).click();await page.waitForURL('**/login?status=updated');
+ // Admin email links open OTP verification without sending a new recovery request or leaking the ID in URL.
+ const beforeLink=writes;
+ await page.goto('http://127.0.0.1:4319/?view=recovery#challengeId='+id);
+ await otp().waitFor();assert.equal(writes,beforeLink);assert.equal(new URL(page.url()).hash,'');
+ await otp().getByText(/Membuka tautan saja belum mengubah kata sandi/).waitFor();await verify();await reset().waitFor();
+ await page.goto('http://127.0.0.1:4319/?view=recovery#challengeId=invalid');
+ await page.getByRole('alert').filter({hasText:'Tautan pemulihan tidak lengkap'}).waitFor();assert.equal(new URL(page.url()).hash,'');assert.equal(await otp().count(),0);
+ // A later email link wins over an earlier request still waiting for its response.
+ mode='ok';csrf='ok';delay=250;await go();await ask();
+ const newer='44444444-4444-4444-8444-444444444444';
+ await page.evaluate(value=>{location.hash='challengeId='+value;},newer);
+ await otp().waitFor();await verify();await reset().waitFor();delay=0;assert.equal(lastOtpChallenge,newer);
  assert.deepEqual(errors,[]);console.log(`PASS: ${combinations} recovery reflow combinations; methods, cooldown/resend, single writes, identity snapshot, malformed/network/server responses, invalid proof, CSRF no-POST, uncertain outcome, validation, restart, orientation, reset success; zero page errors.`);
 } finally {await browser?.close();child.kill('SIGTERM');}

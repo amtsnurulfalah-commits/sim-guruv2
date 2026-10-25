@@ -19,14 +19,22 @@ import {
   statusSchema,
 } from "../../lib/users/schemas";
 import type { AccountLifecycleService } from "../accounts/lifecycle";
+import type { SecurityOtpDelivery, OtpDeliveryStatus } from "../accounts/http";
 import type { UserService } from "./service";
 type Action =
-  "collection" | "detail" | "status" | "activation" | "recovery" | "requests";
+  | "collection"
+  | "detail"
+  | "status"
+  | "activation"
+  | "recovery"
+  | "requests"
+  | "reset-email";
 export function createUserHandler(deps: {
   config: () => HttpAuthConfig;
   auth: () => Promise<LocalAuthService>;
   users: () => Promise<UserService>;
   rate: () => Promise<AccountLifecycleService>;
+  mail?: SecurityOtpDelivery;
 }) {
   return (action: Action, request: Request, id?: string) =>
     handleModuleRequest("users", async (requestId) => {
@@ -90,7 +98,29 @@ export function createUserHandler(deps: {
         result = await users.reissue(token, id!, input);
       else if (action === "recovery")
         result = await users.recover(token, id!, input);
-      else if (read) result = await users.requests(token);
+      else if (action === "reset-email") {
+        if (!deps.mail) throw new AuthError("EMAIL_DELIVERY_UNAVAILABLE", 503);
+        deps.mail.ready();
+        const queued = await users.resetEmail(token, id!, input);
+        // Provider I/O runs after the queue transaction commits, never while holding locks.
+        let emailDelivery: OtpDeliveryStatus = "pending";
+        try {
+          emailDelivery = await deps.mail.deliver(queued.challengeId);
+        } catch {
+          console.error(
+            JSON.stringify({
+              event: "admin_reset_email_dispatch_failed",
+              requestId,
+              code: "WORKER_UNAVAILABLE",
+            }),
+          );
+        }
+        result = {
+          user: queued.user,
+          delivery: queued.delivery,
+          emailDelivery,
+        };
+      } else if (read) result = await users.requests(token);
       else {
         const actionType = z
           .object({ action: z.enum(["approve", "reject"]) })

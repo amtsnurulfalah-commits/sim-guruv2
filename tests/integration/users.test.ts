@@ -87,6 +87,7 @@ test("Tahap 2.1 — user management, real hashes and role-scoped SQL", async (t)
     service = new UserService(scoped, passwords, {
       appUrl: config.appUrl,
       encryptionKey,
+      hmac: config.sessionSecret,
     });
   let admin = (
     await auth.login(
@@ -248,6 +249,7 @@ test("Tahap 2.1 — user management, real hashes and role-scoped SQL", async (t)
       const bad = new UserService(scoped, passwords, {
         appUrl: config.appUrl,
         encryptionKey: "invalid",
+        hmac: config.sessionSecret,
       });
       await assert.rejects(() =>
         bad.create(admin, {

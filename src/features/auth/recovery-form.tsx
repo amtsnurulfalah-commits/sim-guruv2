@@ -22,12 +22,28 @@ export function RecoveryForm() {
   const [flowError, setFlowError] = useState("");
   const [outcome, setOutcome] = useState<"success" | "uncertain" | null>(null);
   const mounted = useRef(false);
+  const flowVersion = useRef(0);
   const root = useRef<HTMLDivElement>(null);
   const remaining = Math.max(0, Math.ceil((nextRequest - now) / 1000));
   useEffect(() => {
     mounted.current = true;
-    void Promise.resolve().then(() => { if (mounted.current) { setReady(true); setNow(Date.now()); } });
-    return () => { mounted.current = false; };
+    const readLink = () => {
+      if (!mounted.current) return;
+      const fragment = new URLSearchParams(window.location.hash.slice(1));
+      if (!fragment.has("challengeId")) return;
+      const challengeId = fragment.get("challengeId");
+      window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
+      flowVersion.current++;
+      setReset(null); setOutcome(null); setIdentity(""); setMethod("email");
+      if (verifyOtpSchema.shape.challengeId.safeParse(challengeId).success) {
+        setOtpChallenge(challengeId!); setFlowError("");
+      } else {
+        setOtpChallenge(""); setFlowError("Tautan pemulihan tidak lengkap. Ajukan pemulihan baru atau hubungi administrator.");
+      }
+    };
+    void Promise.resolve().then(() => { if (mounted.current) { setReady(true); setNow(Date.now()); readLink(); } });
+    window.addEventListener("hashchange", readLink);
+    return () => { mounted.current = false; window.removeEventListener("hashchange", readLink); };
   }, []);
   useEffect(() => {
     if (!nextRequest) return;
@@ -44,6 +60,7 @@ export function RecoveryForm() {
     return () => cancelAnimationFrame(frame);
   }, [reset, otpChallenge]);
   function restart() {
+    flowVersion.current++;
     setReset(null); setOtpChallenge(""); setIdentity(""); setFlowError(""); setOutcome(null);
     requestAnimationFrame(() => root.current?.querySelector<HTMLInputElement>('input[name="username"]')?.focus());
   }
@@ -63,9 +80,10 @@ export function RecoveryForm() {
       <Link href={outcome === "success" ? "/login?status=updated" : "/login"} className="ui-text-link rounded-md underline">Ke halaman masuk</Link>
       {outcome === "uncertain" && restartButton}
     </section> : <>
-      <details open={!reset} className="min-w-0 space-y-4">
+      <details open={!reset && (!otpChallenge || Boolean(identity))} className="min-w-0 space-y-4">
         <summary className="min-h-11 cursor-pointer rounded-lg bg-muted/50 px-3 py-2 text-sm font-semibold">Identitas dan metode pemulihan{reset ? ` · ${identity}` : ""}</summary>
         <ActionForm className={formStyle} title="Ajukan pemulihan" submitLabel="Ajukan" disabled={Boolean(reset)} onSubmit={async (data, form, signal) => {
+          const flow = flowVersion.current;
           if (Date.now() < nextRequest) return { message: `Tunggu ${Math.max(1, Math.ceil((nextRequest - Date.now()) / 1000))} detik sebelum meminta kembali.`, tone: "info" };
           const payload = validateAccount(forgotSchema, { ...data, method, answer: method === "security" ? data.answer : undefined });
           if (method === "security" && !payload.answer?.trim()) throw new ApiRequestError("VALIDATION_ERROR", "Isi jawaban keamanan untuk metode ini.", 422, { answer: ["Jawaban keamanan wajib diisi."] });
@@ -73,7 +91,7 @@ export function RecoveryForm() {
           let raw: unknown;
           try { raw = await accountRequest<unknown>("forgot-password", payload, true, signal); }
           catch (error) {
-            if (!mounted.current || signal.aborted) throw error;
+            if (!mounted.current || signal.aborted || flow !== flowVersion.current) throw error;
             if (uncertain(error)) {
               waitBeforeRequest();
               throw new ApiRequestError("INVALID_RESPONSE", "Status permintaan belum dapat dipastikan. Tunggu 60 detik sebelum meminta pemulihan baru.", 0, {}, error instanceof ApiRequestError ? error.requestId : undefined);
@@ -81,7 +99,7 @@ export function RecoveryForm() {
             if (error instanceof ApiRequestError && error.code === "RATE_LIMITED") waitBeforeRequest(error.retryAfter ?? 60);
             throw error;
           }
-          if (!mounted.current || signal.aborted) return { message: "Permintaan selesai.", tone: "info" };
+          if (!mounted.current || signal.aborted || flow !== flowVersion.current) return { message: "Permintaan selesai.", tone: "info" };
           waitBeforeRequest();
           const parsed = recoveryAcceptedSchema.safeParse(raw);
           if (!parsed.success) throw new ApiRequestError("INVALID_RESPONSE", "Status permintaan belum dapat dipastikan. Tunggu 60 detik sebelum mencoba kembali.");
@@ -104,34 +122,36 @@ export function RecoveryForm() {
         </ActionForm>
       </details>
       {otpChallenge && !reset && <ActionForm key={otpChallenge} className={formStyle} title="Verifikasi OTP pemulihan" submitLabel="Verifikasi kode" onSubmit={async (data, _form, signal) => {
+        const flow = flowVersion.current;
         const payload = validateAccount(verifyOtpSchema, { challengeId: otpChallenge, otp: data.otp });
         try {
           const raw = await accountRequest<unknown>("reset-otp", payload, true, signal);
-          if (!mounted.current || signal.aborted) return { message: "Permintaan selesai.", tone: "info" };
+          if (!mounted.current || signal.aborted || flow !== flowVersion.current) return { message: "Permintaan selesai.", tone: "info" };
           const parsed = resetProofSchema.safeParse(raw);
           if (!parsed.success) throw new ApiRequestError("INVALID_RESPONSE", "Bukti pemulihan belum dapat dibaca.");
           setReset(parsed.data);
           return { message: "Kode terbukti. Atur kata sandi baru dalam lima menit.", tone: "info" };
         } catch (error) {
-          if (mounted.current && !signal.aborted && uncertain(error)) unavailableProof(error, "Status verifikasi belum dapat dipastikan. Jangan gunakan kembali OTP ini; ajukan pemulihan baru setelah masa tunggu.");
+          if (mounted.current && !signal.aborted && flow === flowVersion.current && uncertain(error)) unavailableProof(error, "Status verifikasi belum dapat dipastikan. Jangan gunakan kembali OTP ini; ajukan pemulihan baru setelah masa tunggu.");
           throw error;
         }
       }}>
-        <p className="text-sm">Pemulihan untuk username: <strong>{identity}</strong>. Mengubah isian di atas tidak mengubah pemilik kode ini.</p>
+        <p className="text-sm">{identity ? <>Pemulihan untuk username: <strong>{identity}</strong>. Mengubah isian di atas tidak mengubah pemilik kode ini.</> : "Gunakan OTP dari email yang memuat tautan ini. Membuka tautan saja belum mengubah kata sandi."}</p>
         <Field name="otp" label="Kode OTP enam digit" minLength={6} maxLength={6} pattern="[0-9]{6}" inputMode="numeric" autoComplete="one-time-code" />
         <p className="text-sm">Kode berlaku sepuluh menit, maksimal lima percobaan. Jangan bagikan kode Anda.</p>{restartButton}
       </ActionForm>}
       {reset && <ActionForm key={reset.challengeId} className={formStyle} title="Atur kata sandi baru" submitLabel="Reset kata sandi" onSubmit={async (data, form, signal) => {
+          const flow = flowVersion.current;
         const payload = validateAccount(resetSchema, { ...reset, ...data });
         try {
           const raw = await accountRequest<unknown>("reset-password", payload, true, signal);
-          if (!mounted.current || signal.aborted) return { message: "Permintaan selesai.", tone: "info" };
+          if (!mounted.current || signal.aborted || flow !== flowVersion.current) return { message: "Permintaan selesai.", tone: "info" };
           if (!recoveryCompletedSchema.safeParse(raw).success) throw new ApiRequestError("INVALID_RESPONSE", "Status perubahan belum dapat dipastikan.");
           form.reset(); setReset(null); setOtpChallenge(""); setOutcome("success");
           window.location.replace("/login?status=updated");
           return { message: "Kata sandi berhasil diperbarui.", tone: "info" };
         } catch (error) {
-          if (!mounted.current || signal.aborted) throw error;
+          if (!mounted.current || signal.aborted || flow !== flowVersion.current) throw error;
           if (uncertain(error)) {
             unavailableProof(error, "Status perubahan kata sandi belum dapat dipastikan. Coba masuk dengan kata sandi baru. Jika belum berhasil, mulai pemulihan baru."); setOutcome("uncertain");
           } else if (error instanceof ApiRequestError && error.code === "CHALLENGE_INVALID") unavailableProof(error, "Bukti pemulihan tidak berlaku, sudah digunakan, atau kedaluwarsa. Ajukan pemulihan baru.");

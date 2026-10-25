@@ -20,7 +20,7 @@ import {
 } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  userStatusLabels, createUserSchema, editUserSchema, statusSchema, activationRequestSchema, listUsersSchema,
+  userStatusLabels, createUserSchema, editUserSchema, statusSchema, activationRequestSchema, resetEmailRequestSchema, listUsersSchema,
   type UserDto,
   type UserList,
   type UserProfileInput,
@@ -302,7 +302,7 @@ export function IdentityFields() {
 }
 type Confirmation = {
   user: UserDto;
-  action: "active" | "disabled" | "archived" | "activation";
+  action: "active" | "disabled" | "archived" | "activation" | "reset-email";
 };
 export function UserManager() {
   const [query, setQuery] = useState({
@@ -316,6 +316,7 @@ export function UserManager() {
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
     [message, setMessage] = useState(""),
+    [messageIsError, setMessageIsError] = useState(false),
     [revision, setRevision] = useState(0),
     [editing, setEditing] = useState<UserDto | null>(null),
     [editorOpen, setEditorOpen] = useState(false),
@@ -375,15 +376,21 @@ export function UserManager() {
   useEffect(() => {
     if (confirmation) confirm.current?.showModal();
   }, [confirmation]);
-  function success(raw:unknown,target:string) {
+  function success(raw:unknown,target:string,action?:Confirmation["action"]) {
     if(!mounted.current)return;
     const value=raw && typeof raw==="object"?raw as Record<string,unknown>:{};
     committed.current=true;
+    setMessageIsError(false);
     if(value.selfAffected===true){endLocalSession();return;}
     // Preserve a one-time secret even if other response fields are malformed.
     if(typeof value.temporaryPassword==="string"&&value.temporaryPassword)setSecret({value:value.temporaryPassword,target});
     const parsed=userMutationSchema.safeParse(raw);
     setMessage(!parsed.success?"Tindakan sudah diproses, tetapi detail hasil belum dapat dibaca. Jangan ulangi tindakan; periksa status pengguna setelah memuat ulang daftar.":parsed.data.delivery==="handover"&&!parsed.data.temporaryPassword?"Akun sudah dibuat tetapi kata sandi sementara tidak terbaca. Jangan buat akun ulang; tinjau status pengguna dan ajukan pemulihan bila diperlukan.":parsed.data.delivery==="queued"?"Akun tersimpan dan aktivasi masuk antrean pengiriman. Belum berarti email telah terkirim.":"Perubahan pengguna berhasil disimpan.");
+    if(action === "reset-email") {
+      const labels = { accepted: "Penyedia email telah menerima email reset password. Pengguna dapat membuka tautan dan memasukkan OTP dari email; periksa juga folder spam.", pending: "Email reset password sudah masuk antrean. Pengiriman masih menunggu; periksa status email di Pengaturan operasional sebelum mengirim ulang.", failed: "Permintaan reset sudah dicatat, tetapi pengiriman email gagal. Periksa layanan email di Pengaturan operasional sebelum mengirim ulang.", unknown: "Permintaan reset sudah dicatat, tetapi status pengiriman belum pasti. Periksa kotak masuk pengguna dan Pengaturan operasional sebelum mengirim ulang." };
+      setMessageIsError(!parsed.success || ["failed","unknown"].includes(parsed.data.emailDelivery ?? "pending"));
+      setMessage(parsed.success ? labels[parsed.data.emailDelivery ?? "pending"] : "Permintaan reset sudah diproses, tetapi detail hasil belum dapat dibaca. Jangan kirim ulang; periksa status email di Pengaturan operasional.");
+    }
     editor.current?.close();confirm.current?.close();setRevision(v=>v+1);
   }
   async function confirmAction(event: FormEvent<HTMLFormElement>) {
@@ -397,17 +404,17 @@ export function UserManager() {
       { user, action } = confirmation;
     try {
       const result = await usersRequest<unknown>(
-        "/" + user.id + (action === "activation" ? "/activation" : "/status"),
+        "/" + user.id + (action === "activation" ? "/activation" : action === "reset-email" ? "/reset-email" : "/status"),
         "POST",
-        action==="activation"?validateInput(activationRequestSchema,{...values,version:user.version}):validateInput(statusSchema,{...values,version:user.version,status:action}),
+        action==="reset-email"?validateInput(resetEmailRequestSchema,{...values,version:user.version}):action==="activation"?validateInput(activationRequestSchema,{...values,version:user.version}):validateInput(statusSchema,{...values,version:user.version,status:action}),
       );
       form.reset();
-      success(result,user.fullName+" ("+user.username+")");
+      success(result,user.fullName+" ("+user.username+")", action);
     } catch (e) {
       if(!mounted.current)return;
       fieldError(form,e);
       setError(
-        e instanceof Error ? e.message : "Tindakan belum dapat dijalankan.",
+        (action === "reset-email" && e instanceof ApiRequestError && e.code !== "EMAIL_DELIVERY_UNAVAILABLE" && (["NETWORK_ERROR","TIMEOUT","INVALID_RESPONSE"].includes(e.code) || e.status>=500) ? "Hasil pengiriman belum dapat dipastikan. Periksa status email di Pengaturan operasional sebelum mencoba ulang. " : "") + (e instanceof Error ? e.message : "Tindakan belum dapat dijalankan."),
       );
     } finally {
       pending.current=false;
@@ -450,11 +457,9 @@ export function UserManager() {
           Tambah pengguna
         </Button>
       </header>
-      {message && (
-        <p role="status" className="rounded-xl border bg-accent p-4 text-sm">
-          {message}
-        </p>
-      )}
+      {message && (messageIsError ? <ErrorFeedback message={message} /> : (
+        <p role="status" className="rounded-xl border bg-accent p-4 text-sm">{message}</p>
+      ))}
       {secret && (
         <section className="page-section space-y-3 rounded-2xl border bg-card p-5">
           <h2 className="font-semibold">Serah terima kata sandi sementara</h2><p className="text-sm font-medium">Pemilik: {secret.target}</p>
@@ -644,6 +649,10 @@ export function UserManager() {
                                 Antrekan ulang email aktivasi
                               </Button>
                             )}
+                            {user.status === "active" && <>
+                              <Button size="sm" variant="outline" disabled={busy || Boolean(secret) || !user.emailVerified || !user.email} onClick={() => { setError(""); setConfirmation({user, action:"reset-email"}); }}><ActionIcon action="mail" />Kirim email reset password</Button>
+                              {(!user.emailVerified || !user.email) && <p className="text-xs leading-6 text-muted-foreground">Reset melalui email memerlukan email terverifikasi.</p>}
+                            </>}
                             {(user.status === "active" ||
                               user.status === "disabled") && (
                               <Button
@@ -764,7 +773,9 @@ export function UserManager() {
         {confirmation && (
           <form key={confirmation.user.id+confirmation.action+confirmation.user.version} aria-busy={busy} onSubmit={(e) => void confirmAction(e)} className="min-w-0 space-y-5">
             <h2 id="user-confirm-title" className="text-xl font-bold">
-              {confirmation.action === "activation"
+              {confirmation.action === "reset-email"
+                ? "Kirim email reset password"
+                : confirmation.action === "activation"
                 ? "Antrekan ulang email aktivasi"
                 : confirmation.action === "archived"
                   ? "Arsipkan pengguna"
@@ -779,11 +790,12 @@ export function UserManager() {
                 {confirmation.user.fullName} ({confirmation.user.username})
               </strong>
               .{" "}
-              {confirmation.action === "activation"
+              {confirmation.action === "reset-email"
+                ? `Email akan dikirim ke alamat terverifikasi ${confirmation.user.email}. Pengguna menentukan kata sandi baru menggunakan tautan dan OTP yang berlaku 10 menit. Kata sandi dan sesi pengguna belum diubah saat email dikirim. Kode pemulihan sebelumnya dibatalkan. Jangan membagikan OTP.`
+                : confirmation.action === "activation"
                 ? "Tautan lama dibatalkan dan tautan baru masuk antrean. Status antrean tidak berarti terkirim."
                 : "Sesi dan challenge lama akan dicabut. Pengarsipan mempertahankan riwayat dan tidak dapat dibatalkan melalui halaman ini."}{" "}
-              Harus tetap ada admin aktif yang telah menyelesaikan pengamanan
-              akun.
+              {confirmation.action !== "reset-email" && "Harus tetap ada admin aktif yang telah menyelesaikan pengamanan akun."}
             </p>
             <fieldset disabled={busy} className="space-y-4">
               <Input
@@ -813,7 +825,7 @@ export function UserManager() {
                 <Button type="submit">
                   <ActionIcon
                     action={
-                      confirmation.action === "activation"
+                      (confirmation.action === "activation" || confirmation.action === "reset-email")
                         ? "mail"
                         : confirmation.action === "archived"
                           ? "archive"
@@ -822,7 +834,9 @@ export function UserManager() {
                   />
                   {busy
                     ? "Memproses…"
-                    : confirmation.action === "activation"
+                    : confirmation.action === "reset-email"
+                      ? "Kirim email reset password"
+                      : confirmation.action === "activation"
                       ? "Antrekan ulang email aktivasi"
                       : confirmation.action === "archived"
                         ? "Arsipkan pengguna"

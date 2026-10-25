@@ -88,6 +88,7 @@ export const statusSchema = z
 export const activationRequestSchema = z
   .object({ version: versionSchema, currentPassword: password, reason })
   .strict();
+export const resetEmailRequestSchema = activationRequestSchema;
 export const recoverySchema = z
   .object({
     version: versionSchema,

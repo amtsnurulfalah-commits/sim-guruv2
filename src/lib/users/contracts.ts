@@ -8,4 +8,4 @@ export const userDtoSchema=z.object({
  temporaryExpiresAt:z.iso.datetime({offset:true}).nullable(),createdAt:z.iso.datetime({offset:true}),
 });
 export const userListSchema=z.object({items:z.array(userDtoSchema).max(100),total:z.number().int().nonnegative(),page:z.number().int().min(1).max(100000),pageSize:z.number().int().min(1).max(100)});
-export const userMutationSchema=z.object({user:userDtoSchema,selfAffected:z.boolean().optional(),delivery:z.enum(["queued","handover"]).optional(),temporaryPassword:z.string().min(1).optional(),expiresInHours:z.number().positive().optional()});
+export const userMutationSchema=z.object({user:userDtoSchema,selfAffected:z.boolean().optional(),delivery:z.enum(["queued","handover"]).optional(),emailDelivery:z.enum(["accepted","pending","failed","unknown"]).optional(),temporaryPassword:z.string().min(1).optional(),expiresInHours:z.number().positive().optional()});

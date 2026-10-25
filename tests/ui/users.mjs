@@ -12,7 +12,7 @@ try {
  await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error(stderr||'fixture timeout')),60000);child.stdout.on('data',b=>{if(b.toString().includes('UI_FIXTURE_READY')){clearTimeout(timer);resolve();}});child.on('exit',()=>{clearTimeout(timer);reject(Error(stderr));});});
  browser=await chromium.launch({headless:true,...(process.env.UI_BROWSER_EXECUTABLE?{executablePath:process.env.UI_BROWSER_EXECUTABLE}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
  const page=await browser.newPage();page.setDefaultTimeout(12000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
- let rows=[row(1),row(2,'pending_activation'),row(3,'disabled'),row(4,'archived')],posts=0,failRead=false,malformed=false,failAfter=false,delay=0,wrong=false,lastAdmin=false,malformedMutation=false,self=false;
+ let rows=[row(1),row(2,'pending_activation'),row(3,'disabled'),row(4,'archived')],posts=0,failRead=false,malformed=false,failAfter=false,delay=0,wrong=false,lastAdmin=false,malformedMutation=false,self=false,emailDelivery="accepted",emailWrites=0,ackLost=false;
  const ok=(route,data)=>route.fulfill({contentType:'application/json',body:JSON.stringify({ok:true,data})});
  const fail=(route,code,status)=>route.fulfill({status,contentType:'application/json',body:JSON.stringify({ok:false,error:{code,message:'Penolakan sintetis untuk pengujian.'},requestId:'users-help-123'})});
  await page.route('**/api/users**',async route=>{
@@ -31,12 +31,21 @@ try {
    user.emailVerified=false;rows.push(user);
   }else{
    user=rows.find(r=>r.id===url.pathname.split('/')[3]);assert.ok(user);
+   if(url.pathname.endsWith('/reset-email')){
+    assert.deepEqual(Object.keys(data).sort(),['currentPassword','reason','version']);
+    if(data.version!==user.version)return fail(route,'CONFLICT',409);
+    emailWrites++;
+   }
    if(url.pathname.endsWith('/status'))user.status=data.status;
-   else if(!url.pathname.endsWith('/activation'))for(const key of Object.keys(user))if(key in data&&key!=='id')user[key]=data[key];
+   else if(!url.pathname.endsWith('/activation')&&!url.pathname.endsWith('/reset-email'))for(const key of Object.keys(user))if(key in data&&key!=='id')user[key]=data[key];
    user.version=String(Number(user.version)+1);
   }
   if(failAfter)failRead=true;
   const result={user,selfAffected:self,...(data.delivery==='handover'?{delivery:'handover',temporaryPassword:'SyntheticTemporary9!',expiresInHours:24}:data.delivery==='activation'||url.pathname.endsWith('/activation')?{delivery:'queued'}:{})};
+  if(url.pathname.endsWith('/reset-email')){
+   if(ackLost)return route.abort();
+   return ok(route,{user,delivery:'queued',emailDelivery});
+  }
   return ok(route,malformedMutation?{temporaryPassword:'SyntheticSalvaged9!'}:result);
  });
  const go=()=>page.goto('http://127.0.0.1:4319/?view=users&role=admin&path=/admin/pengguna');
@@ -66,7 +75,7 @@ try {
  const fillCreate=async name=>{await create().locator('[name=username]').fill(name);await create().locator('[name=fullName]').fill('Pemilik '+name);await proof(create());};
  await page.getByRole('button',{name:'Tambah pengguna',exact:true}).click();await fillCreate('baru.email');await create().locator('[name=email]').fill('baru@example.test');await create().getByRole('button',{name:'Buat akun',exact:true}).click();await create().waitFor({state:'hidden'});
  await page.getByRole('button',{name:'Tambah pengguna',exact:true}).click();await fillCreate('baru.handover');await create().getByLabel('Metode penyerahan akun',{exact:true}).selectOption('handover');await create().locator('[name=evidence]').fill('Bukti pemeriksaan identitas');await create().getByRole('button',{name:'Buat akun',exact:true}).click();await page.getByText('Serah terima kata sandi sementara',{exact:true}).waitFor();assert.ok((await page.locator('output').textContent()).includes('SyntheticTemporary9!'));assert.ok((await page.getByText('Pemilik: Pemilik baru.handover (baru.handover)',{exact:true}).textContent()).includes('baru.handover'));
- for(const name of ['Tambah pengguna','Ubah pengguna','Nonaktifkan','Aktifkan','Arsipkan','Antrekan ulang email aktivasi'])for(const button of await page.getByRole('button',{name,exact:true}).all())assert.equal(await button.isDisabled(),true);
+ for(const name of ['Tambah pengguna','Ubah pengguna','Nonaktifkan','Aktifkan','Arsipkan','Antrekan ulang email aktivasi','Kirim email reset password'])for(const button of await page.getByRole('button',{name,exact:true}).all())assert.equal(await button.isDisabled(),true);
  await page.getByRole('button',{name:'Sembunyikan kata sandi sementara',exact:true}).click();
  // Malformed write reply still preserves its one-time secret instead of discarding it.
  malformedMutation=true;await page.getByRole('button',{name:'Tambah pengguna',exact:true}).click();await fillCreate('baru.salvage');await create().getByLabel('Metode penyerahan akun',{exact:true}).selectOption('handover');await create().locator('[name=evidence]').fill('Bukti pemeriksaan identitas');await create().getByRole('button',{name:'Buat akun',exact:true}).click();await page.getByRole('status').filter({hasText:'detail hasil belum dapat dibaca'}).waitFor();assert.equal(await page.locator('output').textContent(),'SyntheticSalvaged9!');malformedMutation=false;await page.getByRole('button',{name:'Sembunyikan kata sandi sementara',exact:true}).click();
@@ -75,6 +84,32 @@ try {
  rows=Array.from({length:21},(_,i)=>row(i+1));await go();await page.getByRole('navigation',{name:'Pagination pengguna',exact:true}).getByRole('button',{name:'Berikutnya',exact:true}).click();await page.getByText('21 pengguna sesuai filter · Halaman 2',{exact:true}).waitFor();rows=[row(1)];await page.getByRole('button',{name:'Muat ulang',exact:true}).click();await page.getByText('1 pengguna sesuai filter · Halaman 1',{exact:true}).waitFor();
  malformed=true;await go();await page.getByRole('alert').filter({hasText:'format'}).waitFor();malformed=false;rows=[];await page.getByRole('button',{name:'Muat ulang daftar',exact:true}).click();await page.getByText('Tidak ada pengguna yang sesuai filter',{exact:true}).waitFor();
  rows=[{...row(1),fullName:'NamaTanpaSpasi'.repeat(15),email:'a'.repeat(180)+'@example.test'}];await go();await page.getByRole('region',{name:'Daftar pengguna',exact:true}).waitFor();await page.addStyleTag({content:'html{font-size:200%}'});await overflow();await page.setViewportSize({width:812,height:375});await overflow();
+ // Admin reset email: explicit confirmation, eligible targets, single flight and delivery feedback.
+ rows=[row(1),{...row(2),emailVerified:false},row(3,'pending_activation'),row(4,'disabled'),row(5,'archived')];await go();
+ const resetTrigger=()=>page.getByRole('button',{name:'Kirim email reset password',exact:true}).first();
+ assert.equal(await page.getByRole('button',{name:'Kirim email reset password',exact:true}).count(),2);
+ assert.equal(await page.getByRole('button',{name:'Kirim email reset password',exact:true}).nth(1).isDisabled(),true);
+ const resetDialog=()=>page.getByRole('dialog',{name:'Kirim email reset password?',exact:true});
+ for(const viewport of [{width:280,height:740},{width:375,height:812},{width:812,height:375},{width:1440,height:900}]){
+  await page.setViewportSize(viewport);await resetTrigger().click();await resetDialog().waitFor();
+  const b=await resetDialog().boundingBox();assert.ok(b.x>=-1&&b.x+b.width<=viewport.width+1&&b.y>=-1&&b.y+b.height<=viewport.height+1);
+  await resetDialog().getByText(/guru1@example.test/).waitFor();
+  const count=emailWrites;await resetDialog().getByRole('button',{name:'Batal',exact:true}).click();assert.equal(emailWrites,count);
+ }
+ for(const [receipt,copy] of [['accepted','Penyedia email telah menerima'],['pending','Pengiriman masih menunggu'],['failed','pengiriman email gagal'],['unknown','status pengiriman belum pasti']]){
+  emailDelivery=receipt;await resetTrigger().click();await proof(resetDialog());delay=100;const count=emailWrites;
+  await resetDialog().getByRole('button',{name:'Kirim email reset password',exact:true}).evaluate(b=>{b.click();b.click();b.form.requestSubmit();});
+  await resetDialog().waitFor({state:'hidden'});delay=0;assert.equal(emailWrites,count+1);
+  await page.getByText(new RegExp(copy)).waitFor();
+  if(['failed','unknown'].includes(receipt))assert.equal(await page.getByRole('alert').filter({hasText:copy}).count(),1);
+ }
+ await resetTrigger().click();await proof(resetDialog());ackLost=true;const once=emailWrites;
+ await resetDialog().getByRole('button',{name:'Kirim email reset password',exact:true}).click();
+ await resetDialog().getByRole('alert').filter({hasText:'belum dapat dipastikan'}).waitFor();assert.equal(emailWrites,once+1);
+ ackLost=false;await resetDialog().getByRole('button',{name:'Kirim email reset password',exact:true}).click();
+ await resetDialog().getByRole('alert').filter({hasText:'users-help-123'}).waitFor();assert.equal(emailWrites,once+1,'Stale acknowledgement must not enqueue another email');
+ await resetDialog().getByRole('button',{name:'Batal',exact:true}).click();
+ const discardReset=page.getByRole('dialog',{name:'Buang perubahan?',exact:true});if(await discardReset.isVisible())await discardReset.getByRole('button',{name:'Buang perubahan',exact:true}).click();
  rows=[row(1)];await go();self=true;await page.getByRole('button',{name:'Ubah pengguna',exact:true}).first().click();await proof(edit());await edit().getByRole('button',{name:'Simpan perubahan',exact:true}).click();await page.waitForURL('**/login?status=updated');
  assert.deepEqual(errors,[]);console.log('PASS: six viewports + create/confirm modal bounds, edit validation/password/double submit, saved+refresh failure, last-admin denial, status/reactivate/reissue, activation/handover/salvage secret lock, filter/reset/pagination shrink, empty/malformed/long/text200/orientation and self-session redirect; zero page errors.');
 } finally {await browser?.close();child.kill('SIGTERM');}

@@ -137,6 +137,11 @@ export class SecurityOutboxWorker {
             ? "Verifikasi email SiM-Guru"
             : "Pemulihan akun SiM-Guru";
         text = `Kode ${value.template === "email_verify" ? "verifikasi email" : "pemulihan akun"} SiM-Guru Anda: ${otp}\nKode berlaku 10 menit, maksimal 5 percobaan. Jangan bagikan kode ini. Abaikan jika Anda tidak mengajukannya.`;
+        if (value.template === "reset_otp") {
+          const link = new URL("/lupa-password", app);
+          link.hash = new URLSearchParams({ challengeId: value.secret.challengeId }).toString();
+          text += `\nBuka ${link.toString()} lalu masukkan kode di atas untuk menentukan kata sandi baru. Permintaan dapat diajukan oleh administrator atas bantuan Anda. Jangan teruskan email ini kepada orang lain.`;
+        }
       }
       // A transport exception may occur after the provider accepted the message.
       // Keep ambiguous delivery separate from invalid/stale payload failures.
