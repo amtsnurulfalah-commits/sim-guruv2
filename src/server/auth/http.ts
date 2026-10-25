@@ -131,6 +131,7 @@ const messages: Record<string, string> = {
     "Email terverifikasi hanya dapat diganti melalui pemulihan identitas yang sah.",
   ARCHIVED_READ_ONLY: "Akun telah diarsipkan dan tidak dapat diubah.",
   INVALID_STATUS_TRANSITION: "Perubahan status akun tidak diizinkan.",
+  RESET_EMAIL_NOT_ALLOWED: "Email reset hanya dapat dikirim ke akun aktif dengan email terverifikasi. Gunakan aktivasi atau pemulihan identitas untuk akun lainnya.",
   RECOVERY_REQUEST_INVALID:
     "Permintaan pemulihan tidak cocok, sudah diproses, atau kedaluwarsa.",
   ACTIVATION_NOT_ALLOWED:
@@ -340,6 +341,7 @@ export async function handleAuthRequest(
                   "INVALID_STATUS_TRANSITION",
                   "RECOVERY_REQUEST_INVALID",
                   "ACTIVATION_NOT_ALLOWED",
+                  "RESET_EMAIL_NOT_ALLOWED",
                   "NOT_FOUND",
                 ].includes(dbMessage)
               ? new AuthError(

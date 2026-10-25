@@ -1,6 +1,6 @@
 import { sqlJson } from "../../../scripts/lib/sql-database";
 import "server-only";
-import { randomBytes } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { z } from "zod";
 import type {
   SqlDatabase,
@@ -10,7 +10,13 @@ import { tokenHash, AuthError } from "../auth/service";
 import { PasswordPolicyError, type PasswordService } from "../auth/passwords";
 import { AccountActivationService } from "../accounts/provisioning";
 import {
+  createOtp,
+  encryptOtp,
+  otpDigest,
+} from "../accounts/lifecycle-secrets";
+import {
   activationRequestSchema,
+  resetEmailRequestSchema,
   createUserSchema,
   editUserSchema,
   listUsersSchema,
@@ -26,7 +32,11 @@ export class UserService {
   constructor(
     private readonly db: SqlDatabase,
     private readonly passwords: PasswordService,
-    private readonly config: { appUrl: string; encryptionKey: string },
+    private readonly config: {
+      appUrl: string;
+      encryptionKey: string;
+      hmac: string;
+    },
   ) {}
   private async proof(tx: SqlExecutor, token: string, password: string) {
     const ctx = (
@@ -73,12 +83,7 @@ export class UserService {
   }
   async detail(token: string, id: string) {
     z.uuid().parse(id);
-    return (
-      await this.db.query<{ value: UserDto }>(
-        "select auth_private.users_detail($1,$2) as value",
-        [tokenHash(token), id],
-      )
-    ).rows[0]!.value;
+    return this.detailInTransaction(this.db, token, id);
   }
   async create(token: string, input: unknown) {
     const v = createUserSchema.parse(input),
@@ -188,6 +193,57 @@ export class UserService {
       await this.db.query<{ value: RecoveryRequest[] }>(
         "select auth_private.users_reset_requests($1) as value",
         [tokenHash(token)],
+      )
+    ).rows[0]!.value;
+  }
+  async resetEmail(token: string, id: string, input: unknown) {
+    z.uuid().parse(id);
+    const v = resetEmailRequestSchema.parse(input);
+    return this.db.transaction(async (tx) => {
+      await this.proof(tx, token, v.currentPassword);
+      const target = await this.detailInTransaction(tx, token, id);
+      const challengeId = randomUUID(),
+        outboxId = randomUUID(),
+        otp = createOtp();
+      const email = target.email.toLowerCase();
+      const cipher = encryptOtp(otp, this.config.encryptionKey, {
+        challengeId,
+        outboxId,
+        email,
+        purpose: "reset_otp",
+      });
+      const user = (
+        await tx.query<{ value: UserDto | null }>(
+          "select auth_private.users_queue_reset_email($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) as value",
+          [
+            tokenHash(token),
+            id,
+            v.version,
+            v.reason,
+            email,
+            challengeId,
+            otpDigest(otp, this.config.hmac, "reset_otp", challengeId, email),
+            outboxId,
+            cipher.ciphertextHex,
+            cipher.nonceHex,
+            cipher.tagHex,
+            this.config.appUrl,
+          ],
+        )
+      ).rows[0]!.value;
+      if (!user) throw new AuthError("RATE_LIMITED", 429, 60);
+      return { user, challengeId, delivery: "queued" as const };
+    });
+  }
+  private async detailInTransaction(
+    tx: SqlExecutor,
+    token: string,
+    id: string,
+  ) {
+    return (
+      await tx.query<{ value: UserDto }>(
+        "select auth_private.users_detail($1,$2) as value",
+        [tokenHash(token), id],
       )
     ).rows[0]!.value;
   }

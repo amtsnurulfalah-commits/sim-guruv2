@@ -115,6 +115,7 @@ export function fieldLabel(path: string) {
   return Object.hasOwn(fieldLabels, key) ? fieldLabels[key]! : "Isian formulir";
 }
 export const guidance: Record<string, string> = {
+  RESET_EMAIL_NOT_ALLOWED: "Gunakan aktivasi untuk akun yang belum aktif, atau verifikasi identitas bila pemilik belum memiliki email terverifikasi.",
   FORM_NOT_READY:
     "Coba kembali untuk menyiapkan formulir. Jika masih gagal, hubungi administrator dengan referensi bantuan bila tersedia.",
   VALIDATION_ERROR:
