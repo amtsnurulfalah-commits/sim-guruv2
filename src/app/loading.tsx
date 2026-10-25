@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Loading() {
   return (
     <main
@@ -10,9 +12,13 @@ export default function Loading() {
         <p className="mt-4 text-sm leading-7">
           Halaman ini memerlukan JavaScript. Aktifkan JavaScript di browser,
           lalu muat ulang halaman. Anda juga dapat{" "}
-          <a href="/" className="ui-text-link rounded-md underline">
+          <Link
+            href="/"
+            prefetch={false}
+            className="ui-text-link rounded-md underline"
+          >
             kembali ke beranda
-          </a>
+          </Link>
           .
         </p>
       </noscript>
