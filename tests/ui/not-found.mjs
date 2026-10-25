@@ -32,7 +32,7 @@ try {
  await context.route('**/login?status=expired',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><html lang="id"><title>Masuk | SiM-Guru</title><body>Tujuan login sintetis</body></html>'}));
  await context.addCookies([{name:'sim-guru-404-test',value:'retained',url:origin}]);
  const heading=page.getByRole('heading',{name:'Halaman tidak ditemukan',exact:true});
- const go=async path=>{const response=await page.goto(origin+path);await heading.waitFor();return response;};
+ const go=async path=>{const response=await page.goto(origin+path);await heading.waitFor();if(state==='active')await page.getByRole('button',{name:'Keluar',exact:true}).first().waitFor();else if(state==='unavailable'&&!path.startsWith('/modul/'))await page.getByRole('button',{name:'Periksa kembali sesi',exact:true}).waitFor();return response;};
  const check=async()=>{
   assert.equal(await page.locator('main').count(),1);assert.equal(await page.locator('#konten-utama').count(),1);assert.equal(await page.locator('main main').count(),0);
   assert.equal(await page.locator('h1').count(),1);assert.match(await page.locator('meta[name=robots]').first().getAttribute('content'),/noindex/);assert.match(await page.title(),/SiM-Guru/);assert.equal(await page.locator('head title').count(),1);
@@ -49,23 +49,38 @@ try {
   report.matrix.push({embedded,width,height,scale});
   if(scale===1&&(width===375||width===1440))await page.screenshot({path:`${output}/${embedded?'workspace':'public'}-${width}.png`,fullPage:true,animations:'disabled'});
  }
- // Public errors stay usable without auth/network and never probe or clear a session.
- state='unavailable';api.length=0;let response=await go('/not-found-fixture/'+ 'a'.repeat(1500)+'?token=DO_NOT_REFLECT');assert.equal(response.status(),404);assert.equal(api.length,0);assert.equal(await page.getByText('DO_NOT_REFLECT').count(),0);
+ // Public errors stay usable when session checks fail and never force login/logout.
+ state='unavailable';api.length=0;let response=await go('/not-found-fixture/'+ 'a'.repeat(1500)+'?token=DO_NOT_REFLECT');assert.equal(response.status(),404);assert.equal(await page.getByRole('link',{name:'Masuk',exact:true}).count(),0);assert.ok(api.some(r=>r.path==='/api/auth/session'&&r.method==='GET'));assert.ok(!api.some(r=>r.path==='/api/auth/logout'));assert.equal(await page.getByText('DO_NOT_REFLECT').count(),0);
  await page.evaluate(()=>sessionStorage.setItem('404-sentinel','retained'));
  await page.reload();await heading.waitFor();assert.equal(await page.evaluate(()=>sessionStorage.getItem('404-sentinel')),'retained');
  // Native links and the root skip link work without JavaScript too.
  const nojs=await browser.newContext({javaScriptEnabled:false,viewport:{width:320,height:740}});const staticPage=await nojs.newPage();response=await staticPage.goto(origin+'/not-found-fixture');assert.equal(response.status(),404);assert.equal(await staticPage.getByRole('heading',{name:'Halaman tidak ditemukan',exact:true}).count(),1);await staticPage.getByRole('link',{name:'Kembali ke beranda',exact:true}).click();assert.equal(new URL(staticPage.url()).pathname,'/');await nojs.close();
  await page.setViewportSize({width:375,height:812});await go('/not-found-fixture');await page.keyboard.press('Tab');assert.equal(await page.getByRole('link',{name:'Lewati ke konten utama'}).evaluate(n=>n===document.activeElement),true);await page.keyboard.press('Enter');assert.equal(await page.locator('main').evaluate(n=>n===document.activeElement),true);
- await page.keyboard.press('Tab');const home=page.getByRole('link',{name:'Kembali ke beranda',exact:true});assert.equal(await home.evaluate(n=>n===document.activeElement&&n.matches(':focus-visible')),true);await page.keyboard.press('Enter');await page.waitForURL(origin+'/');
+ const home=page.getByRole('link',{name:'Kembali ke beranda',exact:true});await home.focus();await page.keyboard.press('Tab');await page.keyboard.press('Shift+Tab');assert.equal(await home.evaluate(n=>n===document.activeElement&&n.matches(':focus-visible')),true);await page.keyboard.press('Enter');await page.waitForURL(origin+'/');
  // Both roles keep their existing workspace and can leave the 404 without logout.
  state='active';for(role of ['admin','guru']){
+  const draftKey='sim-guru:draft:v1:'+userId+':journal:404-session';
+  await page.evaluate(({draftKey,userId})=>{sessionStorage.setItem('sim-guru:draft-owner:v1',userId);sessionStorage.setItem(draftKey,JSON.stringify({format:1,account:userId,module:'journal',entity:'404-session',basis:'synthetic',savedAt:Date.now(),state:'editing',values:{notes:'Draft sintetis tetap ada'}}));},{draftKey,userId});
+  await go('/not-found-fixture');await check();assert.equal(await page.getByRole('link',{name:'Masuk',exact:true}).count(),0);
+  assert.ok(await page.evaluate(key=>sessionStorage.getItem(key),draftKey));
+  // A temporary error after verification must retain the account controls.
+  state='unavailable';await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.getByRole('alert').filter({hasText:'Pemeriksaan sesi sintetis'}).waitFor();assert.equal(await page.getByRole('button',{name:'Keluar',exact:true}).first().isVisible(),true);assert.ok(await page.evaluate(key=>sessionStorage.getItem(key),draftKey));
+  state='active';await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.getByRole('alert').filter({hasText:'Pemeriksaan sesi sintetis'}).waitFor({state:'hidden'});
+  await page.getByRole('button',{name:'Keluar',exact:true}).first().click();const logout=page.getByRole('dialog',{name:'Keluar dari SiM-Guru?',exact:true});await logout.waitFor();await logout.getByRole('button',{name:'Batal',exact:true}).click();assert.ok(!report.apiWrites.includes('/api/auth/logout'));
+  await page.getByRole('link',{name:'Buka Dashboard',exact:true}).click();await page.waitForURL(origin+'/dashboard');await page.getByRole('button',{name:'Keluar',exact:true}).first().waitFor();
+  await page.goBack();await heading.waitFor();await page.getByRole('button',{name:'Keluar',exact:true}).first().waitFor();assert.ok(await page.evaluate(key=>sessionStorage.getItem(key),draftKey));
+  await page.getByRole('link',{name:'Buka Dashboard',exact:true}).click();await page.waitForURL(origin+'/dashboard');await page.getByRole('button',{name:'Keluar',exact:true}).first().waitFor();assert.ok(await page.evaluate(key=>sessionStorage.getItem(key),draftKey));
+
   await go('/modul/nonexistent-404-fixture');await page.getByRole('button',{name:'Keluar',exact:true}).first().waitFor();await check();
   await page.getByRole('link',{name:'Buka Dashboard',exact:true}).click();await page.waitForURL(origin+'/dashboard');await page.getByRole('button',{name:'Keluar',exact:true}).first().waitFor();assert.equal(new URL(page.url()).pathname,'/dashboard');
   await go('/not-found-fixture');await page.getByRole('link',{name:'Buka panduan aplikasi',exact:true}).click();await page.waitForURL(origin+'/kesiapan');await page.getByRole('button',{name:'Keluar',exact:true}).first().waitFor();
  }
  assert.equal((await context.cookies()).find(c=>c.name==='sim-guru-404-test')?.value,'retained');
+ delay=800;await page.goto(origin+'/not-found-fixture');await heading.waitFor();assert.equal(await page.getByRole('link',{name:'Masuk',exact:true}).count(),0);await page.getByRole('button',{name:'Keluar',exact:true}).first().waitFor();delay=0;
+ state='anonymous';await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.getByRole('link',{name:'Masuk',exact:true}).waitFor();assert.equal(new URL(page.url()).pathname,'/not-found-fixture');assert.equal(await page.getByRole('button',{name:'Keluar',exact:true}).count(),0);assert.equal(await page.evaluate(()=>sessionStorage.getItem('sim-guru:draft-owner:v1')),null);state='active';
  delay=800;await page.goto(origin+'/modul/nonexistent-404-fixture');await page.getByLabel('Memuat halaman',{exact:true}).waitFor();await heading.waitFor();delay=0;
  state='unavailable';await page.goto(origin+'/modul/nonexistent-404-fixture');await page.getByRole('heading',{name:'Pemeriksaan sesi',exact:true}).waitFor();state='active';await page.getByRole('button',{name:'Coba kembali',exact:true}).click();await heading.waitFor();await check();
+ state='anonymous';await go('/not-found-fixture');await page.getByRole('link',{name:'Masuk',exact:true}).waitFor();assert.equal(new URL(page.url()).pathname,'/not-found-fixture');
  state='anonymous';await page.goto(origin+'/modul/nonexistent-404-fixture');await page.waitForURL(/\/login\?status=expired/);
  assert.ok(!report.apiWrites.includes('/api/auth/logout'));assert.equal(report.pageErrors.length,0,JSON.stringify(report.pageErrors));assert.equal(report.consoleErrors.length,0,JSON.stringify(report.consoleErrors));
  await writeFile(`${output}/results.json`,JSON.stringify(report,null,2));console.log(JSON.stringify({ok:true,matrix:report.matrix.length,pageErrors:report.pageErrors.length,consoleErrors:report.consoleErrors.length,notes:'HTTP404, static/noJS, main/skip/focus, links, anonymous guards, roles/session preservation, retry; no real credentials/mail/data'}));

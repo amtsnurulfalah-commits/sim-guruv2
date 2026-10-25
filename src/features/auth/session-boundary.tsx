@@ -15,10 +15,12 @@ export function SessionBoundary({
   children,
   business = false,
   publicFallback,
+  pendingPublicFallback,
 }: {
   children: (session: SessionDto, requestLogout: () => void) => ReactNode;
   business?: boolean;
   publicFallback?: (message: string, retry: () => void) => ReactNode;
+  pendingPublicFallback?: ReactNode;
 }) {
   const isPublic = publicFallback !== undefined;
   const [logoutRequested, setLogoutRequested] = useState(false);
@@ -190,7 +192,12 @@ export function SessionBoundary({
       setBusy(false);
     }
   }
-  if (!session && !resolved) return <PageSkeleton />;
+  if (!session && !resolved)
+    return isPublic && pendingPublicFallback ? (
+      pendingPublicFallback
+    ) : (
+      <PageSkeleton />
+    );
   if (!session && publicFallback)
     return publicFallback(message, () => {
       setResolved(false);

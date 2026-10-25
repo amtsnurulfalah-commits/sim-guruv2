@@ -1,18 +1,13 @@
 "use client";
 
-import { createContext, useContext, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import Link from "next/link";
-import { Workspace } from "./workspace";
-import { SessionBoundary } from "@/features/auth/session-boundary";
-import { ErrorFeedback } from "@/components/feedback/error-feedback";
+import { PublicWorkspace, usePublicWorkspaceSession } from "./public-workspace";
 import { Button } from "@/components/ui/button";
 import { ActionIcon } from "@/components/ui/action-icon";
-import type { SessionDto } from "@/types/auth";
-
-const GuideSession = createContext<SessionDto | null>(null);
 
 export function GuideAccessLink() {
-  const session = useContext(GuideSession);
+  const session = usePublicWorkspaceSession();
   return (
     <Button asChild variant="outline">
       <Link
@@ -50,31 +45,9 @@ export function GuideWorkspace({ children }: { children: ReactNode }) {
           .
         </p>
       </noscript>
-      <SessionBoundary
-        publicFallback={(message, retry) => (
-          <Workspace>
-            {message && (
-              <div className="mb-6 space-y-3">
-                <ErrorFeedback
-                  message={`Status akun belum dapat diperiksa. Panduan tetap dapat dibaca.\n${message}`}
-                />
-                <Button variant="outline" onClick={retry}>
-                  Periksa kembali sesi
-                </Button>
-              </div>
-            )}
-            {children}
-          </Workspace>
-        )}
-      >
-        {(session, logout) => (
-          <GuideSession.Provider value={session}>
-            <Workspace session={session} onLogout={logout}>
-              {children}
-            </Workspace>
-          </GuideSession.Provider>
-        )}
-      </SessionBoundary>
+      <PublicWorkspace unavailableMessage="Panduan tetap dapat dibaca.">
+        {children}
+      </PublicWorkspace>
     </>
   );
 }
