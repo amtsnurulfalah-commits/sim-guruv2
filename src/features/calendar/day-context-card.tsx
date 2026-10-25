@@ -1,9 +1,9 @@
 "use client";
 import { ActionIcon } from "@/components/ui/action-icon";
 
-import { useEffect, useState } from "react";
+import { useCallback, useId } from "react";
 import { ChevronDown } from "lucide-react";
-import { masterRequest } from "@/features/masters/api";
+import { useReadResource } from "@/lib/feedback/use-read-resource";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { z } from "zod";
 import { wibDate } from "@/lib/calendar/schemas";
@@ -20,45 +20,22 @@ const reasonLabels: Record<string, string> = {
   SUNDAY_DEFAULT_OFF: "Hari Minggu tidak otomatis menjadi hari kegiatan.",
 };
 export function DayContextCard({ date = wibDate() }: { date?: string }) {
-  const [day, setDay] = useState<z.infer<typeof cardDaySchema> | null>(null),
-    [error, setError] = useState(""),
-    [revision, setRevision] = useState(0);
-  useEffect(() => {
-    let active = true;
-    const c = new AbortController();
-    masterRequest<unknown>(
-      "/api/day-context?date=" + date,
-      "GET",
-      undefined,
-      c.signal,
-    )
-      .then((v) => {
-        if (active) {
-          const parsed = cardDaySchema.safeParse(v);
-          if (!parsed.success) throw new Error("Data konteks hari belum sesuai. Muat ulang atau hubungi administrator.");
-          setDay(parsed.data);
-          setError("");
-        }
-      })
-      .catch((e) => {
-        if (active) {
-          setDay(null);
-          setError(e instanceof Error ? e.message : "Konteks hari belum dapat dimuat.");
-        }
-      });
-    return () => {
-      active = false;
-      c.abort();
-    };
-  }, [revision, date]);
+  const titleId = useId();
+  const parse = useCallback((raw: unknown) => {
+    const parsed = cardDaySchema.safeParse(raw);
+    if (!parsed.success || parsed.data.date !== date) throw Error("Data konteks hari belum sesuai. Muat ulang atau hubungi administrator.");
+    return parsed.data;
+  }, [date]);
+  const {value: day, error, loading, refresh} = useReadResource("/api/day-context?date=" + date, parse);
   return (
     <section
-      aria-labelledby="dashboard-day-context-title"
+      aria-labelledby={titleId}
       className="min-w-0 space-y-3 rounded-2xl border bg-card p-4 sm:p-6"
     >
-      <h2 id="dashboard-day-context-title" className="text-lg font-bold">
+      <h2 id={titleId} className="text-lg font-bold">
         Konteks hari ini
       </h2>
+      {day && loading && <p role="status" className="text-sm text-muted-foreground">Memperbarui konteks hari…</p>}
       {day ? (
         <>
           <p className="text-sm">
@@ -153,12 +130,8 @@ export function DayContextCard({ date = wibDate() }: { date?: string }) {
       <button
         className="ui-action ui-action-secondary"
         type="button"
-        disabled={!day && !error}
-        onClick={() => {
-          setDay(null);
-          setError("");
-          setRevision((v) => v + 1);
-        }}
+        disabled={loading}
+        onClick={refresh}
       >
         <ActionIcon action="refresh" />
         Muat ulang konteks

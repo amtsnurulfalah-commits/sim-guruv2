@@ -175,6 +175,14 @@ test("Tahap1.6 dashboard boundaries with real local sessions", async (t) => {
     assert.equal(data.activitySummaryAvailable,true);assert.equal(data.financeSummaryAvailable,true);
     assert.deepEqual(data.summary.tasks,[]);
   });
+  await t.test("summary-only isolates unused calendar enrichment without bypassing authentication", async () => {
+    const extended = createDashboardHandler({config:()=>config,service:async()=>auth,calendar:async()=>{throw Error("optional calendar unavailable");},summary:async()=>({tasks:[]})});
+    assert.equal((await extended(request(admin,"/api/dashboard?section=summary"))).status,200);
+    assert.equal((await extended(request(admin))).status,500);
+    assert.equal((await extended(request(undefined,"/api/dashboard?section=summary"))).status,401);
+    assert.equal((await extended(request(onboard,"/api/dashboard?section=summary"))).status,403);
+    assert.equal((await extended(new Request(config.appUrl+"/api/dashboard",{method:"POST"}))).status,405);
+  });
   await t.test(
     "SH05 cross-origin and revoked sessions rejected; backend error sanitized",
     async () => {

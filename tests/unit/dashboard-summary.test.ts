@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { summarySchema, dashboardRows, activityLabel, rupiah } from "../../src/lib/dashboard/summary";
+import { summarySchema, dashboardRows, activityLabel, rupiah, readDashboardSummary, pendingJournal, activityHref } from "../../src/lib/dashboard/summary";
 const empty = {date:"2026-10-21",planned:[],tasks:[],pendingEventJournals:0,attendance:null,honor:{total:"0",totalJtm:"0",rateMissing:true},pendingHolidays:0,admin:null};
 test("dashboard accepts empty and planned-only responses without inventing attendance or totals",()=>{
   assert.ok(summarySchema.safeParse(empty).success);
@@ -20,5 +20,18 @@ test("dashboard combines planned and effective rows in time order without key co
    tasks:[{id:"same",kind:"PIKET",start:"07:00:00",end:"08:00:00",confirmed:true,journalComplete:false}]
  });
  const rows=dashboardRows(value);assert.deepEqual(rows.map(row=>row.key),["task-same","planned-same"]);
- assert.match(rows[0]!.status,/Jurnal/);assert.deepEqual(dashboardRows(null),[]);
+ assert.doesNotMatch(rows[0]!.status,/Jurnal/);assert.deepEqual(dashboardRows(null),[]);
+});
+
+test("dashboard rejects mismatched account/date/role and invalid task data", () => {
+ const user={id:"11111111-1111-4111-8111-111111111111",role:"guru" as const};
+ const valid={date:empty.date,user,summary:empty};
+ assert.deepEqual(readDashboardSummary(valid,empty.date,user),empty);
+ for(const raw of [{...valid,date:"2026-10-22"},{...valid,user:{...user,id:"22222222-2222-4222-8222-222222222222"}},{...valid,user:{...user,role:"admin"}},{...valid,summary:{...empty,admin:{activeUsers:1,failedMessages:0,failedJobs:0}}}]) assert.throws(()=>readDashboardSummary(raw,empty.date,user));
+ const row={id:"one",kind:"KBM",start:"07:00",end:"08:00",confirmed:true,journalComplete:false};
+ assert.equal(summarySchema.safeParse({...empty,tasks:[row,row]}).success,false);
+ assert.equal(summarySchema.safeParse({...empty,tasks:[{...row,start:"99:99"}]}).success,false);
+ assert.equal(summarySchema.safeParse({...empty,honor:{...empty.honor,totalJtm:"NaN"}}).success,false);
+ assert.equal(pendingJournal(row),true);assert.equal(pendingJournal({...row,kind:"PIKET"}),false);
+ assert.equal(activityHref("KBM",empty.date),"/jurnal?date=2026-10-21");
 });

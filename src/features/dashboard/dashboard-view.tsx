@@ -1,4 +1,5 @@
 "use client";
+import { Announcements } from "@/features/operations/announcements";
 import { TaskCenter } from "@/features/tasks/task-center";
 import { useDashboardDay } from "./use-dashboard-day";
 import Link from "next/link";
@@ -15,12 +16,12 @@ export function DashboardView({
   const date = useDashboardDay(data.date);
   const dateLabel = new Intl.DateTimeFormat("id-ID", {dateStyle:"full",timeZone:"Asia/Jakarta"}).format(new Date(date + "T12:00:00Z"));
   return (
-    <div className="min-w-0 space-y-6 sm:space-y-8">
-      <header className="space-y-3">
+    <div className="min-w-0 space-y-6 [overflow-wrap:anywhere] sm:space-y-8">
+      <header className="space-y-3 rounded-2xl border bg-gradient-to-br from-accent/60 to-card p-4 sm:p-6">
         <p className="text-xs font-semibold tracking-widest text-primary uppercase">
           {dateLabel} · WIB
         </p>
-        <h1 className="text-3xl leading-tight font-bold tracking-tight sm:text-4xl">
+        <h1 className="text-2xl leading-tight font-bold tracking-tight sm:text-4xl">
           Selamat datang, {data.user.fullName}
         </h1>
         <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
@@ -28,10 +29,16 @@ export function DashboardView({
             ? "Ruang administrasi madrasah. Kelola kegiatan, data akademik, pengguna, dan honorarium dari satu ruang kerja."
             : "Ruang kerja guru. Pantau jadwal, catat kehadiran, lengkapi jurnal, dan lihat honorarium Anda."}
         </p>
+        <nav aria-label="Aksi cepat Dashboard" className="flex flex-wrap gap-2">
+          <Button asChild variant="outline"><Link prefetch={false} href="/jadwal">Lihat jadwal</Link></Button>
+          <Button asChild variant="outline"><Link prefetch={false} href={"/kehadiran?date=" + date}>Catat kehadiran</Link></Button>
+          <Button asChild><Link prefetch={false} href={"/jurnal?date=" + date}>Isi jurnal</Link></Button>
+        </nav>
       </header>
-      <TaskCenter key={date + "-tasks"} compact />
-      <DayContextCard key={date} date={date} />
-      <LiveSummary key={date} />
+      <TaskCenter key={data.user.id + date + "-tasks"} compact date={date} />
+      <DayContextCard key={data.user.id + date} date={date} />
+      <Announcements key={data.user.id} refreshKey={date} />
+      <LiveSummary key={data.user.id + date} date={date} userId={data.user.id} role={data.user.role} />
       <section
         className={data.user.role === "admin" ? "grid min-w-0 gap-4 lg:grid-cols-2" : "grid min-w-0 gap-4"}
         aria-label="Akses yang tersedia"
