@@ -42,6 +42,7 @@ import { Brand } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 import { modulesFor, navigationGroups } from "@/lib/navigation/modules";
 import { cn } from "@/lib/utils";
+import { capabilitiesSchema } from "@/lib/reports/contracts";
 import type { SessionDto } from "@/types/auth";
 const moduleIcons: Record<string, typeof LayoutDashboard> = {
   jadwal: CalendarDays,
@@ -61,6 +62,7 @@ const moduleIcons: Record<string, typeof LayoutDashboard> = {
   "laporan-kendala": Search,
   operasional: Settings2,
   migrasi: ArrowLeftRight,
+  "laporan-pimpinan": ClipboardList,
 };
 export function Workspace({
   children,
@@ -84,7 +86,7 @@ export function Workspace({
     label: string,
   ) {
     event.preventDefault();
-    if (drawer.current?.open) closeDrawer();
+    if (drawer.current?.open) closeDrawer("content");
     if (href === pathname && !navigating) return;
     setDestination({ href, label });
     startNavigation(() => router.push(href));
@@ -93,7 +95,10 @@ export function Workspace({
     [collapsed, setCollapsed] = useState(false),
     [query, setQuery] = useState(""),
     drawer = useRef<HTMLDialogElement>(null),
-    mobileTrigger = useRef<HTMLButtonElement>(null);
+    mobileTrigger = useRef<HTMLButtonElement>(null),
+    drawerFocus = useRef<"trigger" | "content">("trigger"),
+    backdropPress = useRef(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   useEffect(() => {
     let active = true;
     async function restore() {
@@ -116,8 +121,8 @@ export function Workspace({
     const desktop = window.matchMedia("(min-width: 1024px)");
     const closeOnDesktop = () => {
       if (desktop.matches && drawer.current?.open) {
+        drawerFocus.current = "content";
         drawer.current.close();
-        document.getElementById("konten-utama")?.focus();
       }
     };
     desktop.addEventListener("change", closeOnDesktop);
@@ -136,44 +141,55 @@ export function Workspace({
       /* Tidak menyimpan actor, token, peran atau flag onboarding. */
     }
   }
-  function closeDrawer() {
+  // Native close events also cover Escape and breakpoint changes.
+  function closeDrawer(focus: "trigger" | "content" = "trigger") {
+    drawerFocus.current = focus;
     drawer.current?.close();
-    mobileTrigger.current?.focus();
   }
+  useEffect(() => {
+    if (drawer.current?.open) {
+      drawerFocus.current = "content";
+      drawer.current.close();
+    }
+  }, [pathname]);
   const role = session?.user.role,
     ready = session?.scope === "business";
   const [reportReader, setReportReader] = useState<{
-    id: string;
+    key: string;
     allowed: boolean;
+    unavailable: boolean;
   } | null>(null);
+  const [reportRetry, setReportRetry] = useState(0);
   const userId = session?.user.id;
+  const capabilityKey =
+    ready && userId && role !== "admin"
+      ? `${userId}:${pathname}:${reportRetry}`
+      : null;
   useEffect(() => {
-    if (!ready || !userId || role === "admin") return;
+    if (!capabilityKey) return;
     const c = new AbortController();
+    const publish = (allowed: boolean, unavailable = false) => {
+      if (!c.signal.aborted)
+        setReportReader({ key: capabilityKey, allowed, unavailable });
+    };
     fetch("/api/reports/read?kind=capabilities", {
       cache: "no-store",
       signal: c.signal,
     })
       .then((r) => (r.ok ? r.json() : null))
       .then((r) => {
-        if (!c.signal.aborted)
-          setReportReader({
-            id: userId,
-            allowed:
-              r?.ok === true &&
-              (r.data.academic === true || r.data.finance === true),
-          });
+        const result =
+          r?.ok === true ? capabilitiesSchema.safeParse(r.data) : null;
+        if (result?.success)
+          publish(result.data.academic || result.data.finance);
+        else publish(false, true);
       })
-      .catch(() => {});
+      .catch(() => publish(false, true));
     return () => c.abort();
-  }, [ready, role, userId, pathname]);
-  const links =
-    role && ready
-      ? modulesFor(
-          role,
-          reportReader?.id === userId && reportReader?.allowed === true,
-        )
-      : [];
+  }, [capabilityKey]);
+  const reportAllowed =
+    reportReader?.key === capabilityKey && reportReader?.allowed === true;
+  const links = role && ready ? modulesFor(role, reportAllowed) : [];
   const matches = (label: string) =>
     label
       .toLocaleLowerCase("id-ID")
@@ -181,6 +197,34 @@ export function Workspace({
   const filteredLinks = links.filter((module) =>
     matches(module.title + " " + module.group),
   );
+  const primaryLinks = session
+    ? [
+        ...(ready
+          ? [
+              { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+              { href: "/tugas", label: "Pusat tugas", icon: ClipboardCheck },
+              { href: "/notifikasi", label: "Notifikasi", icon: Megaphone },
+            ]
+          : []),
+        { href: "/akun", label: "Akun dan profil", icon: UserRound },
+        ...(role === "admin" && ready
+          ? [
+              {
+                href: "/admin/pemulihan",
+                label: "Pemulihan akun",
+                icon: ShieldCheck,
+              },
+            ]
+          : []),
+      ]
+    : [
+        { href: "/", label: "Beranda", icon: LayoutDashboard },
+        { href: "/login", label: "Masuk ke akun", icon: UserRound },
+      ];
+  const searchCount =
+    filteredLinks.length +
+    primaryLinks.filter((link) => matches(link.label)).length +
+    Number(matches("Panduan aplikasi"));
   const activeHref = [
     "/dashboard",
     "/tugas",
@@ -210,7 +254,7 @@ export function Workspace({
           }
           title={compact ? label : undefined}
           className={cn(
-            "ui-nav-item group flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring",
+            "ui-nav-item group flex min-h-11 min-w-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring [overflow-wrap:anywhere]",
             pathname === href || activeHref === href
               ? "bg-accent font-semibold text-accent-foreground ring-1 ring-primary/15"
               : "text-muted-foreground",
@@ -243,12 +287,14 @@ export function Workspace({
               onChange={(event) => setQuery(event.target.value)}
               className="ui-control pl-9"
               placeholder="Cari menu…"
+              maxLength={100}
+              autoComplete="off"
             />
           </label>
         )}
         {query.trim() && (
           <p role="status" className="px-3 py-2 text-xs text-muted-foreground">
-            {filteredLinks.length} modul sesuai pencarian.{" "}
+            {searchCount} menu sesuai pencarian.{" "}
             <button
               type="button"
               className="ui-action ui-action-secondary mt-1"
@@ -259,22 +305,41 @@ export function Workspace({
             </button>
           </p>
         )}
-        {session ? (
-          <>
-            {ready && item("/dashboard", "Dashboard", LayoutDashboard)}
-            {ready && item("/tugas", "Pusat tugas", ClipboardCheck)}
-            {ready && item("/notifikasi", "Notifikasi", Megaphone)}
-            {item("/akun", "Akun dan profil", UserRound)}
-            {role === "admin" &&
-              ready &&
-              item("/admin/pemulihan", "Pemulihan akun", ShieldCheck)}
-          </>
-        ) : (
-          <>
-            {item("/", "Beranda", LayoutDashboard)}
-            {item("/login", "Masuk ke akun", UserRound)}
-          </>
+        {!compact && capabilityKey && reportReader?.key !== capabilityKey && (
+          <p role="status" className="px-3 py-2 text-xs text-muted-foreground">
+            Memeriksa menu laporan…
+          </p>
         )}
+        {capabilityKey &&
+          reportReader?.key === capabilityKey &&
+          reportReader.unavailable && (
+            <div
+              className={cn(
+                "space-y-2 rounded-xl border bg-card p-2",
+                compact && "p-0",
+              )}
+            >
+              {!compact && (
+                <p className="px-1 text-xs leading-6 text-muted-foreground">
+                  Menu laporan belum dapat diperiksa.
+                </p>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                aria-label="Periksa izin laporan"
+                title={compact ? "Periksa izin laporan" : undefined}
+                onClick={() => setReportRetry((value) => value + 1)}
+              >
+                <ActionIcon action="refresh" />
+                <span className={compact ? "sr-only" : ""}>
+                  Periksa izin laporan
+                </span>
+              </Button>
+            </div>
+          )}
+        {primaryLinks.map((link) => item(link.href, link.label, link.icon))}
         {navigationGroups.map((group) => {
           const list = filteredLinks.filter((m) => m.group === group);
           if (!list.length) return null;
@@ -294,10 +359,17 @@ export function Workspace({
               )}
             </div>
           ) : (
-            <details key={group} open className="border-t pt-2">
+            <details
+              key={query.trim() ? `${group}:search:${query.trim()}` : group}
+              open
+              className="group/nav-section border-t pt-2"
+            >
               <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase [overflow-wrap:anywhere]">
                 {group}
-                <ChevronDown className="size-4" aria-hidden="true" />
+                <ChevronDown
+                  className="size-4 shrink-0 -rotate-90 transition-transform group-open/nav-section:rotate-0"
+                  aria-hidden="true"
+                />
               </summary>
               <div className="space-y-1">
                 {list.map((m) =>
@@ -332,6 +404,7 @@ export function Workspace({
               prefetch={false}
               href={ready ? "/dashboard" : session ? "/akun" : "/"}
               aria-label="SiM-Guru, halaman utama"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg"
             >
               <BookOpen aria-hidden="true" className="size-7 text-primary" />
             </Link>
@@ -339,6 +412,7 @@ export function Workspace({
             <Link
               prefetch={false}
               href={ready ? "/dashboard" : session ? "/akun" : "/"}
+              className="inline-flex min-h-11 max-w-full items-center rounded-lg"
             >
               <Brand />
             </Link>
@@ -366,17 +440,24 @@ export function Workspace({
           </Button>
         </div>
       </aside>
-      <div className="min-w-0 flex-1">
+      <div className="flex min-h-svh min-w-0 flex-1 flex-col">
         <header className="ui-topbar sticky top-0 z-20 flex min-h-20 flex-wrap items-center justify-between gap-3 border-b bg-card/95 px-4 py-3 backdrop-blur-md sm:px-8">
           <div className="flex min-w-0 items-center gap-3">
             <Button
               ref={mobileTrigger}
               variant="outline"
-              className="lg:hidden"
+              className="min-w-11 shrink-0 lg:hidden"
               aria-label="Buka navigasi"
               aria-haspopup="dialog"
               aria-controls="mobile-navigation"
-              onClick={() => drawer.current?.showModal()}
+              aria-expanded={drawerOpen}
+              onClick={() => {
+                if (drawer.current && !drawer.current.open) {
+                  drawerFocus.current = "trigger";
+                  drawer.current.showModal();
+                  setDrawerOpen(true);
+                }
+              }}
             >
               <Menu aria-hidden="true" />
             </Button>
@@ -388,7 +469,10 @@ export function Workspace({
                     : "Ruang guru"
                   : "SiM-Guru"}
               </p>
-              <p className="max-w-40 truncate sm:max-w-56 text-xs text-muted-foreground">
+              <p
+                title={session?.user.fullName}
+                className="max-w-40 line-clamp-2 text-xs text-muted-foreground sm:max-w-56 [overflow-wrap:anywhere]"
+              >
                 {session?.user.fullName ?? "Panduan penggunaan SiM-Guru"}
               </p>
             </div>
@@ -419,12 +503,13 @@ export function Workspace({
         <main
           id="konten-utama"
           tabIndex={-1}
-          className="workspace-content mx-auto w-full max-w-[1440px] px-4 py-5 outline-none sm:px-8 sm:py-7 xl:px-10"
+          className="workspace-content mx-auto w-full min-w-0 max-w-[1440px] flex-1 px-4 py-5 outline-none sm:px-8 sm:py-7 xl:px-10"
         >
           <Breadcrumbs
             pathname={navigating && destination ? destination.href : pathname}
             role={role}
             ready={ready}
+            reportAccess={reportAllowed}
           />
           {navigating && destination && (
             <div data-slot="navigation-pending">
@@ -433,33 +518,74 @@ export function Workspace({
           )}
           <div hidden={navigating}>{children}</div>
         </main>
-        <footer className="border-t px-5 py-6 text-xs leading-6 text-muted-foreground sm:px-8">
-          SiM-Guru · Sistem Informasi Guru · Ruang kerja madrasah.
+        <footer className="mt-auto flex min-w-0 flex-wrap justify-between gap-x-6 gap-y-1 border-t px-5 py-5 text-xs leading-6 text-muted-foreground sm:px-8 [overflow-wrap:anywhere]">
+          <p>
+            <span className="font-semibold text-foreground">SiM-Guru</span> ·
+            Sistem Informasi Guru
+          </p>
+          <p>Ruang kerja madrasah.</p>
         </footer>
       </div>
       <dialog
         id="mobile-navigation"
         ref={drawer}
         aria-labelledby="mobile-navigation-title"
-        className="fixed inset-y-0 left-0 m-0 h-svh max-h-none w-[min(20rem,calc(100%-2rem))] max-w-none border-r bg-card p-0 text-foreground shadow-xl backdrop:bg-black/45"
+        className="fixed top-0 left-0 m-0 h-dvh max-h-dvh w-[min(22rem,100%)] max-w-none border-r bg-card p-0 text-foreground shadow-xl backdrop:bg-black/45 open:flex open:flex-col"
         onClose={() => {
-          if (!window.matchMedia("(min-width: 1024px)").matches)
-            mobileTrigger.current?.focus();
+          setDrawerOpen(false);
+          backdropPress.current = false;
+          if (
+            drawerFocus.current === "content" ||
+            window.matchMedia("(min-width: 1024px)").matches
+          )
+            document
+              .getElementById("konten-utama")
+              ?.focus({ preventScroll: true });
+          else mobileTrigger.current?.focus({ preventScroll: true });
+        }}
+        onPointerDown={(event) => {
+          const rect = event.currentTarget.getBoundingClientRect();
+          backdropPress.current =
+            event.target === event.currentTarget &&
+            (event.clientX < rect.left ||
+              event.clientX > rect.right ||
+              event.clientY < rect.top ||
+              event.clientY > rect.bottom);
+        }}
+        onPointerCancel={() => {
+          backdropPress.current = false;
+        }}
+        onClick={(event) => {
+          const rect = event.currentTarget.getBoundingClientRect();
+          if (
+            backdropPress.current &&
+            event.target === event.currentTarget &&
+            (event.clientX < rect.left ||
+              event.clientX > rect.right ||
+              event.clientY < rect.top ||
+              event.clientY > rect.bottom)
+          )
+            closeDrawer();
+          backdropPress.current = false;
         }}
       >
-        <div className="flex min-h-20 items-center justify-between gap-2 border-b px-5">
-          <h2 id="mobile-navigation-title" className="font-bold">
+        <div className="flex min-h-20 shrink-0 items-center justify-between gap-2 border-b px-4 py-3">
+          <h2
+            id="mobile-navigation-title"
+            className="min-w-0 font-bold [overflow-wrap:anywhere]"
+          >
             Navigasi SiM-Guru
           </h2>
           <Button
             variant="outline"
             aria-label="Tutup navigasi"
-            onClick={closeDrawer}
+            className="min-w-11 shrink-0"
+            onClick={() => closeDrawer()}
           >
             <X aria-hidden="true" />
           </Button>
         </div>
-        <div className="max-h-[calc(100svh-5rem)] overflow-y-auto p-4">
+        <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain p-4">
           {nav()}
         </div>
       </dialog>

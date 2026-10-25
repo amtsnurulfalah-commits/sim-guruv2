@@ -25,13 +25,15 @@ export function Breadcrumbs({
   pathname,
   role,
   ready,
+  reportAccess = false,
 }: {
   pathname: string;
   role?: Role | undefined;
   ready: boolean;
+  reportAccess?: boolean;
 }) {
   const currentModule = role
-    ? modulesFor(role)
+    ? modulesFor(role, reportAccess)
         .filter(
           (m) =>
             m.href &&

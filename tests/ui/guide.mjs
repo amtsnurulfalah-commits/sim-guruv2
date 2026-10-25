@@ -132,7 +132,7 @@ try {
       url.searchParams.get("kind") === "capabilities"
     )
       return route.fulfill({
-        json: { ok: true, data: { academic: false, finance: false } },
+        json: { ok: true, data: { admin: false, academic: false, finance: false } },
       });
     apiRequests.push(req.method() + " " + url.pathname);
     return route.abort();
