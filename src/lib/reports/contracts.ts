@@ -95,7 +95,7 @@ export const reportResponseSchema = z
     if ((r.kind === "academic" && (Number(r.summary.kbm)+Number(r.summary.exams)+Number(r.summary.attendance)!==r.total ||
       [["confirmed","kbm"],["journals","kbm"],["baps","exams"],["present","attendance"],["complete","attendance"]].some(([part,total])=>Number(r.summary[part!])>Number(r.summary[total!])))) ||
       (r.kind === "finance" && r.summary.beneficiaries !== r.total) ||
-      r.items.some(row => (r.teacher && (r.kind==="academic"?row.user_id:row.id)!==r.teacher) || (r.kind==="academic" && row.date?.slice(0,7)!==r.period)) ||
+      r.items.some(row => (r.teacher && (r.kind==="academic"?row.user_id:row.id)?.toLowerCase()!==r.teacher.toLowerCase()) || (r.kind==="academic" && row.date?.slice(0,7)!==r.period)) ||
       keys.some(key => r.summary[key] === undefined) || counts.some(key => typeof r.summary[key] !== "number") ||
       (r.kind === "academic" ? r.mode !== "recorded" || r.items.some(row => !["KBM", "EXAM_SUPERVISOR", "ATTENDANCE"].includes(row.category ?? ""))
         : r.mode === "recorded" || typeof r.summary.jtm !== "string" || typeof r.summary.total !== "string") ||
@@ -121,7 +121,7 @@ export const accessSavedSchema = z.object({ok:z.literal(true)});
 export function readReportResponse(raw: unknown, query: string): Report {
   const expected=reportQuery.parse(Object.fromEntries(new URLSearchParams(query)));
   const result=reportResponseSchema.parse(raw);
-  if(result.kind!==expected.kind || result.period!==expected.period || result.teacher!==(expected.teacher||null) ||
+  if(result.kind!==expected.kind || result.period!==expected.period || (result.teacher?.toLowerCase()??null)!==(expected.teacher.toLowerCase()||null) ||
     result.page!==expected.page || result.pageSize!==expected.pageSize ||
     (result.kind==="finance" && result.mode!=="final" && result.mode!==expected.mode))
     throw Error("Respons laporan tidak sesuai filter. Muat ulang untuk mencoba kembali.");

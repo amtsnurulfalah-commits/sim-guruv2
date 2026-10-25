@@ -72,6 +72,8 @@ test("reports reject missing kind-specific summaries, wrong modes and mismatched
  const finance={...academic,kind:"finance",mode:"realized",summary:{beneficiaries:0,jtm:"0",total:"0"}};
  assert.throws(()=>readReportResponse(finance,"kind=finance&period=2026-10&mode=projection"));
  assert.equal(readReportResponse({...finance,mode:"final"},"kind=finance&period=2026-10&mode=projection").mode,"final");
+ const teacher="abcdefab-abcd-4abc-8abc-abcdefabcdef";
+ assert.equal(readReportResponse({...finance,teacher},"kind=finance&period=2026-10&teacher="+teacher.toUpperCase()).teacher,teacher);
 });
 test("report access responses require typed unique readers and an explicit save acknowledgment",()=>{
  const reader={id:"11111111-1111-4111-8111-111111111111",name:"Guru",academic:true,finance:false,version:"1"};
