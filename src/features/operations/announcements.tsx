@@ -9,7 +9,7 @@ import { visibleAnnouncementsSchema, announcementDismissedSchema, readAnnounceme
 import type { z } from "zod";
 type Announcement = z.infer<typeof visibleAnnouncementsSchema>[number];
 const severityLabels: Record<string, string> = { info: "Informasi", success: "Pemberitahuan", warning: "Perhatian", critical: "Penting" };
-export function Announcements() {
+export function Announcements({refreshKey}: {refreshKey?: string}) {
   const [items, setItems] = useState<Announcement[]>([]);
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
@@ -18,11 +18,18 @@ export function Announcements() {
   const [notice, setNotice] = useState("");
   const mounted = useRef(false);
   const pending = useRef(false);
+  const refreshAfterWrite = useRef(false);
+  const reading = useRef(false);
   const write = useRef<AbortController | null>(null);
-  useEffect(() => () => write.current?.abort(), []);
   useEffect(() => {
     mounted.current = true;
+    return () => { mounted.current = false; write.current?.abort(); };
+  }, []);
+  useEffect(() => {
+    if (pending.current) { refreshAfterWrite.current = true; return; }
     const c = new AbortController();
+    reading.current = true;
+    queueMicrotask(() => { if (!c.signal.aborted) setLoading(true); });
     masterRequest<unknown>("/api/operations/announcements", "GET", undefined, c.signal)
       .then(v => {
         if (c.signal.aborted) return;
@@ -30,11 +37,11 @@ export function Announcements() {
         setItems(result); setError("");
       })
       .catch(e => { if (!c.signal.aborted) setError(e instanceof Error ? e.message : "Pengumuman belum dapat dimuat."); })
-      .finally(() => { if (!c.signal.aborted) setLoading(false); });
-    return () => { mounted.current = false; c.abort(); };
-  }, [revision]);
+      .finally(() => { if (!c.signal.aborted) { reading.current = false; setLoading(false); } });
+    return () => { c.abort(); };
+  }, [revision, refreshKey]);
   async function dismiss(a: Announcement) {
-    if (pending.current || loading || !a.canDismiss) return;
+    if (pending.current || reading.current || loading || !a.canDismiss) return;
     pending.current = true; setBusyId(a.id); setError(""); setNotice("");
     const controller = new AbortController(); write.current = controller;
     try {
@@ -47,7 +54,10 @@ export function Announcements() {
       if (mounted.current) setError(e instanceof Error ? e.message : "Gagal menutup pengumuman. Coba kembali.");
     } finally {
       write.current = null; pending.current = false;
-      if (mounted.current) setBusyId(null);
+      if (mounted.current) {
+        setBusyId(null);
+        if (refreshAfterWrite.current) { refreshAfterWrite.current = false; setRevision(v => v + 1); }
+      }
     }
   }
   if (!items.length && !error && !notice && !loading) return null;

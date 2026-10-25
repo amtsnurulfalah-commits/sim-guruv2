@@ -19,6 +19,7 @@ export function createDashboardHandler(deps: {
 }) {
   return (request: Request) =>
     handleModuleRequest("dashboard", async (requestId) => {
+      if (!["GET", "HEAD"].includes(request.method)) throw new AuthError("METHOD_NOT_ALLOWED", 405);
       const config = deps.config();
       rejectCrossSiteRead(request, config);
       const token = requestCookie(
@@ -27,13 +28,15 @@ export function createDashboardHandler(deps: {
       );
       if (!opaqueToken(token)) throw new AuthError("UNAUTHENTICATED", 401);
       const session = await (await deps.service()).requireSession(token, true);
+      const now = new Date();
+      const summaryOnly = new URL(request.url).searchParams.get("section") === "summary";
       const [dayContext, summary] = await Promise.all([
-        deps.calendar ? deps.calendar().then(calendar => calendar.context(token, { date: wibDate() })) : undefined,
+        !summaryOnly && deps.calendar ? deps.calendar().then(calendar => calendar.context(token, { date: wibDate(now) })) : undefined,
         deps.summary ? deps.summary(token) : undefined,
       ]);
       return authResponse(
         {
-          ...dashboardDto(session),
+          ...dashboardDto(session, now),
           ...(dayContext ? { dayContext } : {}),
           ...(deps.summary
             ? {

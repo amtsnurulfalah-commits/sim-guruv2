@@ -1,63 +1,21 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import Link from "next/link";
 import { tasksSchema, taskPriority } from "@/lib/tasks/contracts";
 import { journalEligibilityText } from "@/lib/activities/journal-contracts";
-import { masterRequest } from "@/features/masters/api";
+import { useReadResource } from "@/lib/feedback/use-read-resource";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Pagination } from "@/components/ui/pagination";
 import { FeatureState, EmptyState } from "@/components/feedback/feature-state";
-export function TaskCenter({ compact = false }: { compact?: boolean }) {
-  const [data, setData] = useState<ReturnType<typeof tasksSchema.parse> | null>(
-    null,
-  );
-  const [error, setError] = useState(""),
-    [revision, setRevision] = useState(0),
-    [status, setStatus] = useState("all"),
-    [page, setPage] = useState(1);
-  useEffect(() => {
-    const controller = new AbortController();
-    const refresh = () => {
-      if (document.visibilityState === "visible") setRevision((v) => v + 1);
-    };
-    const timer = setInterval(refresh, 60000);
-    window.addEventListener("focus", refresh);
-    document.addEventListener("visibilitychange", refresh);
-    masterRequest<unknown>(
-      "/api/operations/tasks",
-      "GET",
-      undefined,
-      controller.signal,
-    )
-      .then((value) => {
-        const parsed = tasksSchema.safeParse(value);
-        if (!parsed.success)
-          throw Error(
-            "Data pusat tugas belum sesuai. Muat ulang atau hubungi administrator.",
-          );
-        if (!controller.signal.aborted) {
-          setData(parsed.data);
-          setError("");
-        }
-      })
-      .catch((value) => {
-        if (!controller.signal.aborted) {
-          setData(null);
-          setError(
-            value instanceof Error
-              ? value.message
-              : "Tugas belum dapat dimuat.",
-          );
-        }
-      });
-    return () => {
-      controller.abort();
-      clearInterval(timer);
-      window.removeEventListener("focus", refresh);
-      document.removeEventListener("visibilitychange", refresh);
-    };
-  }, [revision]);
+export function TaskCenter({ compact = false, date }: { compact?: boolean; date?: string }) {
+  const parse = useCallback((raw: unknown) => {
+    const parsed = tasksSchema.safeParse(raw);
+    if (!parsed.success || (date && parsed.data.date !== date)) throw Error("Data pusat tugas belum sesuai. Muat ulang atau hubungi administrator.");
+    return parsed.data;
+  }, [date]);
+  const {value: data, error, loading, refresh} = useReadResource("/api/operations/tasks", parse);
+  const [status, setStatus] = useState("all"), [page, setPage] = useState(1);
   const tasks = (data?.items ?? []).filter(
     (task) => status === "all" || task.blocked === (status === "blocked"),
   );
@@ -65,7 +23,7 @@ export function TaskCenter({ compact = false }: { compact?: boolean }) {
     activePage = Math.min(page, Math.max(1, Math.ceil(tasks.length / size)));
   return (
     <section className="ui-panel min-w-0 space-y-4" aria-label="Pusat tugas">
-      <header className="flex flex-wrap items-start justify-between gap-3">
+      <header className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-start">
         <div>
           <h2 className="text-xl font-bold">
             {compact
@@ -80,11 +38,9 @@ export function TaskCenter({ compact = false }: { compact?: boolean }) {
         <Button
           type="button"
           variant="outline"
-          onClick={() => {
-            setData(null);
-            setError("");
-            setRevision((v) => v + 1);
-          }}
+          className="w-full sm:w-auto"
+          disabled={loading}
+          onClick={() => { setPage(1); refresh(); }}
         >
           Muat ulang tugas
         </Button>
@@ -94,15 +50,12 @@ export function TaskCenter({ compact = false }: { compact?: boolean }) {
           headingLevel={2}
           error={error}
           label="Memuat pusat tugas…"
-          retry={() => {
-            setError("");
-            setRevision((v) => v + 1);
-          }}
+          retry={refresh}
         />
       ) : (
         <>
-          <p className="text-sm text-muted-foreground">
-            Diperbarui{" "}
+          <p role="status" className="text-sm text-muted-foreground">
+            {loading ? "Memperbarui tugas… · " : ""}Diperbarui{" "}
             {new Date(data.generatedAt).toLocaleString("id-ID", {
               timeZone: "Asia/Jakarta",
             })}{" "}
@@ -131,7 +84,7 @@ export function TaskCenter({ compact = false }: { compact?: boolean }) {
               description="Tugas yang selesai atau tidak lagi berlaku hilang setelah data dimuat ulang. Jadwal yang akan datang dapat diperiksa di menu Jadwal."
             />
           )}
-          <ul className="grid min-w-0 gap-3" aria-label="Daftar tugas aktif">
+          <ul className={compact ? "grid min-w-0 gap-3 sm:grid-cols-2 xl:grid-cols-3" : "grid min-w-0 gap-3"} aria-label="Daftar tugas aktif">
             {tasks
               .slice((activePage - 1) * size, activePage * size)
               .map((task) => (

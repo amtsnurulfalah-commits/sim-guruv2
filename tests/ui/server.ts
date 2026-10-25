@@ -304,6 +304,8 @@ async function main() {
         };
       else if (path === "/api/dashboard")
         data = {
+          date: new Intl.DateTimeFormat("en-CA", {timeZone:"Asia/Jakarta",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date()),
+          user: {id: token.startsWith("B") ? guru : id, role: token.startsWith("B") ? "guru" : "admin"},
           summary: (
             await db.query<{ value: unknown }>(
               "select app.dashboard_summary($1) as value",
