@@ -37,7 +37,7 @@ try {
     executablePath: process.env.UI_BROWSER_EXECUTABLE,
     args: ["--no-sandbox", "--disable-dev-shm-usage"],
   });
-  const page = await browser.newPage();
+  const page = await browser.newPage({hasTouch:true});
   page.setDefaultTimeout(15000);
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -60,7 +60,7 @@ try {
     writes = 0,
     readWrites = 0,
     delay = 0,
-    writeFail = false;
+    writeFail = false, readDelay = 0, reads = 0, wrongDate = false, network = false;
   let pref = { version: "0", emailEnabled: true, reminderEmail: true };
   let messages = Array.from({ length: 21 }, (_, n) => ({
     id: uid(n + 50),
@@ -79,29 +79,13 @@ try {
   await page.route("**/api/operations/**", async (route) => {
     const url = new URL(route.request().url()),
       kind = url.pathname.split("/").at(-1);
-    if (kind === "tasks")
-      return fail
-        ? route.fulfill({
-            status: 503,
-            contentType: "application/json",
-            body: JSON.stringify({
-              ok: false,
-              error: {
-                code: "UNAVAILABLE",
-                message: "Layanan sementara terganggu.",
-              },
-            }),
-          })
-        : ok(
-            route,
-            bad
-              ? null
-              : {
-                  date: "2090-01-02",
-                  generatedAt: "2090-01-02T12:00:00+07:00",
-                  items,
-                },
-          );
+    if (kind === "tasks") {
+      reads++;
+      if (network) return route.abort();
+      if (readDelay) await new Promise(resolve=>setTimeout(resolve,readDelay));
+      return fail ? route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({ok:false,error:{code:"UNAVAILABLE",message:"Layanan sementara terganggu."},requestId:"11111111-1111-4111-8111-111111111111"})})
+        : ok(route,bad?null:{date:wrongDate?"1999-01-01":await page.evaluate(()=>new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Jakarta"}).format(new Date())),generatedAt:"2090-01-02T12:00:00+07:00",items});
+    }
     if (kind === "inbox") {
       let rows = messages;
       if (url.searchParams.get("unread") === "true")
@@ -151,7 +135,7 @@ try {
     );
   };
   for (const role of ["admin", "guru"])
-    for (const width of [320, 375, 768, 1024, 1440, 1920]) {
+    for (const width of [280, 320, 375, 768, 1024, 1440, 1920]) {
       await page.setViewportSize({ width, height: 900 });
       await go("tasks", role);
       await page.getByRole("list", { name: "Daftar tugas aktif" }).waitFor();
@@ -163,6 +147,8 @@ try {
           .getAttribute("href"),
         "/jurnal?date=2090-01-02",
       );
+      assert.equal(await page.getByRole("heading",{name:"Pusat tugas",exact:true}).count(),1);
+      if(role==="admin"&&(width===375||width===1440)){await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:`${output}/tasks-${width}.png`,fullPage:true});}
       await go("inbox", role);
       await page.getByRole("region", { name: "Inbox notifikasi" }).waitFor();
       await overflow();
@@ -193,6 +179,38 @@ try {
       .count(),
     3,
   );
+  // Search and type/status filters combine without changing server order or source links.
+  await page.getByLabel("Cari tugas",{exact:true}).fill("  tidak ditemukan  ");
+  await page.getByText("Tidak ada tugas pada tampilan ini",{exact:true}).waitFor();
+  const resetTouch=page.getByRole("button",{name:"Hapus filter",exact:true});await resetTouch.scrollIntoViewIfNeeded();const touchBox=await resetTouch.boundingBox();assert.ok(touchBox.height>=44);await page.touchscreen.tap(touchBox.x+touchBox.width/2,touchBox.y+touchBox.height/2);
+  await page.getByRole("list",{name:"Daftar tugas aktif"}).locator("li").first().waitFor();
+  await page.getByLabel("Jenis tugas",{exact:true}).selectOption("bap");
+  await page.getByText("Tidak ada tugas pada tampilan ini",{exact:true}).waitFor();
+  await page.getByRole("button",{name:"Hapus filter",exact:true}).click();
+  await page.getByLabel("Cari tugas",{exact:true}).fill("JURNAL PEMBELAJARAN");
+  await page.getByLabel("Status tugas",{exact:true}).selectOption("ready");
+  assert.equal(await page.getByRole("list",{name:"Daftar tugas aktif"}).locator("li").count(),11);
+  await page.getByRole("button",{name:"Hapus filter",exact:true}).click();
+  // A refreshed shorter dataset clamps stored page, even if later growth restores more pages.
+  await page.getByRole("navigation",{name:"Halaman pusat tugas"}).getByRole("button",{name:"Berikutnya"}).click();
+  items=[task(2)];await page.evaluate(()=>window.dispatchEvent(new Event("focus")));
+  await page.getByRole("navigation",{name:"Halaman pusat tugas"}).getByText("Halaman 1 dari 1",{exact:false}).waitFor();
+  items=Array.from({length:23},(_,n)=>task(n+1));await page.evaluate(()=>window.dispatchEvent(new Event("focus")));
+  await page.getByRole("navigation",{name:"Halaman pusat tugas"}).getByText("Halaman 1 dari 2",{exact:false}).waitFor();
+  // A slow refresh preserves cards, filter selection and coalesces focus/online bursts.
+  await page.getByLabel("Status tugas",{exact:true}).selectOption("ready");readDelay=700;
+  const before=reads;await page.evaluate(()=>{for(let n=0;n<4;n++){window.dispatchEvent(new Event("focus"));window.dispatchEvent(new Event("online"));}});
+  await page.getByRole("status").filter({hasText:"Memperbarui tugas"}).waitFor();
+  assert.equal(await page.getByRole("list",{name:"Daftar tugas aktif"}).locator("li").count(),11);
+  await page.waitForFunction(()=>!Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('Muat ulang tugas'))?.disabled);
+  assert.equal(reads,before+1);assert.equal(await page.getByLabel("Status tugas",{exact:true}).inputValue(),"ready");readDelay=0;
+  // Hidden tabs skip periodic/wake reads; returning to visible recovers once.
+  const beforeHidden=reads;
+  await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});window.dispatchEvent(new Event('focus'));window.dispatchEvent(new Event('online'));document.dispatchEvent(new Event('visibilitychange'));});
+  await page.waitForTimeout(100);assert.equal(reads,beforeHidden);
+  await page.evaluate(()=>{delete document.visibilityState;document.dispatchEvent(new Event('visibilitychange'));});
+  await page.waitForTimeout(200);assert.equal(reads,beforeHidden+1);
+  await page.getByRole("button",{name:"Hapus filter",exact:true}).click();
   items = [];
   await page.getByRole("button", { name: "Muat ulang tugas" }).click();
   await page
@@ -216,6 +234,25 @@ try {
   await page.getByRole("button", { name: "Coba kembali" }).click();
   await page.getByRole("list", { name: "Daftar tugas aktif" }).waitFor();
   await overflow();
+  // Large projection keeps at most 20 cards mounted and the final page stays bounded.
+  items=Array.from({length:101},(_,n)=>task(n+1));await page.getByRole("button",{name:"Muat ulang tugas"}).click();
+  const pager=page.getByRole("navigation",{name:"Halaman pusat tugas"});await pager.getByText("Halaman 1 dari 6",{exact:false}).waitFor();
+  assert.equal(await page.getByRole("list",{name:"Daftar tugas aktif"}).locator("li").count(),20);
+  for(let n=0;n<5;n++)await pager.getByRole("button",{name:"Berikutnya",exact:true}).click();
+  await pager.getByText("Halaman 6 dari 6",{exact:false}).waitFor();assert.equal(await page.getByRole("list",{name:"Daftar tugas aktif"}).locator("li").count(),1);
+  assert.equal(await page.getByRole("heading",{name:"Daftar tugas aktif",exact:true}).evaluate(el=>document.activeElement===el),true);
+  items=[task(2)];await page.getByRole("button",{name:"Muat ulang tugas"}).click();await pager.getByText("Halaman 1 dari 1",{exact:false}).waitFor();
+  // Invalid identity/link metadata cannot produce duplicate keys or route to the wrong day/module.
+  for(const invalidItems of [[task(2),task(2)],[{...task(2),href:"/jurnal?date=2000-01-01"}],[{...task(2),href:"/admin/operasional"}]]) {
+    items=invalidItems;await page.getByRole("button",{name:"Muat ulang tugas"}).click();await page.getByRole("alert").filter({hasText:"Data pusat tugas belum sesuai"}).waitFor();
+    items=[task(2)];await page.getByRole("button",{name:"Coba kembali"}).click();await page.getByRole("list",{name:"Daftar tugas aktif"}).waitFor();
+  }
+  wrongDate=true;await page.getByRole("button",{name:"Muat ulang tugas"}).click();await page.getByRole("alert").filter({hasText:"Data pusat tugas belum sesuai"}).waitFor();wrongDate=false;
+  network=true;await page.getByRole("button",{name:"Coba kembali"}).click();await page.getByRole("alert").filter({hasText:"Koneksi"}).waitFor();network=false;
+  items=[{...task(2),kind:"confirmation",title:"Konfirmasi ujian",reason:"STUDENT_ATTENDANCE_MISMATCH",blocked:true,href:"/ujian?date=2090-01-02"}, {...task(4),deadline:"2000-01-01T00:00:00+07:00"}];
+  await page.getByRole("button",{name:"Coba kembali"}).click();await page.getByText("Rekap absensi siswa untuk ujian belum lengkap",{exact:false}).waitFor();await page.getByText("Batas waktu terlewati",{exact:true}).waitFor();
+  for(const size of [{width:844,height:390},{width:375,height:812}]){await page.setViewportSize(size);await overflow();}
+  await page.addStyleTag({content:"html{font-size:200%}"});await overflow();
   await go("inbox");
   await page.getByRole("region", { name: "Inbox notifikasi" }).waitFor();
   await page.getByLabel("Email informasi kegiatan dan honorarium").uncheck();
@@ -273,9 +310,18 @@ try {
   await go("tasks", "guru");
   await page.getByRole("list", { name: "Daftar tugas aktif" }).waitFor();
   assert.equal(await page.getByRole("alert").count(), 0);
+  // Initial delay, then a sleeping tab crossing midnight WIB; no reload and no stale-day error.
+  await page.route("**/api/operations/tasks",async route=>{
+    if(readDelay)await new Promise(r=>setTimeout(r,readDelay));
+    return ok(route,{date:await page.evaluate(()=>new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Jakarta"}).format(new Date())),generatedAt:new Date().toISOString(),items:[]});
+  });
+  readDelay=600;await go("tasks","guru");await page.getByRole("status").filter({hasText:"Memuat pusat tugas"}).waitFor();await page.getByText("Tidak ada tugas pada tampilan ini",{exact:true}).waitFor();readDelay=0;
+  await page.clock.install({time:new Date("2026-10-25T16:59:59Z")});await go("tasks","guru");await page.getByText("Tidak ada tugas pada tampilan ini",{exact:true}).waitFor();
+  await page.clock.setSystemTime(new Date("2026-10-25T17:01:00Z"));await page.evaluate(()=>window.dispatchEvent(new Event("online")));
+  await page.getByText("Senin, 26 Oktober 2026 · WIB",{exact:false}).waitFor();await page.getByText("Tidak ada tugas pada tampilan ini",{exact:true}).waitFor();assert.equal(await page.getByRole("alert").count(),0);
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: 24 role/view/viewport cases, task filters/pagination/empty/error/malformed/retry/source date, long text, inbox read isolation UI, preference draft retained, double submit, uncertain write lock/recovery and real SQL fixture response; zero page errors/document overflow.",
+    "PASS: 28 role/view/viewport cases, combined search/status/kind and reset; stable paging after shrink/growth; slow focus/online coalescing and hidden tabs; loading/date guard/duplicate IDs/wrong source link/network recovery; exam prerequisites/deadline; orientation/200% text/WIB rollover; task filters/pagination/empty/error/malformed/retry/source date, long text, inbox read isolation UI, preference draft retained, double submit, uncertain write lock/recovery and real SQL fixture response; zero page errors/document overflow.",
   );
 } finally {
   await browser?.close();

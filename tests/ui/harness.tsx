@@ -1,7 +1,7 @@
 import { SessionBoundary } from "../../src/features/auth/session-boundary";
 import {SemesterPreparationWorkspace} from "../../src/features/semester-preparation/workspace";
 import {ReportsWorkspace} from "../../src/features/reports/workspace";
-import { TaskCenter } from "../../src/features/tasks/task-center";
+import { TaskWorkspace } from "../../src/features/tasks/task-workspace";
 import { NotificationInbox } from "../../src/features/tasks/notification-inbox";
 import React, { useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -185,7 +185,7 @@ const components: Record<string, React.ReactNode> = {
   recoveryAdmin: <><h1 className="mb-6 text-3xl">Verifikasi pemulihan akun</h1><AdminRecovery /></>,
   account: <AccountLifecycle isAdmin={admin} onboarding={false} />,
   onboarding: <AccountLifecycle isAdmin={false} onboarding />,
-  tasks: <TaskCenter />,
+  tasks: <TaskWorkspace initialDate={new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Jakarta"}).format(new Date())} accountId={id}/>,
   reports:<ReportsWorkspace/>,
   semesterPreparation:<SemesterPreparationWorkspace/>,
   inbox: <NotificationInbox />,

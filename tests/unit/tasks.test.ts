@@ -57,3 +57,21 @@ test("inbox filters and preferences reject spoofed identity and unbounded pagina
     false,
   );
 });
+
+test("tasks reject duplicate identity, blank descriptions and mismatched source links", () => {
+  const envelope = {date: base.date, generatedAt: "2026-10-24T12:00:00+07:00", items: [base]};
+  assert.equal(tasksSchema.safeParse(envelope).success, true);
+  for (const items of [[base, base], [{...base,title:" "}], [{...base,reason:" "}], [{...base,href:"/jurnal?date=2026-10-23"}], [{...base,href:"/jurnal?date=2026-99-99"}], [{...base,href:"/admin/operasional"}]]) {
+    assert.equal(tasksSchema.safeParse({...envelope, items}).success,false);
+  }
+  // Existing undated internal links remain accepted for compatible callers.
+  assert.equal(tasksSchema.safeParse({...envelope,items:[{...base,href:"/jurnal"}]}).success,true);
+});
+test("deadline is exclusive; expired task snapshots do not claim a future opportunity", () => {
+  const deadline=Date.parse(base.deadline);
+  assert.equal(taskPriority(base,deadline-1),"Segera");
+  assert.equal(taskPriority(base,deadline),"Batas waktu terlewati");
+  assert.equal(taskPriority(base,deadline+1),"Batas waktu terlewati");
+  assert.equal(taskPriority({...base,blocked:true},deadline+1),"Perlu prasyarat");
+  assert.equal(taskPriority({...base,kind:"operations",deadline:null},deadline),"Segera");
+});
