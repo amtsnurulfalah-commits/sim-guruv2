@@ -51,11 +51,11 @@ const decimal = z.string().regex(/^-?\d+(\.\d+)?$/);
 export const reportResponseSchema = z
   .object({
     kind: z.enum(["academic", "finance"]),
-    period: z.string(),
+    period: z.string().regex(/^20\d{2}-(0[1-9]|1[0-2])$/),
     teacher: z.uuid().nullable(),
     mode: z.enum(["recorded", "realized", "projection", "final"]),
     cutoff: z.iso.date(),
-    updatedAt: z.string(),
+    updatedAt: z.iso.datetime({ offset: true }),
     summary: z.record(
       z.string(),
       z.union([z.number().int().nonnegative(), decimal]),
@@ -89,6 +89,22 @@ export const reportResponseSchema = z
     teachers: z.array(z.object({ id: z.uuid(), name: z.string() })),
   })
   .superRefine((r, c) => {
+    const keys = r.kind === "academic" ? ["kbm", "confirmed", "journals", "exams", "baps", "attendance", "present", "complete"] : ["beneficiaries", "jtm", "total"];
+    const counts = r.kind === "academic" ? keys : ["beneficiaries"];
+    const requiredRows = r.kind === "academic" ? ["category", "date", "user_id", "confirmed", "documented"] : ["jtm", "teaching", "allowances", "transport", "corrections", "total", "cutoff"];
+    if ((r.kind === "academic" && (Number(r.summary.kbm)+Number(r.summary.exams)+Number(r.summary.attendance)!==r.total ||
+      [["confirmed","kbm"],["journals","kbm"],["baps","exams"],["present","attendance"],["complete","attendance"]].some(([part,total])=>Number(r.summary[part!])>Number(r.summary[total!])))) ||
+      (r.kind === "finance" && r.summary.beneficiaries !== r.total) ||
+      r.items.some(row => (r.teacher && (r.kind==="academic"?row.user_id:row.id)!==r.teacher) || (r.kind==="academic" && row.date?.slice(0,7)!==r.period)) ||
+      keys.some(key => r.summary[key] === undefined) || counts.some(key => typeof r.summary[key] !== "number") ||
+      (r.kind === "academic" ? r.mode !== "recorded" || r.items.some(row => !["KBM", "EXAM_SUPERVISOR", "ATTENDANCE"].includes(row.category ?? ""))
+        : r.mode === "recorded" || typeof r.summary.jtm !== "string" || typeof r.summary.total !== "string") ||
+      r.items.some(row => requiredRows.some(key => row[key as keyof typeof row] === undefined)) ||
+      new Set(r.teachers.map(teacher => teacher.id)).size !== r.teachers.length ||
+      ![25,100,1000].includes(r.pageSize) ||
+      r.items.length !== Math.min(r.pageSize, Math.max(0, r.total - (r.page - 1) * r.pageSize))) {
+      c.addIssue({code:"custom", message:"REPORT_RESPONSE_INCOMPLETE"});
+    }
     if (
       r.items.length > r.pageSize ||
       r.items.length > r.total ||
@@ -96,3 +112,18 @@ export const reportResponseSchema = z
     )
       c.addIssue({ code: "custom", message: "REPORT_RESPONSE_INVALID" });
   });
+
+export const readersSchema = z.object({items:z.array(z.object({
+  id:z.uuid(), name:z.string().trim().min(1), academic:z.boolean(), finance:z.boolean(), version:z.string().regex(/^\d{1,15}$/),
+})).refine(items=>new Set(items.map(item=>item.id)).size===items.length)});
+export const accessSavedSchema = z.object({ok:z.literal(true)});
+/** Validate shape and complete request scope before using a report or enabling export. */
+export function readReportResponse(raw: unknown, query: string): Report {
+  const expected=reportQuery.parse(Object.fromEntries(new URLSearchParams(query)));
+  const result=reportResponseSchema.parse(raw);
+  if(result.kind!==expected.kind || result.period!==expected.period || result.teacher!==(expected.teacher||null) ||
+    result.page!==expected.page || result.pageSize!==expected.pageSize ||
+    (result.kind==="finance" && result.mode!=="final" && result.mode!==expected.mode))
+    throw Error("Respons laporan tidak sesuai filter. Muat ulang untuk mencoba kembali.");
+  return result;
+}

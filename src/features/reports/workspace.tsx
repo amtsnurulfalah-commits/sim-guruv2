@@ -5,22 +5,24 @@ import { masterRequest } from "../masters/api";
 import {
   reportDefinitions,
   capabilitiesSchema,
-  reportResponseSchema,
-  type Capabilities,
-  type Reader,
+  readReportResponse,
   type Report,
   type ReportRow,
 } from "@/lib/reports/contracts";
 import { wibDate } from "@/lib/calendar/schemas";
 import { formatHonorAmount } from "@/lib/finance/contracts";
 import { issueLabels } from "@/lib/finance/schemas";
-import { ApiRequestError, downloadFile } from "@/lib/feedback/api-error";
+import { downloadFile } from "@/lib/feedback/api-error";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
 import { TableRegion } from "@/components/ui/table-region";
 import { FormDialog } from "@/components/ui/dialog";
-import { DataForm, input, panel } from "../programs/forms";
+import { input, panel } from "../programs/forms";
+import { useReadResource } from "@/lib/feedback/use-read-resource";
+import { FeatureState } from "@/components/feedback/feature-state";
+import { ReportAccess } from "./report-access";
+const parseCapabilities=(raw:unknown)=>{const parsed=capabilitiesSchema.safeParse(raw);if(!parsed.success)throw Error("Data izin laporan belum sesuai. Coba muat ulang akses.");return parsed.data;};
 const endpoint = "/api/reports/";
 const errorText = (e: unknown) =>
   e instanceof ZodError
@@ -30,42 +32,28 @@ const errorText = (e: unknown) =>
       : "Laporan belum dapat dimuat. Coba kembali.";
 const yes = (v: boolean | undefined) => (v ? "Ya" : "Belum");
 export function ReportsWorkspace() {
-  const [caps, setCaps] = useState<Capabilities | null>(null),
-    [report, setReport] = useState<Report | null>(null),
+  const {value:caps,error:capsError,loading:capsLoading,updatedAt:capsUpdatedAt,refresh:refreshCaps}=useReadResource(endpoint+"read?kind=capabilities",parseCapabilities);
+  const [report, setReport] = useState<Report | null>(null),
     [loadedQuery, setLoadedQuery] = useState(""),
     [teachers, setTeachers] = useState<{ id: string; name: string }[]>([]),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true),
     [refresh, setRefresh] = useState(0),
-    [downloading, setDownloading] = useState(false);
-  const [kind, setKind] = useState<"academic" | "finance">("academic"),
+    [downloading, setDownloading] = useState(false),
+    [downloadError,setDownloadError]=useState("");
+  const [kindChoice, setKind] = useState<"academic" | "finance">("academic"),
     [period, setPeriod] = useState(() => wibDate().slice(0, 7)),
     [teacher, setTeacher] = useState(""),
     [mode, setMode] = useState("realized"),
     [page, setPage] = useState(1),
     [detail, setDetail] = useState<ReportRow | null>(null);
-  const exportLock = useRef(false);
-  useEffect(() => {
-    const c = new AbortController();
-    masterRequest<Capabilities>(
-      endpoint + "read?kind=capabilities",
-      "GET",
-      undefined,
-      c.signal,
-    )
-      .then((v) => {
-        setCaps(capabilitiesSchema.parse(v));
-        if (!v.academic && v.finance) setKind("finance");
-      })
-      .catch((e) => {
-        if (!c.signal.aborted) setError(errorText(e));
-      })
-      .finally(() => {
-        if (!c.signal.aborted) setLoading(false);
-      });
-    return () => c.abort();
-  }, [refresh]);
-  const allowed = caps?.[kind] === true;
+  const exportLock = useRef(false), mounted=useRef(false), exportController=useRef<AbortController|null>(null);
+  const lastDetailButton=useRef<HTMLButtonElement|null>(null);
+  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;exportController.current?.abort();};},[]);
+  const kind=caps?.[kindChoice] ? kindChoice : caps?.academic ? "academic" : "finance";
+  const validPeriod=/^20\d{2}-(0[1-9]|1[0-2])$/.test(period);
+  const permitted=caps?.[kind] === true;
+  const allowed = permitted && validPeriod;
   const query = new URLSearchParams({
     kind,
     period,
@@ -75,7 +63,12 @@ export function ReportsWorkspace() {
     pageSize: "25",
   }).toString();
   useEffect(() => {
-    if (!allowed) return;
+    if (!allowed) {
+      let active=true;
+      queueMicrotask(()=>{if(active){setDetail(null);setReport(null);setLoadedQuery("");if(!permitted)setTeachers([]);setError("");setLoading(false);}});
+      exportController.current?.abort();
+      return ()=>{active=false;};
+    }
     const c = new AbortController();
     let active = true;
     queueMicrotask(() => {
@@ -83,6 +76,7 @@ export function ReportsWorkspace() {
         setLoading(true);
         setReport(null);
         setError("");
+        setDownloadError("");
         setDetail(null);
       }
     });
@@ -94,26 +88,17 @@ export function ReportsWorkspace() {
     )
       .then((v) => {
         if (active) {
-          const parsed = reportResponseSchema.parse(v);
-          if (
-            parsed.kind !== new URLSearchParams(query).get("kind") ||
-            parsed.period !== new URLSearchParams(query).get("period") ||
-            parsed.teacher !==
-              (new URLSearchParams(query).get("teacher") || null) ||
-            parsed.page !== page
-          )
-            throw new Error(
-              "Respons laporan tidak sesuai filter. Muat ulang untuk mencoba kembali.",
-            );
+          const parsed = readReportResponse(v,query);
+          const last=Math.max(1,Math.ceil(parsed.total/25));
+          if(page>last){setPage(last);return;}
           setReport(parsed);
-          setTeachers(v.teachers);
+          setTeachers(parsed.teachers);
           setLoadedQuery(query);
-          if (v.total > 0 && page > Math.ceil(v.total / 25))
-            setPage(Math.ceil(v.total / 25));
+
         }
       })
       .catch((e) => {
-        if (active) setError(errorText(e));
+        if (active) {setReport(null);setError(errorText(e));}
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -122,28 +107,31 @@ export function ReportsWorkspace() {
       active = false;
       c.abort();
     };
-  }, [query, allowed, refresh, page]);
+  }, [query, allowed, permitted, refresh, page, capsUpdatedAt]);
   async function download() {
-    if (exportLock.current || loadedQuery !== query) return;
+    if (exportLock.current || loadedQuery !== query || !report || loading || !allowed) return;
     exportLock.current = true;
     setDownloading(true);
-    setError("");
+    setDownloadError("");
+    const c=new AbortController();exportController.current=c;
     try {
       await downloadFile(
         endpoint + "excel?" + query,
         `laporan-${kind}-${period}.xlsx`,
+        {signal:AbortSignal.any([c.signal,AbortSignal.timeout(40000)])},
       );
     } catch (e) {
-      setError(errorText(e));
+      if(mounted.current&&!c.signal.aborted)setDownloadError(errorText(e));
     } finally {
-      exportLock.current = false;
-      setDownloading(false);
+      exportLock.current = false;exportController.current=null;
+      if(mounted.current)setDownloading(false);
     }
   }
   const s = report?.summary;
+  const visibleDetail=allowed && report && loadedQuery===query && !loading ? detail : null;
   return (
     <div className="min-w-0 space-y-6 [overflow-wrap:anywhere]">
-      <header>
+      <header className="space-y-2 rounded-2xl border bg-accent/40 p-4 sm:p-6">
         <p className="text-sm text-muted-foreground">
           Ringkasan dan sumber data
         </p>
@@ -154,9 +142,10 @@ export function ReportsWorkspace() {
         </p>
       </header>
       <ErrorFeedback message={error} />
-      {!caps && !loading && (
-        <Button onClick={() => setRefresh((x) => x + 1)}>Coba kembali</Button>
-      )}
+      <ErrorFeedback message={downloadError}/>
+      {!validPeriod&&<p role="alert" className="text-sm text-destructive">Pilih bulan laporan antara Januari 2000 dan Desember 2099 sebelum memuat data.</p>}
+      {!caps && <FeatureState headingLevel={2} error={capsError} label="Memverifikasi akses laporan…" retry={refreshCaps}/>}
+      {caps && capsLoading && <p role="status" className="text-sm">Memperbarui akses laporan…</p>}
       {caps && !caps.academic && !caps.finance && (
         <section className={panel}>
           <h2 className="font-semibold">Akses laporan belum diberikan</h2>
@@ -164,6 +153,7 @@ export function ReportsWorkspace() {
             Hubungi admin untuk meminta izin akademik atau honorarium. Jabatan
             tambahan tidak memberikan akses secara otomatis.
           </p>
+          <Button type="button" variant="outline" disabled={capsLoading} onClick={refreshCaps}>Periksa ulang akses</Button>
         </section>
       )}
       {caps && (caps.academic || caps.finance) && (
@@ -180,6 +170,7 @@ export function ReportsWorkspace() {
                   key={k}
                   variant={kind === k ? "default" : "outline"}
                   aria-pressed={kind === k}
+                  disabled={downloading}
                   onClick={() => {
                     setKind(k);
                     setPage(1);
@@ -191,20 +182,21 @@ export function ReportsWorkspace() {
               ))}
           </div>
           <section className={panel} aria-label="Filter laporan">
-            <div className="grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className={kind==="academic"?"grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-3":"grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-4"}>
               <label className="min-w-0 text-sm">
                 Bulan
                 <input
                   className={input}
                   type="month"
+                  disabled={downloading}
+                  required
+                  aria-invalid={!validPeriod}
                   min="2000-01"
                   max="2099-12"
                   value={period}
                   onChange={(e) => {
-                    if (/^20\d{2}-(0[1-9]|1[0-2])$/.test(e.target.value)) {
-                      setPeriod(e.target.value);
-                      setPage(1);
-                    }
+                    setPeriod(e.target.value);
+                    setPage(1);
                   }}
                 />
               </label>
@@ -212,6 +204,7 @@ export function ReportsWorkspace() {
                 Guru
                 <select
                   className={input}
+                  disabled={downloading}
                   value={teacher}
                   onChange={(e) => {
                     setTeacher(e.target.value);
@@ -231,6 +224,7 @@ export function ReportsWorkspace() {
                   Dasar perhitungan
                   <select
                     className={input}
+                    disabled={downloading}
                     value={mode}
                     onChange={(e) => {
                       setMode(e.target.value);
@@ -260,9 +254,11 @@ export function ReportsWorkspace() {
                 </Button>
               </div>
             </div>
-            <p className="text-sm leading-6 text-muted-foreground">
-              {reportDefinitions[kind]}
-            </p>
+            <details className="rounded-xl border p-3 text-sm leading-6">
+              <summary className="min-h-11 cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-ring">Memahami sumber dan perhitungan</summary>
+              <p className="mt-2 text-muted-foreground">{reportDefinitions[kind]}</p>
+            </details>
+            <p className="text-sm text-muted-foreground">Excel memuat seluruh hasil sesuai filter saat diunduh, bukan hanya halaman yang terlihat.</p>
           </section>
           {loading && <p role="status">Memuat laporan…</p>}
           {report && loadedQuery === query && !loading && (
@@ -301,7 +297,7 @@ export function ReportsWorkspace() {
                   </p>
                 </aside>
               )}
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className={kind==="academic"?"grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5":"grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-3"}>
                 {kind === "academic"
                   ? [
                       ["Konfirmasi KBM", `${s?.confirmed} / ${s?.kbm}`],
@@ -315,7 +311,7 @@ export function ReportsWorkspace() {
                         `${s?.present} / ${s?.attendance}`,
                       ],
                       [
-                        "Masuk-pulang / catatan",
+                        "Pulang / catatan kehadiran",
                         `${s?.complete} / ${s?.attendance}`,
                       ],
                     ].map(([k, v]) => (
@@ -329,7 +325,7 @@ export function ReportsWorkspace() {
                       ["Total JTM", String(s?.jtm)],
                       [
                         "Total honorarium",
-                        "Rp " + formatHonorAmount(String(s?.total)),
+                        formatHonorAmount(String(s?.total)),
                       ],
                     ].map(([k, v]) => (
                       <article key={k} className={panel}>
@@ -347,7 +343,7 @@ export function ReportsWorkspace() {
                   </p>
                 ) : (
                   <TableRegion label="Rincian laporan">
-                    <table className="w-full text-left text-sm">
+                    <table className={kind==="academic"?"w-full min-w-[44rem] table-fixed text-left text-sm":"w-full min-w-[32rem] table-fixed text-left text-sm"}>
                       <thead>
                         <tr>
                           {(kind === "academic"
@@ -382,13 +378,13 @@ export function ReportsWorkspace() {
                                       ? "KBM"
                                       : "Pengawasan ujian"}
                                 </td>
-                                <td className="p-3">{r.name}</td>
+                                <td className="p-3"><span className="line-clamp-3" title={r.name}>{r.name}</span></td>
                                 <td className="p-3">{yes(r.confirmed)}</td>
                                 <td className="p-3">{yes(r.documented)}</td>
                               </>
                             ) : (
                               <>
-                                <td className="p-3">{r.name}</td>
+                                <td className="p-3"><span className="line-clamp-3" title={r.name}>{r.name}</span></td>
                                 <td className="p-3">{r.jtm}</td>
                                 <td className="p-3">
                                   {formatHonorAmount(r.total!)}
@@ -398,7 +394,7 @@ export function ReportsWorkspace() {
                             <td className="p-3">
                               <Button
                                 variant="outline"
-                                onClick={() => setDetail(r)}
+                                onClick={event => {lastDetailButton.current=event.currentTarget;setDetail(r);}}
                                 aria-label={"Lihat rincian " + r.name}
                               >
                                 Rincian
@@ -415,7 +411,7 @@ export function ReportsWorkspace() {
                   pageSize={25}
                   total={report.total}
                   onPageChange={setPage}
-                  disabled={loading}
+                  disabled={loading||downloading}
                 />
               </section>
             </>
@@ -423,19 +419,20 @@ export function ReportsWorkspace() {
         </>
       )}
       {caps?.admin && (
-        <ReportAccess onChange={() => setRefresh((x) => x + 1)} />
+        <ReportAccess onChange={refreshCaps} />
       )}
       <FormDialog
         title="Rincian catatan laporan"
+        trigger=""
         description="Nilai berasal dari sumber dan filter yang sama dengan ringkasan. Isi jurnal dan data pribadi tidak disalin ke laporan ini."
-        open={!!detail}
+        open={!!visibleDetail}
         onOpenChange={(v) => {
-          if (!v) setDetail(null);
+          if (!v) {setDetail(null);requestAnimationFrame(()=>{if(lastDetailButton.current?.isConnected)lastDetailButton.current.focus();});}
         }}
       >
-        {detail && (
+        {visibleDetail && (
           <dl className="grid min-w-0 gap-3">
-            {Object.entries(detail).map(([k, v]) => (
+            {Object.entries(visibleDetail).map(([k, v]) => (
               <div key={k}>
                 <dt className="text-sm text-muted-foreground">
                   {(
@@ -462,7 +459,7 @@ export function ReportsWorkspace() {
                   )[k] ?? k}
                 </dt>
                 <dd className="min-w-0 [overflow-wrap:anywhere]">
-                  {typeof v === "boolean" ? yes(v) : (v ?? "—")}
+                  {typeof v === "boolean" ? yes(v) : ["teaching","allowances","transport","corrections","total"].includes(k) ? formatHonorAmount(String(v)) : k==="category" ? ({KBM:"KBM",EXAM_SUPERVISOR:"Pengawasan ujian",ATTENDANCE:"Kehadiran"}[String(v)]??String(v)) : (v ?? "—")}
                 </dd>
               </div>
             ))}
@@ -470,132 +467,5 @@ export function ReportsWorkspace() {
         )}
       </FormDialog>
     </div>
-  );
-}
-function ReportAccess({ onChange }: { onChange: () => void }) {
-  const [readers, setReaders] = useState<Reader[]>([]),
-    [loading, setLoading] = useState(true),
-    [error, setError] = useState(""),
-    [refresh, setRefresh] = useState(0),
-    [locked, setLocked] = useState(false);
-  useEffect(() => {
-    let active = true;
-    const c = new AbortController();
-    masterRequest<{ items: Reader[] }>(
-      endpoint + "read?kind=access",
-      "GET",
-      undefined,
-      c.signal,
-    )
-      .then((r) => {
-        if (active) {
-          setReaders(r.items);
-          setLocked(false);
-        }
-      })
-      .catch((e) => {
-        if (active) setError(errorText(e));
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
-      c.abort();
-    };
-  }, [refresh]);
-  return (
-    <section className={panel}>
-      <h2 className="text-lg font-semibold">Izin pembaca laporan</h2>
-      <p className="text-sm">
-        Admin memiliki akses penuh. Berikan hanya lingkup yang diperlukan;
-        pencabutan berlaku pada pembacaan dan ekspor berikutnya. Alasan dicatat
-        pada audit.
-      </p>
-      <ErrorFeedback message={error} />
-      <Button
-        variant="outline"
-        onClick={() => {
-          setLoading(true);
-          setError("");
-          setRefresh((x) => x + 1);
-        }}
-      >
-        Muat ulang izin
-      </Button>
-      <DataForm
-        key={refresh}
-        label="Atur izin laporan"
-        busy={loading}
-        locked={locked}
-        fields={[
-          {
-            key: "userId",
-            label: "Pengguna",
-            type: "select",
-            options: readers.map((r) => ({ id: r.id, name: r.name })),
-          },
-          {
-            key: "academic",
-            label: "Laporan akademik",
-            type: "select",
-            options: [
-              { id: "true", name: "Izinkan" },
-              { id: "false", name: "Cabut / tidak diizinkan" },
-            ],
-          },
-          {
-            key: "finance",
-            label: "Laporan honorarium",
-            type: "select",
-            options: [
-              { id: "false", name: "Cabut / tidak diizinkan" },
-              { id: "true", name: "Izinkan" },
-            ],
-          },
-          { key: "reason", label: "Alasan (5–500 karakter)", type: "textarea" },
-        ]}
-        onSave={async (d) => {
-          const r = readers.find((x) => x.id === d.userId);
-          if (!r) throw new Error("Muat ulang daftar pengguna.");
-          try {
-            await masterRequest(endpoint + "access", "POST", {
-              ...d,
-              academic: d.academic === "true",
-              finance: d.finance === "true",
-              version: r.version,
-            });
-            setLoading(true);
-            setRefresh((x) => x + 1);
-            onChange();
-          } catch (e) {
-            if (
-              !(e instanceof ApiRequestError) ||
-              e.status >= 500 ||
-              e.status === 409
-            )
-              setLocked(true);
-            throw e;
-          }
-        }}
-      />
-      <ul className="space-y-2 text-sm">
-        {readers
-          .filter((r) => r.academic || r.finance)
-          .map((r) => (
-            <li key={r.id} className="rounded-lg border p-3">
-              {r.name} ·{" "}
-              {[r.academic ? "Akademik" : "", r.finance ? "Honorarium" : ""]
-                .filter(Boolean)
-                .join(", ")}
-            </li>
-          ))}
-      </ul>
-      {!loading && !readers.some((r) => r.academic || r.finance) && (
-        <p className="text-sm text-muted-foreground">
-          Belum ada guru yang diberi izin.
-        </p>
-      )}
-    </section>
   );
 }
