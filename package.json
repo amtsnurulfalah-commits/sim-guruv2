@@ -63,7 +63,8 @@
     "release:drill": "node --conditions=react-server --import tsx scripts/release-native-drill.ts",
     "release:smoke": "node --import tsx scripts/release-smoke.ts",
     "test:ui:release-profile": "node tests/ui/release-profile.mjs",
-    "test:ui:guide": "node tests/ui/guide.mjs"
+    "test:ui:guide": "node tests/ui/guide.mjs",
+    "test:ui:not-found": "node tests/ui/not-found.mjs"
   },
   "dependencies": {
     "@next/env": "16.4.2",
