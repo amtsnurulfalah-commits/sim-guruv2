@@ -1,3 +1,4 @@
+import { assertTableActions } from './table-action-checks.mjs';
 /** Disposable user management browser fixtures; no real credentials or mail. */
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
@@ -56,7 +57,7 @@ try {
  const overflow=async()=>assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
  const fits=async d=>{const rect=await d.boundingBox(),size=page.viewportSize();assert.ok(rect&&rect.x>=0&&rect.y>=0&&rect.x+rect.width<=size.width+1&&rect.y+rect.height<=size.height+1);assert.equal(await d.evaluate(n=>n.scrollWidth>n.clientWidth+1),false);};
  for(const width of [320,375,768,1024,1440,1920]){
-  console.log('Users viewport',width);await page.setViewportSize({width,height:900});await go();await page.getByRole('region',{name:'Daftar pengguna',exact:true}).waitFor();await overflow();
+  console.log('Users viewport',width);await page.setViewportSize({width,height:900});await go();await page.getByRole('region',{name:'Daftar pengguna',exact:true}).waitFor();await overflow();await assertTableActions(page);
   if(width===375||width===1440)await page.screenshot({path:`${output}/list-${width}.png`,fullPage:true,animations:'disabled'});
   await page.getByRole('button',{name:'Tambah pengguna',exact:true}).click();await fits(create());if(width===375||width===1440)await page.screenshot({path:`${output}/editor-${width}.png`,fullPage:false,animations:'disabled'});await close(create());
   await page.getByRole('button',{name:'Nonaktifkan',exact:true}).first().click();const confirm=page.getByRole('dialog',{name:'Nonaktifkan pengguna?',exact:true});await fits(confirm);await confirm.getByRole('button',{name:'Batal',exact:true}).click();

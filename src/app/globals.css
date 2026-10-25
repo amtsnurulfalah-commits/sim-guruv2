@@ -186,6 +186,76 @@
   .ui-table-region tbody tr:last-child td {
     border-bottom: 0;
   }
+  /* Row actions share one visual system. Labels remain visible and handlers,
+     disabled states and confirmation flows stay owned by each feature. */
+  .ui-table-region tbody td .ui-action {
+    min-width: 0;
+    min-height: 2.75rem;
+    max-width: 100%;
+    height: auto;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.625rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: start;
+    justify-content: flex-start;
+    vertical-align: middle;
+    box-shadow: none;
+    scroll-margin: 1rem;
+  }
+  .ui-table-region tbody td :where(div):has(> .ui-action) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.5rem;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .ui-table-region tbody td .ui-action-secondary {
+    border-color: var(--border);
+    background: var(--card);
+    color: var(--foreground);
+  }
+  .ui-table-region tbody td .ui-action-secondary:has([data-action="edit"]) {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  .ui-table-region tbody td .ui-action-secondary:has([data-action="archive"]) {
+    border-color: var(--warning-border);
+    color: var(--warning);
+  }
+  .ui-table-region tbody td .ui-action-secondary:has([data-action="delete"], [data-action="stop"]) {
+    border-color: var(--error-border);
+    color: var(--destructive);
+  }
+  .ui-table-region tbody td .ui-action:disabled {
+    opacity: 0.6;
+  }
+  .ui-table-region tbody td .ui-action:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  @media (hover: hover) {
+    .ui-table-region tbody td .ui-action-secondary:hover:not(:disabled) {
+      background: var(--accent);
+      border-color: var(--ring);
+    }
+    .ui-table-region tbody td .ui-action-secondary:has([data-action="archive"]):hover:not(:disabled) {
+      background: var(--warning-surface);
+      border-color: var(--warning);
+    }
+    .ui-table-region tbody td .ui-action-secondary:has([data-action="delete"], [data-action="stop"]):hover:not(:disabled) {
+      background: var(--error-surface);
+      border-color: var(--destructive);
+    }
+  }
+  @media (max-width: 40rem) {
+    .ui-table-region tbody td :where(div):has(> .ui-action) > .ui-action {
+      flex: 1 1 100%;
+    }
+  }
   .ui-metric-value {
     font-size: clamp(1.35rem, 2.2vw, 1.9rem);
     font-weight: 700;
