@@ -777,6 +777,7 @@ test("Tahap 5 — exams, BAP and events", async (t) => {
       );
     },
   );
+
   await t.test(
     "E10 deletion preview counts cascade, final guard and history remains",
     async () => {
@@ -1386,5 +1387,246 @@ test("Tahap 5 — exams, BAP and events", async (t) => {
         0,
       );
     },
+  );  await t.test(
+    "E13 master sync preserves an unconfirmed effective substitute after owner rename",
+    async () => {
+      const ep = await save("period", {
+        academicPeriodId: period.id,
+        name: "Regresi pengganti",
+        dateStart: date,
+        dateEnd: "2090-01-05",
+        committeeJtm: "2",
+      });
+      for (const entity of ["supervisor", "committee"] as const) {
+        const owner = await fixture("e13.owner." + entity, "guru"),
+          target = await fixture("e13.target." + entity, "guru");
+        if (entity === "supervisor") {
+          const sx = await save("session", {
+            periodId: ep.id,
+            date,
+            name: "Sesi sinkronisasi",
+            timeStart: "18:00",
+            timeEnd: "19:00",
+            jtm: "2",
+          });
+          const rx = await save("room", {
+            sessionId: sx.id,
+            name: "Ruang sinkronisasi",
+            subjectId: subject.id,
+            totalStudents: 0,
+            classIds: [],
+          });
+          await save("supervisor", {
+            roomId: rx.id,
+            userId: owner,
+            overrideJtm: null,
+          });
+        } else
+          await save("committee", {
+            periodId: ep.id,
+            date,
+            userId: owner,
+            jtm: null,
+            exclusiveStart: null,
+            exclusiveEnd: null,
+          });
+        const before = (await read()).occurrences.find(
+          (o) => o.originalUserId === owner,
+        )!;
+        await operate(before.id, "substitute", { userId: target });
+        const replaced = (await read()).occurrences.find(
+          (o) => o.id === before.id,
+        )!;
+        await db.query(
+          "update app.app_users set full_name=full_name||' diperbarui' where id=$1",
+          [owner],
+        );
+        await save("session", {
+          periodId: ep.id,
+          date: "2090-01-03",
+          name: "Pemicu sinkronisasi " + entity,
+          timeStart: "20:00",
+          timeEnd: "21:00",
+          jtm: "1",
+        });
+        const after = (await read()).occurrences.find(
+          (o) => o.id === before.id,
+        )!;
+        assert.equal(after.userId, target);
+        assert.equal(after.substitutionId, replaced.substitutionId);
+        assert.equal(after.confirmed, false);
+        assert.equal(after.teacherName, "e13.target." + entity);
+        await operate(before.id, "confirm");
+        if (entity === "supervisor") {
+          await db.exec(
+            "create or replace function app.exam_now() returns timestamp language sql set search_path=pg_catalog as $$ select timestamp '2090-01-02 22:00' $$",
+          );
+          try {
+            await programs.bap(await login("e13.target.supervisor"), {
+              occurrenceId: before.id,
+              operation: "create",
+              version: "0",
+              present: 0,
+              absent: 0,
+              notes: "BAP pengganti sintetis",
+            });
+          } finally {
+            await db.exec(
+              "create or replace function app.exam_now() returns timestamp language sql set search_path=pg_catalog as $$ select timestamp '2090-01-02 12:00' $$",
+            );
+          }
+        }
+        const confirmed = (await read()).occurrences.find(
+          (o) => o.id === before.id,
+        )!;
+        const credited = await credit(before.id);
+        assert.equal(credited, 2);
+        await db.query(
+          "update app.app_users set full_name=full_name||' lagi' where id=$1",
+          [owner],
+        );
+        await save("session", {
+          periodId: ep.id,
+          date: "2090-01-04",
+          name: "Sinkronisasi setelah konfirmasi " + entity,
+          timeStart: "21:00",
+          timeEnd: "22:00",
+          jtm: "1",
+        });
+        const preserved = (await read()).occurrences.find(
+          (o) => o.id === before.id,
+        )!;
+        assert.equal(preserved.userId, target);
+        assert.equal(preserved.version, confirmed.version);
+        assert.equal(preserved.confirmed, true);
+        assert.equal(preserved.bap?.id, confirmed.bap?.id);
+        assert.equal(await credit(before.id), credited);
+        await operate(before.id, "cancel-substitute");
+        const restored = (await read()).occurrences.find(
+          (o) => o.id === before.id,
+        )!;
+        assert.equal(restored.userId, owner);
+        assert.equal(restored.confirmed, false);
+        assert.equal(await credit(before.id), 0);
+      }
+    },
   );
+
+  await t.test(
+    "E14 future exam snapshots can still be moved to today",
+    async () => {
+      const ep = await save("period", {
+        academicPeriodId: period.id,
+        name: "Regresi pindah sesi",
+        dateStart: date,
+        dateEnd: "2090-01-05",
+        committeeJtm: "2",
+      });
+      const owner = await fixture("e14.owner", "guru");
+      const future = await save("session", {
+        periodId: ep.id,
+        date: "2090-01-03",
+        name: "Sesi dipindah",
+        timeStart: "22:00",
+        timeEnd: "23:00",
+        jtm: "1",
+      });
+      const room = await save("room", {
+        sessionId: future.id,
+        name: "Ruang dipindah",
+        subjectId: subject.id,
+        totalStudents: 0,
+        classIds: [],
+      });
+      await save("supervisor", {
+        roomId: room.id,
+        userId: owner,
+        overrideJtm: null,
+      });
+      await save(
+        "session",
+        {
+          periodId: ep.id,
+          date,
+          name: "Sesi dipindah",
+          timeStart: "22:00",
+          timeEnd: "23:00",
+          jtm: "1",
+        },
+        future.id,
+        future.version,
+      );
+      const moved = (await read()).occurrences.find(
+        (o) => o.originalUserId === owner,
+      )!;
+      assert.ok(moved);
+      assert.equal(moved.date, date);
+      assert.equal(moved.userId, owner);
+    },
+  );
+
+  await t.test(
+    "E15 committee replacement transfers operator authority and credits only after reconfirmation",
+    async () => {
+      const ep = await save("period", {
+        academicPeriodId: period.id,
+        name: "Regresi otoritas panitia",
+        dateStart: date,
+        dateEnd: "2090-01-05",
+        committeeJtm: "2",
+      });
+      const owner = await fixture("e15.owner", "guru"),
+        first = await fixture("e15.first", "guru"),
+        second = await fixture("e15.second", "guru");
+      const ownerToken = await login("e15.owner"),
+        firstToken = await login("e15.first"),
+        secondToken = await login("e15.second");
+      await save("committee", {
+        periodId: ep.id,
+        date,
+        userId: owner,
+        jtm: null,
+        exclusiveStart: null,
+        exclusiveEnd: null,
+      });
+      const o = (await read()).occurrences.find(
+        (o) => o.originalUserId === owner,
+      )!;
+      await operate(o.id, "confirm");
+      assert.equal((await read(ownerToken)).canOperate, true);
+      assert.equal(await credit(o.id), 2);
+      await operate(o.id, "substitute", { userId: first });
+      assert.equal((await read(ownerToken)).canOperate, false);
+      assert.equal((await read(firstToken)).canOperate, false);
+      assert.equal(await credit(o.id), 0);
+      await operate(o.id, "confirm");
+      assert.equal((await read(firstToken)).canOperate, true);
+      assert.equal(await credit(o.id), 2);
+      const prior = (await read()).occurrences.find((x) => x.id === o.id)!;
+      await operate(o.id, "replace", { userId: second });
+      assert.equal((await read(firstToken)).canOperate, false);
+      assert.equal((await read(secondToken)).canOperate, false);
+      assert.equal(await credit(o.id), 0);
+      const next = (await read()).occurrences.find((x) => x.id === o.id)!;
+      const history = (
+        await db.query<{ replaced_by_id: string; cancelled: boolean }>(
+          "select replaced_by_id,cancelled_at is not null as cancelled from app.substitutions where id=$1",
+          [prior.substitutionId],
+        )
+      ).rows[0]!;
+      assert.equal(history.replaced_by_id, next.substitutionId);
+      assert.equal(history.cancelled, true);
+      await operate(o.id, "confirm");
+      assert.equal((await read(secondToken)).canOperate, true);
+      assert.equal(await credit(o.id), 2);
+      await operate(o.id, "cancel-substitute");
+      assert.equal((await read(secondToken)).canOperate, false);
+      assert.equal((await read(ownerToken)).canOperate, false);
+      assert.equal(await credit(o.id), 0);
+      await operate(o.id, "confirm");
+      assert.equal((await read(ownerToken)).canOperate, true);
+      assert.equal(await credit(o.id), 2);
+    },
+  );
+
 });

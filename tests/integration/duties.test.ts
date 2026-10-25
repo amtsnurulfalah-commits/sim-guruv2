@@ -868,4 +868,141 @@ test("Tahap 4 — duties, substitution and JTM conservation", async (t) => {
       );
     },
   );
+  await t.test(
+    "D20 substitute rejects an unmaterialized weekly piket created after preview",
+    async () => {
+      const owner = await fixture("d20.owner", "guru"),
+        target = await fixture("d20.target", "guru");
+      const source = (await duties.schedule(
+        admin,
+        dutyData("PIKET", owner),
+      )) as { id: string };
+      const current = (await board()).occurrences.find(
+        (o) => o.originalUserId === owner && o.kind === "PIKET",
+      )!;
+      const preview = await duties.preview(admin, {
+        occurrenceId: current.id,
+        version: current.version,
+        operation: "substitute",
+        userId: target,
+        reason,
+      });
+      await duties.schedule(admin, dutyData("PIKET", target));
+      assert.equal(
+        (
+          await db.query(
+            "select id from app.activity_occurrences where duty_schedule_id<>$1 and kind='PIKET' and snapshot->>'teacherName'='d20.target'",
+            [source.id],
+          )
+        ).rows.length,
+        0,
+      );
+      await assert.rejects(
+        () => duties.commit(admin, { previewId: preview.previewId }),
+        /DUTY_COLLISION/,
+      );
+      assert.equal((await get(current.id)).userId, owner);
+      assert.equal(await net(current.id), "0.0000");
+    },
+  );
+  await t.test(
+    "D21 schedule creation rejects a teacher already replacing today's piket",
+    async () => {
+      const owner = await fixture("d21.owner", "guru"),
+        target = await fixture("d21.target", "guru");
+      await duties.schedule(admin, dutyData("PIKET", owner));
+      const current = (await board()).occurrences.find(
+        (o) => o.originalUserId === owner && o.kind === "PIKET",
+      )!;
+      await mutate(admin, current.id, "substitute", { userId: target });
+      await assert.rejects(
+        () => duties.schedule(admin, dutyData("PIKET", target)),
+        /DUTY_COLLISION/,
+      );
+    },
+  );
+
+  await t.test(
+    "D22 overlapping date windows without a common piket weekday are not collisions",
+    async () => {
+      const owner = await fixture("d22.owner", "guru");
+      await duties.schedule(admin, {
+        ...dutyData("PIKET", owner),
+        validFrom: "2090-01-09",
+        validTo: "2090-01-10",
+      });
+      await duties.schedule(admin, {
+        ...dutyData("PIKET", owner),
+        validFrom: "2090-01-10",
+        validTo: "2090-01-16",
+      });
+      await assert.rejects(
+        () =>
+          duties.schedule(admin, {
+            ...dutyData("PIKET", owner),
+            validFrom: "2090-01-09",
+            validTo: "2090-01-16",
+          }),
+        /DUTY_COLLISION/,
+      );
+    },
+  );
+
+  await t.test(
+    "D23 a transferred-out weekly owner can replace another piket on the same date",
+    async () => {
+      const first = await fixture("d23.first", "guru"),
+        second = await fixture("d23.second", "guru"),
+        receiver = await fixture("d23.receiver", "guru");
+      await duties.schedule(admin, dutyData("PIKET", first));
+      await duties.schedule(admin, dutyData("PIKET", second));
+      const rows = (await board()).occurrences;
+      const a = rows.find(
+          (o) => o.kind === "PIKET" && o.originalUserId === first,
+        )!,
+        b = rows.find(
+          (o) => o.kind === "PIKET" && o.originalUserId === second,
+        )!;
+      await mutate(admin, a.id, "substitute", { userId: receiver });
+      const changed = await mutate(admin, b.id, "substitute", {
+        userId: first,
+      });
+      assert.equal(changed.userId, first);
+      assert.equal(changed.confirmed, false);
+      await assert.rejects(
+        () => mutate(admin, a.id, "cancel-substitute"),
+        /DUTY_COLLISION/,
+      );
+      assert.equal((await get(a.id)).userId, receiver);
+    },
+  );
+  await t.test(
+    "D24 migration preserves owner, search path and helper/API grants",
+    async () => {
+      for (const signature of [
+        "app.stage4_duty_candidate(uuid,uuid)",
+        "app.exam_sync()",
+        "app.duty_schedule_save(text,uuid,jsonb)",
+      ]) {
+        const row = (
+          await db.query<{
+            owner: string;
+            config: string[];
+            business: boolean;
+            auth: boolean;
+            worker: boolean;
+          }>(
+            "select pg_get_userbyid(proowner) as owner,proconfig as config,has_function_privilege('sim_guru_business',oid,'execute') as business,has_function_privilege('sim_guru_auth',oid,'execute') as auth,has_function_privilege('sim_guru_worker',oid,'execute') as worker from pg_proc where oid=$1::regprocedure",
+            [signature],
+          )
+        ).rows[0]!;
+        assert.equal(row.owner, "sim_guru_owner");
+        assert.ok(row.config.includes("search_path=pg_catalog"));
+        assert.equal(row.business, signature.includes("duty_schedule_save"));
+        assert.equal(row.auth, false);
+        assert.equal(row.worker, false);
+      }
+    },
+  );
+
 });

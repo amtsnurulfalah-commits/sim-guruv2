@@ -11,6 +11,7 @@ import type {
 } from "../../scripts/lib/sql-database";
 import { getPasswordService } from "../../src/server/auth/passwords";
 import { MasterService } from "../../src/server/masters/service";
+import { DutyService } from "../../src/server/duties/service";
 import { ScheduleService } from "../../src/server/schedules/service";
 test("Native PostgreSQL — independent business connections serialize colliding schedules", async (t) => {
   const connection = process.env.SIM_GURU_SCHEDULE_TEST_DATABASE_URL;
@@ -231,4 +232,126 @@ test("Native PostgreSQL — independent business connections serialize colliding
       );
     },
   );
+  const dutyA = new DutyService(a),
+    dutyB = new DutyService(b);
+  const day = "2090-01-02";
+  const dutyData = (userId: string) => ({
+    kind: "PIKET",
+    userId,
+    academicPeriodId: period.id,
+    dayIndex: 1,
+    date: null,
+    validFrom: day,
+    validTo: day,
+    timeStart: "07:00",
+    timeEnd: "14:00",
+    active: true,
+    version: "0",
+    reason,
+  });
+  await db.exec(
+    "create or replace function app.activity_today() returns date language sql stable set search_path=pg_catalog as $$ select date '2090-01-02' $$",
+  );
+  await t.test(
+    "NR03 two distinct piket assignments cannot acquire the same substitute concurrently",
+    async () => {
+      const first = await fixture("race.piket.first", "guru"),
+        second = await fixture("race.piket.second", "guru"),
+        target = await fixture("race.piket.target", "guru");
+      await dutyA.schedule(tokenA, dutyData(first));
+      await dutyA.schedule(tokenA, dutyData(second));
+      const rows = (await dutyA.read(tokenA, { date: day })).occurrences;
+      const x = rows.find(
+          (o) => o.kind === "PIKET" && o.originalUserId === first,
+        )!,
+        y = rows.find(
+          (o) => o.kind === "PIKET" && o.originalUserId === second,
+        )!;
+      const p = await dutyA.preview(tokenA, {
+          occurrenceId: x.id,
+          version: x.version,
+          operation: "substitute",
+          userId: target,
+          reason,
+        }),
+        q = await dutyB.preview(tokenB, {
+          occurrenceId: y.id,
+          version: y.version,
+          operation: "substitute",
+          userId: target,
+          reason,
+        });
+      const outcomes = await Promise.allSettled([
+        dutyA.commit(tokenA, { previewId: p.previewId }),
+        dutyB.commit(tokenB, { previewId: q.previewId }),
+      ]);
+      assert.equal(outcomes.filter((r) => r.status === "fulfilled").length, 1);
+      assert.equal(
+        outcomes.filter(
+          (r) =>
+            r.status === "rejected" && /DUTY_COLLISION/.test(r.reason.message),
+        ).length,
+        1,
+      );
+      assert.equal(
+        (await dutyA.read(tokenA, { date: day })).occurrences.filter(
+          (o) => o.kind === "PIKET" && o.userId === target,
+        ).length,
+        1,
+      );
+    },
+  );
+  await t.test(
+    "NR04 a new weekly piket and a substitution cannot both claim one teacher",
+    async () => {
+      const owner = await fixture("race.piket.owner2", "guru"),
+        target = await fixture("race.piket.target2", "guru");
+      await dutyA.schedule(tokenA, dutyData(owner));
+      const current = (
+        await dutyA.read(tokenA, { date: day })
+      ).occurrences.find(
+        (o) => o.kind === "PIKET" && o.originalUserId === owner,
+      )!;
+      const preview = await dutyA.preview(tokenA, {
+        occurrenceId: current.id,
+        version: current.version,
+        operation: "substitute",
+        userId: target,
+        reason,
+      });
+      const outcomes = await Promise.allSettled([
+        dutyA.commit(tokenA, { previewId: preview.previewId }),
+        dutyB.schedule(tokenB, dutyData(target)),
+      ]);
+      assert.equal(outcomes.filter((r) => r.status === "fulfilled").length, 1);
+      assert.equal(
+        outcomes.filter(
+          (r) =>
+            r.status === "rejected" && /DUTY_COLLISION/.test(r.reason.message),
+        ).length,
+        1,
+      );
+      const rows = (await dutyA.read(tokenA, { date: day })).occurrences.filter(
+        (o) => o.kind === "PIKET" && o.userId === target,
+      );
+      assert.equal(rows.length, 1);
+      const p = await dutyA.preview(tokenA, {
+        occurrenceId: rows[0]!.id,
+        version: rows[0]!.version,
+        operation: "confirm",
+        reason,
+      });
+      await dutyA.commit(tokenA, { previewId: p.previewId });
+      assert.equal(
+        (
+          await db.query<{ total: string }>(
+            "select coalesce(sum(jtm),0)::text total from finance.jtm_ledger where date=$1 and user_id=$2",
+            [day, target],
+          )
+        ).rows[0]!.total,
+        "4.0000",
+      );
+    },
+  );
+
 });
