@@ -287,7 +287,12 @@ async function main() {
         res.setHeader("content-disposition",'attachment; filename="attendance.'+(format==="pdf"?"pdf":"csv")+'"');
         res.end(format==="pdf"?await renderPdf(rows,"attendance",filter.from+" – "+filter.to):renderCsv(rows,"attendance"));return;
       }
-      if (path === "/api/auth/csrf") data = { csrfToken: "fixture-csrf" };
+      if (path === "/api/auth/session") data = {
+        user: { id: token.startsWith("B") ? guru : id, username: "fixture", fullName: "Pengguna Akun Sintetis", role: token.startsWith("B") ? "guru" : "admin" },
+        scope: "business", expiresAt: "2099-01-01T00:00:00Z", idleExpiresAt: "2099-01-01T00:00:00Z",
+        onboarding: { mustChangePassword: false, emailVerified: true, securityQuestionReady: true }, maintenance: false,
+      };
+      else if (path === "/api/auth/csrf") data = { csrfToken: "fixture-csrf" };
       else if (path === "/api/auth/profile" && req.method === "GET")
         data = {
           id,

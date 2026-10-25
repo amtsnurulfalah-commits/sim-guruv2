@@ -3,7 +3,10 @@ import type { Metadata } from "next";
 import { BookOpen, CircleHelp, LogIn } from "lucide-react";
 import { ActionIcon } from "@/components/ui/action-icon";
 import { Button } from "@/components/ui/button";
-import { Workspace } from "@/components/shell/workspace";
+import {
+  GuideAccessLink,
+  GuideWorkspace,
+} from "@/components/shell/guide-workspace";
 import { ModuleCards } from "@/features/dashboard/module-cards";
 import { modules, navigationGroups } from "@/lib/navigation/modules";
 
@@ -48,7 +51,7 @@ const questions = [
 
 export default function ReadinessPage() {
   return (
-    <Workspace>
+    <GuideWorkspace>
       <div className="application-guide @container min-w-0 space-y-8 [overflow-wrap:anywhere]">
         <header className="space-y-3">
           <p className="text-xs font-semibold tracking-widest uppercase text-primary">
@@ -114,12 +117,7 @@ export default function ReadinessPage() {
                 penugasan Anda.
               </li>
             </ol>
-            <Button asChild variant="outline">
-              <Link prefetch={false} href="/login">
-                <ActionIcon action="access" />
-                Masuk ke SiM-Guru
-              </Link>
-            </Button>
+            <GuideAccessLink />
           </div>
           <div className="ui-panel space-y-4">
             <CircleHelp aria-hidden="true" className="size-6 text-primary" />
@@ -242,6 +240,6 @@ export default function ReadinessPage() {
           </p>
         </section>
       </div>
-    </Workspace>
+    </GuideWorkspace>
   );
 }

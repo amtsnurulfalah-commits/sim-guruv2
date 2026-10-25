@@ -1,4 +1,4 @@
-/** Public guide against a production build; no credentials, business writes or data APIs. */
+/** Production-build guide tests with synthetic sessions; no credentials or business writes. */
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -58,12 +58,86 @@ try {
     matrix = [];
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => {
-    if (m.type() === "error") consoleErrors.push(m.text());
+    if (
+      m.type() === "error" &&
+      !(
+        /\/api\/auth\/session/.test(m.location().url) &&
+        /status of (401|503)/.test(m.text())
+      )
+    )
+      consoleErrors.push(m.text());
   });
-  await page.route("**/api/**", (route) => {
-    apiRequests.push(route.request().url());
+  let state = "anonymous",
+    role = "admin",
+    scope = "business",
+    maintenance = false;
+  const authRequests = [];
+  const session = () => ({
+    user: {
+      id:
+        role === "admin"
+          ? "11111111-1111-4111-8111-111111111111"
+          : "22222222-2222-4222-8222-222222222222",
+      username: "fixture",
+      fullName: "Akun panduan sintetis",
+      role,
+    },
+    scope,
+    maintenance,
+    expiresAt: "2099-01-01T00:00:00Z",
+    idleExpiresAt: "2099-01-01T00:00:00Z",
+    onboarding: {
+      mustChangePassword: scope !== "business",
+      emailVerified: true,
+      securityQuestionReady: true,
+    },
+  });
+  const routeApi = async (route) => {
+    const req = route.request(),
+      url = new URL(req.url());
+    if (url.pathname === "/api/auth/session") {
+      authRequests.push({ path: url.pathname, method: req.method() });
+      if (state === "anonymous")
+        return route.fulfill({
+          status: 401,
+          json: {
+            ok: false,
+            error: { code: "UNAUTHENTICATED", message: "Sesi tidak tersedia." },
+          },
+        });
+      if (state === "error")
+        return route.fulfill({
+          status: 503,
+          json: {
+            ok: false,
+            error: {
+              code: "UNAVAILABLE",
+              message: "Pemeriksaan sesi terganggu.",
+            },
+          },
+        });
+      return route.fulfill({ json: { ok: true, data: session() } });
+    }
+    if (
+      url.pathname === "/api/auth/csrf" &&
+      url.searchParams.get("intent") === "session"
+    ) {
+      authRequests.push({ path: url.pathname, method: req.method() });
+      return route.fulfill({
+        json: { ok: true, data: { csrfToken: "fixture-csrf" } },
+      });
+    }
+    if (
+      url.pathname === "/api/reports/read" &&
+      url.searchParams.get("kind") === "capabilities"
+    )
+      return route.fulfill({
+        json: { ok: true, data: { academic: false, finance: false } },
+      });
+    apiRequests.push(req.method() + " " + url.pathname);
     return route.abort();
-  });
+  };
+  await page.route("**/api/**", routeApi);
   const guide = async () => {
     const response = await page.goto("http://127.0.0.1:4337/kesiapan");
     assert.equal(response.status(), 200);
@@ -254,6 +328,7 @@ try {
     viewport: { width: 375, height: 812 },
   });
   const touchPage = await touch.newPage();
+  await touchPage.route("**/api/**", routeApi);
   await touchPage.goto("http://127.0.0.1:4337/kesiapan");
   await touchPage
     .getByRole("link", { name: "Bantuan dan kendala", exact: true })
@@ -281,10 +356,213 @@ try {
     );
   await touch.close();
   assert.deepEqual(apiRequests, [], "Public guide must not call private APIs");
+  assert.equal(
+    authRequests.some((r) => r.method === "POST"),
+    false,
+    "Anonymous reading must not refresh an absent session",
+  );
+  // The real session boundary and Next router must retain account navigation across guide visits.
+  state = "authenticated";
+  for (role of ["admin", "guru"]) {
+    await page.context().addCookies([
+      {
+        name: "__Host-sim_guru_session",
+        value: "A".repeat(43),
+        domain: "127.0.0.1",
+        path: "/",
+        secure: true,
+        httpOnly: true,
+        sameSite: "Lax",
+      },
+    ]);
+    await guide();
+    await page.getByRole("button", { name: "Keluar", exact: true }).waitFor();
+    assert.equal(
+      await page.getByText("Akun panduan sintetis", { exact: true }).count(),
+      1,
+    );
+    await page.evaluate(
+      (account) =>
+        sessionStorage.setItem(
+          "sim-guru:draft:v1:guide-proof",
+          JSON.stringify({
+            format: 1,
+            account,
+            module: "journal",
+            entity: "guide-proof",
+            basis: "fixture",
+            savedAt: Date.now(),
+            state: "editing",
+            values: { material: "draft tetap ada" },
+          }),
+        ),
+      session().user.id,
+    );
+    assert.equal(
+      await page.locator('a[href="/login"]').count(),
+      0,
+      "Verified accounts must not be prompted to log in again",
+    );
+    assert.equal(
+      await page
+        .getByRole("link", { name: "Kembali ke Dashboard", exact: true })
+        .getAttribute("href"),
+      "/dashboard",
+    );
+    const nav = page.locator('aside[aria-label="Sidebar desktop"]');
+    assert.equal(
+      await nav.getByRole("link", { name: "Dashboard", exact: true }).count(),
+      1,
+    );
+    assert.equal(
+      await nav
+        .getByRole("link", { name: "Manajemen pengguna", exact: true })
+        .count(),
+      role === "admin" ? 1 : 0,
+    );
+    await nav.getByRole("link", { name: "Dashboard", exact: true }).click();
+    await page.waitForURL("**/dashboard");
+    await page.getByRole("button", { name: "Keluar", exact: true }).waitFor();
+    await page
+      .locator('aside[aria-label="Sidebar desktop"]')
+      .getByRole("link", { name: "Panduan aplikasi", exact: true })
+      .click();
+    await page.waitForURL("**/kesiapan");
+    await page
+      .getByRole("heading", { name: "Panduan aplikasi", exact: true })
+      .waitFor();
+    assert.equal(
+      await page.getByRole("button", { name: "Keluar", exact: true }).count(),
+      1,
+    );
+    assert.equal(
+      await page.evaluate(
+        () =>
+          JSON.parse(
+            sessionStorage.getItem("sim-guru:draft:v1:guide-proof") ?? "null",
+          )?.values.material,
+      ),
+      "draft tetap ada",
+    );
+    const cookie = (await page.context().cookies()).find(
+      (c) => c.name === "__Host-sim_guru_session",
+    );
+    assert.equal(
+      cookie?.value,
+      "A".repeat(43),
+      "Guide must not clear the session cookie",
+    );
+    // An unavailable session service is not a logout signal.
+    state = "error";
+    await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+    await page.getByText(/Pemeriksaan sesi terganggu/).waitFor();
+    assert.equal(
+      await page.getByRole("button", { name: "Keluar", exact: true }).count(),
+      1,
+    );
+    assert.equal(new URL(page.url()).pathname, "/kesiapan");
+    state = "authenticated";
+    await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+    await page
+      .getByText(/Pemeriksaan sesi terganggu/)
+      .waitFor({ state: "hidden" });
+    // Confirm the usual activity heartbeat and logout confirmation are present.
+    await page.getByRole("button", { name: "Keluar", exact: true }).click();
+    const logoutDialog = page.getByRole("dialog", {
+      name: "Keluar dari SiM-Guru?",
+      exact: true,
+    });
+    await logoutDialog.waitFor();
+    await logoutDialog
+      .getByRole("button", { name: "Batal", exact: true })
+      .click();
+    await logoutDialog.waitFor({ state: "hidden" });
+    assert.equal(new URL(page.url()).pathname, "/kesiapan");
+  }
+  assert.ok(
+    authRequests.some(
+      (r) => r.path === "/api/auth/session" && r.method === "POST",
+    ),
+    "Authenticated guide must retain session activity renewal",
+  );
+  // Onboarding and maintenance can still read help without being forced to a business page.
+  scope = "onboarding";
+  await guide();
+  await page.getByRole("button", { name: "Keluar", exact: true }).waitFor();
+  assert.equal(
+    await page
+      .locator("aside")
+      .getByRole("link", { name: "Dashboard", exact: true })
+      .count(),
+    0,
+  );
+  assert.equal(
+    await page
+      .locator("aside")
+      .getByRole("link", { name: "Akun dan profil", exact: true })
+      .count(),
+    1,
+  );
+  assert.equal(
+    await page
+      .getByRole("link", { name: "Buka akun dan profil", exact: true })
+      .getAttribute("href"),
+    "/akun",
+  );
+  scope = "business";
+  maintenance = true;
+  await guide();
+  await page.getByRole("button", { name: "Keluar", exact: true }).waitFor();
+  assert.equal(new URL(page.url()).pathname, "/kesiapan");
+  maintenance = false;
+  state = "error";
+  await guide();
+  await page
+    .getByRole("button", { name: "Periksa kembali sesi", exact: true })
+    .waitFor();
+  state = "authenticated";
+  await page
+    .getByRole("button", { name: "Periksa kembali sesi", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Keluar", exact: true }).waitFor();
+  state = "anonymous";
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await page
+    .getByRole("link", { name: "Masuk ke SiM-Guru", exact: true })
+    .waitFor();
+  assert.equal(
+    await page.getByRole("button", { name: "Keluar", exact: true }).count(),
+    0,
+    "A confirmed 401 must stop displaying an authenticated account",
+  );
+  assert.equal(new URL(page.url()).pathname, "/kesiapan");
+  assert.equal(
+    await page.evaluate(() =>
+      sessionStorage.getItem("sim-guru:draft:v1:guide-proof"),
+    ),
+    null,
+    "Confirmed expiry still clears known-account drafts",
+  );
+  assert.deepEqual(
+    apiRequests,
+    [],
+    "Guide must not log in, log out, or issue business requests",
+  );
   assert.deepEqual(errors, []);
   assert.deepEqual(consoleErrors, []);
   const result = {
     matrix,
+    sessionContinuity: [
+      "admin",
+      "guru",
+      "onboarding",
+      "maintenance",
+      "transient-failure",
+      "retry",
+      "activity-heartbeat",
+      "logout-cancel",
+      "confirmed-expiry",
+    ],
     keyboard: true,
     disclosures: 5,
     touch: true,
