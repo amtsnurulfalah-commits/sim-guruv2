@@ -1,7 +1,6 @@
 "use client";
 import { ActionIcon } from "@/components/ui/action-icon";
 
-import Link from "next/link";
 import { loginCsrfSchema } from "@/lib/accounts/login";
 import { cn } from "@/lib/utils";
 import { UserRound, KeyRound, MailCheck, ShieldQuestion } from "lucide-react";
@@ -270,7 +269,6 @@ export const PasswordHelp = () => (
   </p>
 );
 export function AccountLifecycle({
-  isAdmin,
   onboarding,
   onProfileChange,
 }: {
@@ -600,13 +598,6 @@ export function AccountLifecycle({
             lama diakhiri.
           </p>
         </ActionForm>
-      )}
-      {isAdmin && (
-        <p>
-          <Link prefetch={false} href="/admin/pemulihan" className="underline">
-            Tinjau permintaan pemulihan akun
-          </Link>
-        </p>
       )}
     </div>
     </AccountActions.Provider>

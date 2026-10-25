@@ -9,7 +9,6 @@ import {
   ManagedDialog,
   requestDialogClose,
 } from "@/components/ui/managed-dialog";
-import Link from "next/link";
 import {
   useEffect,
   useId,
@@ -719,11 +718,6 @@ export function UserManager() {
           </>
         )
       )}
-      <p className="text-sm">
-        <Link prefetch={false} href="/admin/pemulihan" className="underline">
-          Tinjau permintaan pemulihan akun
-        </Link>
-      </p>
       <ManagedDialog
         ref={editor}
         aria-labelledby="user-editor-title"
