@@ -25,7 +25,7 @@ try {
    return route.fulfill({json:{ok:true,data:request.method()==='GET'?session():{updated:true}}});
   }
   if(url.pathname==='/api/auth/csrf')return route.fulfill({json:{ok:true,data:{csrfToken:'fixture-csrf'}}});
-  if(url.pathname==='/api/reports/read')return route.fulfill({json:{ok:true,data:{academic:false,finance:false}}});
+  if(url.pathname==='/api/reports/read')return route.fulfill({json:{ok:true,data:{admin:false,academic:false,finance:false}}});
   return route.abort();
  });
  // The auth redirect is under test; the login form itself has its own suite.
