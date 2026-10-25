@@ -1,3 +1,4 @@
+import { assertTableActions } from './table-action-checks.mjs';
 /** Disposable Data Master regression fixtures; no production mutations. */
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
@@ -27,14 +28,14 @@ try {
   return ok(r,malformed?{}:{items,total:items.length,page:p,pageSize:20});
  });
  const go=()=>page.goto('http://127.0.0.1:4319/?view=masters&role=admin&path=/admin/master');
- const tab=async k=>{await page.getByRole('button',{name:labels[k],exact:true}).click();await page.getByRole('region',{name:'Data master',exact:true}).waitFor();};
+ const tab=async k=>{const button=page.getByRole('button',{name:labels[k],exact:true});if(await button.getAttribute('aria-current')!=='page')await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname==='/api/settings/'+k&&r.request().method()==='GET'),button.click()]);await page.getByText('Memuat data…',{exact:true}).waitFor({state:'hidden'});await page.getByRole('region',{name:'Data master',exact:true}).waitFor();};
  const overflow=async()=>assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
  const fits=async d=>{const b=await d.boundingBox(),v=page.viewportSize();assert.ok(b&&b.x>=0&&b.y>=0&&b.x+b.width<=v.width+1&&b.y+b.height<=v.height+1);assert.equal(await d.evaluate(e=>e.scrollWidth>e.clientWidth+1),false);};
  const close=async d=>{await d.getByRole('button',{name:'Tutup',exact:true}).click();const discard=page.getByRole('dialog',{name:'Buang perubahan?',exact:true});if(await discard.isVisible())await discard.getByRole('button',{name:'Buang perubahan',exact:true}).click();};
  for(const width of [320,375,768,1024,1440,1920]){
   console.log('Master viewport',width);await page.setViewportSize({width,height:850});await go();
   for(const k of Object.keys(labels)){
-   await tab(k);await overflow();
+   await tab(k);await overflow();await assertTableActions(page);
    if(k==='school')await page.getByRole('button',{name:'Ubah data',exact:true}).click();
    else await page.getByRole('button',{name:'Tambah '+labels[k].toLowerCase(),exact:true}).click();
    const d=page.getByRole('dialog').filter({visible:true});await fits(d);

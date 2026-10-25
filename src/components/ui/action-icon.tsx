@@ -58,6 +58,11 @@ const icons = {
 export function ActionIcon({ action }: { action: keyof typeof icons }) {
   const Icon = icons[action];
   return (
-    <Icon aria-hidden="true" focusable="false" className="size-4 shrink-0" />
+    <Icon
+      data-action={action}
+      aria-hidden="true"
+      focusable="false"
+      className="size-4 shrink-0"
+    />
   );
 }
