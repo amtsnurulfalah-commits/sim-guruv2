@@ -1,18 +1,28 @@
-participant_code,scenario_id,session_wib,device,browser,connection,result,total_seconds,system_wait_seconds,error_count,assistance_count,ease_1_5,finding_id,notes_without_personal_data
-G01,U01,,,,,belum_diuji,,,,,,,
-G02,U01,,,,,belum_diuji,,,,,,,
-G03,U01,,,,,belum_diuji,,,,,,,
-G01,U02,,,,,belum_diuji,,,,,,,
-G02,U02,,,,,belum_diuji,,,,,,,
-A01,U03,,,,,belum_diuji,,,,,,,
-A01,U04,,,,,belum_diuji,,,,,,,
-G03,U04,,,,,belum_diuji,,,,,,,
-G03,U05,,,,,belum_diuji,,,,,,,
-G01,U06,,,,,belum_diuji,,,,,,,
-G02,U06,,,,,belum_diuji,,,,,,,
-G03,U06,,,,,belum_diuji,,,,,,,
-A01,U07,,,,,belum_diuji,,,,,,,
-A01,U08,,,,,belum_diuji,,,,,,,
-G01,U09,,,,,belum_diuji,,,,,,,
-G01,U10,,,,,belum_diuji,,,,,,,
-A01,U10,,,,,belum_diuji,,,,,,,
+participant_code,scenario_id,session_wib,device,browser,connection,result,total_seconds,system_wait_seconds,error_count,assistance_count,ease_1_5,finding_id,notes_without_personal_data,validation_kind,actor_role,evidence_ref
+G01,U01,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,guru,UAT.md#kebutuhan-penyelesaian
+G02,U01,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,guru,UAT.md#kebutuhan-penyelesaian
+G03,U01,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,guru,UAT.md#kebutuhan-penyelesaian
+G01,U02,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,guru,UAT.md#kebutuhan-penyelesaian
+G02,U02,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,guru,UAT.md#kebutuhan-penyelesaian
+A01,U03,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,admin,UAT.md#kebutuhan-penyelesaian
+A01,U04,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,admin,UAT.md#kebutuhan-penyelesaian
+G03,U04,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,guru,UAT.md#kebutuhan-penyelesaian
+G03,U05,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,guru,UAT.md#kebutuhan-penyelesaian
+G01,U06,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,guru,UAT.md#kebutuhan-penyelesaian
+G02,U06,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,guru,UAT.md#kebutuhan-penyelesaian
+G03,U06,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,guru,UAT.md#kebutuhan-penyelesaian
+A01,U07,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,admin,UAT.md#kebutuhan-penyelesaian
+A01,U08,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,admin,UAT.md#kebutuhan-penyelesaian
+G01,U09,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,guru,UAT.md#kebutuhan-penyelesaian
+G01,U10,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,guru,UAT.md#kebutuhan-penyelesaian
+A01,U10,,,,,belum_diuji,,,,,,B-002,Sesi peserta belum dilaksanakan; jadwal/perangkat/moderator dan akses staging aman belum ditetapkan. Validasi agen dicatat terpisah sebagai T01.,manusia,admin,UAT.md#kebutuhan-penyelesaian
+T01,U01,2026-10-26T13:16:43+07:00,Headless; viewport sintetis desktop/tablet/mobile,Chromium 153; Playwright 1.58.2,localhost; data sintetis disposable,lulus_teknis,,,,,,,Jadwal harian/pekan dan batas akun; kemampuan peserta mencari kelas/jam belum diukur.,otomatis,guru/admin,UAT-TECHNICAL-RESULTS.md#pemetaan-dan-batas-u01u10
+T01,U02,2026-10-26T13:17:08+07:00,Headless; viewport sintetis desktop/tablet/mobile,Chromium 153; Playwright 1.58.2,localhost; data sintetis disposable,lulus_teknis,,,,,,,"Create/edit/delete, validasi jumlah, riwayat, draft dan sekali submit; pemahaman peserta belum diuji.",otomatis,guru/admin,UAT-TECHNICAL-RESULTS.md#pemetaan-dan-batas-u01u10
+T01,U03,2026-10-26T13:17:28+07:00,Headless; viewport sintetis desktop/tablet/mobile,Chromium 153; Playwright 1.58.2,localhost; data sintetis disposable,lulus_teknis,,,,,,,"Pemilik efektif, kredit dan perubahan/pembatalan diperiksa terutama pada integrasi D10-D12/E15; bukan satu sesi admin nyata.",otomatis,admin,UAT-TECHNICAL-RESULTS.md#pemetaan-dan-batas-u01u10
+T01,U04,2026-10-26T13:17:28+07:00,Headless; viewport sintetis desktop/tablet/mobile,Chromium 153; Playwright 1.58.2,localhost; data sintetis disposable,lulus_teknis,,,,,,,Konfirmasi dan guard peran diperiksa; penjelasan peserta tentang jam hadir belum dinilai.,otomatis,admin/guru,UAT-TECHNICAL-RESULTS.md#pemetaan-dan-batas-u01u10
+T01,U05,2026-10-26T13:17:51+07:00,Headless; viewport sintetis desktop/tablet/mobile,Chromium 153; Playwright 1.58.2,localhost; data sintetis disposable,lulus_teknis,,,,,,,"BAP create/edit, jumlah dan draft sintetis; penerimaan guru pengawas belum diukur.",otomatis,guru/admin,UAT-TECHNICAL-RESULTS.md#pemetaan-dan-batas-u01u10
+T01,U06,2026-10-26T13:18:01+07:00,Headless; viewport sintetis desktop/tablet/mobile,Chromium 153; Playwright 1.58.2,localhost; data sintetis disposable,lulus_teknis,,,,,,,Slip/periode/privasi/PDF/Excel sintetis; penjelasan komponen honor oleh peserta belum diukur.,otomatis,guru/admin,UAT-TECHNICAL-RESULTS.md#pemetaan-dan-batas-u01u10
+T01,U07,2026-10-26T13:18:15+07:00,Headless; viewport sintetis desktop/tablet/mobile,Chromium 153; Playwright 1.58.2,localhost; data sintetis disposable,lulus_teknis,,,,,,,"Kode bantuan ke case, status/pemilik dan tindak lanjut teknis; pemahaman admin belum dinilai.",otomatis,admin,UAT-TECHNICAL-RESULTS.md#pemetaan-dan-batas-u01u10
+T01,U08,2026-10-26T13:18:58+07:00,Headless; viewport sintetis desktop/tablet/mobile,Chromium 153; Playwright 1.58.2,localhost; data sintetis disposable,lulus_teknis,,,,,,,"Filter, prasyarat, deadline dan deep link/tanggal; pemilihan prioritas oleh admin belum dinilai.",otomatis,admin/guru,UAT-TECHNICAL-RESULTS.md#pemetaan-dan-batas-u01u10
+T01,U09,2026-10-26T13:17:51+07:00,Headless; viewport sintetis desktop/tablet/mobile,Chromium 153; Playwright 1.58.2,localhost; data sintetis disposable,lulus_teknis,,,,,,,"Restore eksplisit, isolasi akun/tab, TTL dan purge; pemahaman draft oleh guru belum dinilai.",otomatis,guru/admin,UAT-TECHNICAL-RESULTS.md#pemetaan-dan-batas-u01u10
+T01,U10,2026-10-26T13:17:08+07:00,Headless; viewport sintetis desktop/tablet/mobile,Chromium 153; Playwright 1.58.2,localhost; data sintetis disposable,lulus_teknis,,,,,,,Uncertain-write dan pencegahan kirim ganda diperiksa; perilaku peserta pada koneksi nyata belum diuji.,otomatis,guru/admin,UAT-TECHNICAL-RESULTS.md#pemetaan-dan-batas-u01u10
