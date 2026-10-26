@@ -550,3 +550,24 @@ dialog[open] {
     border-color: var(--warning-border);
   }
 }
+
+/* PRO-4: reserve reachable controls while the visual viewport shrinks for a keyboard. */
+[data-slot="dialog-content"] {
+  max-height: calc(var(--dialog-viewport-height, 100dvh) - 1rem);
+}
+.ui-modal-header, .ui-modal-footer {
+  flex-shrink: 0;
+  max-height: 35%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+dialog:not(#mobile-navigation) { overflow-y: auto; overscroll-behavior: contain; }
+@media (max-width: 639px) {
+  [data-slot="dialog-content"] {
+    top: calc(var(--dialog-viewport-top, 0px) + 0.5rem);
+    bottom: auto;
+    height: calc(var(--dialog-viewport-height, 100dvh) - 1rem);
+  }
+  .ui-modal-footer > button { flex: 1 1 auto; min-width: 0; white-space: normal; }
+  .ui-modal-body { scroll-padding-block: 1rem; }
+}

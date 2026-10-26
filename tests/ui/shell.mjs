@@ -555,6 +555,10 @@ try {
     .getByRole("link", { name: "Panduan aplikasi", exact: true })
     .scrollIntoViewIfNeeded();
   await tp.getByRole("button", { name: "Tutup navigasi", exact: true }).tap();
+  await touch.setOffline(true);
+  await tp.getByText(/Perangkat sedang offline/).waitFor();
+  await touch.setOffline(false);
+  await tp.getByText(/Perangkat sedang offline/).waitFor({ state: "hidden" });
   await touch.close();
   assert.ok(!result.writes.includes("/api/auth/logout"));
   assert.deepEqual(result.errors, []);
@@ -567,7 +571,7 @@ try {
       pageErrors: result.errors.length,
       consoleErrors: result.consoleErrors.length,
       scenarios:
-        "roles, long identity, text200, search count/groups, footer, collapse/storage, dialog geometry/focus/Escape/backdrop/drag/resize/route, capabilities deny/malformed/stale, touch",
+        "roles, long identity, text200, search count/groups, footer, collapse/storage, dialog geometry/focus/Escape/backdrop/drag/resize/route, capabilities deny/malformed/stale, touch, offline/reconnect indicator",
     }),
   );
 } finally {

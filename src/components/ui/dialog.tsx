@@ -44,7 +44,8 @@ export function FormDialog({
     sawBusy = useRef(false),
     lastReveal = useRef(revealKey),
     cancelDiscard = useRef<HTMLButtonElement>(null),
-    formBody = useRef<HTMLDivElement>(null);
+    formBody = useRef<HTMLDivElement>(null),
+    content = useRef<HTMLDivElement>(null);
   const discardId = useId();
   const open = controlled ?? localOpen;
   function setOpen(value: boolean) {
@@ -86,6 +87,23 @@ export function FormDialog({
       });
     }
   }, [open, busy, success, error, controlled, onOpenChange]);
+  useEffect(() => {
+    if (!open) return;
+    const viewport = window.visualViewport;
+    const update = () => {
+      content.current?.style.setProperty("--dialog-viewport-height", `${viewport?.height ?? window.innerHeight}px`);
+      content.current?.style.setProperty("--dialog-viewport-top", `${viewport?.offsetTop ?? 0}px`);
+    };
+    update();
+    viewport?.addEventListener("resize", update);
+    viewport?.addEventListener("scroll", update);
+    window.addEventListener("resize", update);
+    return () => {
+      viewport?.removeEventListener("resize", update);
+      viewport?.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [open]);
   return (
     <Primitive.Root
       open={open}
@@ -111,6 +129,7 @@ export function FormDialog({
       <Primitive.Portal>
         <Primitive.Overlay className="fixed inset-0 z-40 bg-slate-950/55 backdrop-blur-sm" />
         <Primitive.Content
+          ref={content}
           onCloseAutoFocus={onCloseAutoFocus}
           data-slot="dialog-content"
           className="fixed inset-2 z-50 flex max-h-[calc(100dvh-1rem)] flex-col overflow-hidden rounded-2xl border bg-card text-foreground shadow-2xl sm:inset-auto sm:top-1/2 sm:left-1/2 sm:max-h-[calc(100dvh-3rem)] sm:w-[min(48rem,calc(100vw-3rem))] sm:-translate-x-1/2 sm:-translate-y-1/2"
@@ -126,7 +145,7 @@ export function FormDialog({
         >
           <div
             inert={discard}
-            className="flex items-start justify-between gap-4 border-b px-5 py-5 sm:px-7"
+            className="ui-modal-header flex items-start justify-between gap-4 border-b px-5 py-5 sm:px-7"
           >
             <div className="min-w-0 [overflow-wrap:anywhere]">
               <Primitive.Title className="text-xl font-bold">

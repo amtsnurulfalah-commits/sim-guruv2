@@ -204,3 +204,25 @@ test("Deliberately cancelled response body preserves cancellation", async () => 
     (error) => error === controller.signal.reason,
   );
 });
+
+test("offline writes are rejected before fetch, reads remain explicit, reconnect never retries", async () => {
+  const descriptor = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  const fetchBefore = globalThis.fetch;
+  let online = false, calls = 0;
+  Object.defineProperty(globalThis, "navigator", { configurable: true, value: { get onLine() { return online; } } });
+  globalThis.fetch = async () => { calls++; return Response.json({ ok: true, data: "ok" }); };
+  try {
+    await assert.rejects(requestJson("/test", { method: "POST" }), (e: unknown) => e instanceof ApiRequestError && e.code === "OFFLINE");
+    assert.equal(calls, 0);
+    assert.equal(await requestJson("/test"), "ok");
+    online = true;
+    await Promise.resolve();
+    assert.equal(calls, 1);
+    assert.equal(await requestJson("/test", { method: "POST" }), "ok");
+    assert.equal(calls, 2);
+  } finally {
+    globalThis.fetch = fetchBefore;
+    if (descriptor) Object.defineProperty(globalThis, "navigator", descriptor);
+    else Reflect.deleteProperty(globalThis, "navigator");
+  }
+});

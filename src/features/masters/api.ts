@@ -1,11 +1,12 @@
 "use client";
-import { requestJson } from "@/lib/feedback/api-error";
+import { requestJson, assertWriteConnection } from "@/lib/feedback/api-error";
 export async function masterRequest<T>(
   path: string,
   method = "GET",
   data?: unknown,
   signal?: AbortSignal,
 ): Promise<T> {
+  assertWriteConnection(method);
   const headers: Record<string, string> = {};
   if (method !== "GET") {
     const csrf = await requestJson<{ csrfToken: string }>(
