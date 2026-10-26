@@ -28,5 +28,9 @@ test("operational DTO rejects invalid dates, configuration and states before ren
  assert.equal(operationsSchema.safeParse(data).success,true);
  for (const change of [{config:null},{lastWorkerAt:"bad"},{outbox:null},{jobs:[{state:"constructor"}]},{maintenanceActive:"false"}])
   assert.equal(operationsSchema.safeParse({...data,...change}).success,false);
+ // Diagnostic job results are arbitrary JSON in SQL; optional metadata must not disable all controls.
+ const job={business_key:"synthetic",kind:"synthetic",state:"paused",attempts:0};
+ for(const result of [null,[],"legacy",{code:42},{code:"not a safe diagnostic"}])assert.equal(operationsSchema.safeParse({...data,jobs:[{...job,result}]}).success,true);
+ assert.equal(operationsSchema.parse({...data,jobs:[{...job,result:{code:"42501"}}]}).jobs[0]?.result?.code,"42501");
  assert.throws(()=>readOperationsResponse(operationsSchema,{...data,lastWorkerAt:"private-invalid-value"}),error=>error instanceof Error && !error.message.includes("private-invalid-value"));
 });

@@ -1,6 +1,6 @@
 # Validasi PRO-3
 
-Source baseline22b764a, fixture lokal/PGlite dan browser Chromium153. Runtime c53f5403 diuji pada CI run40286086907/job121449975016 (PostgreSQL16.15); native job berhasil.
+Source baseline22b764a, fixture lokal/PGlite dan browser Chromium153. SQL/worker/restore pada c53f5403 diuji pada CI run40286086907/job121449975016 (PostgreSQL16.15); native job berhasil.
 
 Lokal:401 integrasi/164unit lulus, crypto exit0, lint/typecheck/build berhasil. Fokus6tes PRO-3 meliputi paused0attempts tanpa penciptaan honor, domain/security capped retry timestamps, wrong/missing/null/stale lease, state-cohort ratio/unknown/privacy, active-vs-paused queues, heartbeat-vs-job success serta quarantine tickets/sessions/outbox. Reminder dedupe/completion-cancel dan worker fencing existing diuji ulang bersama suite penuh.
 
@@ -15,3 +15,5 @@ Lihat [native-recovery-results.json](native-recovery-results.json). Backup sinte
 RPO drill:0transaksi fixture hilang pada snapshot frozen. RTO1227ms hanya drill ini; bukan sasaran produksi yang disepakati. Ukuran arsip dan batas lain tercatat dalam JSON. Dump/key tidak dipublikasikan dan dihapus setelah runner selesai. CI head dokumentasi final tetap menjadi gate merge.
 
 Migrasi36 kanonis SHA256: `eb59fa404138cd4b6a42362c3451ae04371544a7d787aed274705fee653cf6cf`. Penerapan setelah merge memerlukan ledger35/body prior sesuai guard; kemudian verifikasi ledger36/checksum, metadata fungsi/ACL, security advisor dan deployment. Tidak mengisi completed_at historis atau mengubah job September.
+
+Metadata ops.job_runs.result mendukung JSON legacy/null/array. Contract UI hanya mengambil code diagnostik yang valid; metadata opsional yang tidak sesuai tidak menonaktifkan seluruh kontrol operasional. Validasi state/config/tanggal utama tetap ketat; regresi unit kompatibilitas lulus.
