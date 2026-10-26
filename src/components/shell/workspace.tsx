@@ -1,4 +1,5 @@
 "use client";
+import { WorkspacePreferences, PreferenceControls, useWorkspacePreferences } from "@/features/preferences/workspace-preferences";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import Link from "next/link";
@@ -65,15 +66,13 @@ const moduleIcons: Record<string, typeof LayoutDashboard> = {
   migrasi: ArrowLeftRight,
   "laporan-pimpinan": ClipboardList,
 };
-export function Workspace({
-  children,
-  session,
-  onLogout,
-}: {
-  children: ReactNode;
-  session?: SessionDto;
-  onLogout?: () => void;
-}) {
+type WorkspaceProps = { children: ReactNode; session?: SessionDto; onLogout?: () => void };
+export function Workspace(props: WorkspaceProps) {
+  const scope = props.session ? props.session.user.id + ":" + props.session.user.role : null;
+  return <WorkspacePreferences key={scope ?? "public"} scope={scope}><WorkspaceContent {...props}/></WorkspacePreferences>;
+}
+function WorkspaceContent({ children, session, onLogout }: WorkspaceProps) {
+  const preferences = useWorkspacePreferences();
   const router = useRouter();
   const [navigating, startNavigation] = useTransition();
   const [destination, setDestination] = useState<{
@@ -391,7 +390,7 @@ export function Workspace({
     );
   }
   return (
-    <div className="min-h-svh lg:flex">
+    <div className="min-h-svh lg:flex" data-table-density={preferences.values.density}>
       <aside
         aria-label="Sidebar desktop"
         className={cn(
@@ -513,6 +512,10 @@ export function Workspace({
             ready={ready}
             reportAccess={reportAllowed}
           />
+          {ready && session && <>
+            <PreferenceControls links={links}/>
+            {links.some(link => preferences.values.pins.includes(link.slug)) && <nav aria-label="Pintasan pilihan" className="mb-5 flex min-w-0 flex-wrap gap-2">{links.filter(link => preferences.values.pins.includes(link.slug)).map(link => <Button key={link.slug} asChild variant="outline"><Link prefetch={false} href={link.href ?? "/modul/" + link.slug} onNavigate={event => navigate(event, link.href ?? "/modul/" + link.slug, link.title)}>{link.title}</Link></Button>)}</nav>}
+          </>}
           {navigating && destination && (
             <div data-slot="navigation-pending">
               <NavigationLoading title={destination.label} />

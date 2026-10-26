@@ -571,3 +571,9 @@ dialog:not(#mobile-navigation) { overflow-y: auto; overscroll-behavior: contain;
   .ui-modal-footer > button { flex: 1 1 auto; min-width: 0; white-space: normal; }
   .ui-modal-body { scroll-padding-block: 1rem; }
 }
+
+/* PRO-6: density changes whitespace only, never touch target sizes or row visibility. */
+@media (min-width: 1024px) and (pointer: fine) {
+  [data-table-density="compact"] .ui-table-region td,
+  [data-table-density="compact"] .ui-table-region th { padding-top: 0.35rem; padding-bottom: 0.35rem; }
+}

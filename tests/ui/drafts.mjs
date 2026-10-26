@@ -97,19 +97,23 @@ try {
  await page.goto('http://127.0.0.1:4319/?view=login'); await page.getByLabel('Username',{exact:true}).waitFor();
  assert.equal(await page.evaluate(()=>Object.keys(sessionStorage).filter(k=>k.startsWith('sim-guru:draft:v1:')).length),0);
  // Exercise the real session boundary cleanup, including cross-tab notification.
- let sessionAccount=admin, sessionDenied=false;
- await page.route('**/api/auth/session', route=>route.fulfill({status:sessionDenied?401:200,json:sessionDenied?{ok:false,error:{code:'UNAUTHENTICATED',message:'Sesi berakhir.'}}:{ok:true,data:{user:{id:sessionAccount,username:'fixture',fullName:'Akun uji',role:'admin'},scope:'business',expiresAt:'2099-01-01',idleExpiresAt:'2099-01-01',onboarding:{mustChangePassword:false,emailVerified:true,securityQuestionReady:true},maintenance:false}}}));
+ let sessionAccount=admin, sessionDenied=false, sessionRole='admin';
+ await page.route('**/api/auth/session', route=>route.fulfill({status:sessionDenied?401:200,json:sessionDenied?{ok:false,error:{code:'UNAUTHENTICATED',message:'Sesi berakhir.'}}:{ok:true,data:{user:{id:sessionAccount,username:'fixture',fullName:'Akun uji',role:sessionRole},scope:'business',expiresAt:'2099-01-01',idleExpiresAt:'2099-01-01',onboarding:{mustChangePassword:false,emailVerified:true,securityQuestionReady:true},maintenance:false}}}));
  await page.route('**/api/auth/csrf?intent=session', route=>route.fulfill({json:{ok:true,data:{csrfToken:'fixture-csrf'}}}));
  await page.route('**/api/auth/logout', route=>route.fulfill({json:{ok:true,data:{loggedOut:true}}}));
  const sessionView=async()=>{await page.goto('http://127.0.0.1:4319/?view=draft-session');await page.getByRole('button',{name:'Uji keluar sesi',exact:true}).waitFor();};
- const seed=async()=>page.evaluate(()=>{sessionStorage.setItem('sim-guru:draft:v1:fixture','private-draft');});
+ const seed=async()=>page.evaluate(()=>{sessionStorage.setItem('sim-guru:draft:v1:fixture','private-draft');sessionStorage.setItem('sim-guru:preferences:v1','synthetic-preference');});
  await sessionView(); await seed(); await page.getByRole('button',{name:'Uji keluar sesi',exact:true}).click();await page.getByRole('button',{name:'Keluar dari akun',exact:true}).click();await page.waitForURL('**/login?status=logout');
  assert.equal(await page.evaluate(()=>sessionStorage.getItem('sim-guru:draft:v1:fixture')),null);
+ assert.equal(await page.evaluate(()=>sessionStorage.getItem('sim-guru:preferences:v1')),null);
  await sessionView(); await seed(); await page.evaluate(()=>{const c=new BroadcastChannel('sim-guru-auth');c.postMessage('logout');c.close();}); await page.waitForURL('**/login?status=logout');
  assert.equal(await page.evaluate(()=>sessionStorage.getItem('sim-guru:draft:v1:fixture')),null);
+ assert.equal(await page.evaluate(()=>sessionStorage.getItem('sim-guru:preferences:v1')),null);
  await sessionView(); await seed(); sessionDenied=true; await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.waitForURL('**/login?status=expired');
  assert.equal(await page.evaluate(()=>sessionStorage.getItem('sim-guru:draft:v1:fixture')),null);
- sessionDenied=false; await sessionView(); await seed();sessionAccount=guru;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.waitForFunction(()=>sessionStorage.getItem('sim-guru:draft:v1:fixture')===null);
+ assert.equal(await page.evaluate(()=>sessionStorage.getItem('sim-guru:preferences:v1')),null);
+ sessionDenied=false; await sessionView(); await seed();sessionAccount=guru;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.waitForFunction(()=>sessionStorage.getItem('sim-guru:draft:v1:fixture')===null&&sessionStorage.getItem('sim-guru:preferences:v1')===null);
+ await sessionView();await seed();sessionRole='guru';await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await page.waitForFunction(()=>sessionStorage.getItem('sim-guru:preferences:v1')===null&&sessionStorage.getItem('sim-guru:draft:v1:fixture')===null);
  await page.addInitScript(()=>{Object.defineProperty(window,'sessionStorage',{get(){throw Error('SecurityError')}})});
  role='admin'; await go(); d=await open(); await d.getByText(/Draft lokal tidak dapat disimpan/).waitFor();
  await d.getByLabel('Materi pembelajaran',{exact:true}).fill('Manual with denied storage');

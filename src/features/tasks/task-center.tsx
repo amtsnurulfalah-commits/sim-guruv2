@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useWorkspacePreferences } from "@/features/preferences/workspace-preferences";
 import Link from "next/link";
 import { RotateCcw, Search, X } from "lucide-react";
 import { tasksSchema, taskPriority } from "@/lib/tasks/contracts";
@@ -11,6 +12,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { FeatureState, EmptyState } from "@/components/feedback/feature-state";
 
 export function TaskCenter({ compact = false, date }: { compact?: boolean; date?: string }) {
+  const preferences = useWorkspacePreferences();
   const parse = useCallback((raw: unknown) => {
     const parsed = tasksSchema.safeParse(raw);
     if (!parsed.success || (date && parsed.data.date !== date)) {
@@ -26,7 +28,15 @@ export function TaskCenter({ compact = false, date }: { compact?: boolean; date?
   const listTitle = useRef<HTMLHeadingElement>(null);
   const statusId = useId(), kindId = useId();
   const tasks = filterTasks(data?.items ?? [], status, kind, query);
-  const size = compact ? 5 : 20;
+  const size = compact ? 5 : preferences.values.taskPageSize;
+  const previousSize = useRef(size);
+  useEffect(() => {
+    if (previousSize.current === size) return;
+    previousSize.current = size;
+    let active = true;
+    queueMicrotask(() => { if (active) setPage(1); });
+    return () => { active = false; };
+  }, [size]);
   const pages = Math.max(1, Math.ceil(tasks.length / size));
   const activePage = Math.min(page, pages);
   // Persist clamping after background refresh, so later growth cannot restore an obsolete page.

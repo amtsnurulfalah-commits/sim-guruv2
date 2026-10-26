@@ -1,4 +1,5 @@
 "use client";
+import { resetBrowserPreferences } from "@/lib/preferences/storage";
 import { claimDraftAccount, resetBrowserDrafts } from "@/lib/drafts/storage";
 import { ActionIcon } from "@/components/ui/action-icon";
 
@@ -11,6 +12,10 @@ import {
 import { ApiRequestError, requestJson } from "@/lib/feedback/api-error";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import type { SessionDto } from "@/types/auth";
+function resetPrivateBrowserState() {
+  resetBrowserDrafts();
+  resetBrowserPreferences();
+}
 export function SessionBoundary({
   children,
   business = false,
@@ -53,7 +58,7 @@ export function SessionBoundary({
         }
         const nextIdentity = data.user.id + ":" + data.user.role;
         if (identity.current !== null && identity.current !== nextIdentity) {
-          resetBrowserDrafts();
+          resetPrivateBrowserState();
           setSession(null);
           setLogoutRequested(false);
           window.location.reload();
@@ -76,12 +81,13 @@ export function SessionBoundary({
           setSession(null);
           setLogoutRequested(false);
           if (isPublic) {
-            if (identity.current !== null) resetBrowserDrafts();
+            if (identity.current !== null) resetPrivateBrowserState();
+            else resetBrowserPreferences();
             identity.current = null;
             setMessage("");
             return;
           }
-          resetBrowserDrafts();
+          resetPrivateBrowserState();
           window.location.replace("/login?status=expired");
           return;
         }
@@ -132,7 +138,7 @@ export function SessionBoundary({
       channel.current = new BroadcastChannel("sim-guru-auth");
       channel.current.onmessage = (event) => {
         if (event.data === "logout") {
-          resetBrowserDrafts();
+          resetPrivateBrowserState();
           setSession(null);
           setLogoutRequested(false);
           window.location.replace("/login?status=logout");
@@ -170,7 +176,7 @@ export function SessionBoundary({
         headers: { "X-CSRF-Token": csrf.csrfToken },
         signal: AbortSignal.timeout(15000),
       });
-      resetBrowserDrafts();
+      resetPrivateBrowserState();
       setSession(null);
       setLogoutRequested(false);
       channel.current?.postMessage("logout");
@@ -179,7 +185,7 @@ export function SessionBoundary({
       if (error instanceof ApiRequestError && error.status === 401) {
         setSession(null);
         setLogoutRequested(false);
-        resetBrowserDrafts();
+        resetPrivateBrowserState();
         window.location.replace("/login?status=expired");
         return;
       }
@@ -289,7 +295,7 @@ function SessionExpiry({ session }: { session: SessionDto }) {
     ) - now;
   useEffect(() => {
     if (remaining <= 0) {
-      resetBrowserDrafts();
+      resetPrivateBrowserState();
       window.location.replace("/login?status=expired");
     }
   }, [remaining]);
