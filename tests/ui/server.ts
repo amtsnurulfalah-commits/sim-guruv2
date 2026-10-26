@@ -32,7 +32,7 @@ async function main() {
     bundle: true,
     platform: "browser",
     jsx: "automatic",
-    define: { "process.env.NODE_ENV": "'production'" },
+    define: { "process.env.NODE_ENV": process.env.UI_REACT_DEVELOPMENT === "1" ? "'development'" : "'production'" },
     alias: {
       "next/link": resolve("tests/ui/navigation-stub.tsx"),
       "next/navigation": resolve("tests/ui/navigation-stub.tsx"),

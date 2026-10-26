@@ -9,7 +9,7 @@ const appUrl = "https://school.example";
 const reply = (data: unknown, status = 200): typeof fetch => async () => new Response(JSON.stringify(data), { status });
 const isCode = (code: string) => (error: unknown) => error instanceof AuthError && error.code === code;
 
-test("reCAPTCHA disabled is explicit; incomplete/invalid configuration never bypasses verification", async () => {
+test("reCAPTCHA unconfigured or explicitly disabled skips verification; invalid configuration fails closed", async () => {
   let calls = 0;
   const send: typeof fetch = async () => { calls++; throw Error("Do not call"); };
   await verifyLoginRecaptcha(undefined, appUrl, {}, send);
@@ -57,4 +57,16 @@ test("source rate limit precedes CAPTCHA; CAPTCHA failure never queries credenti
   wait = 60;
   await assert.rejects(service.login({ username: "guru", password: "x" }, "synthetic-ip", "synthetic-request", undefined, before), isCode("RATE_LIMITED"));
   assert.equal(captchaCalls, 1); assert.equal(transactions, 0);
+});
+
+test("keys alone require verification; whitespace/oversized tokens never reach Google", async () => {
+  const { RECAPTCHA_ENABLED: _flag, ...keys } = config;
+  void _flag;
+  let calls = 0;
+  const send: typeof fetch = async () => { calls++; return new Response(JSON.stringify({ success: true, hostname: "school.example" })); };
+  await assert.rejects(verifyLoginRecaptcha(undefined, appUrl, keys, send), isCode("CAPTCHA_REQUIRED"));
+  for (const token of [" ", "x".repeat(4097)]) await assert.rejects(verifyLoginRecaptcha(token, appUrl, keys, send), isCode("CAPTCHA_INVALID"));
+  assert.equal(calls, 0);
+  await verifyLoginRecaptcha("synthetic-token", appUrl, keys, send);
+  assert.equal(calls, 1);
 });
