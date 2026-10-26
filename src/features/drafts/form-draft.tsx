@@ -75,7 +75,7 @@ export function useFormDraft(formId: string, config: FormDraftConfig | null, act
   }
   function beforeSubmit() {
     if (!config) return;
-    if (candidate.current) throw Error("Pulihkan atau hapus draft lokal terlebih dahulu sebelum menyimpan.");
+    if (candidate.current) throw new ApiRequestError("FORM_NOT_READY", "Pulihkan atau hapus draft lokal terlebih dahulu sebelum menyimpan.");
     suspended.current = true;
     setView(v => ({ ...v, outcome: "sending" }));
     const ticket = generation.current;
