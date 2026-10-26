@@ -1,4 +1,6 @@
 "use client";
+import { RecaptchaField } from "./recaptcha-field";
+import type { LoginCaptcha } from "@/lib/accounts/recaptcha";
 import { resetBrowserDrafts } from "@/lib/drafts/storage";
 import { ActionIcon } from "@/components/ui/action-icon";
 import Link from "next/link";
@@ -20,7 +22,9 @@ import {
   loginNotice,
 } from "@/lib/accounts/login";
 
-export function LoginForm() {
+export function LoginForm({ captcha = { enabled: false, siteKey: null } }: { captcha?: LoginCaptcha }) {
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaAttempt, setCaptchaAttempt] = useState(0);
   const [csrf, setCsrf] = useState("");
   const [message, setMessage] = useState("");
   const [notice, setNotice] = useState("");
@@ -92,6 +96,11 @@ export function LoginForm() {
       setMessage(error instanceof Error ? error.message : "Periksa kembali isian formulir.");
       return;
     }
+    if (captcha.enabled && !captchaToken) {
+      setFocusSummary(true);
+      setMessage("Selesaikan verifikasi reCAPTCHA sebelum masuk.");
+      return;
+    }
     pending.current = true;
     const controller = new AbortController();
     loginRequest.current = controller;
@@ -103,7 +112,7 @@ export function LoginForm() {
       const response = await requestJson<unknown>("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
-        body: JSON.stringify(input),
+        body: JSON.stringify(captcha.enabled ? { ...input, captchaToken } : input),
         signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]),
       });
       const result = loginResultSchema.safeParse(response);
@@ -130,6 +139,7 @@ export function LoginForm() {
     } finally {
       // Reset also conceals PasswordInput using its existing native reset listener.
       form.reset();
+      if (mounted.current && captcha.enabled) { setCaptchaToken(""); setCaptchaAttempt(value => value + 1); }
       const username = form.elements.namedItem("username");
       if (username instanceof HTMLInputElement) username.value = input.username;
       loginRequest.current = null;
@@ -192,7 +202,8 @@ export function LoginForm() {
           disabled={busy}
         />
       </div>
-      <Button className="w-full" type="submit" disabled={busy || preparing || !csrf}>
+      {captcha.enabled && <RecaptchaField siteKey={captcha.siteKey} attempt={captchaAttempt} onToken={setCaptchaToken} busy={busy} />}
+      <Button className="w-full" type="submit" disabled={busy || preparing || !csrf || (captcha.enabled && !captchaToken)}>
         <ActionIcon action="access" />
         {busy
           ? "Memeriksa akun…"

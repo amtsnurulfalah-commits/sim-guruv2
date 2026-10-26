@@ -38,6 +38,7 @@
     "test:ui:masters": "node tests/ui/masters.mjs",
     "test:ui:home": "node tests/ui/home.mjs",
     "test:ui:login": "node tests/ui/login.mjs",
+    "test:ui:recaptcha": "node tests/ui/recaptcha.mjs",
     "test:ui:forgot-password": "node tests/ui/forgot-password.mjs",
     "test:ui:calendar": "node tests/ui/calendar.mjs",
     "test:ui:announcements": "node tests/ui/announcements.mjs",
