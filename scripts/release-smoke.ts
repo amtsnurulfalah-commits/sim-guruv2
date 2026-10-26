@@ -4,7 +4,7 @@ const raw = process.env.SMOKE_BASE_URL;
 if (!raw) throw Error("SMOKE_BASE_URL_REQUIRED");
 const base = new URL(raw);
 if (base.protocol !== "https:" || base.username || base.password || base.pathname !== "/" || base.search || base.hash) throw Error("HTTPS_ORIGIN_REQUIRED");
-const paths = ["/api/dashboard","/api/activities/journals","/api/duties/board","/api/programs/read?domain=exams","/api/honorarium/read?kind=history","/api/users","/api/schedules/mine","/api/settings/school","/api/operations/tasks","/api/operations/inbox","/api/operations/support","/api/reports/read","/api/semester-preparation/read","/api/migration/board"];
+const paths = ["/api/dashboard","/api/activities/journals","/api/duties/board","/api/programs/read?domain=exams","/api/honorarium/read?kind=history","/api/users","/api/schedules/mine","/api/settings/school","/api/operations/tasks","/api/operations/inbox","/api/operations/support","/api/reports/read","/api/semester-preparation/read","/api/migration/board","/api/personal/calendar?from=2026-10-26&to=2026-10-26","/api/personal/history?from=2026-10-26&to=2026-10-26","/api/personal/export?from=2026-10-26&to=2026-10-26"];
 async function probe(path: string, status: number) {
   const response = await fetch(new URL(path,base),{redirect:"error",signal:AbortSignal.timeout(30000)});
   assert.equal(response.status,status,path);

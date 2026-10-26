@@ -1,0 +1,82 @@
+{
+  "kind": "anonymous-release-smoke",
+  "ok": true,
+  "checks": [
+    {
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "path": "/api/dashboard",
+      "status": 401
+    },
+    {
+      "path": "/api/activities/journals",
+      "status": 401
+    },
+    {
+      "path": "/api/duties/board",
+      "status": 401
+    },
+    {
+      "path": "/api/programs/read?domain=exams",
+      "status": 401
+    },
+    {
+      "path": "/api/honorarium/read?kind=history",
+      "status": 401
+    },
+    {
+      "path": "/api/users",
+      "status": 401
+    },
+    {
+      "path": "/api/schedules/mine",
+      "status": 401
+    },
+    {
+      "path": "/api/settings/school",
+      "status": 401
+    },
+    {
+      "path": "/api/operations/tasks",
+      "status": 401
+    },
+    {
+      "path": "/api/operations/inbox",
+      "status": 401
+    },
+    {
+      "path": "/api/operations/support",
+      "status": 401
+    },
+    {
+      "path": "/api/reports/read",
+      "status": 401
+    },
+    {
+      "path": "/api/semester-preparation/read",
+      "status": 401
+    },
+    {
+      "path": "/api/migration/board",
+      "status": 401
+    },
+    {
+      "path": "/api/personal/calendar?from=2026-10-26&to=2026-10-26",
+      "status": 401
+    },
+    {
+      "path": "/api/personal/history?from=2026-10-26&to=2026-10-26",
+      "status": 401
+    },
+    {
+      "path": "/api/personal/export?from=2026-10-26&to=2026-10-26",
+      "status": 401
+    }
+  ],
+  "limits": "Liveness and anonymous denial only; not authenticated business UAT or database readiness.",
+  "sourceCommit": "beafb5f0f3379803fd3b2619c22bda0798aaa4db",
+  "origin": "https://sim-guruv2.vercel.app",
+  "phase": "pre-release PRO-8; application PRO-7"
+}

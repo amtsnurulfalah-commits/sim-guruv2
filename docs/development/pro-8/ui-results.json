@@ -1,0 +1,132 @@
+{
+  "sourceCommit": "beafb5f0f3379803fd3b2619c22bda0798aaa4db",
+  "kind": "agent-automated-validation-not-human-UAT",
+  "startedAt": "2026-10-26T16:18:32.070Z",
+  "environment": {
+    "node": "v24.22.1",
+    "browser": "Chromium 153 headless; Playwright 1.58.2",
+    "network": "localhost",
+    "data": "disposable synthetic PGlite and controlled API fixtures",
+    "production": false
+  },
+  "suites": [
+    {
+      "suite": "schedules",
+      "command": "node tests/ui/schedules.mjs",
+      "startedAt": "2026-10-26T16:18:32.071Z",
+      "finishedAt": "2026-10-26T16:18:49.251Z",
+      "exitCode": 0,
+      "elapsedSeconds": 17.18,
+      "summary": "Schedule viewport admin 320\nSchedule viewport admin 375\nSchedule viewport admin 768\nSchedule viewport admin 1024\nSchedule viewport admin 1440\nSchedule viewport admin 1920\nSchedule viewport guru 320\nSchedule viewport guru 375\nSchedule viewport guru 768\nSchedule viewport guru 1024\nSchedule viewport guru 1440\nSchedule viewport guru 1920\nPASS: 12 role/viewport combinations, create/edit/search/reset, daily error/retry/stale prevention, recap independence, editor validation/conflict invalidation/double submit, picker retry, history cancellation/null, cross-page selection, bulk preview/back/stale/commit, pagination clamp, empty/malformed/expired rows, long names/text200/orientation and 101-row print; zero page errors.\n"
+    },
+    {
+      "suite": "journals",
+      "command": "node tests/ui/journals.mjs",
+      "startedAt": "2026-10-26T16:18:49.256Z",
+      "finishedAt": "2026-10-26T16:19:06.143Z",
+      "exitCode": 0,
+      "elapsedSeconds": 16.89,
+      "summary": "PASS: journals 7 widths/all tabs, modal bounds, create/edit/delete/H1/block commands, blank/count validation, double submit/busy close, conflict/rejected/malformed-ack/lost-response-after-commit recovery, saved edit with failed refresh, long text, independent invalid history/search, CSV, last-page deletion, teacher permissions, touch/landscape/200% text; zero page errors. Browser commands use controlled API fixtures; database business rules tested separately.\n"
+    },
+    {
+      "suite": "confirmations",
+      "command": "node tests/ui/confirmations.mjs",
+      "startedAt": "2026-10-26T16:19:06.143Z",
+      "finishedAt": "2026-10-26T16:19:16.315Z",
+      "exitCode": 0,
+      "elapsedSeconds": 10.17,
+      "summary": "PASS: real database browser claim/confirm/revoke; 7 widths, modal bounds, 61 rows/search/status/pagination, long text, validation, duplicate submit/busy close, write/read/malformed/network errors, success then refresh failure, stale date race, own/admin/guru/piket/journal guards, empty, landscape/200% text; zero page errors.\n"
+    },
+    {
+      "suite": "duties",
+      "command": "node tests/ui/duties.mjs",
+      "startedAt": "2026-10-26T16:19:16.315Z",
+      "finishedAt": "2026-10-26T16:19:25.259Z",
+      "exitCode": 0,
+      "elapsedSeconds": 8.94,
+      "summary": "{\"result\":\"passed\",\"realFlows\":[\"schedule-create\",\"schedule-edit\",\"confirm\",\"preview-lock\",\"ambiguous-write\"],\"responsiveWidths\":[1440,768,320,740],\"pageErrors\":[]}\n"
+    },
+    {
+      "suite": "exams",
+      "command": "node tests/ui/exams.mjs",
+      "startedAt": "2026-10-26T16:19:25.260Z",
+      "finishedAt": "2026-10-26T16:19:34.964Z",
+      "exitCode": 0,
+      "elapsedSeconds": 9.7,
+      "summary": "{\"result\":\"passed\",\"flows\":[\"confirm\",\"BAP-draft-reload-restore\",\"BAP-count-validation\",\"BAP-create-edit\",\"master-create-edit-delete\",\"preview-expiry\",\"uncertain-write\",\"malformed-response\",\"pagination\",\"WIB-midnight\"],\"widths\":[1440,768,320,740],\"pageErrors\":[]}\n"
+    },
+    {
+      "suite": "finance",
+      "command": "node tests/ui/finance.mjs",
+      "startedAt": "2026-10-26T16:19:34.965Z",
+      "finishedAt": "2026-10-26T16:19:49.909Z",
+      "exitCode": 0,
+      "elapsedSeconds": 14.94,
+      "summary": "{\"result\":\"passed\",\"flows\":[\"transport-block\",\"holiday-generate-cancel-waive\",\"finalize\",\"single-modal\",\"privacy\",\"history-slip\",\"verified-PDF\",\"scoped-Excel\",\"correction-request\",\"correction-delta\",\"expiry\",\"malformed-read-retry\",\"uncertain-write\",\"recap-pagination-search\",\"responsive-resize\",\"print\",\"public-verification-retry\",\"history-pagination\"],\"widths\":[1440,768,320,740],\"pageErrors\":[]}\n"
+    },
+    {
+      "suite": "support-cases",
+      "command": "node tests/ui/support-cases.mjs",
+      "startedAt": "2026-10-26T16:19:49.910Z",
+      "finishedAt": "2026-10-26T16:20:33.618Z",
+      "exitCode": 0,
+      "elapsedSeconds": 43.71,
+      "summary": "{\"passed\":true,\"flows\":[\"reference-to-case\",\"verified-reporter\",\"owner-and-status\",\"resolution-proof\",\"reopen-history\",\"uncertain-write-lock\",\"retry-after-read\",\"empty-status-filter\",\"monitoring\",\"responsive-modal\",\"reporter-context-audit\"],\"pageErrors\":[]}\n"
+    },
+    {
+      "suite": "tasks",
+      "command": "node tests/ui/tasks.mjs",
+      "startedAt": "2026-10-26T16:20:33.619Z",
+      "finishedAt": "2026-10-26T16:20:50.381Z",
+      "exitCode": 0,
+      "elapsedSeconds": 16.76,
+      "summary": "PASS: 28 role/view/viewport cases, combined search/status/kind and reset; stable paging after shrink/growth; slow focus/online coalescing and hidden tabs; loading/date guard/duplicate IDs/wrong source link/network recovery; exam prerequisites/deadline; orientation/200% text/WIB rollover; task filters/pagination/empty/error/malformed/retry/source date, long text, inbox read isolation UI, preference draft retained, double submit, uncertain write lock/recovery and real SQL fixture response; zero page errors/document overflow.\n"
+    },
+    {
+      "suite": "drafts",
+      "command": "node tests/ui/drafts.mjs",
+      "startedAt": "2026-10-26T16:20:50.382Z",
+      "finishedAt": "2026-10-26T16:21:00.456Z",
+      "exitCode": 0,
+      "elapsedSeconds": 10.07,
+      "summary": "{\n  \"passed\": true,\n  \"cases\": [\n    \"reload-explicit-restore\",\n    \"controlled-counts\",\n    \"9-viewports-short-screen-orientations\",\n    \"offline-preflight-before-CSRF-no-autosubmit\",\n    \"uncertain-receipt-review\",\n    \"success-purge\",\n    \"source-conflict\",\n    \"TTL\",\n    \"account-switch\",\n    \"tab-isolation\",\n    \"discard-purge\",\n    \"login-purge\",\n    \"logout-success\",\n    \"broadcast-logout\",\n    \"expired-session\",\n    \"live-account-switch\",\n    \"storage-denied\"\n  ],\n  \"pageErrors\": [],\n  \"writes\": 2\n}\n"
+    },
+    {
+      "suite": "preferences",
+      "command": "node tests/ui/preferences.mjs",
+      "startedAt": "2026-10-26T16:21:00.458Z",
+      "finishedAt": "2026-10-26T16:21:07.005Z",
+      "exitCode": 0,
+      "elapsedSeconds": 6.55,
+      "summary": "{\n  \"passed\": true,\n  \"widths\": 7,\n  \"pageErrors\": [],\n  \"cases\": [\n    \"reload\",\n    \"count-without-refetch\",\n    \"reset\",\n    \"fine-pointer-density\",\n    \"44px-targets\",\n    \"mobile-density\",\n    \"account-role-isolation\",\n    \"forged-pins-denied\",\n    \"invalid-version\",\n    \"denied-storage\",\n    \"no-URL-private-state\"\n  ]\n}\n"
+    },
+    {
+      "suite": "pro-7",
+      "command": "node tests/ui/pro-7.mjs",
+      "startedAt": "2026-10-26T16:21:07.006Z",
+      "finishedAt": "2026-10-26T16:21:12.532Z",
+      "exitCode": 0,
+      "elapsedSeconds": 5.53,
+      "summary": "{\"passed\":true,\"widths\":7,\"pageErrors\":[],\"flows\":[\"calendar\",\"date-range\",\"ics-download\",\"invalid-retry\",\"source-date\",\"redacted-history\",\"release-read-reload\",\"install-only-on-click\",\"no-repeat-prompt\",\"no-service-worker-cache\"]}\n"
+    },
+    {
+      "suite": "shell",
+      "command": "node tests/ui/shell.mjs",
+      "startedAt": "2026-10-26T16:21:12.532Z",
+      "finishedAt": "2026-10-26T16:21:35.249Z",
+      "exitCode": 0,
+      "elapsedSeconds": 22.72,
+      "summary": "{\"ok\":true,\"matrix\":56,\"pageErrors\":0,\"consoleErrors\":0,\"scenarios\":\"roles, long identity, text200, search count/groups, footer, collapse/storage, dialog geometry/focus/Escape/backdrop/drag/resize/route, capabilities deny/malformed/stale, touch, offline/reconnect indicator\"}\n"
+    },
+    {
+      "suite": "pro-7-production",
+      "command": "node tests/ui/pro-7-production.mjs",
+      "startedAt": "2026-10-26T16:21:35.249Z",
+      "finishedAt": "2026-10-26T16:21:36.721Z",
+      "exitCode": 0,
+      "elapsedSeconds": 1.47,
+      "summary": "{\"passed\":true,\"manifest\":true,\"PNG\":[192,512],\"widths\":7,\"serviceWorkers\":0,\"cacheStorage\":0,\"pageErrors\":[],\"note\":\"Automated metadata/launch page checks; actual OS install/upgrade remains physical UAT.\"}\n"
+    }
+  ],
+  "finishedAt": "2026-10-26T16:21:36.722Z"
+}

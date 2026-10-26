@@ -7,13 +7,13 @@
 
 | Aspek | Keterangan |
 |---|---|
-| Versi | 1.1 — checkpoint PRO-0 |
+| Versi | 1.2 — checkpoint PRO-8 |
 | Tanggal penyusunan | 26 Oktober 2026, WIB |
 | Aplikasi | SiM-Guru |
 | Repositori | `amtsnurulfalah-commits/sim-guruv2` |
 | Acuan kebutuhan | Seluruh saran pengembangan pada percakapan sebelum dokumen ini |
 | Baseline aktual PRO-0 | Main PR #68, commit 882367b52cf0b69ad743c49878dcf0972c8d3bab; lihat ../pro-0/CHECKPOINT.md |
-| Status program ini | **PRO-0 baseline teknis tersedia; UAT manusia menunggu pelaksanaan** |
+| Status program ini | **PRO-0–7 dirilis teknis; PRO-8 validasi/rilis mengikuti paket. Penerimaan manusia dan operasional parsial tetap terbuka.** |
 | Penomoran | `PRO-0` sampai `PRO-8`, terpisah dari Tahap 0–8 pembangunan ulang dan roadmap profesional terdahulu |
 | Pemilik keputusan produk | Admin/pengelola madrasah |
 | Pelaksana teknis | Pengembang/agen yang melanjutkan pekerjaan |
@@ -80,7 +80,7 @@ P1 merupakan fondasi yang didahulukan. P2 memperdalam manfaat fitur utama. P3 me
 | PRO-4 | Pengalaman mobile dan koneksi tidak stabil | PRO-1; temuan PRO-0 | Alur ponsel yang nyaman dan hasil simpan jelas |
 | PRO-5 | Transparansi honorarium dan bantuan kontekstual | PRO-1; sumber data/izin tervalidasi | Rincian dapat ditelusuri dan tindakan perbaikan jelas |
 | PRO-6 | Preferensi dan pintasan pribadi | PRO-1 dan PRO-4 | Personalisasi ringan tanpa mengubah akses |
-| PRO-7 | Implementasi teknis; penerimaan fisik/UAT terbuka | 26 Oktober 2026 | [Paket PRO-7](../pro-7/README.md) | Manifest online, agenda+ICS, audit tersamarkan, release notes; migrasi37 |
+| PRO-7 | PWA, kalender, riwayat, catatan pembaruan | PRO-1–6 diterima atau pengecualian dicatat | Fitur tambahan yang bermanfaat |
 | PRO-8 | Validasi akhir, rilis, dan evaluasi | Tahap yang hendak dirilis | Bukti penerimaan serta rencana tindak lanjut |
 
 Urutan default: **PRO-0 → PRO-1 → PRO-2 → PRO-3 → PRO-4 → PRO-5 → PRO-6 → PRO-7 → PRO-8**. Pemeriksaan aksesibilitas, keamanan, pengujian, dan dokumentasi dilakukan di setiap tahap, bukan ditunda sampai PRO-8. Tahap dapat dirilis bertahap setelah memenuhi gate yang relevan.
@@ -334,10 +334,10 @@ Checklist selesai per paket:
 | PRO-2 | Workload riwayat/jurnal tervalidasi teknis; penerapan mengikuti PR72 | Pengembang + operator | [Paket PRO-2](../pro-2/README.md) | Verifikasi rilis/migrasi; lanjut observability dan workload representatif |
 | PRO-3 | Kontrol teknis/drill native tervalidasi; penerimaan operasional parsial | Pengembang + operator/pengelola | [Paket PRO-3](../pro-3/README.md) | Tutup BKP-01/BKP-02/MAIL-01 |
 | PRO-4 | Kontrol teknis diimplementasikan; penerimaan perangkat fisik terbuka | 26 Oktober 2026 | [Paket PRO-4](../pro-4/README.md) | Offline preflight, status draft dan modal mobile; lihat batas validasi |
-| PRO-5 | Implementasi teknis; penerimaan pemahaman pengguna terbuka | 26 Oktober 2026 | [Paket PRO-5](../pro-5/README.md) | Asal perhitungan, provenance PDF, bantuan dan sumber bertanggal; PRO-5.8 belum diuji manusia |
-| PRO-6 | Pilot teknis; manfaat UAT terbuka | 26 Oktober 2026 | [Paket PRO-6](../pro-6/README.md) | Density/count/pintasan per tab-akun; PRO-6.1 belum diterima manusia |
-| PRO-7 | Implementasi teknis; penerimaan fisik/UAT terbuka | 26 Oktober 2026 | [Paket PRO-7](../pro-7/README.md) | Manifest online, agenda+ICS, audit tersamarkan, release notes; migrasi37 |
-| PRO-8 | Belum dimulai | Belum ditetapkan | — | Susun gate sejak paket pertama |
+| PRO-5 | Dirilis teknis; penerimaan manusia parsial | Pengembang + pengelola | [Paket PRO-5](../pro-5/README.md), PR#75 | Tutup gate pada paket dan evaluasi PRO-8 |
+| PRO-6 | Dirilis teknis; penerimaan manusia parsial | Pengembang + pengelola | [Paket PRO-6](../pro-6/README.md), PR#76 | Tutup gate pada paket dan evaluasi PRO-8 |
+| PRO-7 | Dirilis teknis; penerimaan manusia parsial | Pengembang + pengelola | [Paket PRO-7](../pro-7/README.md), PR#77 | Tutup gate pada paket dan evaluasi PRO-8 |
+| PRO-8 | Divalidasi teknis lokal; rilis mengikuti PR/CI; UAT/evaluasi terbuka | Pengembang + pengelola/operator | [Paket PRO-8](../pro-8/README.md) | Verifikasi rilis dan jalankan EVALUATION.md |
 
 Gunakan status: **Belum dimulai → Dianalisis → Dikerjakan → Divalidasi → Siap rilis → Dirilis**. Status **Terblokir** mencantumkan sebab, kebutuhan penyelesaian, dan penanggung jawab. Kode yang telah merged belum otomatis berarti perubahan produksi/config atau penerimaan pengguna sudah selesai.
 
@@ -390,6 +390,9 @@ Referensi repositori menjadi petunjuk untuk pemeriksaan saat eksekusi, bukan jam
 | Versi | Tanggal | Perubahan |
 |---|---|---|
 | 1.0 | 26 Oktober 2026 | Roadmap baru PRO-0–PRO-8 yang mencakup seluruh rekomendasi prioritas, UI/UX modern, dan fitur tambahan; baseline/target serta tracker belum diisi hasil eksekusi. |
+| 1.2 | 26 Oktober 2026 | Konsolidasi status PRO-5–8, bukti regresi dan backlog penerimaan manusia/operasional. |
 | 1.1 | 26 Oktober 2026 | Baseline teknis PRO-0 dan paket UAT tersedia; cohort 1 admin + 3 guru dipilih pengguna. Hasil UAT manusia tetap belum diukur. |
 
 Checkpoint program baru: [PRO-0](../pro-0/CHECKPOINT.md), [PRO-1](../pro-1/CHECKPOINT.md), [PRO-2](../pro-2/CHECKPOINT.md), [PRO-3](../pro-3/CHECKPOINT.md). Status checkbox rencana di atas dipertahankan; detail selesai/parsial mengikuti matriks paket PRO-0.
+
+Checkpoint PRO-8: [validasi/rilis/evaluasi](../pro-8/README.md). Roadmap bukan pernyataan bahwa gate UAT/backup produksi telah diterima.
