@@ -14,11 +14,12 @@ test("PRO-2 history optimization preserves results, private grants and session/o
  const service=new ActivityService({...db,transaction:work=>db.transaction(async tx=>{await tx.exec("SET LOCAL ROLE sim_guru_business");return work(tx);})});
  const filter={from:"2025-01-01",to:"2025-03-01",page:1,pageSize:25};
  const catalog=()=>db.query("select proowner,proacl::text,prosecdef,proconfig from pg_proc where oid='app.activity_read(text,text,jsonb)'::regprocedure");
- const permissions=await catalog(),before=await service.read(token,"attendance",filter);
+ const permissions=await catalog(),before=await service.read(token,"attendance",filter),deepBefore=await service.read(token,"attendance",{...filter,page:400});
  await applyMigrations(db,migrations);assert.deepEqual(await applyMigrations(db,migrations),[]);
  await t.test("12,060-row response and routine owner/grants are identical",async()=>{
   assert.deepEqual(await service.read(token,"attendance",filter),before);
   assert.deepEqual(await catalog(),permissions);
+  assert.deepEqual(await service.read(token,"attendance",{...filter,page:400}),deepBefore);
   const page=await service.read(token,"attendance",{...filter,page:400}) as {items:unknown[];total:number};assert.equal(page.total,12060);assert.equal(page.items.length,25);
  });
  await t.test("non-admin requests remain owner-scoped, including an explicit foreign filter",async()=>{

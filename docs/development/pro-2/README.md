@@ -6,6 +6,7 @@ Scope: riwayat kegiatan/kehadiran besar, konkurensi akun yang sama, serta pemuat
 
 - `app.activity_read` memanggil `app.actor_is_admin()` pada setiap baris predicate count/page. Helper tersebut melakukan resolve_actor, onboarding/session/maintenance checks; pengulangan pada 12.060 baris memperpanjang transaksi. `lifecycle_self` menahan lock akun/sesi sampai query selesai, sehingga request serentak akun sama dapat menunggu dan terkena lock_timeout3s.
 - Migrasi menghitung keputusan admin sekali setelah activity_guard setiap RPC. Guard, account/session locks, row-specific piket/committee predicates, owner/grants, search_path, limit/rentang/filter dan payload tetap. Ini memo lokal transaksi, bukan cache lintas permintaan. Pencabutan/role/status diperiksa ulang pada request berikutnya.
+- Pagination kehadiran dimaterialisasi sebagai ID+tanggal terlebih dahulu, lalu attendance_dto hanya dibentuk untuk maksimal pageSize baris. Ini menghindari pembentukan detail untuk ribuan baris yang dibuang oleh OFFSET. Payload/urutan/count dan authorization predicates identik; tes membandingkan first/deep page pada fixture yang sama.
 - Riwayat jurnal sebelumnya dipanggil saat halaman Input dibuka dan pencarian berubah walaupun Riwayat tersembunyi. Sekarang dimuat saat tab Riwayat dipilih; debounce/abort/response guard tetap. Refresh Input tidak memuat riwayat kecuali edit/delete memerlukan verifikasi hasil. Hasil lama diinvalidasi setelah refresh; tidak menampilkan snapshot sebagai data baru.
 - Tidak menambah indeks sebelum ada bukti rencana/biaya yang mengharuskannya. Tidak menaikkan statement_timeout10s/lock_timeout3s atau menghapus lock untuk membuat profil lulus.
 
@@ -16,6 +17,12 @@ Scope: riwayat kegiatan/kehadiran besar, konkurensi akun yang sama, serta pemuat
 - `scripts/pro2-native-profile.ts`: PostgreSQL disposable loopback yang harus kosong bernama pro2_test,201users/12060attendance, pool4, global first/deep(page400)/filtered,20request per skenario per phase, satu warm-up tidak masuk percentiles. Melalui ActivityService dan adapter bisnis existing dengan timeout asli. Baseline dulu, migrasi, sesudah pada dataset identik; fingerprint hasil harus sama. EXPLAIN ANALYZE BUFFERS count predicate terpisah dicatat untuk diagnosis, bukan dianggap plan lengkap RPC.
 - Budget teknis uji: setelah perubahan,0error dan p95<5000ms pada masing-masing workload; lebih ketat daripada statement_timeout10s. p50/p95 menggunakan nearest-rank dari sampel sukses, errors/timeout dicatat terpisah. Budget ini untuk fixture CI, bukan SLO yang sudah diterima pengguna.
 - CI native menghasilkan PRO2_PROFILE_RESULT dan artefak JSON; bukti native final dicatat sesudah CI. CPU/RSS adalah proses klien benchmark, bukan CPU PostgreSQL. Wall time memasukkan warm-up; latensi sampel tidak.
+
+## Hasil native diagnosis awal
+
+[Native awal](native-initial-results.json), PG16.15, CI run40281421411/job121435350528 pada23e2232 (memo admin saja): global-first15/20sukses,5locktimeout, p95sukses7152ms →20/20sukses,0error,p9525ms. Global-deep6/20sukses,14lock/statementtimeout,p95sukses9842ms →20/20sukses,0error,p952619ms. Filtered20/20sukses kedua phase,p95117→44ms. Percentiles sebelum mengecualikan request gagal sehingga bukan ukuran semua request.
+
+Count predicate diagnostic2359,916→1,772ms. Sisa biaya deep page menjadi bukti untuk follow-up bounded DTO dalam migrasi yang belum diterapkan produksi. Hasil final setelah bounded DTO akan dicatat terpisah; jangan menyebut angka intermediate ini sebagai head final.
 
 ## Observasi produksi dan batas scope
 
