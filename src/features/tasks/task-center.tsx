@@ -11,7 +11,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { Pagination } from "@/components/ui/pagination";
 import { FeatureState, EmptyState } from "@/components/feedback/feature-state";
 
-export function TaskCenter({ compact = false, date }: { compact?: boolean; date?: string }) {
+export function TaskCenter({ compact = false, date, embedded = false }: { compact?: boolean; date?: string; embedded?: boolean }) {
   const preferences = useWorkspacePreferences();
   const parse = useCallback((raw: unknown) => {
     const parsed = tasksSchema.safeParse(raw);
@@ -60,10 +60,10 @@ export function TaskCenter({ compact = false, date }: { compact?: boolean; date?
     listTitle.current?.scrollIntoView({ block: "start" });
   }
   return (
-    <section className={`${compact ? "ui-panel" : "ui-workspace-pilot"} min-w-0 space-y-5 [overflow-wrap:anywhere]`} aria-label="Pusat tugas">
+    <section className={`${embedded ? "" : compact ? "ui-panel" : "ui-workspace-pilot"} min-w-0 space-y-5 [overflow-wrap:anywhere]`} aria-label="Pusat tugas">
       <header className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-start">
         <div className="min-w-0">
-          <h2 className="text-xl font-bold">{compact ? "Tugas hari ini dan tertunda" : "Daftar tindak lanjut"}</h2>
+          {!embedded && <h2 className="text-xl font-bold">{compact ? "Tugas hari ini dan tertunda" : "Daftar tindak lanjut"}</h2>}
           <p className="mt-2 text-sm leading-6 text-muted-foreground">Status mengikuti kegiatan sumber, bukan penilaian kinerja.</p>
         </div>
         <Button type="button" variant="outline" className="w-full sm:w-auto sm:shrink-0" disabled={loading}

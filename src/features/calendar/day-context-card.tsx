@@ -19,7 +19,7 @@ const reasonLabels: Record<string, string> = {
     "Tanggal ditandai sebagai hari libur; KBM dan ujian reguler dinonaktifkan.",
   SUNDAY_DEFAULT_OFF: "Hari Minggu tidak otomatis menjadi hari kegiatan.",
 };
-export function DayContextCard({ date = wibDate() }: { date?: string }) {
+export function DayContextCard({ date = wibDate(), embedded = false }: { date?: string; embedded?: boolean }) {
   const titleId = useId();
   const parse = useCallback((raw: unknown) => {
     const parsed = cardDaySchema.safeParse(raw);
@@ -29,12 +29,13 @@ export function DayContextCard({ date = wibDate() }: { date?: string }) {
   const {value: day, error, loading, refresh} = useReadResource("/api/day-context?date=" + date, parse);
   return (
     <section
-      aria-labelledby={titleId}
-      className="min-w-0 space-y-3 rounded-2xl border bg-card p-4 sm:p-6"
+      aria-labelledby={embedded ? undefined : titleId}
+      aria-label={embedded ? "Konteks hari ini" : undefined}
+      className={embedded ? "min-w-0 space-y-3" : "min-w-0 space-y-3 rounded-2xl border bg-card p-4 sm:p-6"}
     >
-      <h2 id={titleId} className="text-lg font-bold">
+      {!embedded && <h2 id={titleId} className="text-lg font-bold">
         Konteks hari ini
-      </h2>
+      </h2>}
       {day && loading && <p role="status" className="text-sm text-muted-foreground">Memperbarui konteks hari…</p>}
       {day ? (
         <>

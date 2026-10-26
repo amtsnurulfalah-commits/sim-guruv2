@@ -16,7 +16,9 @@ try {
  await page.route('**/api/dashboard*',summaryRoute);
  await page.route('**/api/operations/announcements',route=>route.fulfill({contentType:'application/json',body:JSON.stringify({ok:true,data:items})}));
  await page.route('**/api/operations/dismiss',async route=>{dismissCount++;await new Promise(r=>setTimeout(r,400));items=items.filter(item=>item.id!==route.request().postDataJSON().id);await route.fulfill({contentType:'application/json',body:JSON.stringify({ok:true,data:{}})});});
- const go=role=>{console.log('Dashboard scenario',role,summary.tasks?.length,summary.planned?.length,apiError);if(role==='guru')summary={...summary,admin:null};return page.goto(`http://127.0.0.1:4319/?view=dashboard&role=${role}&path=/dashboard`);};
+ const go=async role=>{console.log('Dashboard scenario',role,summary.tasks?.length,summary.planned?.length,apiError);if(role==='guru')summary={...summary,admin:null};await page.goto(`http://127.0.0.1:4319/?view=dashboard&role=${role}&path=/dashboard`);
+ for(const title of ['Konteks hari ini','Tugas hari ini dan tertunda']){const accordion=page.locator('details').filter({has:page.getByRole('heading',{name:title,exact:true})});const trigger=accordion.locator(':scope > summary');assert.equal(await accordion.evaluate(n=>n.open),false);await trigger.focus();await page.keyboard.press('Enter');assert.equal(await accordion.evaluate(n=>n.open),true);await page.keyboard.press('Space');assert.equal(await accordion.evaluate(n=>n.open),false);await trigger.click();assert.equal(await accordion.evaluate(n=>n.open),true);}
+ };
  const noOverflow=async()=>assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
  for(const role of ['admin','guru'])for(const width of [280,320,375,768,1024,1440,1920]){
   summary={...base,admin:role==='admin'?{activeUsers:1234,failedMessages:4,failedJobs:1}:null};

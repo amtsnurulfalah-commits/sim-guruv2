@@ -5,8 +5,9 @@ import { useDashboardDay } from "./use-dashboard-day";
 import Link from "next/link";
 import { LiveSummary } from "./live-summary";
 import { DayContextCard } from "@/features/calendar/day-context-card";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { ReactNode } from "react";
 import type { dashboardDto } from "@/server/dashboard/query";
 export function DashboardView({
   data,
@@ -35,8 +36,12 @@ export function DashboardView({
           <Button asChild><Link prefetch={false} href={"/jurnal?date=" + date}>Isi jurnal</Link></Button>
         </nav>
       </header>
-      <TaskCenter key={data.user.id + date + "-tasks"} compact date={date} />
-      <DayContextCard key={data.user.id + date} date={date} />
+      <DashboardSection title="Tugas hari ini dan tertunda">
+        <TaskCenter key={data.user.id + date + "-tasks"} compact date={date} embedded />
+      </DashboardSection>
+      <DashboardSection title="Konteks hari ini">
+        <DayContextCard key={data.user.id + date} date={date} embedded />
+      </DashboardSection>
       <Announcements key={data.user.id} refreshKey={date} />
       <LiveSummary key={data.user.id + date} date={date} userId={data.user.id} role={data.user.role} />
       <section
@@ -75,4 +80,15 @@ export function DashboardView({
 
     </div>
   );
+}
+
+/** Native disclosure keeps loaded data/state mounted while the section is collapsed. */
+function DashboardSection({title,children}:{title:string;children:ReactNode}) {
+  return <details className="group/dashboard-section min-w-0 rounded-2xl border bg-card">
+    <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 rounded-2xl p-4 focus-visible:outline-2 focus-visible:outline-ring sm:p-6 [&::-webkit-details-marker]:hidden">
+      <h2 className="min-w-0 text-lg font-bold">{title}</h2>
+      <ChevronDown aria-hidden="true" className="size-5 shrink-0 transition-transform group-open/dashboard-section:rotate-180 motion-reduce:transition-none" />
+    </summary>
+    <div className="min-w-0 border-t p-4 sm:p-6">{children}</div>
+  </details>;
 }
