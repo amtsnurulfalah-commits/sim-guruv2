@@ -36,3 +36,15 @@ test("Honor export is a real OOXML ZIP, preserves decimal text and never turns n
     false,
   );
 });
+
+test("honor PDF uses final snapshot values and provenance without mutating the receipt", async () => {
+  const { renderHonorPdf } = await import("../../src/server/finance/export");
+  const { syntheticHonorStatement } = await import("../helpers/honor-snapshot");
+  const { mkdir, writeFile } = await import("node:fs/promises");
+  const statement = syntheticHonorStatement(), original = structuredClone(statement);
+  const data = await renderHonorPdf(statement);
+  assert.equal(data.subarray(0, 4).toString(), "%PDF");
+  assert.deepEqual(statement, original);
+  await mkdir("/tmp/sim-guru-pro5", { recursive: true });
+  await writeFile("/tmp/sim-guru-pro5/honor.pdf", data);
+});

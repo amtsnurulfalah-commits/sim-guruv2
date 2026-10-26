@@ -139,6 +139,10 @@ export type HonorSnapshot = {
     headmaster: string;
     headmasterNip: string | null;
   } | null;
+  rateId?: string | null | undefined;
+  rateMissing?: boolean | undefined;
+  ratePolicy?: string | undefined;
+  allowancePolicy?: string | undefined;
   rate: string;
   totalJtm: string;
   teachingRaw: string;

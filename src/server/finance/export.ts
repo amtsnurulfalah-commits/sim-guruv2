@@ -1,4 +1,5 @@
 import "server-only";
+import { honorLineContext, honorTransportFacts, financeComponentLabel, honorExplanation, honorLineReferences, honorModeText } from "../../lib/finance/provenance";
 import PDFDocument from "pdfkit";
 import { join } from "node:path";
 import type { HonorHistory, HonorStatement } from "../../lib/finance/schemas";
@@ -48,6 +49,10 @@ export async function renderHonorPdf(
     ["TOTAL DIBAYARKAN (rupiah)", s.total],
   ])
     doc.fontSize(11).text(label + ": " + value);
+  doc.moveDown().fontSize(9).text(honorModeText(s)).text(honorExplanation)
+    .text("Batas tanggal perhitungan: " + s.cutoff + " | Rumus: " + s.formulaVersion + " | Kebijakan: " + s.policyVersion)
+    .text("Honor mentah: " + s.teachingRaw + " | Transport mentah: " + s.transportRaw)
+    .text("Referensi tarif JTM: " + (s.rateId ?? "Tidak tercantum pada rincian lama"));
   doc.moveDown().fontSize(10).text("Rincian sumber");
   for (const line of s.lines) {
     if (doc.y > 730) doc.addPage();
@@ -56,13 +61,14 @@ export async function renderHonorPdf(
       .text(
         [
           line.date,
-          line.component,
+          financeComponentLabel(line.component),
           line.name,
           line.jtm ? "JTM " + line.jtm : "",
           line.amount ? "Rupiah " + line.amount : "",
           line.raw ? "Nilai mentah " + line.raw : "",
           line.delta ? "Selisih " + line.delta : "",
-          line.sourceRef,
+          line.component === "TRANSPORT" && typeof line.rate === "string" && /^-?\d+(\.\d+)?$/.test(line.rate) ? "Tarif transport " + line.rate : "",
+          ...[...honorLineContext(line), ...honorTransportFacts(line), ...honorLineReferences(line)].map(([label, value]) => label + ": " + value),
         ]
           .filter(Boolean)
           .join(" | "),

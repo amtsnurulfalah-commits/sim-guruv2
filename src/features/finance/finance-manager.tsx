@@ -1,4 +1,6 @@
 "use client";
+import { HonorProvenance, HonorLineOrigin } from "./honor-provenance";
+import { financeComponentLabel } from "@/lib/finance/provenance";
 import { ApiRequestError, downloadFile } from "@/lib/feedback/api-error";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
@@ -50,23 +52,6 @@ import {
   formatHonorAmount,
 } from "../../lib/finance/contracts";
 const reason: Field = { key: "reason", label: "Alasan (5–500 karakter)" };
-const labels: Record<string, string> = {
-  KBM: "KBM",
-  PIKET: "Piket",
-  UPACARA: "Upacara",
-  EXAM_SUPERVISOR: "Pengawas ujian",
-  EXAM_COMMITTEE: "Panitia ujian",
-  PARTIAL_SUB_KBM: "Relokasi KBM",
-  PARTIAL_SUB_PIKET: "Relokasi piket",
-  PARTIAL_SUB_EXAM: "Relokasi ujian",
-  EVENT: "Jurnal acara",
-  HOLIDAY_BONUS: "Bonus libur",
-  HOLIDAY_PENDING: "Proyeksi libur",
-  REVERSAL: "Pembalikan",
-  ALLOWANCE: "Tunjangan",
-  TRANSPORT: "Transportasi",
-  CORRECTION: "Koreksi",
-};
 function Breakdown({ s, hidden }: { s: HonorSnapshot; hidden: boolean }) {
   return (
     <div className="min-w-0 space-y-3 [overflow-wrap:anywhere]">
@@ -95,6 +80,7 @@ function Breakdown({ s, hidden }: { s: HonorSnapshot; hidden: boolean }) {
           </div>
         ))}
       </dl>
+      <HonorProvenance snapshot={s} hidden={hidden} />
       <details>
         <summary className="cursor-pointer">
           Rincian sumber ({s.lines.length})
@@ -107,6 +93,7 @@ function Breakdown({ s, hidden }: { s: HonorSnapshot; hidden: boolean }) {
                 <th>Sumber</th>
                 <th>JTM</th>
                 <th>Rupiah mentah</th>
+                <th>Asal dan penelusuran</th>
               </tr>
             </thead>
             <tbody>
@@ -123,13 +110,14 @@ function Breakdown({ s, hidden }: { s: HonorSnapshot; hidden: boolean }) {
                 >
                   <td className="p-2">{l.date ?? "—"}</td>
                   <td>
-                    {labels[l.component] ?? l.component}
+                    {financeComponentLabel(l.component)}
                     {l.name ? " / " + l.name : ""}
                   </td>
                   <td>{l.jtm ?? "—"}</td>
                   <td>
                     {hidden ? "••••" : (l.amount ?? l.raw ?? l.delta ?? "—")}
                   </td>
+                  <td><HonorLineOrigin line={l} hidden={hidden} /></td>
                 </tr>
               ))}
             </tbody>
@@ -994,7 +982,7 @@ export function FinanceManager({
                       <tr key={h.sourceKey} className="border-t">
                         <td>{h.date}</td>
                         <td>{h.name}</td>
-                        <td>{labels[h.kind] ?? h.kind}</td>
+                        <td>{financeComponentLabel(h.kind)}</td>
                         <td>{h.jtm}</td>
                         <td>
                           {{

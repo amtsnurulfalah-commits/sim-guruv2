@@ -237,6 +237,20 @@ try {
   await btn("Buka slip").click();
   await page.locator("#honor-slip").waitFor();
   await ready();
+  const slipRegion = page.locator("#honor-slip");
+  await slipRegion.locator("summary").filter({ hasText: "Asal perhitungan" }).click();
+  await slipRegion.getByText("Final — rincian saat diterbitkan", { exact: true }).waitFor();
+  await slipRegion.getByText("Referensi versi tarif JTM", { exact: true }).waitFor();
+  await slipRegion.locator("summary").filter({ hasText: "Rincian sumber" }).click();
+  await slipRegion.locator("summary").filter({ hasText: "Telusuri sumber" }).first().click();
+  const sourceLinks = await slipRegion.locator('a[href*="?date="]').evaluateAll(nodes => nodes.map(n => n.getAttribute("href")));
+  await slipRegion.getByText("Referensi sumber", { exact: true }).first().waitFor();
+  // This SQL fixture contains holiday/reversal lines: keep their references without inventing a destination.
+  await slipRegion.getByText("Gunakan referensi ini saat mengajukan koreksi pada slip atau menghubungi administrator.", { exact: true }).first().waitFor();
+  assert.ok(sourceLinks.every(href => /^\/(jurnal|piket|upacara|ujian|acara\/jurnal|kehadiran)\?date=\d{4}-\d{2}-\d{2}(?:&section=history)?$/.test(href)));
+  for (const width of [320, 768, 1440]) { await page.setViewportSize({ width, height: 800 }); await overflow(); }
+  await slipRegion.locator("summary").filter({ hasText: "Rincian sumber" }).click();
+  await slipRegion.locator("summary").filter({ hasText: "Asal perhitungan" }).click();
   await page
     .getByText(/Rp 30.003/)
     .first()

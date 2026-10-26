@@ -194,16 +194,16 @@ Alur jadwal, jurnal, BAP, tugas, dan slip lulus matriks perangkat yang disepakat
 
 ### A. Transparansi honorarium
 
-- [ ] **PRO-5.1** Tinjau rincian slip yang sudah tersedia; identifikasi informasi yang masih sulit dipahami, bukan langsung membuat kalkulator baru.
-- [ ] **PRO-5.2** Sediakan alur “Asal perhitungan”: slip → komponen → kegiatan/penugasan → JTM, penyesuaian, reversal, dan koreksi terkait sesuai kewenangan.
-- [ ] **PRO-5.3** Bedakan nilai proyeksi dan final. Jelaskan tanggal/periode berlaku dan sumber tarif dengan bahasa pengguna.
-- [ ] **PRO-5.4** Cocokkan rincian layar, ekspor, dan hasil engine yang sama. Nilai final berasal dari snapshot yang sah dan tidak dihitung ulang menggunakan konfigurasi terbaru.
+- [x] **PRO-5.1** Tinjau rincian slip yang sudah tersedia; identifikasi informasi yang masih sulit dipahami, bukan langsung membuat kalkulator baru.
+- [x] **PRO-5.2** Sediakan alur “Asal perhitungan”: slip → komponen → kegiatan/penugasan → JTM, penyesuaian, reversal, dan koreksi terkait sesuai kewenangan.
+- [x] **PRO-5.3** Bedakan nilai proyeksi dan final. Jelaskan tanggal/periode berlaku dan sumber tarif dengan bahasa pengguna.
+- [x] **PRO-5.4** Cocokkan rincian layar, ekspor, dan hasil engine yang sama. Nilai final berasal dari snapshot yang sah dan tidak dihitung ulang menggunakan konfigurasi terbaru.
 
 ### B. Bantuan sesuai konteks
 
-- [ ] **PRO-5.5** Tampilkan contoh isian, aturan singkat, dan bantuan di dekat field yang relevan. Hindari instruksi panjang yang muncul berulang di semua halaman.
-- [ ] **PRO-5.6** Hubungkan penolakan dengan field atau aturan yang tidak sesuai, langkah perbaikan, dan kode referensi bantuan bila diperlukan.
-- [ ] **PRO-5.7** Dari pusat tugas, laporan, atau kendala, arahkan pengguna ke sumber/tanggal/filter/bagian yang relevan. Tautan tidak boleh melewati izin atau membawa informasi sensitif pada URL.
+- [x] **PRO-5.5** Tampilkan contoh isian, aturan singkat, dan bantuan di dekat field yang relevan. Hindari instruksi panjang yang muncul berulang di semua halaman.
+- [x] **PRO-5.6** Hubungkan penolakan dengan field atau aturan yang tidak sesuai, langkah perbaikan, dan kode referensi bantuan bila diperlukan.
+- [x] **PRO-5.7** Dari pusat tugas, laporan, atau kendala, arahkan pengguna ke sumber/tanggal/filter/bagian yang relevan. Tautan tidak boleh melewati izin atau membawa informasi sensitif pada URL.
 - [ ] **PRO-5.8** Uji apakah pengguna dapat memahami rincian dan menyelesaikan masalah tanpa bantuan tambahan.
 
 ### Hasil dan kriteria selesai
@@ -334,7 +334,7 @@ Checklist selesai per paket:
 | PRO-2 | Workload riwayat/jurnal tervalidasi teknis; penerapan mengikuti PR72 | Pengembang + operator | [Paket PRO-2](../pro-2/README.md) | Verifikasi rilis/migrasi; lanjut observability dan workload representatif |
 | PRO-3 | Kontrol teknis/drill native tervalidasi; penerimaan operasional parsial | Pengembang + operator/pengelola | [Paket PRO-3](../pro-3/README.md) | Tutup BKP-01/BKP-02/MAIL-01 |
 | PRO-4 | Kontrol teknis diimplementasikan; penerimaan perangkat fisik terbuka | 26 Oktober 2026 | [Paket PRO-4](../pro-4/README.md) | Offline preflight, status draft dan modal mobile; lihat batas validasi |
-| PRO-5 | Belum dimulai | Belum ditetapkan | — | Tinjau rincian/hambatan yang sudah ada |
+| PRO-5 | Implementasi teknis; penerimaan pemahaman pengguna terbuka | 26 Oktober 2026 | [Paket PRO-5](../pro-5/README.md) | Asal perhitungan, provenance PDF, bantuan dan sumber bertanggal; PRO-5.8 belum diuji manusia |
 | PRO-6 | Belum dimulai | Belum ditetapkan | — | Pilih preferensi berdasarkan UAT |
 | PRO-7 | Belum dimulai | Belum ditetapkan | — | Nilai prasyarat setiap paket tambahan |
 | PRO-8 | Belum dimulai | Belum ditetapkan | — | Susun gate sejak paket pertama |
