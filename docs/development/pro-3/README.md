@@ -31,4 +31,4 @@ Storage mempunyai0bucket/0object dan referensi foto eksternal0 saat pemeriksaan.
 | 3.7 | Drill native disposable wajib lulus | CI pg_dump/restore riil, manifest/isi/schema/ACL/migrasi/isolation diperiksa; bukan restore produksi |
 | 3.8 | Pengukuran sintetis + usulan | RPO/RTO produksi belum disepakati/diukur; jangan menutup tahap penuh hanya dari drill |
 
-Lihat [runbook](RUNBOOK.md) dan [checkpoint](CHECKPOINT.md). Bukti native dan CI diisi setelah job pada source final selesai. Merge/penerapan diverifikasi melalui PR paket, ledger dan deployment aktual; jangan menganggap rencana sebagai hasil produksi.
+Lihat [runbook](RUNBOOK.md) dan [checkpoint](CHECKPOINT.md). Bukti native runtime tersedia di [VALIDATION.md](VALIDATION.md) dan native-recovery-results.json; CI head final menjadi gate merge. Merge/penerapan diverifikasi melalui PR paket, ledger dan deployment aktual; jangan menganggap rencana sebagai hasil produksi.
