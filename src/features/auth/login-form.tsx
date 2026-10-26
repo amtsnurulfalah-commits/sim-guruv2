@@ -202,7 +202,7 @@ export function LoginForm({ captcha = { enabled: false, siteKey: null } }: { cap
           disabled={busy}
         />
       </div>
-      {captcha.enabled && <RecaptchaField siteKey={captcha.siteKey} attempt={captchaAttempt} onToken={setCaptchaToken} busy={busy} />}
+      {captcha.enabled && <RecaptchaField key={captchaAttempt} siteKey={captcha.siteKey} attempt={captchaAttempt} onToken={setCaptchaToken} busy={busy} />}
       <Button className="w-full" type="submit" disabled={busy || preparing || !csrf || (captcha.enabled && !captchaToken)}>
         <ActionIcon action="access" />
         {busy
