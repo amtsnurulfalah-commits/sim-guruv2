@@ -1,5 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { Check, CircleAlert, Clock3, LoaderCircle, RotateCw, ShieldCheck } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useEffect, useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 type RecaptchaApi = {
@@ -53,9 +55,12 @@ export function RecaptchaField({ siteKey, attempt, onToken, busy }: {
   busy: boolean;
 }) {
   const host = useRef<HTMLDivElement>(null);
+  const descriptionId = useId();
   const [revision, setRevision] = useState(0);
   const [status, setStatus] = useState("Memuat verifikasi keamanan…");
-  const [failed, setFailed] = useState(false);
+  const [phase, setPhase] = useState<"loading" | "ready" | "verified" | "expired" | "error">("loading");
+  const failed = phase === "error" || !siteKey;
+  const verified = phase === "verified";
   useEffect(() => {
     if (!siteKey || !host.current) return;
     let active = true;
@@ -73,27 +78,28 @@ export function RecaptchaField({ siteKey, attempt, onToken, busy }: {
         callback: token => {
           if (!active) return;
           onToken(token);
-          setFailed(false);
+          setPhase("verified");
           setStatus("Verifikasi selesai. Anda dapat menekan Masuk.");
         },
         "expired-callback": () => {
           if (!active) return;
           onToken("");
+          setPhase("expired");
           setStatus("Verifikasi kedaluwarsa. Centang reCAPTCHA kembali.");
         },
         "error-callback": () => {
           if (!active) return;
           onToken("");
-          setFailed(true);
+          setPhase("error");
           setStatus("reCAPTCHA tidak dapat terhubung. Periksa koneksi lalu muat ulang verifikasi.");
         },
       });
       setStatus("Centang reCAPTCHA untuk melanjutkan.");
-      setFailed(false);
+      setPhase("ready");
     }).catch(() => {
       if (!active) return;
       onToken("");
-      setFailed(true);
+      setPhase("error");
       setStatus("reCAPTCHA gagal dimuat. Periksa koneksi atau pemblokir konten lalu coba kembali.");
     });
     return () => {
@@ -102,19 +108,54 @@ export function RecaptchaField({ siteKey, attempt, onToken, busy }: {
       node.remove();
     };
   }, [siteKey, attempt, revision, onToken]);
+  const StatusIcon = failed ? CircleAlert : verified ? Check : phase === "expired" ? Clock3 : phase === "loading" ? LoaderCircle : ShieldCheck;
+  const badge = failed ? "Perlu perhatian" : verified ? "Terverifikasi" : phase === "expired" ? "Kedaluwarsa" : phase === "loading" ? "Menyiapkan" : "Belum diverifikasi";
   return (
-    <section aria-label="Verifikasi keamanan" className="min-w-0 space-y-3 rounded-xl border bg-muted/30 p-3">
-      <h2 className="text-sm font-semibold">Verifikasi keamanan</h2>
-      <div ref={host} className="min-w-0" inert={busy} />
-      <p role={failed || !siteKey ? "alert" : "status"} className="text-xs leading-6">
-        {siteKey ? status : "Verifikasi keamanan belum dikonfigurasi. Hubungi administrator madrasah."}
-      </p>
-      {failed && siteKey && <Button type="button" variant="outline" disabled={busy} onClick={() => {
-        onToken(""); setStatus("Memuat verifikasi keamanan…"); setFailed(false); setRevision(value => value + 1);
-      }}>Muat ulang verifikasi</Button>}
-      <p className="text-xs leading-6 text-muted-foreground">
-        reCAPTCHA menggunakan layanan Google. <a className="underline" href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privasi</a> dan <a className="underline" href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Persyaratan Layanan</a> Google berlaku.
-      </p>
+    <section
+      aria-label="Verifikasi keamanan"
+      aria-describedby={descriptionId}
+      className={cn(
+        "@container/captcha min-w-0 rounded-2xl border bg-card shadow-sm transition-colors motion-reduce:transition-none",
+        failed ? "border-[var(--error-border)]" : verified ? "border-[var(--success-border)]" : "border-border",
+      )}
+    >
+      <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-b px-4 py-3 @[22rem]/captcha:grid-cols-[auto_minmax(0,1fr)_auto]">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-accent text-primary">
+          <ShieldCheck className="size-4" aria-hidden="true" />
+        </span>
+        <h2 className="min-w-0 flex-1 text-sm font-semibold">Verifikasi keamanan</h2>
+        <span aria-hidden="true" className={cn(
+          "col-span-2 inline-flex max-w-full items-center justify-self-start gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium @[22rem]/captcha:col-span-1",
+          failed ? "bg-[var(--error-surface)] text-destructive" : verified ? "bg-[var(--success-surface)] text-[var(--success)]" : phase === "expired" ? "bg-[var(--warning-surface)] text-[var(--warning)]" : "bg-muted text-muted-foreground",
+        )}>
+          <StatusIcon className={cn("size-3.5 shrink-0", phase === "loading" && !failed && "animate-spin motion-reduce:animate-none")} />
+          {badge}
+        </span>
+      </div>
+      <div className="grid min-w-0 items-center gap-4 p-4 @[22rem]/captcha:grid-cols-[auto_minmax(0,1fr)]">
+        <div className={cn("relative min-h-[144px] w-[164px] justify-self-center", !siteKey && "hidden")}>
+          <div ref={host} inert={busy} />
+          {phase === "loading" && siteKey && <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-muted/70">
+            <LoaderCircle className="size-6 animate-spin text-primary motion-reduce:animate-none" />
+          </div>}
+        </div>
+        <div className={cn("min-w-0 space-y-2 text-center @[22rem]/captcha:text-left", !siteKey && "@[22rem]/captcha:col-span-2")}>
+          <p className="text-sm font-semibold">
+            {failed ? "Verifikasi belum tersedia" : verified ? "Anda siap masuk" : phase === "expired" ? "Ulangi verifikasi" : "Satu langkah lagi"}
+          </p>
+          <p id={descriptionId} role={failed ? "alert" : "status"} className="text-xs leading-6 text-muted-foreground">
+            {siteKey ? status : "Verifikasi keamanan belum dikonfigurasi. Hubungi administrator madrasah."}
+          </p>
+          {phase === "error" && siteKey && <Button type="button" variant="outline" className="w-full text-xs @[22rem]/captcha:w-auto" disabled={busy} onClick={() => {
+            onToken(""); setStatus("Memuat verifikasi keamanan…"); setPhase("loading"); setRevision(value => value + 1);
+          }}>
+            <RotateCw aria-hidden="true" />Muat ulang verifikasi
+          </Button>}
+        </div>
+      </div>
+      <div className="border-t bg-muted/30 px-4 py-3 text-xs leading-6 text-muted-foreground">
+        Dilindungi reCAPTCHA. <a className="rounded-sm underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring" href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privasi</a> dan <a className="rounded-sm underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring" href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Persyaratan Layanan</a> Google berlaku.
+      </div>
     </section>
   );
 }
