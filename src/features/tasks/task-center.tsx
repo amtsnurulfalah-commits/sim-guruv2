@@ -50,7 +50,7 @@ export function TaskCenter({ compact = false, date }: { compact?: boolean; date?
     listTitle.current?.scrollIntoView({ block: "start" });
   }
   return (
-    <section className="ui-panel min-w-0 space-y-5 [overflow-wrap:anywhere]" aria-label="Pusat tugas">
+    <section className={`${compact ? "ui-panel" : "ui-workspace-pilot"} min-w-0 space-y-5 [overflow-wrap:anywhere]`} aria-label="Pusat tugas">
       <header className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-start">
         <div className="min-w-0">
           <h2 className="text-xl font-bold">{compact ? "Tugas hari ini dan tertunda" : "Daftar tindak lanjut"}</h2>
@@ -62,7 +62,7 @@ export function TaskCenter({ compact = false, date }: { compact?: boolean; date?
         </Button>
       </header>
       {!data ? <FeatureState headingLevel={2} error={error} label="Memuat pusat tugas…" retry={refresh}/> : <>
-        <p role="status" className="text-sm text-muted-foreground">
+        <p role="status" className="ui-feedback-neutral text-sm text-muted-foreground">
           {loading ? "Memperbarui tugas… · " : ""}Diperbarui {new Date(data.generatedAt).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" })} WIB · {data.items.length} tugas aktif
         </p>
         {!compact && <>
@@ -72,7 +72,7 @@ export function TaskCenter({ compact = false, date }: { compact?: boolean; date?
                 <dt className="text-sm text-muted-foreground">{item.label}</dt><dd className="text-xl font-bold tabular-nums sm:mt-2 sm:text-2xl">{item.value}</dd>
               </div>)}
           </dl>
-          <div role="search" aria-label="Filter pusat tugas" className="grid min-w-0 gap-4 rounded-xl border bg-muted/20 p-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div role="search" aria-label="Filter pusat tugas" className="grid min-w-0 gap-4 rounded-xl bg-muted/40 p-4 sm:grid-cols-2 xl:grid-cols-3">
             <label className="min-w-0 space-y-2 text-sm sm:col-span-2 xl:col-span-1">
               <span className="flex items-center gap-2 font-medium"><Search aria-hidden="true" className="size-4"/>Cari tugas</span>
               <input type="search" className="ui-control" maxLength={200} placeholder="Judul/keterangan/tanggal" value={query}
@@ -93,10 +93,10 @@ export function TaskCenter({ compact = false, date }: { compact?: boolean; date?
         </>}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 ref={listTitle} tabIndex={-1} className="scroll-mt-24 rounded font-semibold focus-visible:outline-2 focus-visible:outline-ring">Daftar tugas aktif</h3>
-          <p role="status" className="text-sm text-muted-foreground">{tasks.length ? `Menampilkan ${(activePage - 1) * size + 1}–${Math.min(activePage * size, tasks.length)} dari ${tasks.length} tugas` : "0 tugas ditampilkan"}</p>
+          <p role="status" className="ui-feedback-neutral text-sm text-muted-foreground">{tasks.length ? `Menampilkan ${(activePage - 1) * size + 1}–${Math.min(activePage * size, tasks.length)} dari ${tasks.length} tugas` : "0 tugas ditampilkan"}</p>
         </div>
         {!tasks.length && <div className="space-y-3">
-          <EmptyState title="Tidak ada tugas pada tampilan ini" description={hasFilters
+          <EmptyState title={hasFilters ? "Tidak ada tugas yang cocok" : "Belum ada tugas aktif"} description={hasFilters
             ? "Tidak ada tugas yang cocok dengan pencarian atau filter. Hapus filter untuk memeriksa semua tugas aktif."
             : "Tugas yang selesai atau tidak lagi berlaku hilang setelah data dimuat ulang. Jadwal yang akan datang dapat diperiksa di menu Jadwal."}/>
           {!hasFilters && <Button asChild variant="outline"><Link prefetch={false} href="/jadwal">Periksa jadwal</Link></Button>}

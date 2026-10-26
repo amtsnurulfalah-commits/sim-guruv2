@@ -181,11 +181,11 @@ try {
   );
   // Search and type/status filters combine without changing server order or source links.
   await page.getByLabel("Cari tugas",{exact:true}).fill("  tidak ditemukan  ");
-  await page.getByText("Tidak ada tugas pada tampilan ini",{exact:true}).waitFor();
+  await page.getByText("Tidak ada tugas yang cocok",{exact:true}).waitFor();
   const resetTouch=page.getByRole("button",{name:"Hapus filter",exact:true});await resetTouch.scrollIntoViewIfNeeded();const touchBox=await resetTouch.boundingBox();assert.ok(touchBox.height>=44);await page.touchscreen.tap(touchBox.x+touchBox.width/2,touchBox.y+touchBox.height/2);
   await page.getByRole("list",{name:"Daftar tugas aktif"}).locator("li").first().waitFor();
   await page.getByLabel("Jenis tugas",{exact:true}).selectOption("bap");
-  await page.getByText("Tidak ada tugas pada tampilan ini",{exact:true}).waitFor();
+  await page.getByText("Tidak ada tugas yang cocok",{exact:true}).waitFor();
   await page.getByRole("button",{name:"Hapus filter",exact:true}).click();
   await page.getByLabel("Cari tugas",{exact:true}).fill("JURNAL PEMBELAJARAN");
   await page.getByLabel("Status tugas",{exact:true}).selectOption("ready");
@@ -214,14 +214,14 @@ try {
   items = [];
   await page.getByRole("button", { name: "Muat ulang tugas" }).click();
   await page
-    .getByText("Tidak ada tugas pada tampilan ini", { exact: true })
+    .getByText("Belum ada tugas aktif", { exact: true })
     .waitFor();
   fail = true;
   await page.getByRole("button", { name: "Muat ulang tugas" }).click();
   await page.getByRole("alert").waitFor();
   assert.equal(
     await page
-      .getByText("Tidak ada tugas pada tampilan ini", { exact: true })
+      .getByText("Belum ada tugas aktif", { exact: true })
       .count(),
     0,
   );
@@ -315,10 +315,10 @@ try {
     if(readDelay)await new Promise(r=>setTimeout(r,readDelay));
     return ok(route,{date:await page.evaluate(()=>new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Jakarta"}).format(new Date())),generatedAt:new Date().toISOString(),items:[]});
   });
-  readDelay=600;await go("tasks","guru");await page.getByRole("status").filter({hasText:"Memuat pusat tugas"}).waitFor();await page.getByText("Tidak ada tugas pada tampilan ini",{exact:true}).waitFor();readDelay=0;
-  await page.clock.install({time:new Date("2026-10-25T16:59:59Z")});await go("tasks","guru");await page.getByText("Tidak ada tugas pada tampilan ini",{exact:true}).waitFor();
+  readDelay=600;await go("tasks","guru");await page.getByRole("status").filter({hasText:"Memuat pusat tugas"}).waitFor();await page.getByText("Belum ada tugas aktif",{exact:true}).waitFor();readDelay=0;
+  await page.clock.install({time:new Date("2026-10-25T16:59:59Z")});await go("tasks","guru");await page.getByText("Belum ada tugas aktif",{exact:true}).waitFor();
   await page.clock.setSystemTime(new Date("2026-10-25T17:01:00Z"));await page.evaluate(()=>window.dispatchEvent(new Event("online")));
-  await page.getByText("Senin, 26 Oktober 2026 · WIB",{exact:false}).waitFor();await page.getByText("Tidak ada tugas pada tampilan ini",{exact:true}).waitFor();assert.equal(await page.getByRole("alert").count(),0);
+  await page.getByText("Senin, 26 Oktober 2026 · WIB",{exact:false}).waitFor();await page.getByText("Belum ada tugas aktif",{exact:true}).waitFor();assert.equal(await page.getByRole("alert").count(),0);
   assert.deepEqual(errors, []);
   console.log(
     "PASS: 28 role/view/viewport cases, combined search/status/kind and reset; stable paging after shrink/growth; slow focus/online coalescing and hidden tabs; loading/date guard/duplicate IDs/wrong source link/network recovery; exam prerequisites/deadline; orientation/200% text/WIB rollover; task filters/pagination/empty/error/malformed/retry/source date, long text, inbox read isolation UI, preference draft retained, double submit, uncertain write lock/recovery and real SQL fixture response; zero page errors/document overflow.",

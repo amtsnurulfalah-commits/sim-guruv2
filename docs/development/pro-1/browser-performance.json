@@ -1,0 +1,611 @@
+{
+  "kind": "localhost-chromium-fixture-profile",
+  "samples": 30,
+  "p50ReadyMs": 699,
+  "p95ReadyMs": 926,
+  "pageErrors": 0,
+  "overflow": false,
+  "measurements": [
+    {
+      "width": 320,
+      "view": "dashboard",
+      "repeat": 0,
+      "readyMs": 817,
+      "resources": [
+        {
+          "durationMs": 11,
+          "bytes": 372
+        },
+        {
+          "durationMs": 57,
+          "bytes": 448
+        },
+        {
+          "durationMs": 64,
+          "bytes": 795
+        },
+        {
+          "durationMs": 100,
+          "bytes": 1445
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "view": "dashboard",
+      "repeat": 1,
+      "readyMs": 690,
+      "resources": [
+        {
+          "durationMs": 7,
+          "bytes": 372
+        },
+        {
+          "durationMs": 21,
+          "bytes": 447
+        },
+        {
+          "durationMs": 23,
+          "bytes": 795
+        },
+        {
+          "durationMs": 44,
+          "bytes": 1445
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "view": "dashboard",
+      "repeat": 2,
+      "readyMs": 691,
+      "resources": [
+        {
+          "durationMs": 6,
+          "bytes": 372
+        },
+        {
+          "durationMs": 16,
+          "bytes": 447
+        },
+        {
+          "durationMs": 19,
+          "bytes": 795
+        },
+        {
+          "durationMs": 38,
+          "bytes": 1445
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "view": "dashboard",
+      "repeat": 3,
+      "readyMs": 668,
+      "resources": [
+        {
+          "durationMs": 6,
+          "bytes": 372
+        },
+        {
+          "durationMs": 17,
+          "bytes": 448
+        },
+        {
+          "durationMs": 21,
+          "bytes": 795
+        },
+        {
+          "durationMs": 34,
+          "bytes": 1445
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "view": "dashboard",
+      "repeat": 4,
+      "readyMs": 744,
+      "resources": [
+        {
+          "durationMs": 7,
+          "bytes": 372
+        },
+        {
+          "durationMs": 18,
+          "bytes": 448
+        },
+        {
+          "durationMs": 21,
+          "bytes": 795
+        },
+        {
+          "durationMs": 42,
+          "bytes": 1445
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "view": "journals",
+      "repeat": 0,
+      "readyMs": 935,
+      "resources": [
+        {
+          "durationMs": 16,
+          "bytes": 620
+        },
+        {
+          "durationMs": 30,
+          "bytes": 382
+        },
+        {
+          "durationMs": 42,
+          "bytes": 382
+        },
+        {
+          "durationMs": 12,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "view": "journals",
+      "repeat": 1,
+      "readyMs": 926,
+      "resources": [
+        {
+          "durationMs": 25,
+          "bytes": 620
+        },
+        {
+          "durationMs": 36,
+          "bytes": 382
+        },
+        {
+          "durationMs": 38,
+          "bytes": 382
+        },
+        {
+          "durationMs": 9,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "view": "journals",
+      "repeat": 2,
+      "readyMs": 863,
+      "resources": [
+        {
+          "durationMs": 14,
+          "bytes": 620
+        },
+        {
+          "durationMs": 18,
+          "bytes": 382
+        },
+        {
+          "durationMs": 23,
+          "bytes": 382
+        },
+        {
+          "durationMs": 6,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "view": "journals",
+      "repeat": 3,
+      "readyMs": 867,
+      "resources": [
+        {
+          "durationMs": 8,
+          "bytes": 620
+        },
+        {
+          "durationMs": 12,
+          "bytes": 382
+        },
+        {
+          "durationMs": 17,
+          "bytes": 382
+        },
+        {
+          "durationMs": 7,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "view": "journals",
+      "repeat": 4,
+      "readyMs": 862,
+      "resources": [
+        {
+          "durationMs": 11,
+          "bytes": 620
+        },
+        {
+          "durationMs": 16,
+          "bytes": 382
+        },
+        {
+          "durationMs": 19,
+          "bytes": 382
+        },
+        {
+          "durationMs": 7,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "view": "history",
+      "repeat": 0,
+      "readyMs": 750,
+      "resources": [
+        {
+          "durationMs": 28,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "view": "history",
+      "repeat": 1,
+      "readyMs": 699,
+      "resources": [
+        {
+          "durationMs": 11,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "view": "history",
+      "repeat": 2,
+      "readyMs": 693,
+      "resources": [
+        {
+          "durationMs": 6,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "view": "history",
+      "repeat": 3,
+      "readyMs": 693,
+      "resources": [
+        {
+          "durationMs": 9,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "view": "history",
+      "repeat": 4,
+      "readyMs": 697,
+      "resources": [
+        {
+          "durationMs": 12,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "dashboard",
+      "repeat": 0,
+      "readyMs": 744,
+      "resources": [
+        {
+          "durationMs": 14,
+          "bytes": 372
+        },
+        {
+          "durationMs": 21,
+          "bytes": 448
+        },
+        {
+          "durationMs": 25,
+          "bytes": 795
+        },
+        {
+          "durationMs": 45,
+          "bytes": 1445
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "dashboard",
+      "repeat": 1,
+      "readyMs": 712,
+      "resources": [
+        {
+          "durationMs": 6,
+          "bytes": 372
+        },
+        {
+          "durationMs": 15,
+          "bytes": 448
+        },
+        {
+          "durationMs": 18,
+          "bytes": 795
+        },
+        {
+          "durationMs": 23,
+          "bytes": 1445
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "dashboard",
+      "repeat": 2,
+      "readyMs": 656,
+      "resources": [
+        {
+          "durationMs": 6,
+          "bytes": 372
+        },
+        {
+          "durationMs": 14,
+          "bytes": 448
+        },
+        {
+          "durationMs": 17,
+          "bytes": 795
+        },
+        {
+          "durationMs": 22,
+          "bytes": 1445
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "dashboard",
+      "repeat": 3,
+      "readyMs": 680,
+      "resources": [
+        {
+          "durationMs": 8,
+          "bytes": 372
+        },
+        {
+          "durationMs": 12,
+          "bytes": 448
+        },
+        {
+          "durationMs": 14,
+          "bytes": 795
+        },
+        {
+          "durationMs": 24,
+          "bytes": 1445
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "dashboard",
+      "repeat": 4,
+      "readyMs": 666,
+      "resources": [
+        {
+          "durationMs": 14,
+          "bytes": 372
+        },
+        {
+          "durationMs": 20,
+          "bytes": 448
+        },
+        {
+          "durationMs": 23,
+          "bytes": 795
+        },
+        {
+          "durationMs": 29,
+          "bytes": 1445
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "journals",
+      "repeat": 0,
+      "readyMs": 854,
+      "resources": [
+        {
+          "durationMs": 11,
+          "bytes": 620
+        },
+        {
+          "durationMs": 14,
+          "bytes": 382
+        },
+        {
+          "durationMs": 17,
+          "bytes": 382
+        },
+        {
+          "durationMs": 8,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "journals",
+      "repeat": 1,
+      "readyMs": 827,
+      "resources": [
+        {
+          "durationMs": 13,
+          "bytes": 620
+        },
+        {
+          "durationMs": 16,
+          "bytes": 382
+        },
+        {
+          "durationMs": 22,
+          "bytes": 382
+        },
+        {
+          "durationMs": 4,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "journals",
+      "repeat": 2,
+      "readyMs": 829,
+      "resources": [
+        {
+          "durationMs": 5,
+          "bytes": 620
+        },
+        {
+          "durationMs": 8,
+          "bytes": 382
+        },
+        {
+          "durationMs": 9,
+          "bytes": 382
+        },
+        {
+          "durationMs": 4,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "journals",
+      "repeat": 3,
+      "readyMs": 835,
+      "resources": [
+        {
+          "durationMs": 6,
+          "bytes": 620
+        },
+        {
+          "durationMs": 8,
+          "bytes": 382
+        },
+        {
+          "durationMs": 11,
+          "bytes": 382
+        },
+        {
+          "durationMs": 4,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "journals",
+      "repeat": 4,
+      "readyMs": 819,
+      "resources": [
+        {
+          "durationMs": 5,
+          "bytes": 620
+        },
+        {
+          "durationMs": 8,
+          "bytes": 382
+        },
+        {
+          "durationMs": 10,
+          "bytes": 382
+        },
+        {
+          "durationMs": 4,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "history",
+      "repeat": 0,
+      "readyMs": 626,
+      "resources": [
+        {
+          "durationMs": 7,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "history",
+      "repeat": 1,
+      "readyMs": 642,
+      "resources": [
+        {
+          "durationMs": 7,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "history",
+      "repeat": 2,
+      "readyMs": 633,
+      "resources": [
+        {
+          "durationMs": 5,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "history",
+      "repeat": 3,
+      "readyMs": 637,
+      "resources": [
+        {
+          "durationMs": 5,
+          "bytes": 415
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "view": "history",
+      "repeat": 4,
+      "readyMs": 628,
+      "resources": [
+        {
+          "durationMs": 6,
+          "bytes": 415
+        }
+      ]
+    }
+  ],
+  "limits": "Includes a 500ms network-idle wait; small synthetic fixture, no TLS/WAN, not production Core Web Vitals/SLO or physical device UAT."
+}

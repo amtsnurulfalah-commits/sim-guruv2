@@ -21,6 +21,7 @@ export function FormDialog({
   onOpenChange,
   onDiscard,
   footer,
+  onCloseAutoFocus,
 }: {
   title: string;
   description?: string;
@@ -34,6 +35,7 @@ export function FormDialog({
   onOpenChange?: (open: boolean) => void;
   onDiscard?: () => void;
   footer?: ReactNode;
+  onCloseAutoFocus?: (event: Event) => void;
 }) {
   const [localOpen, setLocalOpen] = useState(false),
     [dirty, setDirty] = useState(false),
@@ -109,6 +111,7 @@ export function FormDialog({
       <Primitive.Portal>
         <Primitive.Overlay className="fixed inset-0 z-40 bg-slate-950/55 backdrop-blur-sm" />
         <Primitive.Content
+          onCloseAutoFocus={onCloseAutoFocus}
           data-slot="dialog-content"
           className="fixed inset-2 z-50 flex max-h-[calc(100dvh-1rem)] flex-col overflow-hidden rounded-2xl border bg-card text-foreground shadow-2xl sm:inset-auto sm:top-1/2 sm:left-1/2 sm:max-h-[calc(100dvh-3rem)] sm:w-[min(48rem,calc(100vw-3rem))] sm:-translate-x-1/2 sm:-translate-y-1/2"
           onEscapeKeyDown={(e) => {
