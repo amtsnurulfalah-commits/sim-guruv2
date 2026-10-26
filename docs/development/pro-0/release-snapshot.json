@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "882367b52cf0b69ad743c49878dcf0972c8d3bab",
+  "capturedAt": "2026-10-26T01:43:19.379Z",
+  "deployment": {
+    "id": "dpl_61e49q7DMYxc8wTtED2FUbntic7Y",
+    "state": "READY",
+    "sha": "882367b52cf0b69ad743c49878dcf0972c8d3bab",
+    "canonical": true
+  },
+  "sourceChecks": [
+    {
+      "name": "quality",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/amtsnurulfalah-commits/sim-guruv2/actions/runs/40251706952/job/121344830711"
+    },
+    {
+      "name": "native-release",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/amtsnurulfalah-commits/sim-guruv2/actions/runs/40251706952/job/121344830549"
+    }
+  ],
+  "sourceQualitySummary": [
+    "2026-10-26T00:56:29.2653140Z ℹ tests 164",
+    "2026-10-26T00:56:29.2654464Z ℹ pass 164",
+    "2026-10-26T00:56:29.2654677Z ℹ fail 0",
+    "2026-10-26T00:56:31.8142081Z ℹ tests 42",
+    "2026-10-26T00:56:31.8142555Z ℹ pass 42",
+    "2026-10-26T00:56:31.8142774Z ℹ fail 0",
+    "2026-10-26T00:57:18.0903120Z ℹ tests 391",
+    "2026-10-26T00:57:18.0903508Z ℹ pass 391",
+    "2026-10-26T00:57:18.0903641Z ℹ fail 0",
+    "2026-10-26T00:57:23.9912628Z ✓ Compiled successfully in 5.5s",
+    "2026-10-26T00:57:32.7334773Z   Generating static pages using 3 workers (0/5) ...",
+    "2026-10-26T00:57:32.8505562Z   Generating static pages using 3 workers (1/5) ",
+    "2026-10-26T00:57:32.8812629Z   Generating static pages using 3 workers (2/5) ",
+    "2026-10-26T00:57:32.8827882Z   Generating static pages using 3 workers (3/5) ",
+    "2026-10-26T00:57:32.8831309Z ✓ Generating static pages using 3 workers (5/5) in 150ms"
+  ],
+  "smoke": [
+    {
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "path": "/api/operations/tasks",
+      "status": 401
+    },
+    {
+      "path": "/api/activities/eligible",
+      "status": 401
+    }
+  ],
+  "cohort": {
+    "admin": 1,
+    "teachers": 3,
+    "selection": "user-confirmed",
+    "sessionsCompleted": 0
+  },
+  "runtimeChanged": false,
+  "databaseMigrated": false,
+  "productionWritesPerformed": false,
+  "notes": [
+    "Read-only smoke can generate normal request telemetry; no business mutation was issued.",
+    "No human UAT, physical device, screen-reader, mail delivery or production restore result fabricated."
+  ]
+}
