@@ -1,0 +1,57 @@
+[
+  {
+    "schema": "app",
+    "name": "support_monitor_read",
+    "hash": "a46738515c53f1774316d1b5a3527316",
+    "owner": "sim_guru_owner",
+    "acl": "{sim_guru_owner=X/sim_guru_owner,sim_guru_business=X/sim_guru_owner}",
+    "config": [
+      "search_path=pg_catalog"
+    ],
+    "definer": true
+  },
+  {
+    "schema": "auth_private",
+    "name": "finish_security_outbox",
+    "hash": "41813e14e32d14dd555a744358586b10",
+    "owner": "sim_guru_owner",
+    "acl": "{sim_guru_owner=X/sim_guru_owner,sim_guru_worker=X/sim_guru_owner}",
+    "config": [
+      "search_path=pg_catalog"
+    ],
+    "definer": true
+  },
+  {
+    "schema": "ops",
+    "name": "domain_finish",
+    "hash": "aec2c3ec943988a8d5ec5a91470f9517",
+    "owner": "sim_guru_owner",
+    "acl": "{sim_guru_owner=X/sim_guru_owner,sim_guru_worker=X/sim_guru_owner}",
+    "config": [
+      "search_path=pg_catalog"
+    ],
+    "definer": true
+  },
+  {
+    "schema": "ops",
+    "name": "reliability_snapshot",
+    "hash": "28b5214f1c65e9ea2c1a3eddc77857b1",
+    "owner": "sim_guru_owner",
+    "acl": "{sim_guru_owner=X/sim_guru_owner}",
+    "config": [
+      "search_path=pg_catalog"
+    ],
+    "definer": false
+  },
+  {
+    "schema": "ops",
+    "name": "scheduled_finance",
+    "hash": "ce1a52d4445cd89595fa9e5b84e33c66",
+    "owner": "sim_guru_owner",
+    "acl": "{sim_guru_owner=X/sim_guru_owner}",
+    "config": [
+      "search_path=pg_catalog"
+    ],
+    "definer": false
+  }
+]

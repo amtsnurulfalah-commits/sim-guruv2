@@ -54,6 +54,8 @@ try {
     await ready();
   };
   await page.goto("http://127.0.0.1:4319/?view=support&role=admin");
+  await page.getByRole("heading",{name:"Keandalan pemrosesan dan email",exact:true}).waitFor();
+  await page.getByText(/bukan tingkat kegagalan seluruh percobaan kirim/).waitFor();
   await ready();
   await page
     .getByRole("heading", { name: "Pemantauan layanan", exact: true })

@@ -191,6 +191,13 @@ export const caseResultSchema = z.union([
   }),
 ]);
 export const monitorSchema = z.object({
+  reliability: z.object({
+    lastSuccessfulJobAt: z.iso.datetime({offset:true}).nullable(),
+    lastAcceptedAt: z.iso.datetime({offset:true}).nullable(),
+    accepted24h: z.number().int().nonnegative(), failed24h: z.number().int().nonnegative(), uncertain24h: z.number().int().nonnegative(),
+    knownFailurePercent: z.number().min(0).max(100).nullable(),
+    activeReadyQueue: z.number().int().nonnegative(), activeOldestQueueSeconds: z.number().int().nonnegative(),
+  }).nullable().optional().default(null),
   generatedAt: z.iso.datetime({ offset: true }),
   lastWorkerAt: z.iso.datetime({ offset: true }).nullable(),
   workerEnabled: z.boolean(),
