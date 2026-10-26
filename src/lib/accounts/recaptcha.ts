@@ -7,11 +7,13 @@ const configuration = z.object({
   RECAPTCHA_SECRET_KEY: key,
 });
 
-/** Explicit rollout switch; malformed/enabled-but-incomplete config fails closed. */
+/** Keys opt in by default; an explicit false disables, incomplete config fails closed. */
 export function parseRecaptcha(source: Readonly<Record<string, string | undefined>>) {
   const flag = source.RECAPTCHA_ENABLED;
-  if (!flag || flag === "false") return { state: "disabled" } as const;
-  if (flag !== "true") return { state: "unavailable" } as const;
+  if (flag === "false") return { state: "disabled" } as const;
+  const hasKeys = Boolean(source.RECAPTCHA_SITE_KEY || source.RECAPTCHA_SECRET_KEY);
+  if (!flag && !hasKeys) return { state: "disabled" } as const;
+  if (flag && flag !== "true") return { state: "unavailable" } as const;
   const result = configuration.safeParse(source);
   return result.success
     ? { state: "ready", siteKey: result.data.RECAPTCHA_SITE_KEY, secretKey: result.data.RECAPTCHA_SECRET_KEY } as const

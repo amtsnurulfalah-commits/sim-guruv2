@@ -18,3 +18,14 @@ test("login transport accepts bounded CAPTCHA separately from business credentia
   assert.equal(loginSchema.safeParse({ ...credentials, captchaToken: "token" }).success, false);
   assert.equal(loginRequestSchema.safeParse({ ...credentials, role: "admin" }).success, false);
 });
+
+test("keys enable CAPTCHA without a rollout flag; a partial key pair never disables protection", () => {
+  const keys = { RECAPTCHA_SITE_KEY: "synthetic-public-key", RECAPTCHA_SECRET_KEY: "synthetic-secret-key" };
+  assert.equal(parseRecaptcha(keys).state, "ready");
+  assert.deepEqual(publicRecaptcha(keys), { enabled: true, siteKey: keys.RECAPTCHA_SITE_KEY });
+  for (const source of [{ RECAPTCHA_SITE_KEY: keys.RECAPTCHA_SITE_KEY }, { RECAPTCHA_SECRET_KEY: keys.RECAPTCHA_SECRET_KEY }]) {
+    assert.equal(parseRecaptcha(source).state, "unavailable");
+    assert.deepEqual(publicRecaptcha(source), { enabled: true, siteKey: null });
+  }
+  assert.equal(parseRecaptcha({ ...keys, RECAPTCHA_ENABLED: "false" }).state, "disabled");
+});

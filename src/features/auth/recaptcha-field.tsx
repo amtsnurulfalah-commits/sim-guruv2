@@ -4,49 +4,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 
-type RecaptchaApi = {
-  render: (node: HTMLElement, options: {
-    sitekey: string;
-    size: "compact";
-    callback: (token: string) => void;
-    "expired-callback": () => void;
-    "error-callback": () => void;
-  }) => number;
-  reset: (id: number) => void;
-};
-declare global {
-  interface Window {
-    grecaptcha?: RecaptchaApi;
-    simGuruRecaptchaReady?: () => void;
-  }
-}
-let loading: Promise<RecaptchaApi> | null = null;
-function loadRecaptcha(): Promise<RecaptchaApi> {
-  if (window.grecaptcha?.render) return Promise.resolve(window.grecaptcha);
-  if (loading) return loading;
-  loading = new Promise<RecaptchaApi>((resolve, reject) => {
-    const script = document.createElement("script");
-    const fail = () => {
-      clearTimeout(timer);
-      script.remove();
-      delete window.simGuruRecaptchaReady;
-      reject(new Error("CAPTCHA_SCRIPT_UNAVAILABLE"));
-    };
-    const timer = window.setTimeout(fail, 15000);
-    window.simGuruRecaptchaReady = () => {
-      clearTimeout(timer);
-      delete window.simGuruRecaptchaReady;
-      if (window.grecaptcha?.render) resolve(window.grecaptcha);
-      else fail();
-    };
-    script.src = "https://www.google.com/recaptcha/api.js?onload=simGuruRecaptchaReady&render=explicit&hl=id";
-    script.async = true;
-    script.defer = true;
-    script.onerror = fail;
-    document.head.appendChild(script);
-  }).catch(error => { loading = null; throw error; });
-  return loading;
-}
+import { loadRecaptcha, type RecaptchaApi } from "./recaptcha-loader";
 
 export function RecaptchaField({ siteKey, attempt, onToken, busy }: {
   siteKey: string | null;
@@ -56,12 +14,16 @@ export function RecaptchaField({ siteKey, attempt, onToken, busy }: {
 }) {
   const host = useRef<HTMLDivElement>(null);
   const descriptionId = useId();
+  const tokenCallback = useRef(onToken);
+  const currentWidget = useRef<{ api: RecaptchaApi; id: number } | null>(null);
+  useEffect(() => { tokenCallback.current = onToken; }, [onToken]);
   const [revision, setRevision] = useState(0);
   const [status, setStatus] = useState("Memuat verifikasi keamanan…");
   const [phase, setPhase] = useState<"loading" | "ready" | "verified" | "expired" | "error">("loading");
   const failed = phase === "error" || !siteKey;
   const verified = phase === "verified";
   useEffect(() => {
+    tokenCallback.current("");
     if (!siteKey || !host.current) return;
     let active = true;
     let api: RecaptchaApi | undefined;
@@ -77,37 +39,58 @@ export function RecaptchaField({ siteKey, attempt, onToken, busy }: {
         size: "compact",
         callback: token => {
           if (!active) return;
-          onToken(token);
+          tokenCallback.current(token);
           setPhase("verified");
           setStatus("Verifikasi selesai. Anda dapat menekan Masuk.");
         },
         "expired-callback": () => {
           if (!active) return;
-          onToken("");
+          tokenCallback.current("");
           setPhase("expired");
           setStatus("Verifikasi kedaluwarsa. Centang reCAPTCHA kembali.");
         },
         "error-callback": () => {
           if (!active) return;
-          onToken("");
+          tokenCallback.current("");
           setPhase("error");
           setStatus("reCAPTCHA tidak dapat terhubung. Periksa koneksi lalu muat ulang verifikasi.");
         },
       });
+      currentWidget.current = { api, id: widget };
       setStatus("Centang reCAPTCHA untuk melanjutkan.");
       setPhase("ready");
     }).catch(() => {
       if (!active) return;
-      onToken("");
+      tokenCallback.current("");
       setPhase("error");
       setStatus("reCAPTCHA gagal dimuat. Periksa koneksi atau pemblokir konten lalu coba kembali.");
     });
     return () => {
       active = false;
+      currentWidget.current = null;
+      tokenCallback.current("");
       if (api && widget !== undefined) { try { api.reset(widget); } catch { /* detached iframe */ } }
       node.remove();
     };
-  }, [siteKey, attempt, revision, onToken]);
+  }, [siteKey, revision]);
+  useEffect(() => {
+    tokenCallback.current("");
+    let active = true;
+    void Promise.resolve().then(() => {
+      if (!active) return;
+      const widget = currentWidget.current;
+      if (!widget) return;
+      widget.api.reset(widget.id);
+      if (!active) return;
+      setPhase("ready");
+      setStatus("Centang reCAPTCHA untuk melanjutkan.");
+    }).catch(() => {
+      if (!active) return;
+      setPhase("error");
+      setStatus("reCAPTCHA gagal direset. Muat ulang verifikasi lalu coba kembali.");
+    });
+    return () => { active = false; };
+  }, [attempt]);
   const StatusIcon = failed ? CircleAlert : verified ? Check : phase === "expired" ? Clock3 : phase === "loading" ? LoaderCircle : ShieldCheck;
   const badge = failed ? "Perlu perhatian" : verified ? "Terverifikasi" : phase === "expired" ? "Kedaluwarsa" : phase === "loading" ? "Menyiapkan" : "Belum diverifikasi";
   return (
@@ -147,7 +130,7 @@ export function RecaptchaField({ siteKey, attempt, onToken, busy }: {
             {siteKey ? status : "Verifikasi keamanan belum dikonfigurasi. Hubungi administrator madrasah."}
           </p>
           {phase === "error" && siteKey && <Button type="button" variant="outline" className="w-full text-xs @[22rem]/captcha:w-auto" disabled={busy} onClick={() => {
-            onToken(""); setStatus("Memuat verifikasi keamanan…"); setPhase("loading"); setRevision(value => value + 1);
+            tokenCallback.current(""); setStatus("Memuat verifikasi keamanan…"); setPhase("loading"); setRevision(value => value + 1);
           }}>
             <RotateCw aria-hidden="true" />Muat ulang verifikasi
           </Button>}

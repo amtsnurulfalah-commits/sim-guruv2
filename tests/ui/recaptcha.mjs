@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {mkdir} from 'node:fs/promises';
 const {chromium}=await import(process.env.UI_PLAYWRIGHT_MODULE??'playwright');
-const child=spawn(process.execPath,['--conditions=react-server','--import','tsx','tests/ui/server.ts'],{stdio:['ignore','pipe','pipe']});
+const child=spawn(process.execPath,['--conditions=react-server','--import','tsx','tests/ui/server.ts'],{stdio:['ignore','pipe','pipe'],env:{...process.env,UI_REACT_DEVELOPMENT:'1'}});
 let browser,stderr='';child.stderr.on('data',b=>stderr+=b);
 try {
  await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error(stderr||'fixture timeout')),60000);child.stdout.on('data',b=>{if(b.toString().includes('UI_FIXTURE_READY')){clearTimeout(timer);resolve();}});child.on('exit',()=>{clearTimeout(timer);reject(Error(stderr));});});
@@ -13,8 +13,9 @@ try {
  let blocked=false,posts=0,lastInput;
  await page.route('https://www.google.com/recaptcha/api.js?**',r=>blocked?r.abort():r.fulfill({contentType:'application/javascript',body:`
  window.fixtureCaptchas=[];
- window.grecaptcha={render(node,options){const id=window.fixtureCaptchas.push(options)-1;const b=document.createElement('button');b.type='button';b.textContent='Centang sintetis';b.style.cssText='width:164px;height:144px';b.onclick=()=>options.callback('synthetic-token-'+id);node.appendChild(b);return id;},reset(id){}};
- window.simGuruRecaptchaReady?.();
+ window.fixtureResets=[];
+ window.grecaptcha={render(node,options){const id=window.fixtureCaptchas.push(options)-1;const b=document.createElement('button');b.type='button';b.textContent='Centang sintetis';b.style.cssText='width:164px;height:144px';b.onclick=()=>options.callback('synthetic-token-'+id);node.appendChild(b);return id;},reset(id){window.fixtureResets.push(id);if(window.fixtureResetThrows)throw Error("synthetic reset failure");}};
+ window[${JSON.stringify(new URL(r.request().url()).searchParams.get("onload"))}]?.();
  `}));
  await page.route('**/api/auth/csrf',r=>r.fulfill({contentType:'application/json',body:JSON.stringify({ok:true,data:{csrfToken:'fixture-csrf'}})}));
  await page.route('**/api/auth/login',r=>{posts++;lastInput=r.request().postDataJSON();return r.fulfill({status:401,contentType:'application/json',body:JSON.stringify({ok:false,error:{code:'INVALID_CREDENTIALS',message:'Username atau kata sandi tidak sesuai.'},requestId:'synthetic-reference'})});});
@@ -32,10 +33,11 @@ try {
  await check().click();assert.equal(await submit().isEnabled(),true);await page.getByText('Anda siap masuk',{exact:true}).waitFor();await page.screenshot({path:'../ui-recaptcha-panel/login-verified.png',fullPage:true});
  await page.evaluate(()=>window.fixtureCaptchas.at(-1)['expired-callback']());assert.equal(await submit().isDisabled(),true);
  await check().click();await submit().click();await page.getByRole('alert').filter({hasText:'synthetic-reference'}).waitFor();
- await check().waitFor();await page.getByText('Belum diverifikasi',{exact:true}).waitFor();assert.equal(posts,1);assert.match(lastInput.captchaToken,/^synthetic-token-/);assert.equal(await submit().isDisabled(),true);
+ await check().waitFor();assert.equal(await page.evaluate(()=>window.fixtureCaptchas.length),1,'failed login reuses the widget');assert.equal(await page.evaluate(()=>window.fixtureResets.length),1,'failed login resets the existing widget once');await page.getByText('Belum diverifikasi',{exact:true}).waitFor();assert.equal(posts,1);assert.match(lastInput.captchaToken,/^synthetic-token-/);assert.equal(await submit().isDisabled(),true);
  assert.equal(await page.getByLabel('Username',{exact:true}).inputValue(),'guru.test');assert.equal(await page.getByLabel('Kata sandi',{exact:true}).inputValue(),'');
  await page.evaluate(()=>window.fixtureCaptchas.at(-1)['error-callback']());await page.getByRole('button',{name:'Muat ulang verifikasi'}).click();await check().waitFor();assert.equal(await check().count(),1);
  blocked=true;await go();await page.getByRole('alert').filter({hasText:'gagal dimuat'}).waitFor();assert.equal(await submit().isDisabled(),true);
  blocked=false;await page.getByRole('button',{name:'Muat ulang verifikasi'}).click();await check().waitFor();await check().click();assert.equal(await submit().isEnabled(),true);
+ await fill();await check().click();await page.evaluate(()=>window.fixtureResetThrows=true);await submit().click();await page.getByRole('alert').filter({hasText:'gagal direset'}).waitFor();assert.equal(await submit().isDisabled(),true);await page.evaluate(()=>window.fixtureResetThrows=false);await page.getByRole('button',{name:'Muat ulang verifikasi'}).click();await check().waitFor();await check().click();assert.equal(await submit().isEnabled(),true);
  assert.deepEqual(errors,[]);console.log('CAPTCHA UI: 5 viewports, 200% text, StrictMode, missing/expired/reset/network/retry PASS');
 } finally {await browser?.close();child.kill('SIGTERM');}
