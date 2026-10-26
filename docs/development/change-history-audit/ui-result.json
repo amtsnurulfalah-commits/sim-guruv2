@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "roles": 2,
+  "layoutCases": 28,
+  "audits": [
+    {
+      "role": "guru",
+      "violations": []
+    },
+    {
+      "role": "admin",
+      "violations": []
+    }
+  ],
+  "pageErrors": [],
+  "flows": [
+    "past-default",
+    "100-row-bound",
+    "local-search",
+    "kind",
+    "paging-reset",
+    "filter-retained-on-refresh",
+    "draft-vs-applied",
+    "invalid-focus",
+    "redaction-copy",
+    "empty",
+    "malformed-retry",
+    "abort-stale-range",
+    "details",
+    "escaped-text",
+    "200%-font-orientation"
+  ],
+  "sourceBaseline": "e41efe6b4d84850f1fe1d35ac8ddedcead6875b3",
+  "environment": "localhost UI fixture; controlled API data, Chromium153/axe4.14.0; no production accounts",
+  "limits": "Automated coverage only; not physical-device or human screen-reader acceptance."
+}

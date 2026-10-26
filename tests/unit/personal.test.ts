@@ -15,3 +15,19 @@ test('personal calendar range and DTO reject oversized, mismatched, duplicate an
 test('install manifest launches a guarded page with existing identity and no credentials',()=>{
  const value=manifest();assert.equal(value.start_url,'/dashboard');assert.equal(value.display,'standalone');assert.deepEqual(value.icons?.map(x=>x.sizes),['192x192','512x512']);assert.ok(!JSON.stringify(value).includes('token'));
 });
+
+test('history defaults look backwards; WIB bounds, duplicate IDs and ordering are validated',async()=>{
+ const {personalDefaultRange,historyForRangeSchema}=await import('../../src/lib/personal/contracts');
+ assert.deepEqual(personalDefaultRange('2026-10-26',true),{from:'2026-10-20',to:'2026-10-26'});
+ assert.deepEqual(personalDefaultRange('2026-10-26',false),{from:'2026-10-26',to:'2026-11-01'});
+ assert.deepEqual(personalDefaultRange('2000-01-01',true),{from:'2000-01-01',to:'2000-01-01'});
+ assert.deepEqual(personalDefaultRange('2199-12-31',false),{from:'2199-12-31',to:'2199-12-31'});
+ const schema=historyForRangeSchema({from:'2026-10-26',to:'2026-10-26'});
+ const item={id:'11111111-1111-4111-8111-111111111111',reference:'22222222-2222-4222-8222-222222222222',kind:'journal',actor:null,reason:null,createdAt:'2026-10-25T17:00:00Z',hasBefore:false,hasAfter:true};
+ assert.equal(schema.safeParse({items:[item],truncated:false}).success,true);
+ assert.equal(schema.safeParse({items:[{...item,createdAt:'2026-10-26T17:00:00Z'}],truncated:false}).success,false);
+ assert.equal(schema.safeParse({items:[{...item,createdAt:'2026-10-25T16:59:59Z'}],truncated:false}).success,false);
+ assert.equal(schema.safeParse({items:[item,item],truncated:false}).success,false);
+ const later={...item,id:'33333333-3333-4333-8333-333333333333',createdAt:'2026-10-26T08:00:00Z'};
+ assert.deepEqual(schema.parse({items:[item,later],truncated:false}).items.map(x=>x.id),[later.id,item.id]);
+});

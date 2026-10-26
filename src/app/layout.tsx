@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "Sistem informasi kegiatan dan administrasi guru madrasah.",
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "SiM-Guru", statusBarStyle: "default" },
-  icons: { apple: "/app-icon/192" },
+  icons: { shortcut: "/favicon.ico", apple: "/app-icon/192" },
   robots: { index: false, follow: false },
 };
 export default function RootLayout({
