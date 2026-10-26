@@ -16,7 +16,7 @@ try{
  await page.route('**/api/personal/history?*',async route=>{
   reads++;const from=new URL(route.request().url()).searchParams.get('from');const stale=slow&&from==='2026-10-20';
   if(stale)await new Promise(r=>setTimeout(r,500));
-  const data={items:mode==='empty'?[]:mode==='invalid'?[{...items[0],createdAt:'2026-10-19T00:00:00Z'}]:mode==='race'?[{...items[0],actor:stale?'STALE':'FRESH'}]:items,truncated:mode==='many'};
+  const data={items:mode==='empty'?[]:mode==='piketOnly'?items.filter(item=>item.kind==='duty-substitute'):mode==='invalid'?[{...items[0],createdAt:'2026-10-19T00:00:00Z'}]:mode==='race'?[{...items[0],actor:stale?'STALE':'FRESH'}]:items,truncated:mode==='many'};
   try{await route.fulfill({json:{ok:true,data}});}catch{/* Aborted old-range request. */}
  });
  const go=async(role='guru')=>page.goto('http://127.0.0.1:4319/?view=personalHistory&role='+role);
@@ -26,6 +26,7 @@ try{
  await page.getByRole('note').getByText(/Hanya 100 catatan/).waitFor();
  await page.getByRole('button',{name:'Berikutnya',exact:true}).click();await page.getByText('Halaman 2 dari 10',{exact:true}).waitFor();
  await page.getByLabel('Jenis perubahan',{exact:true}).selectOption('journal');await page.getByText('Halaman 1 dari 5',{exact:true}).waitFor();
+ mode='piketOnly';await page.getByRole('button',{name:'Muat ulang sumber',exact:true}).click();await page.getByText('Tidak ada catatan yang cocok',{exact:true}).waitFor();assert.equal(await page.getByLabel('Jenis perubahan',{exact:true}).inputValue(),'journal');mode='many';await page.getByRole('button',{name:'Muat ulang sumber',exact:true}).click();await page.getByText('Halaman 1 dari 5',{exact:true}).waitFor();
  await page.getByLabel('Cari dalam catatan dimuat',{exact:true}).fill('11111111-1111-4111-8111-000000000099');assert.equal(await page.getByRole('list',{name:'Daftar riwayat perubahan'}).locator(':scope > li').count(),1);
  await page.getByLabel('Cari dalam catatan dimuat',{exact:true}).fill('TIDAK ADA');await page.getByText('Tidak ada catatan yang cocok',{exact:true}).waitFor();
  await page.getByRole('button',{name:'Reset pencarian',exact:true}).click();
@@ -46,5 +47,5 @@ try{
  mode='invalid';await page.getByRole('button',{name:'Muat ulang sumber',exact:true}).click();await page.getByRole('button',{name:'Coba kembali',exact:true}).waitFor();
  mode='many';await page.getByRole('button',{name:'Coba kembali',exact:true}).click();await page.getByRole('list',{name:'Daftar riwayat perubahan'}).waitFor();
  mode='race';slow=true;await go();await page.getByLabel('Dari tanggal',{exact:true}).fill('2026-10-21');await page.getByRole('button',{name:'Tampilkan rentang',exact:true}).click();await page.getByText('FRESH',{exact:false}).first().waitFor();await page.waitForTimeout(600);assert.equal(await page.getByText('STALE',{exact:false}).count(),0);
- assert.deepEqual(errors,[]);console.log(JSON.stringify({passed:true,roles:2,layoutCases:28,audits,pageErrors:errors,flows:['past-default','100-row-bound','local-search','kind','paging-reset','draft-vs-applied','invalid-focus','redaction-copy','empty','malformed-retry','abort-stale-range','details','escaped-text','200%-font-orientation']}));
+ assert.deepEqual(errors,[]);console.log(JSON.stringify({passed:true,roles:2,layoutCases:28,audits,pageErrors:errors,flows:['past-default','100-row-bound','local-search','kind','paging-reset','filter-retained-on-refresh','draft-vs-applied','invalid-focus','redaction-copy','empty','malformed-retry','abort-stale-range','details','escaped-text','200%-font-orientation']}));
 }finally{await browser?.close();child.kill('SIGTERM');}

@@ -9,8 +9,8 @@ const label=(kind:string)=>Object.hasOwn(historyLabel,kind)?historyLabel[kind]:'
 export function HistoryList({value,admin,updatedAt,loading}:{value:PersonalHistory;admin:boolean;updatedAt:string|null;loading:boolean}){
  const fieldId=useId();
  const [query,setQuery]=useState(''),[kind,setKind]=useState(''),[page,setPage]=useState(1);
- const options=[...new Set(value.items.map(item=>item.kind))];
- const selectedKind=options.includes(kind)?kind:'';
+ const options=[...new Set([...value.items.map(item=>item.kind),...(kind?[kind]:[])])];
+ const selectedKind=kind;
  const needle=query.trim().toLocaleLowerCase('id-ID');
  const filtered=value.items.filter(item=>(!selectedKind||item.kind===selectedKind)&&(!needle||[label(item.kind),item.actor,item.reason,item.id,item.reference,...item.changedFields].filter(Boolean).join(' ').toLocaleLowerCase('id-ID').includes(needle)));
  const pages=Math.max(1,Math.ceil(filtered.length/10)),current=Math.min(page,pages),start=(current-1)*10;

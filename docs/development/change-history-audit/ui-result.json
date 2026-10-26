@@ -19,6 +19,7 @@
     "local-search",
     "kind",
     "paging-reset",
+    "filter-retained-on-refresh",
     "draft-vs-applied",
     "invalid-focus",
     "redaction-copy",
