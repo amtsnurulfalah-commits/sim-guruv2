@@ -1,0 +1,270 @@
+{
+  "kind": "pro2-native-business-adapter-before-after",
+  "postgres": "16.15 (Ubuntu 16.15-1.pgdg24.04+2)",
+  "fixture": {
+    "users": 201,
+    "attendanceRows": 12060
+  },
+  "samplePolicy": "20 timed requests per scenario/phase, one excluded warm-up; nearest-rank percentiles of successes; errors reported separately",
+  "budgets": {
+    "afterErrors": 0,
+    "afterP95Ms": 5000
+  },
+  "before": [
+    {
+      "phase": "before",
+      "scenario": "global-first",
+      "requests": 20,
+      "concurrency": 4,
+      "success": 15,
+      "errors": 5,
+      "errorCodes": [
+        "55P03"
+      ],
+      "p50Ms": 4704,
+      "p95Ms": 7152,
+      "wallMs": 37753,
+      "meanResponseBytes": 9211,
+      "clientCpuMs": 89,
+      "clientRssDeltaBytes": 4489216
+    },
+    {
+      "phase": "before",
+      "scenario": "global-deep",
+      "requests": 20,
+      "concurrency": 4,
+      "success": 6,
+      "errors": 14,
+      "errorCodes": [
+        "55P03",
+        "57014"
+      ],
+      "p50Ms": 5310,
+      "p95Ms": 9842,
+      "wallMs": 41087,
+      "meanResponseBytes": 9211,
+      "clientCpuMs": 54,
+      "clientRssDeltaBytes": 393216
+    },
+    {
+      "phase": "before",
+      "scenario": "filtered",
+      "requests": 20,
+      "concurrency": 4,
+      "success": 20,
+      "errors": 0,
+      "errorCodes": [],
+      "p50Ms": 61,
+      "p95Ms": 117,
+      "wallMs": 617,
+      "meanResponseBytes": 9070,
+      "clientCpuMs": 43,
+      "clientRssDeltaBytes": 0
+    }
+  ],
+  "after": [
+    {
+      "phase": "after",
+      "scenario": "global-first",
+      "requests": 20,
+      "concurrency": 4,
+      "success": 20,
+      "errors": 0,
+      "errorCodes": [],
+      "p50Ms": 14,
+      "p95Ms": 25,
+      "wallMs": 130,
+      "meanResponseBytes": 9211,
+      "clientCpuMs": 33,
+      "clientRssDeltaBytes": 0
+    },
+    {
+      "phase": "after",
+      "scenario": "global-deep",
+      "requests": 20,
+      "concurrency": 4,
+      "success": 20,
+      "errors": 0,
+      "errorCodes": [],
+      "p50Ms": 1316,
+      "p95Ms": 2619,
+      "wallMs": 13705,
+      "meanResponseBytes": 9211,
+      "clientCpuMs": 42,
+      "clientRssDeltaBytes": 0
+    },
+    {
+      "phase": "after",
+      "scenario": "filtered",
+      "requests": 20,
+      "concurrency": 4,
+      "success": 20,
+      "errors": 0,
+      "errorCodes": [],
+      "p50Ms": 24,
+      "p95Ms": 44,
+      "wallMs": 231,
+      "meanResponseBytes": 9070,
+      "clientCpuMs": 30,
+      "clientRssDeltaBytes": 131072
+    }
+  ],
+  "diagnosticCountPlans": {
+    "before": [
+      {
+        "Plan": {
+          "Node Type": "Aggregate",
+          "Strategy": "Plain",
+          "Partial Mode": "Simple",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 9463.31,
+          "Total Cost": 9463.32,
+          "Plan Rows": 1,
+          "Plan Width": 8,
+          "Actual Startup Time": 2359.899,
+          "Actual Total Time": 2359.899,
+          "Actual Rows": 1,
+          "Actual Loops": 1,
+          "Shared Hit Blocks": 157075,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Seq Scan",
+              "Parent Relationship": "Outer",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "daily_attendance",
+              "Alias": "x",
+              "Startup Cost": 0,
+              "Total Cost": 9442.05,
+              "Plan Rows": 8504,
+              "Plan Width": 0,
+              "Actual Startup Time": 1.142,
+              "Actual Total Time": 2354.624,
+              "Actual Rows": 12060,
+              "Actual Loops": 1,
+              "Filter": "((date >= '2025-01-01'::date) AND (date <= '2025-03-01'::date) AND (app.actor_is_admin() OR (user_id = 'f0d5771c-0323-4e37-8968-3f8f148f2d34'::uuid) OR app.is_piket('f0d5771c-0323-4e37-8968-3f8f148f2d34'::uuid, date) OR app.committee_target('f0d5771c-0323-4e37-8968-3f8f148f2d34'::uuid, user_id, date)))",
+              "Rows Removed by Filter": 0,
+              "Shared Hit Blocks": 157075,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        },
+        "Planning": {
+          "Shared Hit Blocks": 42,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0
+        },
+        "Planning Time": 0.128,
+        "Triggers": [],
+        "Execution Time": 2359.916
+      }
+    ],
+    "after": [
+      {
+        "Plan": {
+          "Node Type": "Aggregate",
+          "Strategy": "Plain",
+          "Partial Mode": "Simple",
+          "Parallel Aware": false,
+          "Async Capable": false,
+          "Startup Cost": 397.05,
+          "Total Cost": 397.06,
+          "Plan Rows": 1,
+          "Plan Width": 8,
+          "Actual Startup Time": 1.761,
+          "Actual Total Time": 1.762,
+          "Actual Rows": 1,
+          "Actual Loops": 1,
+          "Shared Hit Blocks": 186,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0,
+          "Plans": [
+            {
+              "Node Type": "Seq Scan",
+              "Parent Relationship": "Outer",
+              "Parallel Aware": false,
+              "Async Capable": false,
+              "Relation Name": "daily_attendance",
+              "Alias": "x",
+              "Startup Cost": 0,
+              "Total Cost": 366.9,
+              "Plan Rows": 12060,
+              "Plan Width": 0,
+              "Actual Startup Time": 0.005,
+              "Actual Total Time": 1.18,
+              "Actual Rows": 12060,
+              "Actual Loops": 1,
+              "Filter": "((date >= '2025-01-01'::date) AND (date <= '2025-03-01'::date))",
+              "Rows Removed by Filter": 0,
+              "Shared Hit Blocks": 186,
+              "Shared Read Blocks": 0,
+              "Shared Dirtied Blocks": 0,
+              "Shared Written Blocks": 0,
+              "Local Hit Blocks": 0,
+              "Local Read Blocks": 0,
+              "Local Dirtied Blocks": 0,
+              "Local Written Blocks": 0,
+              "Temp Read Blocks": 0,
+              "Temp Written Blocks": 0
+            }
+          ]
+        },
+        "Planning": {
+          "Shared Hit Blocks": 12,
+          "Shared Read Blocks": 0,
+          "Shared Dirtied Blocks": 0,
+          "Shared Written Blocks": 0,
+          "Local Hit Blocks": 0,
+          "Local Read Blocks": 0,
+          "Local Dirtied Blocks": 0,
+          "Local Written Blocks": 0,
+          "Temp Read Blocks": 0,
+          "Temp Written Blocks": 0
+        },
+        "Planning Time": 0.079,
+        "Triggers": [],
+        "Execution Time": 1.772
+      }
+    ],
+    "note": "Representative count predicate under owner/verified synthetic context. Timed RPC runs through business role, unchanged 10s statement/3s lock limits."
+  },
+  "limits": "Loopback disposable PostgreSQL, actual service/adapter but no HTTP/TLS/WAN/SSR. Client CPU/RSS are not database CPU or a production capacity guarantee.",
+  "evidence": {
+    "sourceCommit": "23e2232378dc7c0ef759b8d1d624c8651e849b7d",
+    "runId": 40281421411,
+    "jobId": 121435350528,
+    "stage": "diagnostic intermediate: authorization memo only, before bounded DTO follow-up"
+  }
+}

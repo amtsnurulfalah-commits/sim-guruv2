@@ -331,7 +331,7 @@ Checklist selesai per paket:
 |---|---|---|---|---|
 | PRO-0 | Baseline teknis tervalidasi; UAT nyata belum selesai | Pengembang; pengelola/moderator untuk UAT | [Paket PRO-0](../pro-0/README.md) | Jadwalkan 1 admin + 3 guru dan isi hasil UAT |
 | PRO-1 | Pilot teknis jurnal/tugas diimplementasikan; penerimaan manusia belum | Pengembang + peserta UAT | [Paket PRO-1](../pro-1/README.md) | UAT ulang dan keputusan perluasan modul |
-| PRO-2 | Belum dimulai | Belum ditetapkan | — | Menunggu baseline performa |
+| PRO-2 | Workload riwayat/jurnal tervalidasi teknis; penerapan mengikuti PR72 | Pengembang + operator | [Paket PRO-2](../pro-2/README.md) | Verifikasi rilis/migrasi; lanjut observability dan workload representatif |
 | PRO-3 | Belum dimulai | Belum ditetapkan | — | Inventaris operasional setelah scope ditetapkan |
 | PRO-4 | Belum dimulai | Belum ditetapkan | — | Menunggu pilot UI dan temuan perangkat |
 | PRO-5 | Belum dimulai | Belum ditetapkan | — | Tinjau rincian/hambatan yang sudah ada |
@@ -392,4 +392,4 @@ Referensi repositori menjadi petunjuk untuk pemeriksaan saat eksekusi, bukan jam
 | 1.0 | 26 Oktober 2026 | Roadmap baru PRO-0–PRO-8 yang mencakup seluruh rekomendasi prioritas, UI/UX modern, dan fitur tambahan; baseline/target serta tracker belum diisi hasil eksekusi. |
 | 1.1 | 26 Oktober 2026 | Baseline teknis PRO-0 dan paket UAT tersedia; cohort 1 admin + 3 guru dipilih pengguna. Hasil UAT manusia tetap belum diukur. |
 
-Checkpoint program baru: [PRO-0](../pro-0/CHECKPOINT.md). Status checkbox rencana di atas dipertahankan; detail selesai/parsial mengikuti matriks paket PRO-0.
+Checkpoint program baru: [PRO-0](../pro-0/CHECKPOINT.md), [PRO-1](../pro-1/CHECKPOINT.md), [PRO-2](../pro-2/CHECKPOINT.md). Status checkbox rencana di atas dipertahankan; detail selesai/parsial mengikuti matriks paket PRO-0.

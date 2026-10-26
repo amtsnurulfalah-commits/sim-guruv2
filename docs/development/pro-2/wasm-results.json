@@ -1,0 +1,38 @@
+{
+  "kind": "exploratory-wasm-sequential-not-native",
+  "before": {
+    "kind": "wasm-not-native",
+    "samples": [
+      {
+        "ms": 1149,
+        "bytes": 9207
+      },
+      {
+        "ms": 1100,
+        "bytes": 9207
+      },
+      {
+        "ms": 1089,
+        "bytes": 9207
+      }
+    ]
+  },
+  "after": {
+    "kind": "wasm-not-native",
+    "samples": [
+      {
+        "ms": 31,
+        "bytes": 9203
+      },
+      {
+        "ms": 11,
+        "bytes": 9203
+      },
+      {
+        "ms": 9,
+        "bytes": 9203
+      }
+    ]
+  },
+  "limits": "Three sequential calls per variant on separate synthetic datasets with 201 users/12060 attendance rows. UUID/order/payload bytes differ between seed runs. Not native concurrency, production latency or causal capacity proof. Exact same-fixture response equivalence is tested separately."
+}
