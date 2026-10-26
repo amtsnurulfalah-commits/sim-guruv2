@@ -23,6 +23,7 @@ import { FormDialog } from "@/components/ui/dialog";
 export type Field = {
   key: string;
   label: string;
+  hint?: string;
   type?:
     | "text"
     | "date"
@@ -39,6 +40,13 @@ export type Field = {
   min?: number;
   max?: number;
 };
+function fieldHint(field: Field) {
+  if (field.hint) return field.hint;
+  if (field.key === "reason") return "Contoh: memperbaiki tanggal penugasan sesuai jadwal yang disahkan. Jelaskan perubahan dan alasannya (5–500 karakter); jangan masukkan kata sandi atau OTP.";
+  if (field.type === "dates") return "Masukkan tanggal dalam format YYYY-MM-DD, satu tanggal per baris.";
+  if (field.type === "number" && (field.min !== undefined || field.max !== undefined)) return `Gunakan bilangan bulat${field.min !== undefined ? `, minimal ${field.min}` : ""}${field.max !== undefined ? `, maksimal ${field.max}` : ""}.`;
+  return undefined;
+}
 export function DataForm({
   fields,
   label,
@@ -257,6 +265,7 @@ export function DataForm({
                 aria-invalid={Boolean(fieldErrors[x.key])}
                 aria-describedby={[
                   prefix + x.key + "-hint",
+                  fieldHint(x) ? prefix + x.key + "-help" : "",
                   fieldErrors[x.key] ? prefix + x.key + "-error" : "",
                 ].filter(Boolean).join(" ")}
                 aria-labelledby={prefix + x.key + "-label"}
@@ -285,7 +294,7 @@ export function DataForm({
                 id={prefix + x.key}
                 aria-invalid={Boolean(fieldErrors[x.key])}
                 aria-describedby={
-                  fieldErrors[x.key] ? prefix + x.key + "-error" : undefined
+                  [fieldErrors[x.key] ? prefix + x.key + "-error" : "", fieldHint(x) ? prefix + x.key + "-help" : ""].filter(Boolean).join(" ") || undefined
                 }
                 className={input}
                 required={!x.optional}
@@ -304,7 +313,7 @@ export function DataForm({
                 id={prefix + x.key}
                 aria-invalid={Boolean(fieldErrors[x.key])}
                 aria-describedby={
-                  fieldErrors[x.key] ? prefix + x.key + "-error" : undefined
+                  [fieldErrors[x.key] ? prefix + x.key + "-error" : "", fieldHint(x) ? prefix + x.key + "-help" : ""].filter(Boolean).join(" ") || undefined
                 }
                 className={input}
                 maxLength={x.type === "dates" ? 5000 : 1000}
@@ -319,7 +328,7 @@ export function DataForm({
                 id={prefix + x.key}
                 aria-invalid={Boolean(fieldErrors[x.key])}
                 aria-describedby={
-                  fieldErrors[x.key] ? prefix + x.key + "-error" : undefined
+                  [fieldErrors[x.key] ? prefix + x.key + "-error" : "", fieldHint(x) ? prefix + x.key + "-help" : ""].filter(Boolean).join(" ") || undefined
                 }
                 className={input}
                 type={x.type ?? "text"}
@@ -331,6 +340,7 @@ export function DataForm({
                 defaultValue={x.value as string | number | undefined}
               />
             )}
+            {fieldHint(x) && <p id={prefix + x.key + "-help"} className="text-sm font-normal leading-6 text-muted-foreground">{fieldHint(x)}</p>}
             {fieldErrors[x.key] && (
               <p
                 id={prefix + x.key + "-error"}

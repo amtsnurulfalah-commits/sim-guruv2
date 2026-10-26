@@ -1,4 +1,6 @@
 "use client";
+import Link from "next/link";
+import { honorSourceLink } from "@/lib/finance/provenance";
 import { ZodError } from "zod";
 import { useEffect, useRef, useState } from "react";
 import { masterRequest } from "../masters/api";
@@ -431,6 +433,8 @@ export function ReportsWorkspace() {
         }}
       >
         {visibleDetail && (
+          <div className="space-y-4">
+          {report?.kind === "academic" && honorSourceLink({ component: visibleDetail.category === "ATTENDANCE" ? "TRANSPORT" : visibleDetail.category ?? "", date: visibleDetail.date }) && <p className="text-sm leading-6"><Link prefetch={false} className="inline-flex min-h-11 items-center text-primary underline" href={honorSourceLink({ component: visibleDetail.category === "ATTENDANCE" ? "TRANSPORT" : visibleDetail.category ?? "", date: visibleDetail.date })!}>Buka sumber pada tanggal {visibleDetail.date}</Link><br/>Halaman sumber menampilkan data sesuai izin akun Anda; izin laporan tidak memperluas akses kegiatan.</p>}
           <dl className="grid min-w-0 gap-3">
             {Object.entries(visibleDetail).map(([k, v]) => (
               <div key={k}>
@@ -464,6 +468,7 @@ export function ReportsWorkspace() {
               </div>
             ))}
           </dl>
+          </div>
         )}
       </FormDialog>
     </div>

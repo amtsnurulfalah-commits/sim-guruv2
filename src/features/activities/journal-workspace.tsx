@@ -29,6 +29,14 @@ export function JournalWorkspace({ admin, userId }: {
 }) {
     const [tab, setTab] = useState("input"), [date, setDate] = useActivityDate();
     const [from, setFrom] = useState(wibDate().slice(0, 7) + "-01"), [to, setTo] = useState(wibDate()), [teacher, setTeacher] = useState(""), [q, setQ] = useState(""), [page, setPage] = useState(1);
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const sourceDate = params.get("date");
+        if (params.get("section") !== "history" || !sourceDate || !/^\d{4}-\d{2}-\d{2}$/.test(sourceDate) || !dayFilter.safeParse({ date: sourceDate }).success) return;
+        let active = true;
+        queueMicrotask(() => { if (active) { setFrom(sourceDate); setTo(sourceDate); setTab("history"); } });
+        return () => { active = false; };
+    }, []);
     const [context, setContext] = useState<Context | null>(null), [history, setHistory] = useState<History | null>(null);
     const [contextLoading, setContextLoading] = useState(true), [historyLoading, setHistoryLoading] = useState(false);
     const [contextError, setContextError] = useState(""), [historyError, setHistoryError] = useState(""), [actionError, setActionError] = useState("");

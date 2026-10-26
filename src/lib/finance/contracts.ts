@@ -49,6 +49,10 @@ export const honorSnapshotSchema = z.object({
       headmasterNip: z.string().nullable(),
     })
     .nullable(),
+  rateId: uuid.nullable().optional(),
+  rateMissing: z.boolean().optional(),
+  ratePolicy: z.string().optional(),
+  allowancePolicy: z.string().optional(),
   rate: decimal,
   totalJtm: decimal,
   teachingRaw: decimal,

@@ -21,3 +21,5 @@ Untuk instruksi pengguna “Tahap 0” setelah roadmap baru, baca [roadmap PRO](
 - [PRO-3 — pemantauan dan pemulihan](pro-3/README.md), [runbook](pro-3/RUNBOOK.md), [checkpoint](pro-3/CHECKPOINT.md).
 
 - [PRO-4 — mobile dan koneksi tidak stabil](pro-4/README.md), [validasi](pro-4/VALIDATION.md), [checkpoint](pro-4/CHECKPOINT.md).
+
+- [PRO-5 — transparansi honorarium dan bantuan](pro-5/README.md), [validasi](pro-5/VALIDATION.md), [UAT](pro-5/UAT.md).
