@@ -60,13 +60,16 @@ try {
  assert.equal(await d.getByLabel('Siswa hadir',{exact:true}).inputValue(),'18');
  assert.equal(await d.getByLabel('Siswa absen',{exact:true}).inputValue(),'2');
  assert.equal(writes,0);
- for(const viewport of [{width:280,height:640},{width:320,height:568},{width:375,height:812},{width:768,height:1024},{width:1024,height:768},{width:1440,height:900},{width:1920,height:1080},{width:812,height:375}]) {
+ for(const viewport of [{width:280,height:640},{width:320,height:568},{width:375,height:812},{width:768,height:1024},{width:1024,height:768},{width:1440,height:900},{width:1920,height:1080},{width:812,height:375},{width:375,height:320}]) {
   await page.setViewportSize(viewport); await overflow();
   await page.waitForFunction(()=>{const r=document.querySelector('[role="dialog"]')?.getBoundingClientRect();return r && r.left>=-1&&r.right<=innerWidth+1&&r.top>=-1&&r.bottom<=innerHeight+1;});
   if(screenshots&&[320,1440].includes(viewport.width))await page.screenshot({path:screenshots+'/draft-journal-'+viewport.width+'.png'});
  }
  await page.context().setOffline(true); await d.getByText(/Koneksi terputus/).waitFor();
  await d.getByLabel('Catatan',{exact:true}).fill('Tetap dapat menulis saat terputus');
+ await d.getByRole('button',{name:'Simpan jurnal',exact:true}).click();
+ await d.getByText(/Permintaan belum tersimpan/).waitFor(); assert.equal(writes,0);
+ assert.equal(await d.getByLabel('Catatan',{exact:true}).inputValue(),'Tetap dapat menulis saat terputus');
  await page.context().setOffline(false); assert.equal(writes,0);
  writeMode='invalid'; await d.getByRole('button',{name:'Simpan jurnal',exact:true}).click(); await d.getByRole('alert').waitFor();
  assert.equal(writes,1); await go(); d=await open();
@@ -111,5 +114,5 @@ try {
  role='admin'; await go(); d=await open(); await d.getByText(/Draft lokal tidak dapat disimpan/).waitFor();
  await d.getByLabel('Materi pembelajaran',{exact:true}).fill('Manual with denied storage');
  assert.equal(await d.getByLabel('Materi pembelajaran',{exact:true}).inputValue(),'Manual with denied storage');
- assert.deepEqual(errors,[]); console.log(JSON.stringify({passed:true,cases:['reload-explicit-restore','controlled-counts','8-viewports-orientations','offline-no-autosubmit','uncertain-receipt-review','success-purge','source-conflict','TTL','account-switch','tab-isolation','discard-purge','login-purge','logout-success','broadcast-logout','expired-session','live-account-switch','storage-denied'],pageErrors:errors,writes},null,2));
+ assert.deepEqual(errors,[]); console.log(JSON.stringify({passed:true,cases:['reload-explicit-restore','controlled-counts','9-viewports-short-screen-orientations','offline-preflight-before-CSRF-no-autosubmit','uncertain-receipt-review','success-purge','source-conflict','TTL','account-switch','tab-isolation','discard-purge','login-purge','logout-success','broadcast-logout','expired-session','live-account-switch','storage-denied'],pageErrors:errors,writes},null,2));
 } finally {await browser?.close();child.kill('SIGTERM');}

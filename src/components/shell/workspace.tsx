@@ -36,6 +36,7 @@ import {
   Search,
   LoaderCircle,
 } from "lucide-react";
+import { ConnectivityStatus } from "@/components/feedback/connectivity-status";
 import { Breadcrumbs } from "./breadcrumbs";
 import { NavigationLoading } from "./navigation-loading";
 import { Brand } from "@/components/brand";
@@ -505,6 +506,7 @@ export function Workspace({
           tabIndex={-1}
           className="workspace-content mx-auto w-full min-w-0 max-w-[1440px] flex-1 px-4 py-5 outline-none sm:px-8 sm:py-7 xl:px-10"
         >
+          <ConnectivityStatus />
           <Breadcrumbs
             pathname={navigating && destination ? destination.href : pathname}
             role={role}

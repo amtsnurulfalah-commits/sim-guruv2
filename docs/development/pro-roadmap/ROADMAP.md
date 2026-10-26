@@ -333,7 +333,7 @@ Checklist selesai per paket:
 | PRO-1 | Pilot teknis jurnal/tugas diimplementasikan; penerimaan manusia belum | Pengembang + peserta UAT | [Paket PRO-1](../pro-1/README.md) | UAT ulang dan keputusan perluasan modul |
 | PRO-2 | Workload riwayat/jurnal tervalidasi teknis; penerapan mengikuti PR72 | Pengembang + operator | [Paket PRO-2](../pro-2/README.md) | Verifikasi rilis/migrasi; lanjut observability dan workload representatif |
 | PRO-3 | Kontrol teknis/drill native tervalidasi; penerimaan operasional parsial | Pengembang + operator/pengelola | [Paket PRO-3](../pro-3/README.md) | Tutup BKP-01/BKP-02/MAIL-01 |
-| PRO-4 | Belum dimulai | Belum ditetapkan | — | Menunggu pilot UI dan temuan perangkat |
+| PRO-4 | Kontrol teknis diimplementasikan; penerimaan perangkat fisik terbuka | 26 Oktober 2026 | [Paket PRO-4](../pro-4/README.md) | Offline preflight, status draft dan modal mobile; lihat batas validasi |
 | PRO-5 | Belum dimulai | Belum ditetapkan | — | Tinjau rincian/hambatan yang sudah ada |
 | PRO-6 | Belum dimulai | Belum ditetapkan | — | Pilih preferensi berdasarkan UAT |
 | PRO-7 | Belum dimulai | Belum ditetapkan | — | Nilai prasyarat setiap paket tambahan |

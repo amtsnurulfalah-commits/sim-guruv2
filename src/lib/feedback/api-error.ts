@@ -114,11 +114,21 @@ function transportError(error: unknown, init: RequestInit): unknown {
     `${timeout ? "Layanan belum menjawab dalam batas waktu." : "Koneksi ke layanan terputus."} Periksa koneksi internet Anda.${write ? " Status penyimpanan belum dapat dipastikan. Periksa riwayat atau muat ulang data sebelum mengirim ulang agar tidak membuat data ganda." : " Coba muat ulang data setelah koneksi kembali stabil."}`,
   );
 }
+/** Reject known offline writes before CSRF acquisition as well as dispatch. */
+export function assertWriteConnection(method: string) {
+  // A browser offline hint is a preflight rejection, not an uncertain server commit.
+  // Online is only a hint too: a real transport failure still needs reconciliation.
+  if (typeof navigator !== "undefined" && navigator.onLine === false &&
+      !["GET", "HEAD"].includes(method.toUpperCase())) {
+    throw new ApiRequestError("OFFLINE", "Perangkat sedang offline. Permintaan belum dikirim. Sambungkan internet, lalu simpan secara manual.");
+  }
+}
 /** Never retry writes automatically: a lost response can follow a successful commit. */
 export async function requestResponse(
   path: string,
   init: RequestInit = {},
 ): Promise<Response> {
+  assertWriteConnection(init.method ?? "GET");
   try {
     return await fetch(path, { cache: "no-store", ...init });
   } catch (error) {
