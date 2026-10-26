@@ -1,0 +1,25 @@
+{
+  "sourceCommit": "beafb5f0f3379803fd3b2619c22bda0798aaa4db",
+  "kind": "production-read-only-catalog-review",
+  "production": true,
+  "migrationCount": 37,
+  "allCanonicalMigrationChecksumsMatch": true,
+  "securityAdvisorLints": [],
+  "routines": [
+    {
+      "name": "personal_calendar",
+      "bodyMd5": "686e2c51f485e254779c0da193fad930"
+    },
+    {
+      "name": "personal_history",
+      "bodyMd5": "abe1be35e75730cdec61f21b97b3fc14"
+    }
+  ],
+  "routineOwner": "sim_guru_owner",
+  "executeRoles": [
+    "sim_guru_owner",
+    "sim_guru_business"
+  ],
+  "searchPath": "pg_catalog",
+  "limits": "Catalog/checksum review only. No production user records, transactions, email, backup archive or key accessed. No DDL applied."
+}

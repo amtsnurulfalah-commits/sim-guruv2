@@ -70,7 +70,8 @@
     "test:performance:native": "node --conditions=react-server --import tsx scripts/pro2-native-profile.ts",
     "test:ui:performance": "node tests/ui/pro-2.mjs",
     "test:ui:preferences": "node tests/ui/preferences.mjs",
-    "test:ui:pro7": "node tests/ui/pro-7.mjs"
+    "test:ui:pro7": "node tests/ui/pro-7.mjs",
+    "test:ui:pro8": "node scripts/pro8-ui-validation.mjs"
   },
   "dependencies": {
     "@next/env": "16.4.2",
