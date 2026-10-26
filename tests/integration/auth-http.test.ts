@@ -202,4 +202,31 @@ test("Tahap1.4 login/session/logout — HTTP handlers + Argon2 + PostgreSQL WASM
         assert.equal(res.status,500);assert.ok(!(await res.text()).includes("private-stack-secret"));
     });
 
+    await t.test("AU14 CAPTCHA errors retain reference/no-store, no cookie and no credential/session mutation", async () => {
+        const h = createAuthHandlers({ config: () => config, service: async () => service, verifyCaptcha: async token => {
+            throw new AuthError(token ? "CAPTCHA_INVALID" : "CAPTCHA_REQUIRED", 422);
+        }});
+        const before = (await db.query<{n:number}>("select count(*)::int n from auth_private.app_sessions")).rows[0]!.n;
+        for (const captchaToken of [undefined, "synthetic-expired-token"]) {
+            const c = await h.csrf(new Request(config.appUrl + "/api/auth/csrf"));
+            const csrf = (await c.json()).data.csrfToken;
+            const pre = c.cookies.get("__Host-sim_guru_prelogin")!.value;
+            const response = await h.login(new Request(config.appUrl + "/api/auth/login", { method: "POST", headers: headers("__Host-sim_guru_prelogin="+pre,csrf,"198.51.100.240"), body: JSON.stringify({username:"guru.test",password,captchaToken}) }));
+            assert.equal(response.status,422);
+            assert.equal(response.cookies.get("__Host-sim_guru_session"),undefined);
+            assert.equal(response.headers.get("cache-control"),"no-store");
+            const body=await response.json();
+            assert.equal(body.error.code,captchaToken?"CAPTCHA_INVALID":"CAPTCHA_REQUIRED");
+            assert.match(body.error.message,/reCAPTCHA/);
+            assert.ok(body.requestId);
+        }
+        assert.equal((await db.query<{n:number}>("select count(*)::int n from auth_private.app_sessions")).rows[0]!.n,before);
+        let verified=false;
+        const allowed=createAuthHandlers({config:()=>config,service:async()=>service,verifyCaptcha:async token=>{assert.equal(token,"synthetic-valid-token");verified=true;}});
+        const c=await allowed.csrf(new Request(config.appUrl+"/api/auth/csrf"));
+        const csrf=(await c.json()).data.csrfToken;
+        const response=await allowed.login(new Request(config.appUrl+"/api/auth/login",{method:"POST",headers:headers("__Host-sim_guru_prelogin="+c.cookies.get("__Host-sim_guru_prelogin")!.value,csrf,"198.51.100.241"),body:JSON.stringify({username:"guru.test",password,captchaToken:"synthetic-valid-token"})}));
+        assert.equal(verified,true);assert.equal(response.status,200);
+    });
+
 });

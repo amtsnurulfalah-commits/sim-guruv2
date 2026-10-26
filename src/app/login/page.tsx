@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { publicRecaptcha } from "@/lib/accounts/recaptcha";
 import { LoginForm } from "@/features/auth/login-form";
 import { AuthLayout } from "@/components/shell/auth-layout";
 import { requireEnvironment } from "@/server/env";
@@ -15,7 +16,7 @@ export default async function LoginPage() {
       title="Masuk ke SiM-Guru"
       description="Gunakan username dan kata sandi akun madrasah Anda."
     >
-      <LoginForm />
+      <LoginForm captcha={publicRecaptcha(process.env)} />
     </AuthLayout>
   );
 }

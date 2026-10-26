@@ -7,7 +7,9 @@ import { ZodError } from "zod";
 import { validationFieldErrors } from "./validation-feedback";
 import { EnvironmentConfigurationError } from "../env";
 import { PasswordCryptoError, PasswordPolicyError } from "./passwords";
-import { AuthError, loginSchema, sessionDto } from "./service";
+import { AuthError, sessionDto } from "./service";
+import { loginRequestSchema } from "@/lib/accounts/login";
+import { verifyLoginRecaptcha } from "./recaptcha";
 import type { LocalAuthService } from "./service";
 import {
   assertOrigin,
@@ -24,8 +26,12 @@ import type { HttpAuthConfig } from "./security";
 type Dependencies = {
   config: () => HttpAuthConfig;
   service: () => Promise<LocalAuthService>;
+  verifyCaptcha?: (token: string | undefined, appUrl: string) => Promise<void>;
 };
 const messages: Record<string, string> = {
+  CAPTCHA_REQUIRED: "Selesaikan verifikasi reCAPTCHA sebelum masuk.",
+  CAPTCHA_INVALID: "Verifikasi reCAPTCHA tidak berlaku atau telah kedaluwarsa. Selesaikan verifikasi baru lalu coba lagi.",
+  CAPTCHA_UNAVAILABLE: "Verifikasi reCAPTCHA belum tersedia. Coba kembali beberapa saat lagi atau hubungi administrator.",
   SEMESTER_INVALID:
     "Permintaan persiapan semester tidak sesuai. Periksa sumber, tujuan, konfigurasi dan alasan.",
   SEMESTER_PREVIEW_STALE:
@@ -450,7 +456,7 @@ export function createAuthHandlers(deps: Dependencies) {
           "login",
           requestCookie(request, names.prelogin),
         );
-        const input = loginSchema.parse(await boundedJson(request)),
+        const { captchaToken, ...input } = loginRequestSchema.parse(await boundedJson(request)),
           ip = sourceIp(request, config),
           service = await deps.service();
         const result = await service.login(
@@ -458,6 +464,7 @@ export function createAuthHandlers(deps: Dependencies) {
           ip,
           requestId,
           requestCookie(request, names.session),
+          () => (deps.verifyCaptcha ?? verifyLoginRecaptcha)(captchaToken, config.appUrl),
         );
         const res = authResponse(
           {

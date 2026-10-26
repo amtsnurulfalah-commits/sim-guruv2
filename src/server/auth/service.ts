@@ -38,13 +38,15 @@ export type SessionDto = ReturnType<typeof sessionDto>;
 export class LocalAuthService {
     constructor(private readonly database: SqlDatabase, private readonly passwords: PasswordService, private readonly rateSecret: string) { }
     private key(scope: string, value: string) { return createHmac("sha256", this.rateSecret).update(JSON.stringify(["sim-guru:rate:v1", scope, value])).digest("hex"); }
-    async login(input: unknown, source: string, requestId: string, previousToken?: string) {
+    async login(input: unknown, source: string, requestId: string, previousToken?: string, beforeCredentials?: () => Promise<void>) {
         const value = loginSchema.parse(input), account = this.key("account", value.username), ip = this.key("ip", source);
         const sourceLimit = (await this.database.query<{
             wait: number;
         }>("select auth_private.consume_login_source($1) as wait", [ip])).rows[0]!.wait;
         if (sourceLimit > 0)
             throw new AuthError("RATE_LIMITED", 429, sourceLimit);
+        // CAPTCHA verification happens after durable source limiting, before credentials/Argon2.
+        await beforeCredentials?.();
         const result = await this.database.transaction(async (tx) => {
             const limit = (await tx.query<{
                 wait: number;

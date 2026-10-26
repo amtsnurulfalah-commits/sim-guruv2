@@ -10,6 +10,10 @@ export const loginSchema = z.object({
   }),
 }).strict();
 
+export const loginRequestSchema = loginSchema.extend({
+  captchaToken: z.string().min(1).max(4096).optional(),
+});
+
 export const loginCsrfSchema = z.object({
   csrfToken: z.string().min(1).max(150).regex(/^[A-Za-z0-9._-]+$/),
 });
