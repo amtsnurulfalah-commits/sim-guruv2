@@ -12,6 +12,8 @@ export const operationsSchema = z.object({
         attempts: z.number().int().min(0).max(5), next_attempt_at: timestamp,
     })).max(100),
     jobs: z.array(z.object({
+        result: z.object({code: z.string().regex(/^[A-Z0-9_]{1,80}$/).optional()}).optional(),
+        completed_at: timestamp.nullable().optional(), next_attempt_at: timestamp.optional(),
         business_key: z.string().min(1), kind: z.string().min(1),
         state: z.enum(["pending", "running", "completed", "failed", "paused"]), attempts: z.number().int().nonnegative(),
     })).max(100),

@@ -1,4 +1,5 @@
 "use client";
+import {incidentGuidance} from "@/lib/operations/incident-guidance";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { z } from "zod";
@@ -612,6 +613,19 @@ export function CaseWorkspace({
               </div>
             ))}
           </dl>
+          {monitor.reliability && <div className="min-w-0 space-y-3 rounded-xl border p-4">
+            <h3 className="font-semibold">Keandalan pemrosesan dan email</h3>
+            <dl className="grid min-w-0 gap-3 sm:grid-cols-2">
+              {[
+                ["Job notifikasi berhasil terakhir", monitor.reliability.lastSuccessfulJobAt ? time(monitor.reliability.lastSuccessfulJobAt) + " WIB" : "Belum tercatat"],
+                ["Penerimaan server email terakhir", monitor.reliability.lastAcceptedAt ? time(monitor.reliability.lastAcceptedAt) + " WIB" : "Belum tercatat; waktu lama tidak diisi ulang"],
+                ["Diterima server / gagal / tidak pasti", `${monitor.reliability.accepted24h} / ${monitor.reliability.failed24h} / ${monitor.reliability.uncertain24h}`],
+                ["Proporsi gagal dari hasil pasti", monitor.reliability.knownFailurePercent === null ? "Belum ada hasil pasti" : `${monitor.reliability.knownFailurePercent}%`],
+                ["Antrean kanal aktif siap kirim", monitor.reliability.activeReadyQueue],
+              ].map(([label,value])=><div key={label} className="min-w-0"><dt className="text-sm text-muted-foreground">{label}</dt><dd className="break-words font-medium">{value}</dd></div>)}
+            </dl>
+            <p className="text-xs leading-6 text-muted-foreground">Hitungan email adalah status saat ini untuk pesan yang dibuat dalam 24 jam terakhir, bukan tingkat kegagalan seluruh percobaan kirim. Hasil tidak pasti dipisahkan dari persentase. Status diterima server (termasuk rekonsiliasi admin) belum membuktikan masuk inbox. Heartbeat dan keberhasilan job juga merupakan bukti yang berbeda.</p>
+          </div>}
           <p className="text-xs text-muted-foreground">
             Waktu API adalah durasi server untuk endpoint modul yang
             terinstrumentasi; bukan waktu jaringan/browser atau durasi job. Data
@@ -627,7 +641,9 @@ export function CaseWorkspace({
               key={a.code}
               className="rounded-lg border border-amber-500 p-3 text-sm"
             >
-              <p>{a.message}</p>
+              <p className="font-semibold">{a.code}: {a.message}</p>
+              <p className="mt-2">Penanggung jawab peran: {incidentGuidance(a.code).owner}.</p>
+              <p className="my-2">{incidentGuidance(a.code).step}</p>
               <Link prefetch={false} href={a.href} className="underline">
                 Buka pemeriksaan terkait
               </Link>

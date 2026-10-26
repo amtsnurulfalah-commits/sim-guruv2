@@ -45,6 +45,7 @@ async function main() {
     await db.exec("insert into app.daily_attendance(user_id,date,sched_time_in,sched_time_out,actual_time_in,actual_time_out,time_in_source) select id,'2025-01-01'::date+n,'07:30','14:00','07:30','14:00','self' from app.app_users cross join generate_series(0,59)n");
     await db.exec("insert into finance.honor_periods(period_start,state,finalized_at,formula_version) values('2024-01-01','final','2024-02-01','legacy')");
     await db.query(`insert into finance.honor_statements(period_id,user_id,trx_id,snapshot,total_jtm,total_honor,checksum) select p.id,u.id,'SYNTHETIC-'||u.username,jsonb_build_object('formulaVersion','legacy','recipient',jsonb_build_object('name',u.full_name),'period','2024-01','total','9007199254740993','totalJtm','1.2345'),1.2345,9007199254740993,repeat('b',64) from finance.honor_periods p cross join app.app_users u`);
+    await db.exec("insert into ops.worker_tickets(token_hash,expires_at) values(repeat('c',64),clock_timestamp()+interval '1 hour')");
     const rollbackBefore=await restoreInventory(db);
     await assert.rejects(()=>db.transaction(async tx=>{await tx.exec("update app.system_settings set version=version+1 where key='operations.config'");throw Error("SYNTHETIC_ROLLBACK");}));
     assert.deepEqual(await restoreInventory(db),rollbackBefore);
@@ -78,6 +79,7 @@ async function main() {
     const restoreStarted=performance.now();await cli("restore-local");
     assert.deepEqual(await cli("restore-local",{},1).then(s=>s.includes("EMPTY_RESTORE_DATABASE_REQUIRED")),true);
     assert.equal((await restored.query<{n:number}>("select count(*)::int n from auth_private.app_sessions where revoked_at is null")).rows[0]!.n,0);
+    assert.equal((await restored.query<{n:number}>("select count(*)::int n from ops.worker_tickets")).rows[0]!.n,0);
     assert.equal((await restored.query<{state:string}>("select state from ops.domain_outbox where dedupe_key='drill-mail'")).rows[0]!.state,"cancelled");
     assert.equal((await restored.query<{value:string}>("select total_honor::text value from finance.honor_statements limit 1")).rows[0]!.value,"9007199254740993");
     await assert.rejects(()=>restored.exec("update finance.honor_statements set total_honor=1"));
@@ -86,7 +88,7 @@ async function main() {
     assert.equal((await passwords.verify(restoredHash,"Native9!rL8#qW4$vZ2@kD7")).valid,true);
     assert.equal((await restored.query("select * from auth_private.session_snapshot($1,false)",[digest])).rows.length,0);
     const after=await restoreInventory(restored);assert.deepEqual(after.migrations,before.migrations);assert.equal(after.rls,true);assert.equal(after.schemaDigest,before.schemaDigest);
-    const result={kind:"stage8-native-recovery",ok:true,postgres:(await db.query<{v:string}>("select current_setting('server_version') v")).rows[0]!.v,migrations:migration.length,tables:Object.keys(before.counts).length,backupMs,recoveryMs:Math.round(performance.now()-restoreStarted),archiveBytes:dump.length,rpo:"0 fixture transactions lost at frozen snapshot; not a production RPO",inventory:"v2 full-content/schema/ACL/migration comparison before isolation passed in CLI",checks:["transaction-rollback","corrupt-restore-no-write","wrong-key","manifest-tamper","archive-truncation","empty-target","permissions","revoked-session","dispatch-isolation","exact-NUMERIC","immutable-final","credential-hash-verify"],profile};
+    const result={kind:"stage8-native-recovery",ok:true,measuredAt:new Date().toISOString(),backupCreatedAt:manifest.createdAt,postgres:(await db.query<{v:string}>("select current_setting('server_version') v")).rows[0]!.v,migrations:migration.length,tables:Object.keys(before.counts).length,backupMs,recoveryMs:Math.round(performance.now()-restoreStarted),archiveBytes:dump.length,rpo:"0 fixture transactions lost at frozen snapshot; not a production RPO",inventory:"v2 full-content/schema/ACL/migration comparison before isolation passed in CLI",checks:["transaction-rollback","corrupt-restore-no-write","wrong-key","manifest-tamper","archive-truncation","empty-target","permissions","revoked-session","dispatch-isolation","worker-ticket-purge","exact-NUMERIC","immutable-final","credential-hash-verify"],profile};
     if(process.env.STAGE8_REPORT_FILE)await writeFile(process.env.STAGE8_REPORT_FILE,JSON.stringify(result,null,2)+"\n");
     console.log("STAGE8_NATIVE_RESULT "+JSON.stringify(result));
   } finally {await db.close();await restored.close();await rm(directory,{recursive:true,force:true});}

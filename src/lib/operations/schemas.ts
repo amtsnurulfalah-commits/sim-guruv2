@@ -109,6 +109,9 @@ export type Operations = {
     next_attempt_at: string;
   }[];
   jobs: {
+    result?: {code?: string | undefined} | undefined;
+    completed_at?: string | null | undefined;
+    next_attempt_at?: string | undefined;
     business_key: string;
     state: string;
     kind: string;

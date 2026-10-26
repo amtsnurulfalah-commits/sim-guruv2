@@ -20,6 +20,7 @@ export async function isolateRestoredDatabase(db: SqlDatabase) {
       UPDATE ops.domain_outbox SET state='cancelled',lease_token=null,lease_until=null WHERE state IN('pending','retry_wait','sending','unknown');
       UPDATE ops.notification_outbox SET state='cancelled',lease_token=null,lease_until=null WHERE state IN('pending','retry_wait','sending','unknown');
       UPDATE finance.notification_outbox SET state='failed' WHERE state='pending';
+      DELETE FROM ops.worker_tickets;
       DELETE FROM auth_private.outbox_secrets;
       UPDATE auth_private.verification_challenges SET superseded_at=coalesce(superseded_at,clock_timestamp()) WHERE consumed_at IS NULL;`);
   });
