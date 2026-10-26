@@ -217,10 +217,10 @@ Pengguna dapat menjelaskan asal komponen slip berdasarkan rincian yang ditampilk
 ### Pekerjaan
 
 - [ ] **PRO-6.1** Pilih preferensi bernilai nyata dari hasil UAT: kepadatan tabel, jumlah baris, filter favorit, dan pintasan halaman.
-- [ ] **PRO-6.2** Tentukan cakupan penyimpanan: perangkat/tab atau akun lintas perangkat. Jika dibutuhkan lintas perangkat, rancang penyimpanan server serta migrasinya secara eksplisit.
-- [ ] **PRO-6.3** Batasi preferensi pada nilai/kolom/filter yang diizinkan; preferensi tidak boleh memperluas role atau lingkup data.
-- [ ] **PRO-6.4** Sediakan reset ke tampilan standar dan perlakukan preferensi lama/rusak dengan fallback yang aman.
-- [ ] **PRO-6.5** Periksa logout, pergantian akun, perubahan role, serta filter yang tidak lagi valid pada semester baru.
+- [x] **PRO-6.2** Tentukan cakupan penyimpanan: perangkat/tab atau akun lintas perangkat. Jika dibutuhkan lintas perangkat, rancang penyimpanan server serta migrasinya secara eksplisit.
+- [x] **PRO-6.3** Batasi preferensi pada nilai/kolom/filter yang diizinkan; preferensi tidak boleh memperluas role atau lingkup data.
+- [x] **PRO-6.4** Sediakan reset ke tampilan standar dan perlakukan preferensi lama/rusak dengan fallback yang aman.
+- [x] **PRO-6.5** Periksa logout, pergantian akun, perubahan role, serta filter yang tidak lagi valid pada semester baru.
 
 ### Hasil dan kriteria selesai
 
@@ -335,7 +335,7 @@ Checklist selesai per paket:
 | PRO-3 | Kontrol teknis/drill native tervalidasi; penerimaan operasional parsial | Pengembang + operator/pengelola | [Paket PRO-3](../pro-3/README.md) | Tutup BKP-01/BKP-02/MAIL-01 |
 | PRO-4 | Kontrol teknis diimplementasikan; penerimaan perangkat fisik terbuka | 26 Oktober 2026 | [Paket PRO-4](../pro-4/README.md) | Offline preflight, status draft dan modal mobile; lihat batas validasi |
 | PRO-5 | Implementasi teknis; penerimaan pemahaman pengguna terbuka | 26 Oktober 2026 | [Paket PRO-5](../pro-5/README.md) | Asal perhitungan, provenance PDF, bantuan dan sumber bertanggal; PRO-5.8 belum diuji manusia |
-| PRO-6 | Belum dimulai | Belum ditetapkan | — | Pilih preferensi berdasarkan UAT |
+| PRO-6 | Pilot teknis; manfaat UAT terbuka | 26 Oktober 2026 | [Paket PRO-6](../pro-6/README.md) | Density/count/pintasan per tab-akun; PRO-6.1 belum diterima manusia |
 | PRO-7 | Belum dimulai | Belum ditetapkan | — | Nilai prasyarat setiap paket tambahan |
 | PRO-8 | Belum dimulai | Belum ditetapkan | — | Susun gate sejak paket pertama |
 

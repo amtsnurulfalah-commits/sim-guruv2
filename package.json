@@ -68,7 +68,8 @@
     "test:ui:not-found": "node tests/ui/not-found.mjs",
     "test:ui:shell": "node tests/ui/shell.mjs",
     "test:performance:native": "node --conditions=react-server --import tsx scripts/pro2-native-profile.ts",
-    "test:ui:performance": "node tests/ui/pro-2.mjs"
+    "test:ui:performance": "node tests/ui/pro-2.mjs",
+    "test:ui:preferences": "node tests/ui/preferences.mjs"
   },
   "dependencies": {
     "@next/env": "16.4.2",
