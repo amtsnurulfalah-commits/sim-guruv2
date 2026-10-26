@@ -45,3 +45,5 @@ Budget +25% adalah usulan toleransi regresi untuk mengawali diskusi, bukan perse
 ## Tindak lanjut setelah snapshot
 
 B-001: ditangani secara operasional pada 26 Oktober 2026 WIB, lihat pembaruan CHECKPOINT.md. B-009/B-010: pilot teknis PRO-1 dimulai atas instruksi pengelola; hipotesis kemudahan belum diterima pengguna. B-002/B-007 tetap memerlukan UAT/pembaca layar/perangkat fisik, bukan ditutup oleh tes otomatis.
+
+PRO-2/PR72: B-006 direproduksi pada PG16 disposable dan diperbaiki untuk workload201akun/12060baris/concurrency4; sesudah0error/60request terukur. Riwayat journal hidden fetch B-009 juga dihilangkan. B-004/B-005 tetap memerlukan observability produksi/dataset lebih besar; tidak menyatakan p95 produksi atau UAT manusia terpenuhi.

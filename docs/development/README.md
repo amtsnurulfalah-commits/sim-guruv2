@@ -15,3 +15,5 @@ Program lanjutan setelah audit halaman hingga PR #43, terpisah dari tahap pemban
 ## Program lanjutan PRO-0–PRO-8 (26 Oktober 2026)
 
 Untuk instruksi pengguna “Tahap 0” setelah roadmap baru, baca [roadmap PRO](pro-roadmap/ROADMAP.md) dan [checkpoint PRO-0](pro-0/CHECKPOINT.md). Paket stage-* dan roadmap 0–8 di atas tetap arsip program terdahulu. PRO-0 memiliki baseline teknis dan paket UAT; hasil 1 admin + 3 guru belum diukur, sehingga tidak boleh dinyatakan selesai penuh.
+
+- [PRO-2 — performa riwayat dan pemuatan jurnal](pro-2/README.md), [validasi](pro-2/VALIDATION.md), [checkpoint](pro-2/CHECKPOINT.md).
