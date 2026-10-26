@@ -72,7 +72,8 @@
     "test:ui:preferences": "node tests/ui/preferences.mjs",
     "test:ui:pro7": "node tests/ui/pro-7.mjs",
     "test:ui:pro8": "node scripts/pro8-ui-validation.mjs",
-    "test:ui:history": "node tests/ui/history.mjs"
+    "test:ui:history": "node tests/ui/history.mjs",
+    "test:ui:release-notes": "node tests/ui/release-notes.mjs"
   },
   "dependencies": {
     "@next/env": "16.4.2",

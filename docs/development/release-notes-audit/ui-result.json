@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "layoutCases": 14,
+  "notes": 50,
+  "pageErrors": [],
+  "flows": [
+    "mark-reload",
+    "clear-event-sync",
+    "scope-switch",
+    "anonymous",
+    "archive-keyboard",
+    "empty",
+    "long-content",
+    "install-race",
+    "install-cancel",
+    "installed-vs-standalone",
+    "install-rejection",
+    "storage-denied",
+    "Safari-standalone"
+  ],
+  "sourceBaseline": "05ad45e160ccf0972a645135ef80436170f7ab64",
+  "environment": "localhost synthetic UI fixture; Chromium153; axe4.14.0 enabled; no production account",
+  "limits": "Browser event simulation only. No physical OS installation, real Safari or human screen-reader acceptance."
+}

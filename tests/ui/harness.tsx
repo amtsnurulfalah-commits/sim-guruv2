@@ -1,3 +1,4 @@
+import {ReleaseNotice} from '../../src/features/release/experience';
 import {PersonalWorkspace} from "../../src/features/personal/workspace";
 import {ReleaseNotes} from "../../src/features/release/experience";
 import { TableRegion } from "../../src/components/ui/table-region";
@@ -180,6 +181,11 @@ function Lab() {
     </div>
   );
 }
+function ReleaseLab(){
+ const [scope,setScope]=useState<string|null>('synthetic:guru'),[mode,setMode]=useState('normal');
+ const notes=mode==='empty'?[]:mode==='many'?Array.from({length:50},(_,i)=>({version:'Synthetic-'+i+'Long'.repeat(30),date:'2026-10-27',features:['Contoh'.repeat(150)],fixes:[],actions:[]})):undefined;
+ return <section aria-label="Laboratorium catatan pembaruan"><h1>Catatan pembaruan</h1><div className="flex flex-wrap gap-2"><Button onClick={()=>setScope('synthetic:guru')}>Akun guru</Button><Button onClick={()=>setScope('synthetic:admin')}>Akun admin</Button><Button onClick={()=>setScope(null)}>Anonim</Button><Button onClick={()=>setMode('empty')}>Data kosong</Button><Button onClick={()=>setMode('many')}>Data banyak</Button></div><ReleaseNotes scope={scope} {...(notes===undefined?{}:{notes})}/><ReleaseNotice scope={scope}/></section>;
+}
 function RequiredChoices() {
   const [saves, setSaves] = useState(0);
   return <><h1>Validasi pilihan wajib</h1><output aria-label="Jumlah simpan">{saves}</output><DataForm label="Simpan pilihan" busy={false} fields={[{ key: "days", label: "Hari wajib", type: "days", options: [{ id: "1", name: "Senin" }] }, { key: "people", label: "Peserta wajib", type: "multi", options: [{ id: "teacher", name: "Guru sintetis" }] }]} onSave={async () => { setSaves(value => value + 1); }}/></>;
@@ -190,6 +196,7 @@ const components: Record<string, React.ReactNode> = {
   onboarding: <AccountLifecycle isAdmin={false} onboarding />,
   personal: <PersonalWorkspace date="2026-10-26" admin={admin}/>,
   personalHistory: <PersonalWorkspace date="2026-10-26" history admin={admin}/>,
+  releaseLab:<ReleaseLab/>,
   release: <ReleaseNotes scope={id + ":" + (admin ? "admin" : "guru")}/>,
   preferences: <TableRegion label="Tabel uji preferensi"><table><tbody><tr><td className="p-4">Baris uji</td><td><Button>Tindakan uji</Button></td></tr></tbody></table></TableRegion>,
   tasks: <TaskWorkspace initialDate={new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Jakarta"}).format(new Date())} accountId={id}/>,
