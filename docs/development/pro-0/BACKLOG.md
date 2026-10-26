@@ -41,3 +41,7 @@ Source utama `src/features/tasks/task-center.tsx`, `task-workspace.tsx`, kontrak
 | Kapasitas/SLO produksi | Belum ditetapkan | Tetapkan setelah B-004/B-005 dan pembahasan pengelola; tidak memakai nilai localhost sebagai janji produksi |
 
 Budget +25% adalah usulan toleransi regresi untuk mengawali diskusi, bukan persetujuan pemilik produk atau bukti bahwa kenaikan latency diperbolehkan. Jika lingkungan berbeda, catat ulang baseline, jangan memaksakan angka lama.
+
+## Tindak lanjut setelah snapshot
+
+B-001: ditangani secara operasional pada 26 Oktober 2026 WIB, lihat pembaruan CHECKPOINT.md. B-009/B-010: pilot teknis PRO-1 dimulai atas instruksi pengelola; hipotesis kemudahan belum diterima pengguna. B-002/B-007 tetap memerlukan UAT/pembaca layar/perangkat fisik, bukan ditutup oleh tes otomatis.

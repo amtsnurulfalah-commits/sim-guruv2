@@ -33,13 +33,14 @@ export type JournalAction = {
     block: JournalBlock;
     subject: string;
 };
-export function JournalEditor({ action, userId, blocked, onSave, onClose, onRecover }: {
+export function JournalEditor({ action, userId, blocked, onSave, onClose, onRecover, onCloseAutoFocus }: {
     action: JournalAction;
     userId: string;
     blocked: boolean;
     onSave: (input: unknown, signal: AbortSignal) => Promise<void>;
     onClose: () => void;
     onRecover: () => void;
+    onCloseAutoFocus: (event: Event) => void;
 }) {
     const edit = action.kind === "edit" ? action.journal : null;
     const [present, setPresent] = useState(String(edit?.present ?? 0)), [absent, setAbsent] = useState(String(edit?.absent ?? 0));
@@ -111,7 +112,7 @@ export function JournalEditor({ action, userId, blocked, onSave, onClose, onReco
                 setSaving(false);
         }
     }
-    return <FormDialog title={title} trigger="" open busy={saving} onDiscard={draft.remove} description="Periksa kegiatan dan isian sebelum menyimpan. Alasan dicatat untuk riwayat audit." onOpenChange={open => { if (!open && !pending.current)
+    return <FormDialog onCloseAutoFocus={onCloseAutoFocus} title={title} trigger="" open busy={saving} onDiscard={draft.remove} description="Periksa kegiatan dan isian sebelum menyimpan. Alasan dicatat untuk riwayat audit." onOpenChange={open => { if (!open && !pending.current)
         onClose(); }} footer={<Button type="submit" form={formId} variant={action.kind === "delete" ? "destructive" : "default"} disabled={saving || blocked || (action.kind === "create" && !action.eligible.length) || !!draft.candidate}>{saving ? "Menyimpan…" : submitLabel}</Button>}>
     <form ref={attachDraftForm} method="post" id={formId} onSubmit={event => void submit(event)} className="min-w-0 space-y-5 [overflow-wrap:anywhere]" aria-busy={saving}>
       <fieldset disabled={saving || blocked} className="min-w-0 space-y-5">

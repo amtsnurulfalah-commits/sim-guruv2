@@ -518,3 +518,35 @@ dialog[open] {
     visibility: visible;
   }
 }
+
+/* PRO-1: opt-in pilot. Existing modules retain their current hierarchy. */
+@layer components {
+  .ui-page-header {
+    @apply flex min-w-0 flex-col justify-between gap-4 sm:flex-row sm:items-start;
+  }
+  .ui-page-tools {
+    @apply flex min-w-0 flex-wrap gap-2 sm:shrink-0;
+  }
+  .ui-page-tools > .ui-action {
+    @apply w-full sm:w-auto;
+  }
+  .ui-workspace-pilot .ui-panel {
+    border-top-width: 1px;
+    border-top-color: var(--border);
+    box-shadow: none;
+  }
+  .ui-workspace-pilot .ui-panel > :is(h2, h3, header) {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+  /* A live region is not inherently a success message. Keep load/count neutral. */
+  .ui-workspace-pilot p[role="status"].ui-feedback-neutral {
+    @apply rounded-none border-0 bg-transparent p-0 text-sm text-muted-foreground;
+  }
+  .ui-workspace-pilot p[role="status"].ui-feedback-warning {
+    @apply rounded-xl border px-4 py-3 text-sm leading-6;
+    color: var(--warning);
+    background: var(--warning-surface);
+    border-color: var(--warning-border);
+  }
+}

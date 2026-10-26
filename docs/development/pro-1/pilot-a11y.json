@@ -1,0 +1,1128 @@
+{
+  "schemaVersion": 1,
+  "measuredAt": "2026-10-26T06:03:43.779Z",
+  "kind": "synthetic-pro-1-pilot-a11y-and-layout",
+  "sourceCommit": null,
+  "environment": {
+    "node": "v24.22.1",
+    "browser": "153.0.8010.0",
+    "network": "localhost",
+    "database": "disposable PGlite fixture",
+    "production": false
+  },
+  "cases": [
+    {
+      "view": "journals",
+      "role": "guru",
+      "width": 320,
+      "fontSize": 16,
+      "readyMs": 996,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 25,
+        "incomplete": [
+          {
+            "id": "aria-valid-attr-value",
+            "nodes": 1
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Buka navigasi",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": "tab",
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "DIV",
+          "role": "tabpanel",
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BODY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "journals",
+      "role": "guru",
+      "width": 320,
+      "fontSize": 32,
+      "readyMs": 860,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 25,
+        "incomplete": [
+          {
+            "id": "aria-valid-attr-value",
+            "nodes": 1
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Buka navigasi",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": "tab",
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "DIV",
+          "role": "tabpanel",
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BODY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "journals",
+      "role": "guru",
+      "width": 375,
+      "fontSize": 16,
+      "readyMs": 880,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 25,
+        "incomplete": [
+          {
+            "id": "aria-valid-attr-value",
+            "nodes": 1
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Buka navigasi",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": "tab",
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "DIV",
+          "role": "tabpanel",
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BODY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "journals",
+      "role": "guru",
+      "width": 375,
+      "fontSize": 32,
+      "readyMs": 892,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 25,
+        "incomplete": [
+          {
+            "id": "aria-valid-attr-value",
+            "nodes": 1
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Buka navigasi",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": "tab",
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "DIV",
+          "role": "tabpanel",
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BODY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "journals",
+      "role": "guru",
+      "width": 768,
+      "fontSize": 16,
+      "readyMs": 898,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 25,
+        "incomplete": [
+          {
+            "id": "aria-valid-attr-value",
+            "nodes": 1
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Buka navigasi",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": "tab",
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "DIV",
+          "role": "tabpanel",
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BODY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "journals",
+      "role": "guru",
+      "width": 768,
+      "fontSize": 32,
+      "readyMs": 877,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 25,
+        "incomplete": [
+          {
+            "id": "aria-valid-attr-value",
+            "nodes": 1
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Buka navigasi",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": "tab",
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "DIV",
+          "role": "tabpanel",
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BODY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "journals",
+      "role": "guru",
+      "width": 1440,
+      "fontSize": 16,
+      "readyMs": 900,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 29,
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 2
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "journals",
+      "role": "guru",
+      "width": 1440,
+      "fontSize": 32,
+      "readyMs": 872,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 29,
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 10
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "tasks",
+      "role": "admin",
+      "width": 320,
+      "fontSize": 16,
+      "readyMs": 693,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 28,
+        "incomplete": [
+          {
+            "id": "aria-valid-attr-value",
+            "nodes": 1
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Buka navigasi",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "tasks",
+      "role": "admin",
+      "width": 320,
+      "fontSize": 32,
+      "readyMs": 686,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 28,
+        "incomplete": [
+          {
+            "id": "aria-valid-attr-value",
+            "nodes": 1
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Buka navigasi",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "tasks",
+      "role": "admin",
+      "width": 375,
+      "fontSize": 16,
+      "readyMs": 686,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 28,
+        "incomplete": [
+          {
+            "id": "aria-valid-attr-value",
+            "nodes": 1
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Buka navigasi",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "tasks",
+      "role": "admin",
+      "width": 375,
+      "fontSize": 32,
+      "readyMs": 668,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 28,
+        "incomplete": [
+          {
+            "id": "aria-valid-attr-value",
+            "nodes": 1
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Buka navigasi",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "tasks",
+      "role": "admin",
+      "width": 768,
+      "fontSize": 16,
+      "readyMs": 689,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 28,
+        "incomplete": [
+          {
+            "id": "aria-valid-attr-value",
+            "nodes": 1
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Buka navigasi",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "tasks",
+      "role": "admin",
+      "width": 768,
+      "fontSize": 32,
+      "readyMs": 667,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 28,
+        "incomplete": [
+          {
+            "id": "aria-valid-attr-value",
+            "nodes": 1
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Buka navigasi",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "tasks",
+      "role": "admin",
+      "width": 1440,
+      "fontSize": 16,
+      "readyMs": 669,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 31,
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 13
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "view": "tasks",
+      "role": "admin",
+      "width": 1440,
+      "fontSize": 32,
+      "readyMs": 709,
+      "documentOverflow": false,
+      "audit": {
+        "version": "4.14.0",
+        "passes": 31,
+        "incomplete": [
+          {
+            "id": "color-contrast",
+            "nodes": 22
+          }
+        ],
+        "violations": []
+      },
+      "tabSequence": [
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": null,
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "role": null,
+          "name": null,
+          "disabled": false
+        }
+      ]
+    }
+  ],
+  "pageErrors": [],
+  "limits": [
+    "Not human UAT, physical-device evidence, screen-reader testing or WCAG certification.",
+    "axe may require manual review; no finding is automatically fixed by this collector.",
+    "Only default journal/task views, two roles and eight Tab steps; not all dialogs, tabs, business flows or API authorization.",
+    "Readiness includes networkidle; not user task duration or Core Web Vitals."
+  ],
+  "serverLogPresent": false,
+  "sourceDescription": "Working tree PRO-1 on baseline 882367b + PR69 documentation; final PR tree identifies source."
+}

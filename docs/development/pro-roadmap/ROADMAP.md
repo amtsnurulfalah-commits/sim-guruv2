@@ -330,7 +330,7 @@ Checklist selesai per paket:
 | Tahap | Status awal | Penanggung jawab | Bukti/PR | Langkah berikutnya |
 |---|---|---|---|---|
 | PRO-0 | Baseline teknis tervalidasi; UAT nyata belum selesai | Pengembang; pengelola/moderator untuk UAT | [Paket PRO-0](../pro-0/README.md) | Jadwalkan 1 admin + 3 guru dan isi hasil UAT |
-| PRO-1 | Belum dimulai | Belum ditetapkan | — | Menunggu PRO-0 |
+| PRO-1 | Pilot teknis jurnal/tugas diimplementasikan; penerimaan manusia belum | Pengembang + peserta UAT | [Paket PRO-1](../pro-1/README.md) | UAT ulang dan keputusan perluasan modul |
 | PRO-2 | Belum dimulai | Belum ditetapkan | — | Menunggu baseline performa |
 | PRO-3 | Belum dimulai | Belum ditetapkan | — | Inventaris operasional setelah scope ditetapkan |
 | PRO-4 | Belum dimulai | Belum ditetapkan | — | Menunggu pilot UI dan temuan perangkat |

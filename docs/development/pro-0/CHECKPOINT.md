@@ -36,3 +36,9 @@ Status PR/CI paket dokumentasi mengikuti PR yang dibuat dari branch ini. Merge/d
 ## Satu langkah berikutnya
 
 Pengelola menetapkan perangkat/jadwal/moderator serta lingkungan UAT terisolasi untuk A01/G01/G02/G03. Jalankan U01–U10 sesuai pembagian dan isi uat-results.csv; kemudian tetapkan urutan pilot B-009/B-010 serta target durasi/bantuan berdasarkan hasil asli. B-001 dapat didiagnosis sebagai paket operasional terpisah tanpa menunggu perubahan visual, setelah scope penanganannya ditetapkan.
+
+## Pembaruan sesudah baseline
+
+26 Oktober 2026 WIB: B-001 didiagnosis dan ditangani secara operasional atas keputusan pengelola bahwa September tidak diproses. Penyebab awal: RATE_MISSING ditolak guard finance (42501), bukan alasan melonggarkan izin. Job spesifik September dijeda dengan PERIOD_OUT_OF_SCOPE, attempts/history dipertahankan dan satu audit log dicatat. Verifikasi saat penanganan: tidak ada retry eligible, failed honor jobs 0, serta tidak ada slip/ledger/finalisasi/notifikasi September. Tidak ada migrasi atau perubahan tarif. Snapshot baseline di atas tetap dipertahankan sebagai sejarah.
+
+Instruksi selanjutnya “Lanjut jalankan Tahap PRO-1” memulai pilot teknis [jurnal dan tugas](../pro-1/README.md) dengan pengecualian dependency UAT yang dicatat. Hasil peserta PRO-0 tetap belum diisi.

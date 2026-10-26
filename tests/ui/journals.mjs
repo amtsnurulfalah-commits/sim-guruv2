@@ -46,7 +46,7 @@ try {
  const go=async()=>{await page.goto('http://127.0.0.1:4319/?view=journals&role='+role);await page.getByRole('button',{name:'Jurnal pembelajaran',exact:true}).waitFor();await page.waitForFunction(()=>!document.querySelector('[aria-busy="true"]'));};
  const tab=async name=>page.getByRole('tab',{name,exact:true}).click();
  const overflow=async()=>assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
- const close=async()=>{await page.keyboard.press('Escape');const discard=page.getByRole('button',{name:'Buang perubahan',exact:true});if(await discard.isVisible())await discard.click();await page.getByRole('dialog').waitFor({state:'hidden'});};
+ const close=async()=>{await page.keyboard.press('Escape');const discard=page.getByRole('button',{name:'Buang perubahan',exact:true});if(await discard.isVisible())await discard.click();await page.getByRole('dialog').waitFor({state:'hidden'});await page.waitForFunction(()=>document.activeElement?.closest('.ui-workspace-pilot')!==null);};
  const reload=async()=>{await page.getByRole('button',{name:'Muat ulang',exact:true}).click();await page.waitForFunction(()=>!document.querySelector('[aria-busy="true"]'));};
  for(const width of [280,320,375,768,1024,1440,1920]){
   await page.setViewportSize({width,height:800});await go();await overflow();
@@ -61,7 +61,7 @@ try {
  await d.getByLabel('Siswa hadir',{exact:true}).fill('19');await d.getByRole('button',{name:'Simpan jurnal',exact:true}).click();await d.getByRole('alert').waitFor();assert.equal(writes,0);
  await d.getByLabel('Siswa hadir',{exact:true}).fill('20');
  started=new Promise(r=>holdStarted=r);hold=new Promise(r=>holdRelease=r);writeMode='held';await d.getByRole('button',{name:'Simpan jurnal',exact:true}).click();await started;
- await d.locator('form').evaluate(f=>{f.requestSubmit();f.requestSubmit();});await page.keyboard.press('Escape');assert.equal(await d.isVisible(),true);assert.equal(writes,1);writeMode='ok';holdRelease();await d.waitFor({state:'hidden'});
+ await d.locator('form').evaluate(f=>{f.requestSubmit();f.requestSubmit();});await page.keyboard.press('Escape');assert.equal(await d.isVisible(),true);assert.equal(writes,1);writeMode='ok';holdRelease();await d.waitFor({state:'hidden'});await page.waitForFunction(()=>document.activeElement?.closest('.ui-workspace-pilot')!==null);
  await tab('Riwayat dan Detail Jurnal');await page.getByText('Materi baru',{exact:true}).waitFor();
  await page.getByRole('button',{name:'Ubah jurnal',exact:true}).click();d=page.getByRole('dialog');await d.getByLabel('Materi pembelajaran',{exact:true}).fill('Materi diperbarui');await d.getByLabel('Alasan penyimpanan',{exact:true}).fill('Koreksi materi pembelajaran');
  writeMode='conflict';await d.getByRole('button',{name:'Simpan jurnal',exact:true}).click();await d.getByRole('alert').waitFor();assert.equal(await d.getByLabel('Materi pembelajaran',{exact:true}).inputValue(),'Materi diperbarui');assert.equal(await d.getByRole('button',{name:'Simpan jurnal',exact:true}).isDisabled(),true);

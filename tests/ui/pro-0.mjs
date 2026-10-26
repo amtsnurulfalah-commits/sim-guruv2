@@ -24,6 +24,7 @@ try{
    const r=await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}});
    return {version:window.axe.version,passes:r.passes.length,incomplete:r.incomplete.map(v=>({id:v.id,nodes:v.nodes.length})),violations:r.violations.map(v=>({id:v.id,impact:v.impact,help:v.help,helpUrl:v.helpUrl,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))}))};
   });
+  if(process.env.PRO0_SCREENSHOT_DIR && fontSize===16 && [375,1440].includes(width)){await mkdir(process.env.PRO0_SCREENSHOT_DIR,{recursive:true});await page.screenshot({path:process.env.PRO0_SCREENSHOT_DIR+'/'+view+'-'+width+'.png',fullPage:true});}
   const tabSequence=[];
   await page.evaluate(()=>document.activeElement?.blur());
   for(let i=0;i<8;i++){await page.keyboard.press('Tab');tabSequence.push(await page.evaluate(()=>{const e=document.activeElement;return {tag:e?.tagName,role:e?.getAttribute('role'),name:e?.getAttribute('aria-label')||e?.getAttribute('name'),disabled:e?.hasAttribute('disabled')};}));}
