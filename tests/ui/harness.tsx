@@ -1,3 +1,5 @@
+import {PersonalWorkspace} from "../../src/features/personal/workspace";
+import {ReleaseNotes} from "../../src/features/release/experience";
 import { TableRegion } from "../../src/components/ui/table-region";
 import { SessionBoundary } from "../../src/features/auth/session-boundary";
 import {SemesterPreparationWorkspace} from "../../src/features/semester-preparation/workspace";
@@ -186,6 +188,9 @@ const components: Record<string, React.ReactNode> = {
   recoveryAdmin: <><h1 className="mb-6 text-3xl">Verifikasi pemulihan akun</h1><AdminRecovery /></>,
   account: <AccountLifecycle isAdmin={admin} onboarding={false} />,
   onboarding: <AccountLifecycle isAdmin={false} onboarding />,
+  personal: <PersonalWorkspace date="2026-10-26" admin={admin}/>,
+  personalHistory: <PersonalWorkspace date="2026-10-26" history admin={admin}/>,
+  release: <ReleaseNotes scope={id + ":" + (admin ? "admin" : "guru")}/>,
   preferences: <TableRegion label="Tabel uji preferensi"><table><tbody><tr><td className="p-4">Baris uji</td><td><Button>Tindakan uji</Button></td></tr></tbody></table></TableRegion>,
   tasks: <TaskWorkspace initialDate={new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Jakarta"}).format(new Date())} accountId={id}/>,
   reports:<ReportsWorkspace/>,

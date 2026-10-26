@@ -1,3 +1,4 @@
+import { releaseSeenKey } from "../release/notes";
 import { z } from "zod";
 import { modules } from "../navigation/modules";
 export const preferenceKey = "sim-guru:preferences:v1";
@@ -26,6 +27,6 @@ export function writePreferences(storage: PreferenceStorage, scope: string, valu
   storage.setItem(preferenceKey, JSON.stringify(envelope.parse({ version: 1, scope, values })));
 }
 export function resetBrowserPreferences() {
-  try { sessionStorage.removeItem(preferenceKey); } catch { /* Optional browser storage. */ }
+  try { sessionStorage.removeItem(preferenceKey); sessionStorage.removeItem(releaseSeenKey); } catch { /* Optional browser storage. */ }
   window.dispatchEvent(new Event(preferenceEvent));
 }

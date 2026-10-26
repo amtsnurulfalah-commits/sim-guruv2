@@ -1,0 +1,2 @@
+import type {MetadataRoute} from 'next';
+export default function manifest():MetadataRoute.Manifest{return {id:'/',name:'SiM-Guru — Ruang Kerja Guru',short_name:'SiM-Guru',description:'Kegiatan dan administrasi guru madrasah.',lang:'id',start_url:'/dashboard',scope:'/',display:'standalone',background_color:'#ffffff',theme_color:'#146248',icons:[{src:'/app-icon/192',sizes:'192x192',type:'image/png',purpose:'any'},{src:'/app-icon/512',sizes:'512x512',type:'image/png',purpose:'any'}]};}

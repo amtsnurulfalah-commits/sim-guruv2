@@ -28,6 +28,7 @@ jobs:
       SIM_GURU_TEST_DATABASE_URL: postgresql://postgres@127.0.0.1:55439/identity_test
       SIM_GURU_SCHEDULE_TEST_DATABASE_URL: postgresql://postgres@127.0.0.1:55439/race_test
       RELEASE_DRILL_DATABASE_URL: postgresql://postgres@127.0.0.1:55439/release_drill_test
+      PRO7_DATABASE_URL: postgresql://postgres@127.0.0.1:55439/pro7_test
       PRO2_DATABASE_URL: postgresql://postgres@127.0.0.1:55439/pro2_test
       RESTORE_DATABASE_URL: postgresql://postgres@127.0.0.1:55439/release_restore_test
     steps:
@@ -48,11 +49,13 @@ jobs:
           echo "$pg_bin" >> "$GITHUB_PATH"
           "$pg_bin/initdb" -D "$RUNNER_TEMP/sim-guru-postgres" -U postgres -A trust > "$RUNNER_TEMP/initdb.log"
           "$pg_bin/pg_ctl" -D "$RUNNER_TEMP/sim-guru-postgres" -l "$RUNNER_TEMP/postgres.log" -o "-h 127.0.0.1 -p 55439 -k $RUNNER_TEMP" -w start
-          for name in identity_test race_test release_drill_test release_restore_test pro2_test; do
+          for name in identity_test race_test release_drill_test release_restore_test pro2_test pro7_test; do
             "$pg_bin/createdb" -h 127.0.0.1 -p 55439 -U postgres "$name"
           done
       - name: Native identity, role isolation and concurrency
         run: npm run test:db:native && npm run test:schedules:native
+      - name: PRO-7 personal calendar and audit scope (native)
+        run: node --conditions=react-server --import tsx --test tests/integration/pro7-personal.test.ts
       - name: PRO-2 before/after native capacity profile
         run: node --conditions=react-server --import tsx scripts/pro2-native-profile.ts
         env:

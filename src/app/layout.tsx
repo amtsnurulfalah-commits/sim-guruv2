@@ -1,10 +1,14 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { ToastRegion } from "@/components/feedback/toast-region";
+export const viewport: Viewport = { themeColor: "#146248" };
 export const metadata: Metadata = {
   title: { default: "SiM-Guru — Ruang Kerja Guru", template: "%s | SiM-Guru" },
   description: "Sistem informasi kegiatan dan administrasi guru madrasah.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, title: "SiM-Guru", statusBarStyle: "default" },
+  icons: { apple: "/app-icon/192" },
   robots: { index: false, follow: false },
 };
 export default function RootLayout({

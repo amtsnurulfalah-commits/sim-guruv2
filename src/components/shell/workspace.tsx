@@ -1,4 +1,5 @@
 "use client";
+import { ReleaseNotice } from "@/features/release/experience";
 import { WorkspacePreferences, PreferenceControls, useWorkspacePreferences } from "@/features/preferences/workspace-preferences";
 import { ActionIcon } from "@/components/ui/action-icon";
 
@@ -47,6 +48,8 @@ import { cn } from "@/lib/utils";
 import { capabilitiesSchema } from "@/lib/reports/contracts";
 import type { SessionDto } from "@/types/auth";
 const moduleIcons: Record<string, typeof LayoutDashboard> = {
+  agenda: CalendarDays,
+  "riwayat-perubahan": ClipboardList,
   jadwal: CalendarDays,
   jurnal: NotebookPen,
   kegiatan: ClipboardCheck,
@@ -524,6 +527,7 @@ function WorkspaceContent({ children, session, onLogout }: WorkspaceProps) {
           <div hidden={navigating}>{children}</div>
         </main>
         <footer className="mt-auto flex min-w-0 flex-wrap justify-between gap-x-6 gap-y-1 border-t px-5 py-5 text-xs leading-6 text-muted-foreground sm:px-8 [overflow-wrap:anywhere]">
+          <ReleaseNotice scope={session ? session.user.id + ":" + session.user.role : null}/>
           <p>
             <span className="font-semibold text-foreground">SiM-Guru</span> ·
             Sistem Informasi Guru
