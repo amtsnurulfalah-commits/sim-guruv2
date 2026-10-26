@@ -55,3 +55,13 @@ Tidak ada nilai durasi manusia yang diisi sebagai fakta pada PRO-0 ini. Usulan u
 ## Kebutuhan penyelesaian
 
 Pengelola perlu menetapkan waktu, perangkat empat peserta, lingkungan uji aman dan moderator. Isi `uat-results.csv`, lalu sertakan rangkuman anonim. Hasil tersebut diperlukan untuk menutup PRO-0.4 dan menentukan urutan perbaikan UI berbasis frekuensi nyata.
+
+## Pencatatan validasi agen setelah PRO-1
+
+Lembar hasil sekarang memisahkan `validation_kind=manusia` dan `validation_kind=otomatis`. Kolom awal dipertahankan; kolom tambahan `actor_role` menunjukkan peran akun sintetis dan `evidence_ref` menunjuk bukti. Kode `T01` adalah agen penguji, **bukan** A01/G01/G02/G03 dan bukan peserta keempat/kelima.
+
+Status `lulus_teknis`/`gagal_teknis` hanya digunakan untuk baris otomatis dan berarti assertion dalam cakupan suite berjalan berhasil/gagal. Status itu tidak membuktikan peserta memahami UI, mampu bekerja mandiri atau menerima aplikasi. Filter `validation_kind=manusia` sebelum menghitung semua metrik penerimaan di atas. Jangan mencampur 10 pemetaan teknis dengan 17 percobaan peserta sebagai denominator.
+
+`total_seconds`, `system_wait_seconds`, `error_count`, `assistance_count`, dan `ease_1_5` dibiarkan kosong pada baris otomatis karena merupakan metrik peserta. Waktu eksekusi suite ada secara terpisah di laporan teknis; bukan durasi penyelesaian tugas oleh pengguna. Penolakan yang sengaja diuji (validasi/otorisasi/koneksi) bukan otomatis bug pengguna.
+
+Lihat [hasil validasi teknis](UAT-TECHNICAL-RESULTS.md) untuk source, metode, pemetaan bagian U01–U10 yang diuji dan batasnya. Sesi manusia belum dilaksanakan sampai ada peserta, perangkat/jadwal, moderator dan akses lingkungan uji aman. Fixture lokal agen belum menjadi portal staging yang dapat dipakai peserta.

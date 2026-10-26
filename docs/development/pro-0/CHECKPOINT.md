@@ -42,3 +42,7 @@ Pengelola menetapkan perangkat/jadwal/moderator serta lingkungan UAT terisolasi 
 26 Oktober 2026 WIB: B-001 didiagnosis dan ditangani secara operasional atas keputusan pengelola bahwa September tidak diproses. Penyebab awal: RATE_MISSING ditolak guard finance (42501), bukan alasan melonggarkan izin. Job spesifik September dijeda dengan PERIOD_OUT_OF_SCOPE, attempts/history dipertahankan dan satu audit log dicatat. Verifikasi saat penanganan: tidak ada retry eligible, failed honor jobs 0, serta tidak ada slip/ledger/finalisasi/notifikasi September. Tidak ada migrasi atau perubahan tarif. Snapshot baseline di atas tetap dipertahankan sebagai sejarah.
 
 Instruksi selanjutnya “Lanjut jalankan Tahap PRO-1” memulai pilot teknis [jurnal dan tugas](../pro-1/README.md) dengan pengecualian dependency UAT yang dicatat. Hasil peserta PRO-0 tetap belum diisi.
+
+## Validasi untuk lembar UAT setelah rilis PRO-1
+
+26 Oktober 2026 WIB: source main bcae21e setelah PR69/70 digunakan untuk menjalankan sembilan suite browser (semua exit0) dan 391 integrasi database (semua lulus). Lembar uat-results.csv memuat 10 pemetaan teknis T01 berlabel otomatis/lulus_teknis, terpisah dari 17 percobaan manusia yang tetap belum_diuji. Bukti dan batas ada pada UAT-TECHNICAL-RESULTS.md dan uat-technical-results.json. UAT manusia, skor/durasi/bantuan dan penerimaan PRO-0/PRO-1 belum terpenuhi. Tidak ada perubahan runtime atau transaksi produksi.

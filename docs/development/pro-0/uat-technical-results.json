@@ -1,0 +1,112 @@
+{
+  "sourceCommit": "bcae21e67eae8be3033d1b8c168d22b41218337c",
+  "kind": "agent-automated-validation-not-human-UAT",
+  "startedAt": "2026-10-26T06:16:43.636Z",
+  "environment": {
+    "node": "v24.22.1",
+    "browser": "Chromium 153 headless; Playwright 1.58.2",
+    "network": "localhost",
+    "data": "disposable synthetic PGlite and controlled API fixtures",
+    "production": false
+  },
+  "suites": [
+    {
+      "suite": "schedules",
+      "command": "node tests/ui/schedules.mjs",
+      "startedAt": "2026-10-26T06:16:43.637Z",
+      "finishedAt": "2026-10-26T06:17:08.961Z",
+      "exitCode": 0,
+      "elapsedSeconds": 25.32,
+      "summary": "Schedule viewport admin 320\nSchedule viewport admin 375\nSchedule viewport admin 768\nSchedule viewport admin 1024\nSchedule viewport admin 1440\nSchedule viewport admin 1920\nSchedule viewport guru 320\nSchedule viewport guru 375\nSchedule viewport guru 768\nSchedule viewport guru 1024\nSchedule viewport guru 1440\nSchedule viewport guru 1920\nPASS: 12 role/viewport combinations, create/edit/search/reset, daily error/retry/stale prevention, recap independence, editor validation/conflict invalidation/double submit, picker retry, history cancellation/null, cross-page selection, bulk preview/back/stale/commit, pagination clamp, empty/malformed/expired rows, long names/text200/orientation and 101-row print; zero page errors.\n"
+    },
+    {
+      "suite": "journals",
+      "command": "node tests/ui/journals.mjs",
+      "startedAt": "2026-10-26T06:17:08.962Z",
+      "finishedAt": "2026-10-26T06:17:28.096Z",
+      "exitCode": 0,
+      "elapsedSeconds": 19.13,
+      "summary": "PASS: journals 7 widths/all tabs, modal bounds, create/edit/delete/H1/block commands, blank/count validation, double submit/busy close, conflict/rejected/malformed-ack recovery, saved edit with failed refresh, long text, independent invalid history/search, CSV, last-page deletion, teacher permissions, touch/landscape/200% text; zero page errors. Browser commands use controlled API fixtures; database business rules tested separately.\n"
+    },
+    {
+      "suite": "confirmations",
+      "command": "node tests/ui/confirmations.mjs",
+      "startedAt": "2026-10-26T06:17:28.100Z",
+      "finishedAt": "2026-10-26T06:17:41.126Z",
+      "exitCode": 0,
+      "elapsedSeconds": 13.03,
+      "summary": "PASS: real database browser claim/confirm/revoke; 7 widths, modal bounds, 61 rows/search/status/pagination, long text, validation, duplicate submit/busy close, write/read/malformed/network errors, success then refresh failure, stale date race, own/admin/guru/piket/journal guards, empty, landscape/200% text; zero page errors.\n"
+    },
+    {
+      "suite": "duties",
+      "command": "node tests/ui/duties.mjs",
+      "startedAt": "2026-10-26T06:17:41.130Z",
+      "finishedAt": "2026-10-26T06:17:51.796Z",
+      "exitCode": 0,
+      "elapsedSeconds": 10.67,
+      "summary": "{\"result\":\"passed\",\"realFlows\":[\"schedule-create\",\"schedule-edit\",\"confirm\",\"preview-lock\",\"ambiguous-write\"],\"responsiveWidths\":[1440,768,320,740],\"pageErrors\":[]}\n"
+    },
+    {
+      "suite": "exams",
+      "command": "node tests/ui/exams.mjs",
+      "startedAt": "2026-10-26T06:17:51.797Z",
+      "finishedAt": "2026-10-26T06:18:01.903Z",
+      "exitCode": 0,
+      "elapsedSeconds": 10.11,
+      "summary": "{\"result\":\"passed\",\"flows\":[\"confirm\",\"BAP-draft-reload-restore\",\"BAP-count-validation\",\"BAP-create-edit\",\"master-create-edit-delete\",\"preview-expiry\",\"uncertain-write\",\"malformed-response\",\"pagination\",\"WIB-midnight\"],\"widths\":[1440,768,320,740],\"pageErrors\":[]}\n"
+    },
+    {
+      "suite": "finance",
+      "command": "node tests/ui/finance.mjs",
+      "startedAt": "2026-10-26T06:18:01.904Z",
+      "finishedAt": "2026-10-26T06:18:15.689Z",
+      "exitCode": 0,
+      "elapsedSeconds": 13.78,
+      "summary": "{\"result\":\"passed\",\"flows\":[\"transport-block\",\"holiday-generate-cancel-waive\",\"finalize\",\"single-modal\",\"privacy\",\"history-slip\",\"verified-PDF\",\"scoped-Excel\",\"correction-request\",\"correction-delta\",\"expiry\",\"malformed-read-retry\",\"uncertain-write\",\"recap-pagination-search\",\"responsive-resize\",\"print\",\"public-verification-retry\",\"history-pagination\"],\"widths\":[1440,768,320,740],\"pageErrors\":[]}\n"
+    },
+    {
+      "suite": "support-cases",
+      "command": "node tests/ui/support-cases.mjs",
+      "startedAt": "2026-10-26T06:18:15.689Z",
+      "finishedAt": "2026-10-26T06:18:58.486Z",
+      "exitCode": 0,
+      "elapsedSeconds": 42.8,
+      "summary": "{\"passed\":true,\"flows\":[\"reference-to-case\",\"verified-reporter\",\"owner-and-status\",\"resolution-proof\",\"reopen-history\",\"uncertain-write-lock\",\"retry-after-read\",\"empty-status-filter\",\"monitoring\",\"responsive-modal\",\"reporter-context-audit\"],\"pageErrors\":[]}\n"
+    },
+    {
+      "suite": "tasks",
+      "command": "node tests/ui/tasks.mjs",
+      "startedAt": "2026-10-26T06:18:58.488Z",
+      "finishedAt": "2026-10-26T06:19:15.538Z",
+      "exitCode": 0,
+      "elapsedSeconds": 17.05,
+      "summary": "PASS: 28 role/view/viewport cases, combined search/status/kind and reset; stable paging after shrink/growth; slow focus/online coalescing and hidden tabs; loading/date guard/duplicate IDs/wrong source link/network recovery; exam prerequisites/deadline; orientation/200% text/WIB rollover; task filters/pagination/empty/error/malformed/retry/source date, long text, inbox read isolation UI, preference draft retained, double submit, uncertain write lock/recovery and real SQL fixture response; zero page errors/document overflow.\n"
+    },
+    {
+      "suite": "drafts",
+      "command": "node tests/ui/drafts.mjs",
+      "startedAt": "2026-10-26T06:19:15.539Z",
+      "finishedAt": "2026-10-26T06:19:26.225Z",
+      "exitCode": 0,
+      "elapsedSeconds": 10.69,
+      "summary": "{\n  \"passed\": true,\n  \"cases\": [\n    \"reload-explicit-restore\",\n    \"controlled-counts\",\n    \"8-viewports-orientations\",\n    \"offline-no-autosubmit\",\n    \"uncertain-receipt-review\",\n    \"success-purge\",\n    \"source-conflict\",\n    \"TTL\",\n    \"account-switch\",\n    \"tab-isolation\",\n    \"discard-purge\",\n    \"login-purge\",\n    \"logout-success\",\n    \"broadcast-logout\",\n    \"expired-session\",\n    \"live-account-switch\",\n    \"storage-denied\"\n  ],\n  \"pageErrors\": [],\n  \"writes\": 2\n}\n"
+    }
+  ],
+  "finishedAt": "2026-10-26T06:19:26.228Z",
+  "database": {
+    "command": "package test:db with test-concurrency=1 and TAP reporter",
+    "startedAt": "2026-10-26T06:19:39.621734+00:00",
+    "finishedAt": "2026-10-26T06:21:14.649978+00:00",
+    "exitCode": 0,
+    "elapsedSeconds": 95.03,
+    "summary": "tead of INTERNAL_ERROR\n      ---\n      duration_ms: 27.058518\n      type: 'test'\n      ...\n# {\"event\":\"support.request_failed\",\"requestId\":\"5c7a39dd-eef1-4b60-b781-d595c1eba936\",\"occurredAt\":\"2026-10-26T06:21:14.488Z\",\"module\":\"users\",\"code\":\"CONFLICT\",\"status\":409}\n    # Subtest: US18 strict decimal/profile validation and sanitized HTTP conflicts\n    ok 19 - US18 strict decimal/profile validation and sanitized HTTP conflicts\n      ---\n      duration_ms: 47.876299\n      type: 'test'\n      ...\n    # Subtest: US19 self edit clears cookie and revokes session when a second ready admin exists\n    ok 20 - US19 self edit clears cookie and revokes session when a second ready admin exists\n      ---\n      duration_ms: 82.557234\n      type: 'test'\n      ...\n    1..20\nok 22 - Tahap 2.1 \u2014 user management, real hashes and role-scoped SQL\n  ---\n  duration_ms: 4253.28052\n  type: 'test'\n  ...\n1..22\n# tests 391\n# suites 0\n# pass 391\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 94947.748059\n",
+    "tests": "391",
+    "pass": "391",
+    "fail": "0"
+  },
+  "limits": [
+    "Not human acceptance or task-duration measurement.",
+    "Local disposable data and controlled API fixtures; not full production runtime or physical devices.",
+    "Scenario mapping denotes only assertions listed in UAT-TECHNICAL-RESULTS.md; human interpretation and independence remain untested."
+  ]
+}

@@ -7,7 +7,7 @@ Program baru PRO-0–PRO-8, bukan pengulangan Tahap 0–8 terdahulu. Dijalankan 
 ## Berkas acuan
 
 - [Baseline dan batas bukti](BASELINE.md).
-- [Rencana UAT siap digunakan](UAT.md) serta [lembar hasil kosong](uat-results.csv).
+- [Rencana UAT siap digunakan](UAT.md) serta [lembar hasil manusia dan validasi teknis terpisah](uat-results.csv).
 - [Backlog prioritas, target, dependency, estimasi](BACKLOG.md).
 - [Checkpoint dan langkah berikutnya](CHECKPOINT.md).
 - [Inventaris mesin](inventory.json), [profil browser](browser-performance.json), [aksesibilitas pilot](pilot-a11y.json), [sampel kontras token](token-contrast.json).
