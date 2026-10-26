@@ -12,7 +12,7 @@ try {
  const screenshots=process.env.UI_SCREENSHOT_DIR;if(screenshots)await mkdir(screenshots,{recursive:true});
  const admin='11111111-1111-4111-8111-111111111111',guru='22222222-2222-4222-8222-222222222222',occ='33333333-3333-4333-8333-333333333333',subject='44444444-4444-4444-8444-444444444444',jid='55555555-5555-4555-8555-555555555555';
  const date=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Jakarta'}).format(new Date());
- let role='admin',rows=[],blocks=[],h1=false,writeMode='ok',readMode='ok',writes=0,contextReads=0,blockReads=0,holdRelease,holdStarted,started,hold;
+ let role='admin',rows=[],blocks=[],h1=false,writeMode='ok',readMode='ok',writes=0,contextReads=0,historyReads=0,blockReads=0,holdRelease,holdStarted,started,hold;
  const record={id:jid,occurrenceId:occ,userId:admin,teacherName:'Guru sintetis',date,className:'VII',subjectName:'IPA',material:'Materi sintetis',present:20,absent:0,notes:'Catatan',inputType:'SAME_DAY',weight:'1',creditedJtm:'2.0000',version:'1',submittedAt:date+'T07:00:00Z',recapAvailable:false};
  await page.route('**/api/activities/**',async route=>{
   const req=route.request(),url=new URL(req.url()),kind=url.pathname.split('/').at(-1);
@@ -21,7 +21,7 @@ try {
    if(kind==='options'){contextReads++;return ok({teachers:[{id:guru,name:'Guru sintetis'}],subjects:[{id:subject,name:'IPA'}],h1Enabled:h1});}
    if(kind==='blocks'){blockReads++;return ok({items:blocks});}
    if(kind==='eligible')return ok({items:[{id:occ,userId:role==='admin'?admin:guru,date:url.searchParams.get('date'),kind:'KBM',className:'VII',subjectName:'IPA',expectedStudents:20,timeStart:'07:00',timeEnd:'09:00',journalId:rows.length?jid:null,eligibilityError:null}]});
-   if(kind==='journals'){
+   if(kind==='journals'){historyReads++;
     if(readMode==='error')return route.fulfill({status:503,json:{ok:false,error:{code:'UNAVAILABLE',message:'Riwayat belum tersedia.'}}});
     if(readMode==='invalid')return ok({items:null,total:0});
     const p=Number(url.searchParams.get('page'));return ok({items:rows.slice((p-1)*25,p*25),total:rows.length,page:p,pageSize:25});
@@ -48,6 +48,12 @@ try {
  const overflow=async()=>assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
  const close=async()=>{await page.keyboard.press('Escape');const discard=page.getByRole('button',{name:'Buang perubahan',exact:true});if(await discard.isVisible())await discard.click();await page.getByRole('dialog').waitFor({state:'hidden'});await page.waitForFunction(()=>document.activeElement?.closest('.ui-workspace-pilot')!==null);};
  const reload=async()=>{await page.getByRole('button',{name:'Muat ulang',exact:true}).click();await page.waitForFunction(()=>!document.querySelector('[aria-busy="true"]'));};
+ await go(); await page.waitForTimeout(300); assert.equal(historyReads,0,'Hidden history must not be fetched on journal entry');
+ await page.locator('summary').filter({hasText:'Tanggal dan filter jurnal'}).click();
+ await page.getByLabel('Cari materi/catatan',{exact:true}).fill('Pencarian tersembunyi');await page.waitForTimeout(300);assert.equal(historyReads,0,'Hidden search must not fetch history');
+ await tab('Riwayat dan Detail Jurnal');await page.getByText('Belum ada jurnal pada rentang ini.',{exact:true}).waitFor();assert.equal(historyReads,1);
+ await tab('Input Jurnal Pembelajaran');const hiddenReads=historyReads;await page.getByRole('button',{name:'Muat ulang',exact:true}).click();await page.waitForFunction(()=>!document.querySelector('[aria-busy="true"]'));assert.equal(historyReads,hiddenReads,'Input refresh must not fetch history without recovery need');
+
  for(const width of [280,320,375,768,1024,1440,1920]){
   await page.setViewportSize({width,height:800});await go();await overflow();
   await page.getByRole('button',{name:'Jurnal pembelajaran',exact:true}).click();const d=page.getByRole('dialog');await d.getByLabel('Kegiatan',{exact:true}).waitFor();

@@ -30,11 +30,11 @@ export function JournalWorkspace({ admin, userId }: {
     const [tab, setTab] = useState("input"), [date, setDate] = useActivityDate();
     const [from, setFrom] = useState(wibDate().slice(0, 7) + "-01"), [to, setTo] = useState(wibDate()), [teacher, setTeacher] = useState(""), [q, setQ] = useState(""), [page, setPage] = useState(1);
     const [context, setContext] = useState<Context | null>(null), [history, setHistory] = useState<History | null>(null);
-    const [contextLoading, setContextLoading] = useState(true), [historyLoading, setHistoryLoading] = useState(true);
+    const [contextLoading, setContextLoading] = useState(true), [historyLoading, setHistoryLoading] = useState(false);
     const [contextError, setContextError] = useState(""), [historyError, setHistoryError] = useState(""), [actionError, setActionError] = useState("");
     const [busy, setBusy] = useState(false), [blocked, setBlocked] = useState(false), [notice, setNotice] = useState(""), [action, setAction] = useState<JournalAction | null>(null);
     const [blockQ, setBlockQ] = useState(""), [blockPage, setBlockPage] = useState(1);
-    const mounted = useRef(false), pending = useRef(false), contextRead = useRef<AbortController | null>(null), historyRead = useRef<AbortController | null>(null), downloadRequest = useRef<AbortController | null>(null), recoveryScope = useRef<"context" | "all">("all");
+    const mounted = useRef(false), pending = useRef(false), contextRead = useRef<AbortController | null>(null), historyRead = useRef<AbortController | null>(null), downloadRequest = useRef<AbortController | null>(null), recoveryScope = useRef<"context" | "all">("context");
     const workspace = useRef<HTMLDivElement>(null), actionTrigger = useRef<HTMLElement | null>(null);
     function openAction(next: JournalAction) {
         actionTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -125,14 +125,25 @@ export function JournalWorkspace({ admin, userId }: {
     }, []);
     useEffect(() => { let active = true; queueMicrotask(() => { if (active)
         void loadContext(); }); return () => { active = false; contextRead.current?.abort(); }; }, [loadContext]);
-    useEffect(() => { const timer = setTimeout(() => void loadHistory(), 200); return () => { clearTimeout(timer); historyRead.current?.abort(); }; }, [loadHistory]);
+    useEffect(() => {
+        if (tab !== "history") return;
+        let active = true;
+        queueMicrotask(() => { if (active) { setHistory(null); setHistoryLoading(true); } });
+        const timer = setTimeout(() => void loadHistory(), 200);
+        return () => { active = false; clearTimeout(timer); historyRead.current?.abort(); };
+    }, [loadHistory, tab]);
     async function refresh() {
         setActionError("");
-        const [contextOk, historyOk] = await Promise.all([loadContext(), loadHistory()]);
-        if (mounted.current && contextOk && (recoveryScope.current === "context" || historyOk))
+        // Hidden history is not fetched until needed. Edit/delete recovery must still verify it.
+        setHistory(null);
+        const [contextOk, historyOk] = await Promise.all([loadContext(),
+            tab === "history" || recoveryScope.current === "all" ? loadHistory() : Promise.resolve(true)]);
+        if (mounted.current && contextOk && (recoveryScope.current === "context" || historyOk)) {
             setBlocked(false);
+            recoveryScope.current = "context";
+        }
     }
-    function changeHistory(update: () => void) { setHistory(null); setHistoryLoading(true); update(); setPage(1); }
+    function changeHistory(update: () => void) { setHistory(null); setHistoryLoading(tab === "history"); update(); setPage(1); }
     async function save(input: unknown, signal: AbortSignal) {
         if (!action || pending.current || blocked)
             return;
@@ -209,7 +220,7 @@ export function JournalWorkspace({ admin, userId }: {
     return <div ref={workspace} className="ui-workspace-pilot min-w-0 space-y-6 [overflow-wrap:anywhere]">
     <PageHeader title="Jurnal pembelajaran" context="Pembelajaran madrasah · WIB"
       description="Pilih kegiatan, catat pembelajaran, lalu periksa riwayat dan kredit JTM."
-      actions={<Button variant="outline" disabled={busy || contextLoading || historyLoading || action !== null} onClick={() => void refresh()}>Muat ulang</Button>}/>
+      actions={<Button variant="outline" disabled={busy || contextLoading || (tab === "history" && historyLoading) || action !== null} onClick={() => void refresh()}>Muat ulang</Button>}/>
     {notice && <p role="status" className="form-feedback-success">{notice}</p>}
     <ErrorFeedback message={actionError} autoFocus/>
     {blocked && !action && <p role="status" className="ui-feedback-warning">Periksa hasil terbaru melalui Muat ulang sebelum melanjutkan perubahan. Jika pemuatan gagal, perubahan yang sudah berhasil tetap tersimpan.</p>}
@@ -227,7 +238,7 @@ export function JournalWorkspace({ admin, userId }: {
           {context.eligible.map(row => <article key={row.id} className="min-w-0 space-y-2 rounded-xl border p-4"><h3 className="font-semibold">{row.subjectName ?? "Mata pelajaran"} · {row.className ?? "Kelas"}</h3><p className="text-sm">{row.timeStart}–{row.timeEnd} · {row.expectedStudents} siswa sesuai standar</p><StatusBadge tone={row.journalId ? "success" : row.eligibilityError ? "warning" : "neutral"} label={row.journalId ? "Tersimpan" : row.eligibilityError ? "Perlu prasyarat" : "Siap diisi"}/><p className="text-sm text-muted-foreground">{row.journalId ? "Jurnal sudah tersimpan. Periksa Riwayat dan Detail Jurnal." : row.eligibilityError ? journalEligibilityText(row.eligibilityError) : "Siap diisi setelah Anda memeriksa jumlah siswa."}</p></article>)}</>}
       </section> },
             { value: "history", label: "Riwayat dan Detail Jurnal", icon: <ActionIcon action="history"/>, content: <><section className="ui-panel min-w-0 space-y-4"><h2 className="text-xl font-bold">Riwayat dan detail jurnal</h2><p className="text-sm text-muted-foreground">Unduhan mencakup seluruh hasil sesuai filter, bukan hanya halaman yang sedang terlihat.</p><div className="flex flex-wrap gap-3"><Button variant="outline" disabled={historyDisabled} onClick={() => void download("csv")}>Unduh CSV</Button><Button variant="outline" disabled={historyDisabled} onClick={() => void download("pdf")}>Unduh PDF</Button></div>
-        {historyLoading && <p role="status" aria-busy="true" className="ui-feedback-neutral">Memuat riwayat jurnal…</p>}<ErrorFeedback message={historyError}/>
+        {tab === "history" && historyLoading && <p role="status" aria-busy="true" className="ui-feedback-neutral">Memuat riwayat jurnal…</p>}<ErrorFeedback message={historyError}/>
         {history && <>{!history.items.length && <EmptyState title="Belum ada jurnal pada rentang ini." description="Periksa rentang tanggal, filter guru, atau pencarian materi/catatan."/>}{history.items.map(journal => <article key={journal.id} className="min-w-0 space-y-3 rounded-xl border p-4"><h3 className="font-semibold">{journal.date} · {journal.teacherName} · {journal.subjectName} · {journal.className}</h3><p className="whitespace-pre-wrap leading-7">{journal.material}</p><p className="text-sm">Hadir {journal.present}; absen {journal.absent} · {journal.creditedJtm} JTM · {journal.inputType === "H_MINUS_1" ? "H-1 (80%)" : "Hari H (100%)"} · versi {journal.version}</p>{journal.notes && <p className="whitespace-pre-wrap text-sm leading-6">{journal.notes}</p>}<p className="text-sm text-muted-foreground">{journal.recapAvailable ? "Rekap siswa tersedia" : "Belum ada rekap siswa; jumlah diperiksa terhadap standar kelas."}</p>{(admin || journal.userId === userId) && <div className="flex flex-wrap gap-3"><Button variant="outline" disabled={historyDisabled} onClick={() => { setTab("input"); openAction({ kind: "edit", journal }); }}>Ubah jurnal</Button><Button variant="outline" disabled={historyDisabled} onClick={() => openAction({ kind: "delete", journal })}>Hapus jurnal dan batalkan JTM</Button></div>}</article>)}</>}
       </section><div className="flex min-w-0 flex-wrap items-center justify-between gap-3"><Button variant="outline" disabled={historyDisabled || page <= 1} onClick={() => { setHistory(null); setHistoryLoading(true); setPage(value => value - 1); }}>Sebelumnya</Button><span className="text-sm">Halaman {page} dari {historyLast} · {history?.total ?? 0} catatan</span><Button variant="outline" disabled={historyDisabled || page >= historyLast} onClick={() => { setHistory(null); setHistoryLoading(true); setPage(value => value + 1); }}>Berikutnya</Button></div></> },
             { value: "policy", label: "Kebijakan dan Pemblokiran Jurnal", icon: <ActionIcon action="section"/>, content: <section className="ui-panel min-w-0 space-y-4"><h2 className="text-xl font-bold">Kebijakan dan pemblokiran jurnal</h2>{contextLoading && <p role="status" aria-busy="true" className="ui-feedback-neutral">Memuat kebijakan jurnal…</p>}<ErrorFeedback message={contextError}/>{context && <><p className="text-sm">Jurnal H-1 {context.options.h1Enabled ? "aktif dengan bobot 80%" : "belum aktif"}. Kegiatan harus memenuhi ketentuan konfirmasi dan batas waktu pengisian.</p>{admin ? <><div className="flex flex-wrap gap-3"><Button variant="outline" disabled={contextDisabled} onClick={() => openAction({ kind: "h1", enabled: !context.options.h1Enabled })}>{context.options.h1Enabled ? "Nonaktifkan" : "Aktifkan"} jurnal H-1</Button><Button variant="outline" disabled={contextDisabled || !context.options.subjects.length} onClick={() => openAction({ kind: "block-new", date: dayFilter.safeParse({ date }).success ? date : wibDate(), subjects: context.options.subjects })}>Blok pengisian jurnal</Button></div><label className="block min-w-0 text-sm">Cari blok mata pelajaran atau pesan<input className="ui-control mt-2" maxLength={150} value={blockQ} onChange={e => { setBlockQ(e.target.value); setBlockPage(1); }}/></label>{!blocks.length && <EmptyState title="Tidak ada blok sesuai pencarian." description="Blok baru akan tampil setelah berhasil disimpan. Hapus pencarian untuk melihat seluruh blok."/>}{blocks.slice((shownBlockPage - 1) * 10, shownBlockPage * 10).map(block => { const subject = context.options.subjects.find(row => row.id === block.subject_id)?.name ?? `Mata pelajaran ${block.subject_id}`; return <article key={block.id} className="min-w-0 space-y-3 rounded-xl border p-4"><h3 className="font-semibold">{subject}</h3><p className="text-sm">{block.date_start}–{block.date_end} · {block.active ? "Aktif" : "Nonaktif"} · versi {block.version}</p><p className="whitespace-pre-wrap text-sm leading-6">{block.message}</p><Button variant="outline" disabled={contextDisabled} onClick={() => openAction({ kind: "block-toggle", block, subject })}>{block.active ? "Nonaktifkan blok jurnal" : "Aktifkan blok jurnal"}</Button></article>; })}<div className="flex flex-wrap justify-between gap-3"><Button variant="outline" disabled={shownBlockPage <= 1} onClick={() => setBlockPage(shownBlockPage - 1)}>Blok sebelumnya</Button><p className="text-sm">{blocks.length} blok · halaman {shownBlockPage} dari {blockLast}</p><Button variant="outline" disabled={shownBlockPage >= blockLast} onClick={() => setBlockPage(shownBlockPage + 1)}>Blok berikutnya</Button></div></> : <p className="text-sm leading-6">Pengaturan kebijakan dan pemblokiran jurnal dikelola administrator. Kendala pengisian kegiatan ditampilkan pada tab Input Jurnal Pembelajaran.</p>}</>}

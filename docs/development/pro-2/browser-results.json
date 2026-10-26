@@ -1,0 +1,310 @@
+{
+  "kind": "controlled-browser-before-after",
+  "sourceBaseline": "1d4f8217fae38db07440bc9879b32dc624e93855",
+  "before": {
+    "phase": "before",
+    "kind": "pro2-lazy-history-controlled-browser",
+    "browser": "153.0.8010.0",
+    "samples": [
+      {
+        "role": "guru",
+        "width": 375,
+        "repeat": 0,
+        "readyMs": 797,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "guru",
+        "width": 375,
+        "repeat": 1,
+        "readyMs": 759,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "guru",
+        "width": 375,
+        "repeat": 2,
+        "readyMs": 861,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "guru",
+        "width": 375,
+        "repeat": 3,
+        "readyMs": 747,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "guru",
+        "width": 375,
+        "repeat": 4,
+        "readyMs": 747,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "guru",
+        "width": 1440,
+        "repeat": 0,
+        "readyMs": 763,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "guru",
+        "width": 1440,
+        "repeat": 1,
+        "readyMs": 764,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "guru",
+        "width": 1440,
+        "repeat": 2,
+        "readyMs": 780,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "guru",
+        "width": 1440,
+        "repeat": 3,
+        "readyMs": 747,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "guru",
+        "width": 1440,
+        "repeat": 4,
+        "readyMs": 747,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "admin",
+        "width": 375,
+        "repeat": 0,
+        "readyMs": 753,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "admin",
+        "width": 375,
+        "repeat": 1,
+        "readyMs": 746,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "admin",
+        "width": 375,
+        "repeat": 2,
+        "readyMs": 746,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "admin",
+        "width": 375,
+        "repeat": 3,
+        "readyMs": 732,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "admin",
+        "width": 375,
+        "repeat": 4,
+        "readyMs": 743,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "admin",
+        "width": 1440,
+        "repeat": 0,
+        "readyMs": 750,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "admin",
+        "width": 1440,
+        "repeat": 1,
+        "readyMs": 830,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "admin",
+        "width": 1440,
+        "repeat": 2,
+        "readyMs": 729,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "admin",
+        "width": 1440,
+        "repeat": 3,
+        "readyMs": 731,
+        "hiddenHistoryRequests": 1
+      },
+      {
+        "role": "admin",
+        "width": 1440,
+        "repeat": 4,
+        "readyMs": 731,
+        "hiddenHistoryRequests": 1
+      }
+    ],
+    "p50Ms": 747,
+    "p95Ms": 830,
+    "hiddenHistoryRequests": 20,
+    "pageErrors": [],
+    "overflow": false,
+    "limits": "Readiness = reload control enabled, not Core Web Vitals or human task time. History response deliberately delayed 400ms in both variants. Local fixture, empty history, no Next SSR/WAN/production measurement."
+  },
+  "after": {
+    "phase": "after",
+    "kind": "pro2-lazy-history-controlled-browser",
+    "browser": "153.0.8010.0",
+    "samples": [
+      {
+        "role": "guru",
+        "width": 375,
+        "repeat": 0,
+        "readyMs": 280,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "guru",
+        "width": 375,
+        "repeat": 1,
+        "readyMs": 164,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "guru",
+        "width": 375,
+        "repeat": 2,
+        "readyMs": 185,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "guru",
+        "width": 375,
+        "repeat": 3,
+        "readyMs": 148,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "guru",
+        "width": 375,
+        "repeat": 4,
+        "readyMs": 154,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "guru",
+        "width": 1440,
+        "repeat": 0,
+        "readyMs": 195,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "guru",
+        "width": 1440,
+        "repeat": 1,
+        "readyMs": 179,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "guru",
+        "width": 1440,
+        "repeat": 2,
+        "readyMs": 236,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "guru",
+        "width": 1440,
+        "repeat": 3,
+        "readyMs": 174,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "guru",
+        "width": 1440,
+        "repeat": 4,
+        "readyMs": 249,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "admin",
+        "width": 375,
+        "repeat": 0,
+        "readyMs": 207,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "admin",
+        "width": 375,
+        "repeat": 1,
+        "readyMs": 161,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "admin",
+        "width": 375,
+        "repeat": 2,
+        "readyMs": 178,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "admin",
+        "width": 375,
+        "repeat": 3,
+        "readyMs": 174,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "admin",
+        "width": 375,
+        "repeat": 4,
+        "readyMs": 156,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "admin",
+        "width": 1440,
+        "repeat": 0,
+        "readyMs": 182,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "admin",
+        "width": 1440,
+        "repeat": 1,
+        "readyMs": 184,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "admin",
+        "width": 1440,
+        "repeat": 2,
+        "readyMs": 167,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "admin",
+        "width": 1440,
+        "repeat": 3,
+        "readyMs": 173,
+        "hiddenHistoryRequests": 0
+      },
+      {
+        "role": "admin",
+        "width": 1440,
+        "repeat": 4,
+        "readyMs": 163,
+        "hiddenHistoryRequests": 0
+      }
+    ],
+    "p50Ms": 174,
+    "p95Ms": 249,
+    "hiddenHistoryRequests": 0,
+    "pageErrors": [],
+    "overflow": false,
+    "limits": "Readiness = reload control enabled, not Core Web Vitals or human task time. History response deliberately delayed 400ms in both variants. Local fixture, empty history, no Next SSR/WAN/production measurement."
+  }
+}
