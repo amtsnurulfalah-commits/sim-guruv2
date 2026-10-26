@@ -80,7 +80,7 @@ P1 merupakan fondasi yang didahulukan. P2 memperdalam manfaat fitur utama. P3 me
 | PRO-4 | Pengalaman mobile dan koneksi tidak stabil | PRO-1; temuan PRO-0 | Alur ponsel yang nyaman dan hasil simpan jelas |
 | PRO-5 | Transparansi honorarium dan bantuan kontekstual | PRO-1; sumber data/izin tervalidasi | Rincian dapat ditelusuri dan tindakan perbaikan jelas |
 | PRO-6 | Preferensi dan pintasan pribadi | PRO-1 dan PRO-4 | Personalisasi ringan tanpa mengubah akses |
-| PRO-7 | PWA, kalender, riwayat, catatan pembaruan | PRO-1–PRO-6 diterima atau pengecualian dicatat | Fitur tambahan yang benar-benar bermanfaat |
+| PRO-7 | Implementasi teknis; penerimaan fisik/UAT terbuka | 26 Oktober 2026 | [Paket PRO-7](../pro-7/README.md) | Manifest online, agenda+ICS, audit tersamarkan, release notes; migrasi37 |
 | PRO-8 | Validasi akhir, rilis, dan evaluasi | Tahap yang hendak dirilis | Bukti penerimaan serta rencana tindak lanjut |
 
 Urutan default: **PRO-0 → PRO-1 → PRO-2 → PRO-3 → PRO-4 → PRO-5 → PRO-6 → PRO-7 → PRO-8**. Pemeriksaan aksesibilitas, keamanan, pengujian, dan dokumentasi dilakukan di setiap tahap, bukan ditunda sampai PRO-8. Tahap dapat dirilis bertahap setelah memenuhi gate yang relevan.
@@ -336,7 +336,7 @@ Checklist selesai per paket:
 | PRO-4 | Kontrol teknis diimplementasikan; penerimaan perangkat fisik terbuka | 26 Oktober 2026 | [Paket PRO-4](../pro-4/README.md) | Offline preflight, status draft dan modal mobile; lihat batas validasi |
 | PRO-5 | Implementasi teknis; penerimaan pemahaman pengguna terbuka | 26 Oktober 2026 | [Paket PRO-5](../pro-5/README.md) | Asal perhitungan, provenance PDF, bantuan dan sumber bertanggal; PRO-5.8 belum diuji manusia |
 | PRO-6 | Pilot teknis; manfaat UAT terbuka | 26 Oktober 2026 | [Paket PRO-6](../pro-6/README.md) | Density/count/pintasan per tab-akun; PRO-6.1 belum diterima manusia |
-| PRO-7 | Belum dimulai | Belum ditetapkan | — | Nilai prasyarat setiap paket tambahan |
+| PRO-7 | Implementasi teknis; penerimaan fisik/UAT terbuka | 26 Oktober 2026 | [Paket PRO-7](../pro-7/README.md) | Manifest online, agenda+ICS, audit tersamarkan, release notes; migrasi37 |
 | PRO-8 | Belum dimulai | Belum ditetapkan | — | Susun gate sejak paket pertama |
 
 Gunakan status: **Belum dimulai → Dianalisis → Dikerjakan → Divalidasi → Siap rilis → Dirilis**. Status **Terblokir** mencantumkan sebab, kebutuhan penyelesaian, dan penanggung jawab. Kode yang telah merged belum otomatis berarti perubahan produksi/config atau penerimaan pengguna sudah selesai.

@@ -192,6 +192,9 @@ export const modules: readonly AppModule[] = [
     stage: "8.1–8.5",
     adminOnly: true,
   },
+  { slug: "agenda", href: "/agenda", available: true, title: "Kalender pribadi", description: "Penugasan dan acara dari sumber efektif, serta unduhan kalender.", group: "Kehadiran & Penugasan", stage: "PRO-7" },
+  { slug: "riwayat-perubahan", href: "/riwayat-perubahan", available: true, title: "Riwayat perubahan", description: "Catatan perubahan yang boleh dilihat sesuai akun.", group: "Administrasi", stage: "PRO-7" },
+
 ];
 export function modulesFor(role: AppRole, reportAccess = false) {
   return modules.filter((module) => canViewModule(role, module, reportAccess));

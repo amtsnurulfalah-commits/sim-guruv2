@@ -8,8 +8,8 @@ import {
 } from "../../src/lib/navigation/modules";
 test("navigation registry has unique slugs and enforces role visibility independently of the UI", () => {
   assert.equal(new Set(modules.map((m) => m.slug)).size, modules.length);
-  assert.equal(modulesFor("guru").length, 9);
-  assert.equal(modulesFor("admin").length, 18);
+  assert.equal(modulesFor("guru").length, 11);
+  assert.equal(modulesFor("admin").length, 20);
   assert.equal(canViewModule("guru", moduleBySlug("laporan-kendala")!), false);
   assert.equal(canViewModule("admin", moduleBySlug("laporan-kendala")!), true);
   assert.equal(canViewModule("guru", moduleBySlug("laporan-pimpinan")!), false);
@@ -28,5 +28,5 @@ test("four navigation groups retain the complete role-specific module registry",
     ["Pembelajaran", "Kehadiran & Penugasan", "Keuangan", "Administrasi"],
   );
   assert.equal(moduleBySlug("honorarium")?.group, "Keuangan");
-  assert.ok(modulesFor("guru").every((m) => m.group !== "Administrasi"));
+  assert.ok(modulesFor("guru").every((m) => m.group !== "Administrasi" || m.slug === "riwayat-perubahan"));
 });

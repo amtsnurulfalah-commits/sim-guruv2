@@ -123,7 +123,9 @@ test("Tahap1.6 dashboard boundaries with real local sessions", async (t) => {
       assert.equal(response.status, 200);
       assert.equal(response.headers.get("cache-control"), "no-store");
       const result = await response.json();
-      assert.equal(result.data.modules.length, 18);
+      assert.equal(result.data.modules.length, 20);
+      assert.ok(result.data.modules.some((item: { href: string }) => item.href === "/agenda"));
+      assert.ok(result.data.modules.some((item: { href: string }) => item.href === "/riwayat-perubahan"));
       assert.equal(result.data.financeSummaryAvailable, false);
       assert.equal(result.data.activitySummaryAvailable, false);
       assert.equal(JSON.stringify(result).includes(hash), false);

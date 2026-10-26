@@ -154,7 +154,7 @@ export async function downloadFile(
   const type = response.headers.get("content-type") ?? "";
   if (/application\/json/.test(type)) await readApiResponse<never>(response);
   if (
-    !/application\/pdf|text\/csv|application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.test(
+    !/application\/pdf|text\/csv|text\/calendar|application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.test(
       type,
     )
   ) {

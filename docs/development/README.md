@@ -25,3 +25,5 @@ Untuk instruksi pengguna “Tahap 0” setelah roadmap baru, baca [roadmap PRO](
 - [PRO-5 — transparansi honorarium dan bantuan](pro-5/README.md), [validasi](pro-5/VALIDATION.md), [UAT](pro-5/UAT.md).
 
 - [PRO-6 — preferensi tampilan dan pintasan](pro-6/README.md), [validasi](pro-6/VALIDATION.md), [checkpoint](pro-6/CHECKPOINT.md).
+
+- [PRO-7 — pemasangan, kalender, riwayat dan pembaruan](pro-7/README.md), [validasi](pro-7/VALIDATION.md), [checkpoint](pro-7/CHECKPOINT.md).
