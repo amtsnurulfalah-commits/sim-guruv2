@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { journalContentSchema } from "./journal-content";
 import { date } from "../masters/schemas";
 import { wibDate } from "../calendar/schemas";
 const uuid = z.uuid();
@@ -26,6 +27,7 @@ export const historyFilter = z
   );
 const attendanceIdentity = { attendanceId: uuid, version, reason };
 const journalFields = {
+  ...journalContentSchema,
   material: z.string().trim().min(1).max(2000),
   present: count,
   absent: count,

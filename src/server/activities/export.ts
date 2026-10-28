@@ -1,4 +1,6 @@
 import "server-only";
+import { writeJournalRegister } from "./journal-pdf";
+import { journalContentFields } from "../../lib/activities/journal-content";
 import PDFDocument from "pdfkit";
 import { join } from "node:path";
 export function csvCell(value: unknown) {
@@ -23,12 +25,17 @@ export function exportColumns(kind: "attendance" | "journals") {
         ["teacherName", "Nama guru"],
         ["className", "Kelas"],
         ["subjectName", "Mata pelajaran"],
+        ["schoolName", "Sekolah (identitas saat ekspor)"],
+        ["periodLabel", "Tahun pelajaran / semester"],
+        ["timeStart", "Waktu mulai"], ["timeEnd", "Waktu selesai"],
         ["material", "Materi"],
+        ...journalContentFields.map(field => [field.name, field.label]),
         ["present", "Hadir"],
         ["absent", "Absen"],
         ["notes", "Catatan"],
         ["inputType", "Jenis input"],
         ["creditedJtm", "Kredit JTM"],
+        ["submittedAt", "Waktu pengiriman"],
       ];
 }
 export function renderCsv(
@@ -51,7 +58,8 @@ export async function renderPdf(
 ): Promise<Buffer> {
   const doc = new PDFDocument({
     size: "A4",
-    margin: 42,
+    layout: kind === "journals" ? "landscape" : "portrait",
+    margin: kind === "journals" ? 36 : 42,
     info: {
       Title:
         kind === "attendance"
@@ -66,6 +74,11 @@ export async function renderPdf(
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
   });
+  if (kind === "journals") {
+    writeJournalRegister(doc, rows, range);
+    doc.end();
+    return result;
+  }
   doc
     .fontSize(16)
     .text(

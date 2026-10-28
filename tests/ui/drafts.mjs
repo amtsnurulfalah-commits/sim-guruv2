@@ -46,9 +46,9 @@ try {
  const overflow=async()=>assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
  const close=async()=>{await page.keyboard.press('Escape');const discard=page.getByRole('button',{name:'Buang perubahan',exact:true});if(await discard.isVisible())await discard.click();await page.getByRole('dialog').waitFor({state:'hidden'});};
 
- const open = async()=>{ await page.getByRole('button',{name:'Jurnal pembelajaran',exact:true}).click(); const d=page.getByRole('dialog'); await d.getByLabel('Kegiatan',{exact:true}).selectOption(occ); await d.getByRole('region',{name:'Draft lokal'}).waitFor(); return d; };
+ const open = async()=>{ await page.getByRole('button',{name:'Jurnal pembelajaran',exact:true}).click(); const d=page.getByRole('dialog'); await d.getByLabel('Kegiatan',{exact:true}).selectOption(occ);await page.getByRole('dialog').getByLabel('Tujuan pembelajaran',{exact:true}).fill('Mengidentifikasi struktur sel'); await d.getByRole('region',{name:'Draft lokal'}).waitFor(); return d; };
  let d; await go(); d=await open();
- await d.getByLabel('Materi pembelajaran',{exact:true}).fill('Draft materi sebelum reload');
+ await d.getByLabel('Materi pembelajaran',{exact:true}).fill('Draft materi sebelum reload');await d.getByLabel('Refleksi guru',{exact:true}).fill('Refleksi draft tetap tersimpan');
  await d.getByLabel('Siswa hadir',{exact:true}).fill('18'); await d.getByLabel('Siswa absen',{exact:true}).fill('2');
  await d.getByLabel('Alasan penyimpanan',{exact:true}).fill('Draft pengujian otomatis');
  await d.getByText(/Draft tersimpan di tab ini/).waitFor();
@@ -56,7 +56,7 @@ try {
  await go(); d=await open(); await d.getByRole('button',{name:'Pulihkan draft',exact:true}).waitFor();
  assert.equal(await d.getByLabel('Materi pembelajaran',{exact:true}).inputValue(),'');
  await d.getByRole('button',{name:'Pulihkan draft',exact:true}).click();
- assert.equal(await d.getByLabel('Materi pembelajaran',{exact:true}).inputValue(),'Draft materi sebelum reload');
+ assert.equal(await d.getByLabel('Materi pembelajaran',{exact:true}).inputValue(),'Draft materi sebelum reload');assert.equal(await d.getByLabel('Refleksi guru',{exact:true}).inputValue(),'Refleksi draft tetap tersimpan');
  assert.equal(await d.getByLabel('Siswa hadir',{exact:true}).inputValue(),'18');
  assert.equal(await d.getByLabel('Siswa absen',{exact:true}).inputValue(),'2');
  assert.equal(writes,0);

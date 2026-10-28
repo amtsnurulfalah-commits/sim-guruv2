@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { journalContentSchema } from "./journal-content";
 import { ApiRequestError } from "../feedback/api-error";
 const uuid = z.uuid(), date = z.iso.date();
 const version = z.string().regex(/^[1-9]\d{0,18}$/);
@@ -6,6 +7,9 @@ const decimal = z.string().regex(/^(?:0|[1-9]\d*)(?:\.\d+)?$/);
 const count = z.number().int().min(0).max(1000);
 const unique = <T>(rows: T[], key: (row: T) => string) => new Set(rows.map(key)).size === rows.length;
 export const journalSchema = z.object({
+    ...journalContentSchema,
+    schoolName: z.string().max(200).optional(), periodLabel: z.string().optional(),
+    timeStart: z.string().optional(), timeEnd: z.string().optional(),
     id: uuid, occurrenceId: uuid, userId: uuid, teacherName: z.string(), date,
     className: z.string(), subjectName: z.string(), material: z.string().max(2000),
     present: count, absent: count, notes: z.string().max(2000),
