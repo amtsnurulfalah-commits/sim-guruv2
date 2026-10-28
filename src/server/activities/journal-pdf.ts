@@ -9,31 +9,35 @@ export function writeJournalRegister(
     "No.",
     "Hari / tanggal",
     "Kelas",
-    "Waktu / JTM",
+    "Waktu",
     "Materi / tujuan pembelajaran",
     "Kendala",
     "Tindak lanjut",
     "Refleksi guru",
-    "Pengesahan pengiriman",
+    "Guru / tanggal pengisian",
   ];
   const left = 36,
     bottom = () => doc.page.height - 36;
   let y = 0,
     group = "",
     number = 0;
-  function header(title: string) {
-    doc
-      .fontSize(15)
-      .fillColor("#12344b")
-      .text("JURNAL MENGAJAR GURU", left, 30);
-    doc.fontSize(9).fillColor("#222222").text(title, left, 52, { width: 760 });
-    doc.text(
-      "SiM-Guru · " + range + " · Tanggal operasional Asia/Jakarta",
-      left,
-      doc.y + 5,
-      { width: 760 },
-    );
-    y = doc.y + 12;
+  function header(row: Record<string, unknown>, continued = false) {
+    doc.fillColor("#12344b").fontSize(18);
+    if (row.schoolName) doc.text(String(row.schoolName).toLocaleUpperCase("id-ID"), left, 30, { width: 769, align: "center" });
+    else doc.text("JURNAL PEMBELAJARAN", left, 30, { width: 769, align: "center" });
+    const line = doc.y + 10;
+    doc.moveTo(left, line).lineTo(left + 769, line).lineWidth(1.5).stroke("#12344b");
+    doc.moveTo(left, line + 3).lineTo(left + 769, line + 3).lineWidth(0.5).stroke("#12344b");
+    doc.fontSize(12).text("JURNAL MENGAJAR GURU" + (continued ? " — LANJUTAN" : ""), left, line + 14, { width: 769, align: "center" });
+    const metaTop = doc.y + 12;
+    doc.fontSize(9).fillColor("#222222");
+    doc.text("Nama guru: " + String(row.teacherName || "—"), left, metaTop, { width: 375 });
+    doc.text("Mata pelajaran: " + String(row.subjectName || "—"), left, doc.y + 4, { width: 375 });
+    const leftBottom = doc.y;
+    doc.text("Tahun pelajaran / semester: " + String(row.periodLabel || "—"), left + 394, metaTop, { width: 375 });
+    const month = row.date ? new Intl.DateTimeFormat("id-ID", { month: "long", year: "numeric", timeZone: "Asia/Jakarta" }).format(new Date(String(row.date) + "T00:00:00+07:00")) : range;
+    doc.text("Periode: " + month, left + 394, doc.y + 4, { width: 375 });
+    y = Math.max(leftBottom, doc.y) + 14;
     let x = left;
     labels.forEach((label, i) => {
       doc.rect(x, y, widths[i]!, 36).fillAndStroke("#12344b", "#ced9e1");
@@ -61,7 +65,8 @@ export function writeJournalRegister(
     return lo;
   }
   if (!rows.length) {
-    header("Tidak ada jurnal pada rentang ini.");
+    header({});
+    doc.text("Tidak ada jurnal pada periode yang dipilih.", left, y + 12);
     return;
   }
   const ordered = [...rows].sort((a, b) =>
@@ -92,14 +97,13 @@ export function writeJournalRegister(
       String(row.date).slice(0, 7),
       row.periodLabel,
     ].join("|");
-    const title = `${row.schoolName || "Sekolah belum diatur"} (identitas saat ekspor) · ${row.teacherName} · ${row.subjectName} · ${row.periodLabel || "Periode belum dicatat"} · ${String(row.date).slice(0, 7)}`;
     if (key !== group) {
       if (group) doc.addPage();
       group = key;
       number = 0;
-      header(title);
+      header(row);
     }
-    const value = (key: string) => String(row[key] || "Belum dicatat");
+    const value = (key: string) => String(row[key] || "—");
     const date = new Intl.DateTimeFormat("id-ID", {
       weekday: "long",
       day: "numeric",
@@ -113,22 +117,22 @@ export function writeJournalRegister(
           timeStyle: "short",
           timeZone: "Asia/Jakarta",
         }).format(new Date(String(row.submittedAt))) + " WIB"
-      : "Belum dicatat";
+      : "—";
     let cells = [
       String(++number),
       date,
       value("className"),
-      `${row.timeStart || "—"}–${row.timeEnd || "—"}\n${value("creditedJtm")} JTM\n${row.inputType === "H_MINUS_1" ? "H-1 (80%)" : "Hari H (100%)"}`,
+      `${row.timeStart || "—"}–${row.timeEnd || "—"}`,
       `${value("material")}\n\nTP: ${value("learningObjectives")}\n\nHadir: ${row.present}; absen: ${row.absent}\nCatatan: ${value("notes")}`,
       value("obstacles"),
       value("followUp"),
       value("reflection"),
-      `${row.teacherName}\n${sent}\nIdentitas pengiriman; bukan paraf gambar.`,
+      `${row.teacherName}\n${sent}`,
     ];
     while (cells.some(Boolean)) {
       if (bottom() - y < 40) {
         doc.addPage();
-        header(title + " · lanjutan");
+        header(row, true);
       }
       const room = bottom() - y - 10;
       const chunks = cells.map((text, i) =>

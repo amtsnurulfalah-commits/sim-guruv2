@@ -11,9 +11,9 @@ Materi, catatan, jumlah siswa, alasan, identitas occurrence/assignment, kepemili
 - Form dan detail responsif; petunjuk membedakan kendala, tindakan, dan evaluasi.
 - Draft menambahkan field baru, tetap membatasi akun/entity/TTL, dan mengenali format field jurnal lama. Basis yang berubah tetap memerlukan pemeriksaan pengguna.
 - Batas body 100 KB hanya untuk create/edit jurnal, untuk menampung Unicode/JSON escaping semua isian; endpoint lain tetap 8 KB.
-- DTO menyertakan waktu kegiatan dan label periode dari snapshot occurrence; sekolah dari profil saat pembacaan/ekspor, dilabeli eksplisit sebagai identitas saat ekspor.
+- DTO menyertakan waktu kegiatan dan label periode dari snapshot occurrence; sekolah dari profil saat pembacaan/ekspor. Kop PDF menggunakan nama sekolah, garis ganda, judul dan metadata guru/periode tanpa keterangan pengembangan.
 - PDF A4 landscape memakai tabel per guru/mapel/bulan/periode, hari dihitung dari tanggal WIB, header berulang dan sel panjang diteruskan ke halaman berikutnya. CSV mempertahankan formula escaping serta kolom lama dan baru.
-- Nomor jam ke belum memiliki sumber kanonis: ekspor menampilkan waktu mulai–selesai dan kredit JTM tanpa menebak nomor jam.
+- Nomor jam ke belum memiliki sumber kanonis: PDF menampilkan waktu mulai–selesai tanpa menebak nomor jam; kredit dan jenis input tetap tersedia pada CSV.
 - Pengesahan menampilkan nama pemilik dan waktu pengiriman WIB; tidak mengklaim sebagai paraf gambar atau tanda tangan elektronik tersertifikasi.
 - Pencarian tetap materi/catatan sesuai label dan kontrak lama; tidak diam-diam memperluas pencarian.
 
