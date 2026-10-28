@@ -1,4 +1,6 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
+import { formatNumber } from "@/lib/format/number";
 import { useActivityDate } from "@/lib/navigation/use-activity-date";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
@@ -474,10 +476,10 @@ export function AttendanceWorkspace({
     >
       <header>
         <h1 className="text-2xl font-bold">Kehadiran guru</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <HelpDisclosure><p className="mt-2 text-sm text-muted-foreground">
           Tanggal operasional memakai WIB. Jam hadir harian dan konfirmasi
           kegiatan merupakan bukti yang berbeda.
-        </p>
+        </p></HelpDisclosure>
       </header>
       {error && <ErrorFeedback message={error} />}{" "}
       {message && (
@@ -854,8 +856,8 @@ function AttendanceCards({
                 Aktual {d.actualIn ?? "—"}–{d.actualOut ?? "—"}
               </p>
               <p>
-                Efektif {d.effectiveMinutes.toFixed(1)} menit · rasio{" "}
-                {d.ratio.toFixed(3)}
+                Efektif {formatNumber(d.effectiveMinutes.toFixed(1))} menit · rasio{" "}
+                {formatNumber(d.ratio.toFixed(3))}
               </p>
               <p>
                 {d.extra ? "Peserta tambahan · " : ""}Sumber jam masuk:{" "}

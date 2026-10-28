@@ -1,4 +1,6 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
+import { formatNumber } from "@/lib/format/number";
 import { useActivityDate } from "@/lib/navigation/use-activity-date";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
@@ -392,10 +394,10 @@ export function DutyManager({
     >
       <header>
         <h1 className="text-2xl font-bold">Piket, upacara dan pengganti</h1>
-        <p className="mt-2 text-sm text-slate-600">
+        <HelpDisclosure><p className="mt-2 text-sm text-slate-600">
           Konfirmasi piket memberi 4 JTM; upacara memberi 5 JTM. Pengganti wajib
           dikonfirmasi kembali. Klaim pribadi tidak memberi kredit.
-        </p>
+        </p></HelpDisclosure>
       </header>
       <div>
         {error && <ErrorFeedback message={error} />}
@@ -486,8 +488,8 @@ export function DutyManager({
                 </p>
               )}
               <p className="text-sm">
-                Terjadwal {o.scheduledJtm} · basis pemilik {o.adjustedJtm} ·
-                sisa belum dialokasikan {o.remainingJtm} JTM
+                Terjadwal {formatNumber(o.scheduledJtm)} · basis pemilik {formatNumber(o.adjustedJtm)} ·
+                sisa belum dialokasikan {formatNumber(o.remainingJtm)} JTM
               </p>
               {o.adjustmentReason && (
                 <p className="text-sm">
@@ -496,7 +498,7 @@ export function DutyManager({
               )}
               {o.allocations.map((a) => (
                 <p className="text-sm" key={a.id}>
-                  Alokasi {a.teacherName}: {a.jtm} JTM — {a.reason}
+                  Alokasi {a.teacherName}: {formatNumber(a.jtm)} JTM — {a.reason}
                 </p>
               ))}
               {dutyOperations(o, {
@@ -660,7 +662,7 @@ export function DutyManager({
                   }}
                   items={occurrence.allocations.map((a) => ({
                     id: a.id,
-                    name: a.teacherName + " · " + a.jtm + " JTM",
+                    name: a.teacherName + " · " + formatNumber(a.jtm) + " JTM",
                   }))}
                 />
               )}

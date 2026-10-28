@@ -1,3 +1,4 @@
+import { formatNumber } from "@/lib/format/number";
 import type { HonorSnapshot, SourceLine } from "@/lib/finance/schemas";
 import { formatHonorAmount } from "@/lib/finance/contracts";
 import { honorLineContext, honorTransportFacts, honorExplanation, honorLineReferences, honorModeText, honorSourceLink } from "@/lib/finance/provenance";
@@ -11,7 +12,7 @@ export function HonorProvenance({ snapshot: s, hidden }: { snapshot: HonorSnapsh
     <dl className="mt-3 grid min-w-0 gap-3 sm:grid-cols-2 [overflow-wrap:anywhere]">
       {[["Periode / batas tanggal perhitungan", `${s.period} / ${s.cutoff}`],
         ["Versi rumus / kebijakan", `${s.formulaVersion} / ${s.policyVersion}`],
-        ["Honor mengajar sebelum pembulatan", `${s.totalJtm} JTM × ${amount(s.rate)} = ${amount(s.teachingRaw)}`],
+        ["Honor mengajar sebelum pembulatan", `${formatNumber(s.totalJtm)} JTM × ${amount(s.rate)} = ${amount(s.teachingRaw)}`],
         ["Honor mengajar setelah pembulatan", amount(s.teachingSettled)],
         ["Transport sebelum / setelah pembulatan", `${amount(s.transportRaw)} / ${amount(s.transportSettled)}`],
         ["Referensi versi tarif JTM", s.rateId ?? "Tidak tercantum pada rincian lama; gunakan tarif yang ditampilkan."],

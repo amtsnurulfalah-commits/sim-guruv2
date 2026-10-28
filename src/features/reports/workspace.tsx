@@ -1,4 +1,6 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
+import { formatNumber } from "@/lib/format/number";
 import Link from "next/link";
 import { honorSourceLink } from "@/lib/finance/provenance";
 import { ZodError } from "zod";
@@ -139,10 +141,10 @@ export function ReportsWorkspace() {
           Ringkasan dan sumber data
         </p>
         <h1 className="text-2xl font-bold">Laporan pimpinan</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <HelpDisclosure><p className="mt-2 text-sm text-muted-foreground">
           Tinjau kelengkapan administrasi dan honorarium sesuai izin yang
           diberikan admin.
-        </p>
+        </p></HelpDisclosure>
       </header>
       <ErrorFeedback message={error} />
       <ErrorFeedback message={downloadError}/>
@@ -324,7 +326,7 @@ export function ReportsWorkspace() {
                     ))
                   : [
                       ["Penerima", String(s?.beneficiaries)],
-                      ["Total JTM", String(s?.jtm)],
+                      ["Total JTM", formatNumber(s?.jtm)],
                       [
                         "Total honorarium",
                         formatHonorAmount(String(s?.total)),
@@ -387,7 +389,7 @@ export function ReportsWorkspace() {
                             ) : (
                               <>
                                 <td className="p-3"><span className="line-clamp-3" title={r.name}>{r.name}</span></td>
-                                <td className="p-3">{r.jtm}</td>
+                                <td className="p-3">{formatNumber(r.jtm)}</td>
                                 <td className="p-3">
                                   {formatHonorAmount(r.total!)}
                                 </td>

@@ -1,4 +1,5 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
@@ -217,11 +218,11 @@ export function CalendarManager() {
           Administrasi madrasah
         </p>
         <h1 className="mt-2 text-3xl font-bold">Kalender Akademik</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
+        <HelpDisclosure><p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
           Bedakan catatan kalender biasa dan hari libur. Setiap perubahan
           diperiksa melalui pratinjau sebelum disimpan. Hari Minggu tidak
           otomatis memiliki kegiatan.
-        </p>
+        </p></HelpDisclosure>
       </header>
       <section className="min-w-0 space-y-4 rounded-2xl border bg-card p-4 sm:p-6">
         <h2 className="text-xl font-bold">Daftar kalender</h2>

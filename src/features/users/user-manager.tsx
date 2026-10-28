@@ -1,4 +1,6 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
+import { formatNumber } from "@/lib/format/number";
 import { ApiRequestError, serverFieldErrors } from "@/lib/feedback/api-error";
 import { applyFieldErrors } from "@/lib/feedback/form-fields";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
@@ -439,11 +441,11 @@ export function UserManager() {
             Administrasi madrasah
           </p>
           <h1 className="mt-2 text-3xl font-bold">Manajemen pengguna</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
+          <HelpDisclosure><p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">
             Kelola profil, peran dan status akses. Aktivasi akun memerlukan
             email yang dapat dibuktikan pemiliknya. Tidak ada kata sandi default
             bersama.
-          </p>
+          </p></HelpDisclosure>
         </div>
         <Button
           disabled={busy || Boolean(secret)}
@@ -614,7 +616,7 @@ export function UserManager() {
                               : "Kata sandi permanen"}
                           </p>
                         </td>
-                        <td className="p-4">{user.kmDistance} km</td>
+                        <td className="p-4">{formatNumber(user.kmDistance)} km</td>
                         <td className="p-4">
                           <div className="flex max-w-80 flex-wrap gap-2">
                             <Button

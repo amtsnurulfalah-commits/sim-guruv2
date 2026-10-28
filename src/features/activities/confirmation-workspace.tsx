@@ -1,4 +1,6 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
+import { formatNumber } from "@/lib/format/number";
 import { useActivityDate } from "@/lib/navigation/use-activity-date";
 import {
   useCallback,
@@ -228,11 +230,11 @@ export function ConfirmationWorkspace({
         <h1 className="mt-2 text-2xl font-bold sm:text-3xl">
           Kegiatan dan konfirmasi KBM
         </h1>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
+        <HelpDisclosure><p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
           Periksa penugasan dan status setiap kegiatan. Klaim pribadi,
           konfirmasi KBM, serta jam hadir harian merupakan bukti yang berbeda.
           Tanggal operasional memakai WIB.
-        </p>
+        </p></HelpDisclosure>
       </header>
       <section
         className="ui-panel min-w-0 space-y-4"
@@ -394,8 +396,8 @@ export function ConfirmationWorkspace({
                     </span>
                   </div>
                   <p className="text-sm">
-                    {row.timeStart}–{row.timeEnd} WIB · {row.scheduledJtm} JTM
-                    terjadwal · {row.adjustedJtm} JTM dasar efektif
+                    {row.timeStart}–{row.timeEnd} WIB · {formatNumber(row.scheduledJtm)} JTM
+                    terjadwal · {formatNumber(row.adjustedJtm)} JTM dasar efektif
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {row.claimed

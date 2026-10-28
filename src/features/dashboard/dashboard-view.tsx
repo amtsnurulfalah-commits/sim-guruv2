@@ -1,4 +1,5 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
 import { Announcements } from "@/features/operations/announcements";
 import { TaskCenter } from "@/features/tasks/task-center";
 import { useDashboardDay } from "./use-dashboard-day";
@@ -25,11 +26,11 @@ export function DashboardView({
         <h1 className="text-2xl leading-tight font-bold tracking-tight sm:text-4xl">
           Selamat datang, {data.user.fullName}
         </h1>
-        <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+        <HelpDisclosure><p className="max-w-2xl text-sm leading-7 text-muted-foreground">
           {data.user.role === "admin"
             ? "Ruang administrasi madrasah. Kelola kegiatan, data akademik, pengguna, dan honorarium dari satu ruang kerja."
             : "Ruang kerja guru. Pantau jadwal, catat kehadiran, lengkapi jurnal, dan lihat honorarium Anda."}
-        </p>
+        </p></HelpDisclosure>
         <nav aria-label="Aksi cepat Dashboard" className="flex flex-wrap gap-2">
           <Button asChild variant="outline"><Link prefetch={false} href="/jadwal">Lihat jadwal</Link></Button>
           <Button asChild variant="outline"><Link prefetch={false} href={"/kehadiran?date=" + date}>Catat kehadiran</Link></Button>
@@ -52,8 +53,7 @@ export function DashboardView({
           <ShieldCheck className="mb-5 size-7" aria-hidden="true" />
           <h2 className="text-lg font-bold">Akun sudah terlindungi</h2>
           <p className="mt-2 text-sm leading-7">
-            Kata sandi permanen, email terverifikasi dan pertanyaan keamanan
-            telah lengkap.
+            Profil keamanan lengkap.
           </p>
           <Button asChild variant="outline" className="mt-5">
             <Link prefetch={false} href="/akun">

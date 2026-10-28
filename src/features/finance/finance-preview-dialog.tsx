@@ -1,4 +1,5 @@
 "use client";
+import { formatNumber } from "@/lib/format/number";
 import { FormDialog } from "@/components/ui/dialog";
 import { primaryAction } from "@/components/ui/styles";
 import { formatHonorAmount } from "../../lib/finance/contracts";
@@ -100,7 +101,7 @@ export function FinancePreviewDialog({
             <ul className="space-y-2">
               {result.statements.map((s) => (
                 <li key={s.recipient.id} className="rounded-lg border p-3">
-                  {s.recipient.name} · {s.totalJtm} JTM · {money(s.total)}
+                  {s.recipient.name} · {formatNumber(s.totalJtm)} JTM · {money(s.total)}
                 </li>
               ))}
             </ul>
@@ -120,7 +121,7 @@ export function FinancePreviewDialog({
           </dl>
         ) : (
           <p>
-            Hak terdampak: {result.count} · {result.jtm} JTM.{" "}
+            Hak terdampak: {result.count} · {formatNumber(result.jtm)} JTM.{" "}
             {request.operation === "holiday-waive"
               ? "Hak yang dikecualikan tidak dihitung dalam proyeksi atau pembayaran."
               : "Kredit penerbitan dibalik dan hak kembali tertunda. Riwayat tetap disimpan."}

@@ -1,4 +1,5 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
 import { ActionIcon } from "@/components/ui/action-icon";
 
 import Link from "next/link";
@@ -17,9 +18,9 @@ export function SessionPanel() {
           Pengaturan pribadi
         </p>
         <h1 className="text-3xl font-bold">Akun dan profil</h1>
-        <p className="text-sm leading-7 text-muted-foreground">
+        <HelpDisclosure><p className="text-sm leading-7 text-muted-foreground">
           Kelola identitas profil, kata sandi, verifikasi email, dan pertanyaan keamanan Anda.
-        </p>
+        </p></HelpDisclosure>
       </header>
       {session.scope === "onboarding" ? (
         <section className="mb-7 space-y-3 rounded-2xl border bg-accent/40 p-5">
