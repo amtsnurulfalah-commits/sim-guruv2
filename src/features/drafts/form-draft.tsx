@@ -1,5 +1,6 @@
 "use client";
 import { z } from "zod";
+import { journalContentFields } from "@/lib/activities/journal-content";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ApiRequestError } from "@/lib/feedback/api-error";
@@ -115,7 +116,7 @@ export function DraftStatus({ draft, disabled = false }: { draft: Omit<ReturnTyp
       <p>Disimpan {new Date(draft.candidate.savedAt).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" })} WIB.</p>
       {draft.stale && <p role="alert">Sumber atau versinya berubah. Draft tidak dapat dipulihkan langsung. Tinjau teks di bawah dan gunakan formulir terbaru.</p>}
       {draft.candidate.state === "uncertain" && <><p role="alert">Hasil permintaan sebelumnya belum pasti. Periksa riwayat dan data terbaru untuk memastikan apakah sudah tersimpan.</p><label className="flex min-h-11 items-start gap-3"><input type="checkbox" className="mt-1 size-5 shrink-0" checked={reviewed} onChange={e => setReviewedKey(e.target.checked ? candidateKey : "")}/>Saya sudah memeriksa hasil terbaru sebelum melanjutkan.</label></>}
-      <details><summary className="min-h-11 cursor-pointer py-2 font-medium">Lihat isian draft</summary><dl className="space-y-2">{Object.entries(draft.candidate.values).map(([name, text]) => <div key={name}><dt className="font-medium">{({ material: "Materi", present: "Hadir", absent: "Absen", notes: "Catatan", reason: "Alasan" } as Record<string, string>)[name] ?? name}</dt><dd className="whitespace-pre-wrap">{text || "—"}</dd></div>)}</dl></details>
+      <details><summary className="min-h-11 cursor-pointer py-2 font-medium">Lihat isian draft</summary><dl className="space-y-2">{Object.entries(draft.candidate.values).map(([name, text]) => <div key={name}><dt className="font-medium">{({ ...Object.fromEntries(journalContentFields.map(field => [field.name, field.label])), material: "Materi", present: "Hadir", absent: "Absen", notes: "Catatan", reason: "Alasan" } as Record<string, string>)[name] ?? name}</dt><dd className="whitespace-pre-wrap">{text || "—"}</dd></div>)}</dl></details>
       <div className="flex flex-wrap gap-2"><Button type="button" variant="outline" disabled={disabled || draft.stale || (draft.candidate.state === "uncertain" && !reviewed)} onClick={draft.restore}>Pulihkan draft</Button><Button type="button" variant="outline" disabled={disabled} onClick={draft.remove}>Hapus draft lokal</Button></div>
     </>}
     {!draft.candidate && draft.saved && <Button type="button" variant="outline" disabled={disabled} onClick={draft.remove}>Hapus draft lokal</Button>}

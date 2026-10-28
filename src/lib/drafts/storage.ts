@@ -26,9 +26,17 @@ export function readDraft(storage: DraftStorage, scope: DraftScope, fields: Draf
   const key = draftKey(scope), raw = storage.getItem(key);
   if (!raw) return null;
   try {
-    if (raw.length > 20000) throw Error("DRAFT_SIZE");
+    if (raw.length > 200000) throw Error("DRAFT_SIZE");
     const value = JSON.parse(raw) as Draft;
-    if (value.format !== 1 || value.account !== scope.account || value.module !== scope.module || value.entity !== scope.entity || typeof value.basis !== "string" || value.basis.length > 10000 || !Number.isFinite(value.savedAt) || value.savedAt > now || now - value.savedAt >= DRAFT_TTL || !["editing", "uncertain"].includes(value.state) || !value.values || Array.isArray(value.values) || typeof value.values !== "object" || Object.keys(value.values).length !== Object.keys(fields).length || Object.entries(value.values).some(([key, text]) => !Object.hasOwn(fields, key) || typeof text !== "string" || text.length > fields[key]!)) throw Error("DRAFT_INVALID");
+    // Preserve pre-upgrade journal drafts; add only the four new empty text fields.
+    const additions = ["learningObjectives", "obstacles", "followUp", "reflection"];
+    const legacyKeys = ["material", "present", "absent", "notes", "reason"];
+    if (scope.module === "journal" && value.values && typeof value.values === "object" &&
+        Object.keys(value.values).length === legacyKeys.length && legacyKeys.every(key => Object.hasOwn(value.values, key)) &&
+        additions.every(key => Object.hasOwn(fields, key))) {
+      for (const key of additions) value.values[key] = "";
+    }
+    if (value.format !== 1 || value.account !== scope.account || value.module !== scope.module || value.entity !== scope.entity || typeof value.basis !== "string" || value.basis.length > 100000 || !Number.isFinite(value.savedAt) || value.savedAt > now || now - value.savedAt >= DRAFT_TTL || !["editing", "uncertain"].includes(value.state) || !value.values || Array.isArray(value.values) || typeof value.values !== "object" || Object.keys(value.values).length !== Object.keys(fields).length || Object.entries(value.values).some(([key, text]) => !Object.hasOwn(fields, key) || typeof text !== "string" || text.length > fields[key]!)) throw Error("DRAFT_INVALID");
     return value;
   } catch { storage.removeItem(key); return null; }
 }

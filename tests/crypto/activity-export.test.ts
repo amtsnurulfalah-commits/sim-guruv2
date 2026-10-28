@@ -46,3 +46,12 @@ test("PDF renders multipage attendance and journals as real downloadable documen
     await writeFile(`/tmp/sim-guru-stage3/${kind}.pdf`, pdf);
   }
 });
+
+test("journal template exports all reflection fields and long cells continue across pages", async () => {
+  const row={id:"one",userId:"guru",teacherName:"Guru Uji",date:"2026-07-14",className:"VII A",subjectName:"IPA",schoolName:"Madrasah Uji",periodLabel:"2026/2027 · Semester 1",timeStart:"07:00",timeEnd:"08:20",material:"Materi panjang ".repeat(100),learningObjectives:"Tujuan pembelajaran ".repeat(100),obstacles:"Kendala ".repeat(200),followUp:"Tindak lanjut ".repeat(100),reflection:"Refleksi guru ".repeat(100),present:20,absent:0,notes:"Catatan lama tetap ada",submittedAt:"2026-07-14T02:00:00Z",creditedJtm:"2.0000",inputType:"SAME_DAY"};
+  const csv=renderCsv([row],"journals");
+  for(const text of [row.learningObjectives,row.obstacles,row.followUp,row.reflection,row.notes])assert.ok(csv.includes(text));
+  const pdf=await renderPdf([row],"journals","Juli 2026");
+  assert.equal(pdf.subarray(0,4).toString(),"%PDF");
+  await writeFile('/tmp/sim-guru-stage3/journal-reflection-long.pdf',pdf);
+});

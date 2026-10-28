@@ -41,3 +41,12 @@ test("draft values require allowlist and field bounds; denied storage is not hid
   const denied = { ...s, getItem() { throw Error("SecurityError"); } };
   assert.throws(() => readDraft(denied, scope, fields));
 });
+
+test("pre-upgrade journal drafts gain empty reflection fields without losing existing input", () => {
+ const s=storage(); claimDraftAccount(s,scope.account,100);
+ const old={material:2000,present:4,absent:4,notes:2000,reason:500};
+ const additions={learningObjectives:2000,obstacles:2000,followUp:2000,reflection:2000};
+ writeDraft(s,scope,old,{material:"Materi lama",present:"20",absent:"0",notes:"Catatan lama",reason:"Alasan lama"},"editing",100);
+ const result=readDraft(s,scope,{...old,...additions},101);
+ assert.equal(result?.values.material,"Materi lama");assert.equal(result?.values.notes,"Catatan lama");assert.equal(result?.values.reflection,"");
+});

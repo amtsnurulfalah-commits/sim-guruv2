@@ -738,6 +738,21 @@ test("Tahap 3 — occurrences, attendance, students and atomic JTM journals", as
       );
     },
   );
+  await t.test("journal reflection persists and old clients preserve content with unchanged net JTM", async () => {
+    const initial = journalSchema.parse(journal);
+    assert.equal(initial.reflection, "");
+    assert.ok(initial.periodLabel); assert.match(initial.timeStart!, /^\d{2}:\d{2}$/);
+    const { occurrenceId: _occurrenceId, ...legacyFields } = journalData();
+    void _occurrenceId;
+    const fields = { learningObjectives: "Mengidentifikasi struktur sel", obstacles: "Kesulitan membedakan sel", followUp: "Latihan diagram", reflection: "Diagram membantu pemahaman" };
+    journal = await command<Journal>(guru, "journal-edit", { ...legacyFields, journalId: journal.id, version: journal.version, ...fields });
+    for (const [key, text] of Object.entries(fields)) assert.equal(journalSchema.parse(journal)[key as keyof typeof fields], text);
+    journal = await command<Journal>(guru, "journal-edit", { ...legacyFields, journalId: journal.id, version: journal.version });
+    assert.equal(journalSchema.parse(journal).reflection, fields.reflection);
+    assert.equal((await db.query<{ net: string }>("select sum(jtm)::text net from finance.jtm_ledger where journal_id=$1", [journal.id])).rows[0]!.net, "3.0000");
+    const revisions = await db.query<{ reflection: string }>("select new_data->>'reflection' reflection from ops.activity_revisions where entity_id=$1 order by created_at desc limit 1", [journal.id]);
+    assert.equal(revisions.rows[0]!.reflection, fields.reflection);
+  });
   await t.test("journal UI contracts match scoped SQL DTOs without changing exact credits", async () => {
     assert.equal(journalSchema.parse(journal).creditedJtm,"3.0000");
     const list=journalListSchema.parse(await service.read(guru,"journals",filter));

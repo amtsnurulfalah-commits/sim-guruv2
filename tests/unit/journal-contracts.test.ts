@@ -24,3 +24,13 @@ test("journal forms reject empty/noninteger counts and point reversed blocks to 
  const block=commandSchemas.block.safeParse({subjectId:journal.id,dateStart:"2026-10-24",dateEnd:"2026-10-23",message:"Pesan blok",active:true,version:"0",reason:"Alasan uji"});
  assert.equal(block.success,false);if(!block.success)assert.deepEqual(block.error.issues[0]?.path,["dateEnd"]);
 });
+
+test("new journal content is bounded while legacy requests and DTOs stay readable", () => {
+ const input={occurrenceId:journal.occurrenceId,material:"Materi",present:28,absent:2,notes:"",reason:"Alasan uji"};
+ for(const field of ["learningObjectives","obstacles","followUp","reflection"]){
+  assert.equal(commandSchemas["journal-create"].safeParse({...input,[field]:"a".repeat(2000)}).success,true);
+  assert.equal(commandSchemas["journal-create"].safeParse({...input,[field]:"a".repeat(2001)}).success,false);
+  assert.equal(journalSchema.safeParse({...journal,[field]:123}).success,false);
+ }
+ assert.equal(journalSchema.safeParse(journal).success,true);
+});

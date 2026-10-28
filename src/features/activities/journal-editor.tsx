@@ -1,4 +1,5 @@
 "use client";
+import { journalContentFields } from "@/lib/activities/journal-content";
 import { DraftStatus, useFormDraft } from "@/features/drafts/form-draft";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { FormDialog } from "@/components/ui/dialog";
@@ -52,7 +53,7 @@ export function JournalEditor({ action, userId, blocked, onSave, onClose, onReco
     const { formRef: attachDraftForm, ...draft } = useFormDraft(formId, edit || selected ? {
         scope: { account: userId, module: "journal", entity: edit ? "edit:" + edit.id : "create:" + selected!.id,
             basis: JSON.stringify(edit ?? { row: selected, h1: action.kind === "create" && action.h1 }) },
-        fields: { material: 2000, present: 4, absent: 4, notes: 2000, reason: 500 },
+        fields: { ...Object.fromEntries(journalContentFields.map(field => [field.name, 2000])), material: 2000, present: 4, absent: 4, notes: 2000, reason: 500 },
     } : null, true, values => { setPresent(values.present!); setAbsent(values.absent!); });
     useEffect(() => { mounted.current = true; return () => { mounted.current = false; controller.current?.abort(); }; }, []);
     const isJournal = action.kind === "create" || action.kind === "edit";
@@ -74,7 +75,7 @@ export function JournalEditor({ action, userId, blocked, onSave, onClose, onReco
             const reason = text("reason");
             let input: unknown;
             if (action.kind === "create" || action.kind === "edit") {
-                const fields = { material: text("material"), present: text("present") === "" ? undefined : Number(text("present")), absent: text("absent") === "" ? undefined : Number(text("absent")), notes: text("notes"), reason };
+                const fields = { ...Object.fromEntries(journalContentFields.map(field => [field.name, text(field.name)])), material: text("material"), present: text("present") === "" ? undefined : Number(text("present")), absent: text("absent") === "" ? undefined : Number(text("absent")), notes: text("notes"), reason };
                 input = action.kind === "create"
                     ? validateAccount(commandSchemas["journal-create"], { ...fields, occurrenceId: text("occurrenceId") })
                     : validateAccount(commandSchemas["journal-edit"], { ...fields, journalId: action.journal.id, version: action.journal.version });
@@ -118,10 +119,11 @@ export function JournalEditor({ action, userId, blocked, onSave, onClose, onReco
       <fieldset disabled={saving || blocked} className="min-w-0 space-y-5">
         {isJournal && <>
           <h2 className="font-semibold">{action.kind === "edit" ? `Ubah jurnal ${action.journal.date}` : action.kind === "create" ? `Input jurnal tanggal ${action.date}` : ""}</h2>
-          {action.kind === "create" && <><p className="text-sm">H-1: {action.h1 ? "aktif, bobot 80% dibulatkan satu desimal" : "belum aktif"}. Jumlah siswa wajib cocok dengan rekap yang tersedia.</p><div className="min-w-0 space-y-2 text-sm"><label htmlFor={prefix + "occurrence"} className="block font-medium">Kegiatan</label><select id={prefix + "occurrence"} name="occurrenceId" className="ui-control" defaultValue="" required onChange={event => { const row = action.eligible.find(value => value.id === event.target.value); setOccurrence(event.target.value); for (const name of ["material", "notes", "reason"]) { const field = event.target.form?.elements.namedItem(name); if (field instanceof HTMLTextAreaElement || field instanceof HTMLInputElement) field.value = ""; } setPresent(String(row?.expectedStudents ?? 0)); setAbsent("0"); }}><option value="" disabled>Pilih kegiatan…</option>{action.eligible.map(row => <option key={row.id} value={row.id}>{row.subjectName} · {row.className} · {row.timeStart}–{row.timeEnd}</option>)}</select></div></>}
+          {action.kind === "create" && <><p className="text-sm">H-1: {action.h1 ? "aktif, bobot 80% dibulatkan satu desimal" : "belum aktif"}. Jumlah siswa wajib cocok dengan rekap yang tersedia.</p><div className="min-w-0 space-y-2 text-sm"><label htmlFor={prefix + "occurrence"} className="block font-medium">Kegiatan</label><select id={prefix + "occurrence"} name="occurrenceId" className="ui-control" defaultValue="" required onChange={event => { const row = action.eligible.find(value => value.id === event.target.value); setOccurrence(event.target.value); for (const name of ["material", "notes", "reason", ...journalContentFields.map(field => field.name)]) { const field = event.target.form?.elements.namedItem(name); if (field instanceof HTMLTextAreaElement || field instanceof HTMLInputElement) field.value = ""; } setPresent(String(row?.expectedStudents ?? 0)); setAbsent("0"); }}><option value="" disabled>Pilih kegiatan…</option>{action.eligible.map(row => <option key={row.id} value={row.id}>{row.subjectName} · {row.className} · {row.timeStart}–{row.timeEnd}</option>)}</select></div></>}
           {edit && <p className="rounded-xl border bg-muted/30 p-3 text-sm">{edit.teacherName} · {edit.subjectName} · {edit.className} · versi {edit.version}. Bobot dan kredit JTM tetap dihitung oleh server.</p>}
           {(edit || selected) && <DraftStatus draft={draft} disabled={saving || blocked}/>}
           <Field name="material" label="Materi pembelajaran" value={edit?.material ?? ""} maxLength={2000} multiline/>
+          <section className="min-w-0 space-y-4" aria-label="Tujuan dan evaluasi pembelajaran"><h3 className="font-semibold">Tujuan dan evaluasi pembelajaran</h3><p className="text-sm text-muted-foreground">Lengkapi sesuai pelaksanaan KBM. Isian ini tidak mengubah absensi atau perhitungan JTM.</p>{journalContentFields.map(field => <div key={field.name} className="min-w-0 space-y-2"><Field name={field.name} label={field.label} value={edit?.[field.name] ?? ""} maxLength={2000} required={field.name === "learningObjectives" && !edit} multiline/><p className="text-sm leading-6 text-muted-foreground">{field.help}</p></div>)}</section>
           <p id={prefix + "-count-help"} className="text-sm leading-6 text-muted-foreground">{selected?.expectedStudents ? `Jumlah hadir + absen harus ${selected.expectedStudents} siswa sesuai kegiatan ini.` : "Cocokkan hadir + absen dengan rekap siswa kegiatan ini; total maksimal 1000."} Contoh: 18 hadir dan 2 absen untuk kelas berisi 20 siswa.</p>
           <div className="grid min-w-0 gap-4 sm:grid-cols-2">{([['present', 'Siswa hadir', present, setPresent], ['absent', 'Siswa absen', absent, setAbsent]] as const).map(([name, label, value, set]) => <div key={name} className="min-w-0 space-y-2 text-sm"><label className="block font-medium" htmlFor={prefix + name}>{label}</label><input id={prefix + name} className="ui-control" type="number" aria-describedby={prefix + "-count-help"} name={name} min={0} max={1000} step={1} value={value} onChange={e => set(e.target.value)} required/></div>)}</div>
           <Field name="notes" label="Catatan" value={edit?.notes ?? ""} maxLength={2000} required={false} multiline/>

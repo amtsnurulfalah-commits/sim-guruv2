@@ -53,7 +53,7 @@ export function createActivityHandler(deps: {
         await deps.rate()
       ).activityRate(sourceIp(request, config), "activities:" + actor.user_id);
       return authResponse(
-        await service.command(token, action, await boundedJson(request)),
+        await service.command(token, action, await boundedJson(request, ["journal-create", "journal-edit"].includes(action) ? 100000 : 8192)),
         requestId,
       );
     });
