@@ -1,4 +1,6 @@
 "use client";
+import { formatNumber } from "@/lib/format/number";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
 import { validateAccount as validateInput } from "@/lib/accounts/client-validation";
 import { applyFieldErrors } from "@/lib/feedback/form-fields";
 import { serverFieldErrors } from "@/lib/feedback/api-error";
@@ -450,7 +452,7 @@ function HistoryChanges({
         ? value
           ? "Ya"
           : "Tidak"
-        : String(value ?? "—");
+        : field.type === "number" || ["amount", "perJtm"].includes(field.key) ? formatNumber(value as string | number | null) : String(value ?? "—");
   return (
     <dl className="mt-3 space-y-3">
       {fields[kind].map((field) => {
@@ -653,10 +655,10 @@ export function MasterManager() {
           Administrasi madrasah
         </p>
         <h1 className="mt-2 text-3xl font-bold">Master sekolah dan akademik</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
+        <HelpDisclosure><p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
           Kelola identitas madrasah, struktur akademik, tarif, dan tunjangan.
           Lengkapi identitas sekolah, tahun pelajaran, semester, lalu kelas.
-        </p>
+        </p></HelpDisclosure>
       </header>
       <nav aria-label="Kelompok master" className="flex flex-wrap gap-2">
         {kinds.map((k) => (
@@ -792,7 +794,7 @@ export function MasterManager() {
                                         ? row[f.key]
                                           ? "Ya"
                                           : "Tidak"
-                                        : String(row[f.key] ?? "—")}
+                                        : f.type === "number" || ["amount", "perJtm"].includes(f.key) ? formatNumber(row[f.key] as string | number | null) : String(row[f.key] ?? "—")}
                                     </dd>
                                   </div>
                                 ))}

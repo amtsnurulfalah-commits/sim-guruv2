@@ -1,3 +1,4 @@
+import { formatNumber } from "../format/number";
 import { z } from "zod";
 const count = z.number().int().nonnegative();
 const time = z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?$/);
@@ -15,7 +16,7 @@ export type Summary = z.infer<typeof summarySchema>;
 const labels: Record<string,string> = {KBM:"Mengajar",PIKET:"Piket",UPACARA:"Upacara",EXAM_SUPERVISOR:"Pengawas ujian",EXAM_COMMITTEE:"Panitia ujian",EVENT:"Acara"};
 export const activityLabel = (kind: string) => Object.hasOwn(labels,kind) ? labels[kind]! : "Kegiatan lainnya";
 /** Format decimal strings without converting large financial amounts to a lossy Number. */
-export function rupiah(total: string) { return "Rp " + total.split(".")[0]!.replace(/\B(?=(\d{3})+(?!\d))/g,"."); }
+export function rupiah(total: string) { return "Rp " + formatNumber(total); }
 
 export function dashboardRows(value: Summary | null) {
   if (!value) return [];

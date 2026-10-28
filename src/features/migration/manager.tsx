@@ -1,4 +1,5 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
@@ -229,7 +230,7 @@ export function MigrationManager() {
     const filtered = (batches ?? []).filter(batch => (!state || batch.state === state) && `${batch.source} ${batch.id} ${batch.source_checksum}`.toLowerCase().includes(q.trim().toLowerCase()));
     const last = Math.max(1, Math.ceil(filtered.length / 5)), current = Math.min(page, last);
     return <div className="min-w-0 space-y-6 [overflow-wrap:anywhere]">
-    <header><p className="text-xs font-semibold uppercase tracking-widest text-primary">Administrasi madrasah</p><h1 className="text-3xl font-bold">Migrasi data</h1><p className="max-w-3xl text-sm leading-7 text-muted-foreground">Periksa ekspor lama, selesaikan temuan, dan tinjau bukti kesiapan. Unggahan tidak otomatis memindahkan transaksi, mengirim email, atau mengganti layanan.</p></header>
+    <header><p className="text-xs font-semibold uppercase tracking-widest text-primary">Administrasi madrasah</p><h1 className="text-3xl font-bold">Migrasi data</h1><HelpDisclosure><p className="max-w-3xl text-sm leading-7 text-muted-foreground">Periksa ekspor lama, selesaikan temuan, dan tinjau bukti kesiapan. Unggahan tidak otomatis memindahkan transaksi, mengirim email, atau mengganti layanan.</p></HelpDisclosure></header>
     <Button variant="outline" disabled={busy || action !== null} onClick={() => void refresh()}>Muat ulang migrasi</Button>
     {notice && <p role="status">{notice}</p>}
     {busy && <p role="status" aria-busy="true">{writing ? "Memproses permintaan migrasi…" : "Memuat daftar atau laporan batch…"}</p>}

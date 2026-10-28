@@ -1,4 +1,5 @@
 "use client";
+import { formatNumber } from "@/lib/format/number";
 import {incidentGuidance} from "@/lib/operations/incident-guidance";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -600,11 +601,11 @@ export function CaseWorkspace({
               ["Sampel API modul / 1 jam", monitor.samples],
               [
                 "Rata-rata API / ms",
-                monitor.samples ? monitor.averageMs : "Belum ada sampel",
+                monitor.samples ? formatNumber(monitor.averageMs) : "Belum ada sampel",
               ],
               [
                 "Maksimum API / ms",
-                monitor.samples ? monitor.maxMs : "Belum ada sampel",
+                monitor.samples ? formatNumber(monitor.maxMs) : "Belum ada sampel",
               ],
             ].map(([label, value]) => (
               <div key={label} className="min-w-0 rounded-lg bg-muted/30 p-3">
@@ -620,7 +621,7 @@ export function CaseWorkspace({
                 ["Job notifikasi berhasil terakhir", monitor.reliability.lastSuccessfulJobAt ? time(monitor.reliability.lastSuccessfulJobAt) + " WIB" : "Belum tercatat"],
                 ["Penerimaan server email terakhir", monitor.reliability.lastAcceptedAt ? time(monitor.reliability.lastAcceptedAt) + " WIB" : "Belum tercatat; waktu lama tidak diisi ulang"],
                 ["Diterima server / gagal / tidak pasti", `${monitor.reliability.accepted24h} / ${monitor.reliability.failed24h} / ${monitor.reliability.uncertain24h}`],
-                ["Proporsi gagal dari hasil pasti", monitor.reliability.knownFailurePercent === null ? "Belum ada hasil pasti" : `${monitor.reliability.knownFailurePercent}%`],
+                ["Proporsi gagal dari hasil pasti", monitor.reliability.knownFailurePercent === null ? "Belum ada hasil pasti" : `${formatNumber(monitor.reliability.knownFailurePercent)}%`],
                 ["Antrean kanal aktif siap kirim", monitor.reliability.activeReadyQueue],
               ].map(([label,value])=><div key={label} className="min-w-0"><dt className="text-sm text-muted-foreground">{label}</dt><dd className="break-words font-medium">{value}</dd></div>)}
             </dl>
@@ -656,8 +657,8 @@ export function CaseWorkspace({
             <ul className="space-y-2 text-sm">
               {monitor.modules.map((m) => (
                 <li key={m.module}>
-                  {m.module}: {m.samples} sampel · rata-rata {m.average_ms} ms ·
-                  maksimum {m.max_ms} ms
+                  {m.module}: {m.samples} sampel · rata-rata {formatNumber(m.average_ms)} ms ·
+                  maksimum {formatNumber(m.max_ms)} ms
                 </li>
               ))}
             </ul>

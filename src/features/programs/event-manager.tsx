@@ -1,4 +1,6 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
+import { formatNumber } from "@/lib/format/number";
 import { useActivityDate } from "@/lib/navigation/use-activity-date";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
@@ -274,10 +276,10 @@ export function EventManager({
       aria-busy={busy || loading}
     >
       <h1 className="text-2xl font-semibold">Kehadiran dan jurnal acara</h1>
-      <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
+      <HelpDisclosure><p className="max-w-3xl text-sm leading-6 text-muted-foreground">
         Kehadiran tanpa jurnal bernilai 0 JTM. Jurnal H-1 mengikuti pengaturan
         madrasah dengan bobot 80%.
-      </p>
+      </p></HelpDisclosure>
       <label className="block max-w-xs">
         Tanggal
         <input
@@ -408,7 +410,7 @@ export function EventManager({
           >
             <h3 className="font-medium">{e.name}</h3>
             <p>
-              {e.time_start.slice(0, 5)}–{e.time_end.slice(0, 5)} · {e.jtm} JTM
+              {e.time_start.slice(0, 5)}–{e.time_end.slice(0, 5)} · {formatNumber(e.jtm)} JTM
               · {e.description}
             </p>
           </article>
@@ -537,7 +539,7 @@ export function EventManager({
                 : a.journal
                   ? "Jurnal tersimpan"
                   : "Belum mengisi jurnal"}{" "}
-              · {a.cancelled_at ? "0" : a.creditedJtm} JTM
+              · {formatNumber(a.cancelled_at ? "0" : a.creditedJtm)} JTM
             </p>
             {a.journal && <p className="whitespace-pre-wrap">{a.journal}</p>}
             {a.user_id === userId &&

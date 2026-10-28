@@ -24,5 +24,5 @@ test("lineage safely identifies reversals and integer correction sequences witho
   assert.deepEqual(honorLineReferences({ component: "CORRECTION", reversesId: "ref", sequence: 2, reason: "do-not-render", version: { hidden: true } }), [["Membalik catatan JTM", "ref"], ["Urutan koreksi", "2"]]);
   assert.deepEqual(honorLineContext({ component: "KBM", sourceSnapshot: { subjectName: "IPA", credential: "do-not-render" } }), [["Mata pelajaran", "IPA"]]);
   assert.deepEqual(honorLineContext({ component: "KBM", sourceSnapshot: ["bad"] }), []);
-  assert.deepEqual(honorTransportFacts({ component: "TRANSPORT", effectiveMinutes: "120.0000", ratio: "0.667", blocked: false }), [["Menit efektif", "120.0000"], ["Rasio tampilan (dibulatkan sistem)", "0.667"], ["Transport diblok", "Tidak"]]);
+  assert.deepEqual(honorTransportFacts({ component: "TRANSPORT", effectiveMinutes: "120.0000", ratio: "0.667", blocked: false }), [["Menit efektif", "120"], ["Rasio tampilan (dibulatkan sistem)", "0,667"], ["Transport diblok", "Tidak"]]);
 });

@@ -1,4 +1,6 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
+import { formatNumber } from "@/lib/format/number";
 import { useActivityDate } from "@/lib/navigation/use-activity-date";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
@@ -394,10 +396,10 @@ export function ExamManager({
       aria-busy={loading}
     >
       <h1 className="text-2xl font-semibold">Ujian, panitia dan BAP</h1>
-      <p>
+      <HelpDisclosure><p>
         Konfirmasi pengawas belum menghasilkan JTM. Isi BAP setelah sesi selesai
         +5 menit, paling lambat pada tanggal akhir periode.
-      </p>
+      </p></HelpDisclosure>
       <fieldset
         disabled={busy || activeForm || !!preview}
         className="flex min-w-0 flex-wrap gap-3"
@@ -581,8 +583,8 @@ export function ExamManager({
               <p>
                 {o.timeStart}–{o.timeEnd} ·{" "}
                 {o.confirmed ? "Terkonfirmasi" : "Belum dikonfirmasi"} · JTM
-                terjadwal {o.scheduledJtm}, dasar {o.adjustedJtm}, bersih{" "}
-                {o.netJtm}, sisa alokasi {o.remainingJtm}
+                terjadwal {formatNumber(o.scheduledJtm)}, dasar {formatNumber(o.adjustedJtm)}, bersih{" "}
+                {formatNumber(o.netJtm)}, sisa alokasi {formatNumber(o.remainingJtm)}
               </p>
               {o.substitutionId && (
                 <p>Pengganti untuk {o.originalTeacherName}</p>
@@ -590,7 +592,7 @@ export function ExamManager({
               {o.adjustmentReason && <p>Penyesuaian: {o.adjustmentReason}</p>}
               {o.allocations.map((a) => (
                 <p key={a.id}>
-                  Alokasi {a.teacherName}: {a.jtm} JTM
+                  Alokasi {a.teacherName}: {formatNumber(a.jtm)} JTM
                 </p>
               ))}
               {o.lockedBaps > 0 && (
@@ -759,7 +761,7 @@ export function ExamManager({
                         type: "select" as const,
                         options: occ.allocations.map((a) => ({
                           id: a.id,
-                          name: a.teacherName + " · " + a.jtm,
+                          name: a.teacherName + " · " + formatNumber(a.jtm),
                         })),
                       },
                     ]
@@ -1068,7 +1070,7 @@ export function ExamManager({
         </p>
         {board.recaps.map((r, i) => (
           <p key={i}>
-            {r.teacherName} · {r.sourceKind}: {r.jtm} JTM
+            {r.teacherName} · {r.sourceKind}: {formatNumber(r.jtm)} JTM
           </p>
         ))}
         <TableRegion label="Data ujian">

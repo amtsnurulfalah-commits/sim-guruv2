@@ -1,4 +1,5 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
@@ -155,7 +156,7 @@ export function AnnouncementManager() {
     function select(a: ManagedAnnouncement | null) { if (pending.current || blocked)
         return; setEdit(a); setDraft(v => v + 1); setMessage(""); requestAnimationFrame(() => { editor.current?.scrollIntoView({ block: "start" }); editor.current?.querySelector<HTMLInputElement>('input[name="title"]')?.focus(); }); }
     return <div className="min-w-0 space-y-6 [overflow-wrap:anywhere]">
-  <header><p className="text-xs font-semibold uppercase tracking-widest text-primary">Administrasi madrasah</p><h1 className="mt-2 text-3xl font-bold">Pengumuman</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">Kelola informasi untuk warga madrasah. Email dikirim hanya jika pengiriman dan pekerjaan otomatis diaktifkan pada pengaturan operasional.</p></header>
+  <header><p className="text-xs font-semibold uppercase tracking-widest text-primary">Administrasi madrasah</p><h1 className="mt-2 text-3xl font-bold">Pengumuman</h1><HelpDisclosure><p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">Kelola informasi untuk warga madrasah. Email dikirim hanya jika pengiriman dan pekerjaan otomatis diaktifkan pada pengaturan operasional.</p></HelpDisclosure></header>
   {message && <p role="status" className="rounded-xl border bg-primary/5 p-4 text-sm leading-6">{message}</p>}
   {blocked && <ErrorFeedback message={recoveryMessage} autoFocus/>}
   <section ref={editor} className="ui-panel min-w-0 space-y-5"><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold">{edit ? "Ubah pengumuman" : "Pengumuman baru"}</h2>{edit && <Button type="button" variant="outline" disabled={busy || blocked} onClick={() => select(null)}>Batal mengubah</Button>}</div>

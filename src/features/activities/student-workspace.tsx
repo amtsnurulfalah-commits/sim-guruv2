@@ -1,4 +1,5 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
 import { useActivityDate } from "@/lib/navigation/use-activity-date";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Tabs } from "@/components/ui/tabs";
@@ -380,11 +381,11 @@ export function StudentWorkspace({
         <h1 className="mt-2 text-2xl font-bold sm:text-3xl">
           Rekap absensi siswa
         </h1>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
+        <HelpDisclosure><p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
           Catat jumlah hadir, sakit, izin, dan alpa per kelas. Rekap harus
           sesuai standar kelas dan jurnal aktif. Tanggal operasional memakai
           WIB.
-        </p>
+        </p></HelpDisclosure>
       </header>
       {notice && (
         <p

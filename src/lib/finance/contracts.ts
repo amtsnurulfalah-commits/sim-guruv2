@@ -1,3 +1,4 @@
+import { formatNumber } from "../format/number";
 import { z } from "zod";
 import { ApiRequestError } from "../feedback/api-error";
 import {
@@ -327,10 +328,5 @@ export function verifyFinanceCommit(
 /** Format decimal text directly: do not convert money to binary floating point. */
 export function formatHonorAmount(value: string) {
   if (!/^-?\d+(\.\d+)?$/.test(value)) return value;
-  const [whole, fraction] = value.split(".");
-  return (
-    "Rp " +
-    whole!.replace(/\B(?=(\d{3})+(?!\d))/g, ".") +
-    (fraction ? "," + fraction : "")
-  );
+  return "Rp " + formatNumber(value);
 }

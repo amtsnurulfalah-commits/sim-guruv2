@@ -1,4 +1,5 @@
 "use client";
+import { formatNumber } from "@/lib/format/number";
 import { HonorProvenance, HonorLineOrigin } from "./honor-provenance";
 import { financeComponentLabel } from "@/lib/finance/provenance";
 import { ApiRequestError, downloadFile } from "@/lib/feedback/api-error";
@@ -113,9 +114,9 @@ function Breakdown({ s, hidden }: { s: HonorSnapshot; hidden: boolean }) {
                     {financeComponentLabel(l.component)}
                     {l.name ? " / " + l.name : ""}
                   </td>
-                  <td>{l.jtm ?? "—"}</td>
+                  <td>{formatNumber(l.jtm)}</td>
                   <td>
-                    {hidden ? "••••" : (l.amount ?? l.raw ?? l.delta ?? "—")}
+                    {hidden ? "••••" : formatNumber((l.amount ?? l.raw ?? l.delta) as string | number | undefined)}
                   </td>
                   <td><HonorLineOrigin line={l} hidden={hidden} /></td>
                 </tr>
@@ -773,7 +774,7 @@ export function FinanceManager({
                   <tr key={r.id} className="border-t">
                     <td className="p-2">{r.period}</td>
                     <td>{r.name}</td>
-                    <td>{r.jtm}</td>
+                    <td>{formatNumber(r.jtm)}</td>
                     <td>{hidden ? "••••" : formatHonorAmount(r.total)}</td>
                     <td>
                       <button
@@ -983,7 +984,7 @@ export function FinanceManager({
                         <td>{h.date}</td>
                         <td>{h.name}</td>
                         <td>{financeComponentLabel(h.kind)}</td>
-                        <td>{h.jtm}</td>
+                        <td>{formatNumber(h.jtm)}</td>
                         <td>
                           {{
                             projected: "Proyeksi",

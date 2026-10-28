@@ -1,4 +1,6 @@
 "use client";
+import { formatNumber } from "@/lib/format/number";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
 import { useCallback, useState } from "react";
 import Link from "next/link";
 import { ClipboardCheck, Wallet, CalendarCheck2 } from "lucide-react";
@@ -36,10 +38,10 @@ export function LiveSummary({date, userId, role}: {date: string; userId: string;
             <h2 className="font-bold">
               Jadwal dan penugasan hari ini
             </h2>
-            <p className="text-sm">
+            <HelpDisclosure label="Tentang jadwal"><p className="text-sm">
               Jadwal yang belum dibentuk sebagai kegiatan dapat diperiksa pada
               menu Jadwal.
-            </p>
+            </p></HelpDisclosure>
             {value.tasks.length === 0 && value.planned.length === 0 && (
               <p className="rounded-xl border border-dashed p-5 text-sm text-muted-foreground">Belum ada jadwal atau penugasan untuk Anda pada hari ini. Periksa menu Jadwal jika ada penugasan yang belum tampil.</p>
             )}
@@ -76,7 +78,7 @@ export function LiveSummary({date, userId, role}: {date: string; userId: string;
               }
             >
               <p>
-                {value.honor.totalJtm} JTM · {value.pendingHolidays} hak libur
+                {formatNumber(value.honor.totalJtm)} JTM · {value.pendingHolidays} hak libur
                 belum diproses
               </p>
               {value.honor.rateMissing && (

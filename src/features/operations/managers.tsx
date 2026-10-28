@@ -1,4 +1,5 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
 import Link from "next/link";
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
@@ -215,7 +216,7 @@ export function OperationsManager() {
     const jobs = (data?.jobs ?? []).filter(row => (!jobState || row.state === jobState) && `${row.business_key} ${row.kind}`.toLowerCase().includes(jobQ.trim().toLowerCase()));
     const shownMailPage = Math.min(mailPage, Math.max(1, Math.ceil(mail.length / 10))), shownJobPage = Math.min(jobPage, Math.max(1, Math.ceil(jobs.length / 10)));
     return <div className="min-w-0 space-y-6 [overflow-wrap:anywhere]">
-    <header><p className="text-xs font-semibold uppercase tracking-widest text-primary">Administrasi madrasah</p><h1 className="text-3xl font-bold">Pengaturan operasional</h1><p className="max-w-3xl text-sm leading-7 text-muted-foreground">Atur pemeliharaan, pengiriman email, dan pekerjaan otomatis. Tinjau antrean serta catat alasan setiap perubahan.</p></header>
+    <header><p className="text-xs font-semibold uppercase tracking-widest text-primary">Administrasi madrasah</p><h1 className="text-3xl font-bold">Pengaturan operasional</h1><HelpDisclosure><p className="max-w-3xl text-sm leading-7 text-muted-foreground">Atur pemeliharaan, pengiriman email, dan pekerjaan otomatis. Tinjau antrean serta catat alasan setiap perubahan.</p></HelpDisclosure></header>
     <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-muted-foreground">{data ? `Versi pengaturan ${data.config.version}` : "Data operasional aplikasi"}</p><Button variant="outline" disabled={loading || busy || action !== null} onClick={() => void load()}>Muat ulang operasional</Button></div>
     {notice && <p role="status">{notice}</p>}
     {loading && <p role="status" aria-busy="true">Memuat pengaturan dan antrean…</p>}

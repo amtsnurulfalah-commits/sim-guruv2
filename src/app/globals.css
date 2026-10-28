@@ -365,7 +365,6 @@
     border-color: var(--error-border);
     background: var(--error-surface);
   }
-  .workspace-content p[role="status"]:not([aria-busy]),
   .form-feedback-success {
     @apply rounded-xl border px-4 py-3 text-sm leading-6;
     color: var(--success);
@@ -540,10 +539,10 @@ dialog[open] {
     padding-bottom: 0;
   }
   /* A live region is not inherently a success message. Keep load/count neutral. */
-  .ui-workspace-pilot p[role="status"].ui-feedback-neutral {
+  .workspace-content p[role="status"].ui-feedback-neutral {
     @apply rounded-none border-0 bg-transparent p-0 text-sm text-muted-foreground;
   }
-  .ui-workspace-pilot p[role="status"].ui-feedback-warning {
+  .workspace-content p[role="status"].ui-feedback-warning {
     @apply rounded-xl border px-4 py-3 text-sm leading-6;
     color: var(--warning);
     background: var(--warning-surface);
@@ -576,4 +575,25 @@ dialog:not(#mobile-navigation) { overflow-y: auto; overscroll-behavior: contain;
 @media (min-width: 1024px) and (pointer: fine) {
   [data-table-density="compact"] .ui-table-region td,
   [data-table-density="compact"] .ui-table-region th { padding-top: 0.35rem; padding-bottom: 0.35rem; }
+}
+
+/* Shared reading hierarchy: actions and data first, secondary guidance on demand. */
+@layer components {
+  .ui-panel:has(> h2), .page-section {
+    border-top-width: 1px;
+    border-top-color: var(--border);
+  }
+  .ui-page-header { gap: 0.75rem; }
+  .ui-page-header h1 { margin-bottom: 0; }
+  .ui-help { max-width: 100%; }
+  .ui-help > div > p:first-child { margin-top: 0; }
+  .ui-help > summary { font-size: 0.875rem; }
+  .ui-record-details > summary { border-radius: 0.5rem; }
+  .ui-record-details > summary:hover { background: var(--muted); }
+  .ui-table-region td, .ui-metric-value { font-variant-numeric: tabular-nums; }
+}
+@media print {
+  .ui-help::details-content { content-visibility: visible; }
+  .ui-help > div { display: block !important; border: 0; padding: 0; }
+  .ui-help > summary { display: none; }
 }

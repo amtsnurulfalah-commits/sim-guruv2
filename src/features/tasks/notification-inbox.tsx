@@ -1,4 +1,5 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { inboxSchema } from "@/lib/tasks/contracts";
@@ -134,10 +135,10 @@ export function NotificationInbox() {
     <div className="min-w-0 space-y-6">
       <header>
         <h1>Notifikasi</h1>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">
+        <HelpDisclosure><p className="mt-3 text-sm leading-6 text-muted-foreground">
           Tandai dibaca hanya mengubah inbox. Penyelesaian tugas tetap mengikuti
           sumber. Antrean email bukan bukti pesan telah diterima pengguna.
-        </p>
+        </p></HelpDisclosure>
       </header>
       <Button type="button" variant="outline" disabled={busy} onClick={reload}>
         Muat ulang notifikasi

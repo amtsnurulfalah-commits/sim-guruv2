@@ -1,4 +1,6 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
+import { formatNumber } from "@/lib/format/number";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { masterRequest } from "../masters/api";
@@ -89,7 +91,7 @@ export function SemesterPreparationWorkspace() {
           id: s.id,
           source: s.sourceId,
           label: `KBM · ${s.teacher ?? "Guru tidak aktif"} · ${s.className ?? "Kelas tidak tersedia"}`,
-          detail: `${s.subject ?? "Mata pelajaran tidak tersedia"} · ${["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"][s.dayIndex]} ${s.timeStart}–${s.timeEnd} · ${s.scheduledJtm} JTM · ID kelas baru: ${s.classId ?? "Tidak tersedia"}`,
+          detail: `${s.subject ?? "Mata pelajaran tidak tersedia"} · ${["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"][s.dayIndex]} ${s.timeStart}–${s.timeEnd} · ${formatNumber(s.scheduledJtm)} JTM · ID kelas baru: ${s.classId ?? "Tidak tersedia"}`,
         })),
       ]
     : [];
@@ -154,10 +156,10 @@ export function SemesterPreparationWorkspace() {
           Konfigurasi semester berikutnya
         </p>
         <h1 className="text-2xl font-bold">Persiapan semester baru</h1>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+        <HelpDisclosure><p className="mt-2 text-sm leading-6 text-muted-foreground">
           Tinjau salinan konfigurasi sebelum diterapkan. Semester tujuan tidak
           diaktifkan otomatis.
-        </p>
+        </p></HelpDisclosure>
       </header>
       <ErrorFeedback message={error} />
       {notice&&<p role="status" className="rounded-xl border p-4 text-sm leading-6">{notice}</p>}

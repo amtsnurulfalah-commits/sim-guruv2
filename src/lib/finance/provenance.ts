@@ -1,3 +1,4 @@
+import { formatNumber } from "../format/number";
 import { z } from "zod";
 import type { HonorSnapshot, SourceLine } from "./schemas";
 /** Display only: values always come from the engine/persisted final snapshot, never recomputed here. */
@@ -50,7 +51,7 @@ export function honorTransportFacts(line: SourceLine): [string, string][] {
   const fields = { scheduledIn: "Jadwal masuk", scheduledOut: "Jadwal pulang", actualIn: "Masuk tercatat", actualOut: "Pulang tercatat", scheduledMinutes: "Menit terjadwal", effectiveMinutes: "Menit efektif", distance: "Jarak (km)", ratio: "Rasio tampilan (dibulatkan sistem)" };
   const facts: [string, string][] = Object.entries(fields).flatMap(([key, label]) => {
     const value = line[key];
-    return typeof value === "string" && value.length <= 100 ? [[label, value] as [string, string]] : [];
+    return typeof value === "string" && value.length <= 100 ? [[label, ["scheduledMinutes", "effectiveMinutes", "distance", "ratio"].includes(key) ? formatNumber(value) : value] as [string, string]] : [];
   });
   if (typeof line.blocked === "boolean") facts.push(["Transport diblok", line.blocked ? "Ya" : "Tidak"]);
   return facts;

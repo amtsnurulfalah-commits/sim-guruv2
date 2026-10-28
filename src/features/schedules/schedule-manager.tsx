@@ -1,4 +1,6 @@
 "use client";
+import { HelpDisclosure } from "@/components/ui/help-disclosure";
+import { formatNumber } from "@/lib/format/number";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Pagination } from "@/components/ui/pagination";
 import { useUrlFilters } from "@/lib/navigation/use-url-filters";
@@ -664,7 +666,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                     <td>
                       {r.validFrom}–{r.validTo}
                       <br />
-                      {r.scheduledJtm} JTM · {r.state}
+                      {formatNumber(r.scheduledJtm)} JTM · {r.state}
                     </td>
                   </tr>
                 ))}
@@ -678,11 +680,11 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
           {admin ? "Administrasi" : "Ruang guru"}
         </p>
         <h1 className="mt-2 text-3xl font-bold">Jadwal KBM</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
+        <HelpDisclosure><p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
           Kelola jadwal mingguan, rentang berlaku, dan penugasan sesuai
           kalender. Jadwal bukan konfirmasi, jurnal, realisasi JTM atau hak
           honorarium.
-        </p>
+        </p></HelpDisclosure>
       </header>
       <details className="group rounded-2xl border bg-card">
         <summary className="min-h-12 cursor-pointer list-none rounded-2xl p-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
@@ -721,7 +723,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                       {r.className} · {r.subjectName}
                     </strong>
                     <p className="mt-2 text-sm">
-                      {r.timeStart}–{r.timeEnd} WIB · {r.scheduledJtm} JTM
+                      {r.timeStart}–{r.timeEnd} WIB · {formatNumber(r.scheduledJtm)} JTM
                     </p>
                   </article>
                 ))
@@ -906,7 +908,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
         {recap && (
           <p className="text-sm">
             Rekap seluruh filter: {recap.rowCount} baris ·{" "}
-            {recap.totalScheduledJtm} JTM pada baris terfilter. Ini bukan jumlah
+            {formatNumber(recap.totalScheduledJtm)} JTM pada baris terfilter. Ini bukan jumlah
             kehadiran, realisasi mingguan/bulanan atau honor.
           </p>
         )}
@@ -1005,7 +1007,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                           <td className="p-3">
                             {r.validFrom}–{r.validTo}
                             <p>
-                              {r.scheduledJtm} JTM · {r.minutesPerJtm} menit/JTM
+                              {formatNumber(r.scheduledJtm)} JTM · {r.minutesPerJtm} menit/JTM
                             </p>
                           </td>
                           {admin && (
