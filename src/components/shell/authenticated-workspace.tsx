@@ -1,4 +1,5 @@
 "use client";
+import { InstallRequired } from "@/features/pwa/install-required";
 import { createContext, useContext, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Workspace } from "./workspace";
@@ -20,7 +21,7 @@ export function AuthenticatedWorkspace({ children }: { children: ReactNode }) {
       {(session, logout) => (
         <WorkspaceSession.Provider value={session}>
           <Workspace session={session} onLogout={logout}>
-            {children}
+            <InstallRequired required={business && session.scope === "business" && session.user.role !== "admin"}>{children}</InstallRequired>
           </Workspace>
         </WorkspaceSession.Provider>
       )}

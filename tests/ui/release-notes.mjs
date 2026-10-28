@@ -17,7 +17,7 @@ try{
  await lab.getByRole('button',{name:'Anonim',exact:true}).click();assert.equal(await mark().count(),0);
  const summary=lab.locator('summary').first();await summary.focus();await page.keyboard.press('Enter');assert.equal(await summary.evaluate(n=>n.parentElement.open),true);await page.keyboard.press('Space');assert.equal(await summary.evaluate(n=>n.parentElement.open),false);
  await lab.getByRole('button',{name:'Data kosong',exact:true}).click();await lab.getByText('Belum ada catatan pembaruan',{exact:true}).waitFor();
- await lab.getByRole('button',{name:'Data banyak',exact:true}).click();assert.equal(await lab.locator('details').count(),49);
+ await lab.getByRole('button',{name:'Data banyak',exact:true}).click();assert.equal(await lab.getByRole('region',{name:'Pembaruan sebelumnya',exact:true}).locator('details').count(),49);
  for(const width of [280,320,375,768,1024,1440,1920])for(const font of [16,32]){await page.setViewportSize({width,height:width<768?812:900});await page.evaluate(n=>document.documentElement.style.fontSize=n+'px',font);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
  if(process.env.RELEASE_AXE_PATH){await page.setViewportSize({width:375,height:812});await page.addScriptTag({content:await readFile(process.env.RELEASE_AXE_PATH,'utf8')});const violations=await page.evaluate(async()=>{const result=await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}});return result.violations.map(x=>({id:x.id,targets:x.nodes.map(n=>n.target)}));});assert.deepEqual(violations,[]);}
  // A later install offer must survive completion of a prior dialog.

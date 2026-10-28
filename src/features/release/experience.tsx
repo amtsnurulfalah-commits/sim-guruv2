@@ -1,17 +1,24 @@
 'use client';
 import Link from 'next/link';
+import { Download, Smartphone, Monitor } from 'lucide-react';
+import { HelpDisclosure } from '@/components/ui/help-disclosure';
 import {useId,useState} from 'react';
 import {Button} from '@/components/ui/button';
 import {EmptyState} from '@/components/feedback/feature-state';
 import {releaseNotes,type ReleaseNote} from '@/lib/release/notes';
 import {useReleaseStatus} from './use-release-status';
 import {useInstallPrompt} from './use-install-prompt';
-export function InstallGuide(){
- const install=useInstallPrompt(),titleId=useId();
- return <section className="min-w-0 space-y-3 rounded-xl border bg-card p-4 sm:p-5" aria-labelledby={titleId}><h2 id={titleId} className="text-lg font-semibold">Pasang SiM-Guru</h2>
- {install.standalone?<p className="text-sm">Aplikasi sedang dibuka dalam jendela mandiri.</p>:install.installed?<p className="text-sm">Aplikasi telah dipasang pada perangkat ini.</p>:<><p className="text-sm leading-6">Pada browser yang mendukung, gunakan menu Pasang aplikasi / Tambahkan ke layar utama. Pada Safari, gunakan menu Bagikan lalu Tambahkan ke Layar Utama. Nama menu dan dukungan dapat berbeda menurut perangkat.</p>{install.available&&<Button disabled={install.busy} onClick={()=>void install.install()}>{install.busy?'Membuka pemasangan…':'Pasang aplikasi'}</Button>}</>}
+export function InstallGuide(){const install=useInstallPrompt();return <InstallPanel install={install}/>;}
+export function InstallPanel({install}:{install:ReturnType<typeof useInstallPrompt>}){
+ const titleId=useId();
+ return <section className="min-w-0 space-y-4 rounded-2xl border bg-card p-4 sm:p-6" aria-labelledby={titleId}>
+ <div className="flex items-center gap-3"><span className="rounded-xl bg-accent p-3 text-primary"><Download className="size-5" aria-hidden="true"/></span><div><h2 id={titleId} className="text-lg font-semibold">Pasang SiM-Guru</h2><p className="text-sm text-muted-foreground">Akses langsung dari ikon aplikasi.</p></div></div>
+ {install.standalone?<p className="text-sm">Aplikasi sedang dibuka dalam jendela mandiri.</p>:install.installed?<p className="text-sm">Aplikasi telah dipasang pada perangkat ini.</p>:<>
+ {install.available&&<Button className="w-full sm:w-auto" disabled={install.busy} onClick={()=>void install.install()}><Download aria-hidden="true" className="size-4"/>{install.busy?'Membuka pemasangan…':'Pasang aplikasi'}</Button>}
+ <div className="grid min-w-0 gap-3 sm:grid-cols-2"><div className="rounded-xl border p-4 text-sm leading-6"><h3 className="flex items-center gap-2 font-semibold"><Monitor aria-hidden="true" className="size-4"/>Android / komputer</h3><p className="mt-2">Buka menu Chrome atau Edge → Pasang aplikasi / Tambahkan ke layar utama → Pasang.</p></div><div className="rounded-xl border p-4 text-sm leading-6"><h3 className="flex items-center gap-2 font-semibold"><Smartphone aria-hidden="true" className="size-4"/>iPhone / iPad</h3><p className="mt-2">Buka di Safari → Bagikan → Tambahkan ke Layar Utama → aktifkan Buka sebagai app jika tersedia → Tambah.</p></div></div></>}
  {install.message&&<p role="status" className="ui-feedback-neutral text-sm leading-6">{install.message}</p>}
- <p className="text-sm leading-6 text-muted-foreground">Memerlukan internet untuk masuk, membaca sumber terbaru dan menyimpan transaksi. Tidak ada pengiriman otomatis ketika offline. Pembaruan diambil saat aplikasi dimuat ulang. Tunggu proses selesai; periksa sumber bila hasil simpan belum pasti, dan salin isian penting sebelum memuat ulang. Pemasangan tidak menyimpan sesi login permanen.</p></section>;
+ <HelpDisclosure label="Tentang penggunaan aplikasi"><p>Internet diperlukan untuk masuk, memuat data dan menyimpan. Tidak ada pengiriman transaksi otomatis saat offline. Simpan pekerjaan sebelum menutup aplikasi. Pemasangan tidak membuat sesi login permanen.</p></HelpDisclosure>
+ </section>;
 }
 export function ReleaseNotice({scope}:{scope:string|null}){
  const {status}=useReleaseStatus(scope);
