@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
+import { PwaRuntime } from "@/features/pwa/runtime";
 import { ToastRegion } from "@/components/feedback/toast-region";
 export const viewport: Viewport = { themeColor: "#146248" };
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export default function RootLayout({
           Lewati ke konten utama
         </a>
         {children}
+        <PwaRuntime />
         <ToastRegion />
       </body>
     </html>

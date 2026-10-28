@@ -1,3 +1,4 @@
+import { AuthenticatedWorkspace } from "../../src/components/shell/authenticated-workspace";
 import {ReleaseNotice} from '../../src/features/release/experience';
 import {PersonalWorkspace} from "../../src/features/personal/workspace";
 import {ReleaseNotes} from "../../src/features/release/experience";
@@ -241,7 +242,7 @@ const components: Record<string, React.ReactNode> = {
 };
 createRoot(document.getElementById("root")!).render(
   <>
-    {view === "draft-session" ? <SessionBoundary>{(_session, logout) => <Button onClick={logout}>Uji keluar sesi</Button>}</SessionBoundary> : view === "recovery" || view === "activation" ? <AuthLayout title={view === "recovery" ? "Pemulihan akun" : "Aktivasi akun"} description="Pulihkan akses akun madrasah Anda.">{view === "recovery" ? <RecoveryForm /> : <ActivationForm />}</AuthLayout> : (view === "login" || view === "login-captcha") ? (
+    {view === "pwa-session" ? <AuthenticatedWorkspace><h1>Modul kerja sintetis</h1></AuthenticatedWorkspace> : view === "draft-session" ? <SessionBoundary>{(_session, logout) => <Button onClick={logout}>Uji keluar sesi</Button>}</SessionBoundary> : view === "recovery" || view === "activation" ? <AuthLayout title={view === "recovery" ? "Pemulihan akun" : "Aktivasi akun"} description="Pulihkan akses akun madrasah Anda.">{view === "recovery" ? <RecoveryForm /> : <ActivationForm />}</AuthLayout> : (view === "login" || view === "login-captcha") ? (
       <AuthLayout
         title="Masuk ke SiM-Guru"
         description="Gunakan username dan kata sandi akun madrasah Anda."
