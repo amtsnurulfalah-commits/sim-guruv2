@@ -248,7 +248,7 @@ export function DataForm({
             key={x.key}
             className="grid content-start gap-1 text-sm font-medium"
           >
-            <label id={prefix + x.key + "-label"} htmlFor={prefix + x.key}>
+            <div className="ui-floating-field"><label className="ui-floating-label" id={prefix + x.key + "-label"} htmlFor={prefix + x.key}>
               <span>
                 {x.label}
                 {!x.optional && (
@@ -308,7 +308,7 @@ export function DataForm({
                 ))}
               </select>
             ) : x.type === "textarea" || x.type === "dates" ? (
-              <textarea
+              <textarea placeholder=" "
                 name={x.key}
                 id={prefix + x.key}
                 aria-invalid={Boolean(fieldErrors[x.key])}
@@ -323,7 +323,7 @@ export function DataForm({
                 }
               />
             ) : (
-              <input
+              <input placeholder=" "
                 name={x.key}
                 id={prefix + x.key}
                 aria-invalid={Boolean(fieldErrors[x.key])}
@@ -339,7 +339,7 @@ export function DataForm({
                 maxLength={x.key === "reason" ? 500 : 120}
                 defaultValue={x.value as string | number | undefined}
               />
-            )}
+            )}</div>
             {fieldHint(x) && <p id={prefix + x.key + "-help"} className="text-sm font-normal leading-6 text-muted-foreground">{fieldHint(x)}</p>}
             {fieldErrors[x.key] && (
               <p

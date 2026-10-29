@@ -108,11 +108,11 @@ export function Field({
   const id = useId();
   return (
     <div className="block min-w-0 space-y-2 text-sm">
-      <label htmlFor={id} className="block font-medium">
+      <div className="ui-floating-field"><label htmlFor={id} className="block font-medium ui-floating-label">
         {label}
       </label>
-      {multiline ? <textarea id={id} name={name} defaultValue={value} required={required} minLength={minLength} maxLength={maxLength} autoComplete={autoComplete ?? "off"} rows={3} className="min-h-24 w-full min-w-0 resize-y rounded-lg border bg-background px-3 py-2" /> : type === "password" ? (
-        <PasswordInput
+      {multiline ? <textarea placeholder=" " id={id} name={name} defaultValue={value} required={required} minLength={minLength} maxLength={maxLength} autoComplete={autoComplete ?? "off"} rows={3} className="min-h-24 w-full min-w-0 resize-y rounded-lg border bg-background px-3 py-2" /> : type === "password" ? (
+        <PasswordInput placeholder=" "
           id={id}
           name={name}
           defaultValue={value}
@@ -122,7 +122,7 @@ export function Field({
           autoComplete={autoComplete ?? "current-password"}
         />
       ) : (
-        <input
+        <input placeholder=" "
           id={id}
           name={name}
           type={type}
@@ -137,7 +137,7 @@ export function Field({
           }
           className="min-h-11 min-w-0 w-full rounded-lg border bg-background px-3 py-2"
         />
-      )}
+      )}</div>
     </div>
   );
 }

@@ -90,9 +90,9 @@ export function TeacherPicker({
     value && !items.some((u) => u.id === value.id) ? [value, ...items] : items;
   return (
     <div className="min-w-0 space-y-2" aria-busy={loading}>
-      <label className="block text-sm">
-        Cari guru
-        <input
+      <label className="block text-sm ui-floating-field">
+        <span className="ui-floating-label">Cari guru
+        </span><input placeholder=" "
           className={input}
           value={q}
           disabled={disabled}

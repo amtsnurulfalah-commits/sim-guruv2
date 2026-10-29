@@ -188,9 +188,9 @@ export function ReportsWorkspace() {
           </div>
           <section className={panel} aria-label="Filter laporan">
             <div className={kind==="academic"?"grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-3":"grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-4"}>
-              <label className="min-w-0 text-sm">
-                Bulan
-                <input
+              <label className="min-w-0 text-sm ui-floating-field">
+                <span className="ui-floating-label">Bulan
+                </span><input placeholder=" "
                   className={input}
                   type="month"
                   disabled={downloading}

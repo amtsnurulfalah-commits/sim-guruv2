@@ -88,7 +88,7 @@ function AccessEditor({onReload,onSaved}: {onReload:()=>void; onSaved:()=>void})
           <label className="block space-y-2 text-sm"><span>Laporan honorarium</span><select className="ui-control" disabled={!selected} value={String(finance)} onChange={event=>setFinance(event.target.value==="true")}>
             <option value="false">Cabut / tidak diizinkan</option><option value="true">Izinkan</option>
           </select></label>
-          <label className="block space-y-2 text-sm"><span>Alasan (5–500 karakter)</span><textarea required minLength={5} maxLength={500} className="ui-control" value={reason} onChange={event=>setReason(event.target.value)}/></label>
+          <label className="block space-y-2 text-sm ui-floating-field"><span className="ui-floating-label"><span>Alasan (5–500 karakter)</span></span><textarea placeholder=" " required minLength={5} maxLength={500} className="ui-control" value={reason} onChange={event=>setReason(event.target.value)}/></label>
           <Button type="submit" disabled={!selected}>{saving?"Menyimpan izin…":"Atur izin laporan"}</Button>
         </fieldset>
       </form>

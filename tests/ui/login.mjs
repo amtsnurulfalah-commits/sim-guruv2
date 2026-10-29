@@ -13,7 +13,8 @@ let browser,production,proxy,certificateDirectory,stderr='';child.stderr.on('dat
 const output=process.env.UI_REPORT_DIR??'../ui-login-focused';await mkdir(output,{recursive:true});
 try {
  await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error(stderr||'fixture timeout')),60000);child.stdout.on('data',b=>{if(b.toString().includes('UI_FIXTURE_READY')){clearTimeout(timer);resolve();}});child.on('exit',()=>{clearTimeout(timer);reject(Error(stderr));});});
- browser=await chromium.launch({headless:true,...(process.env.UI_BROWSER_EXECUTABLE?{executablePath:process.env.UI_BROWSER_EXECUTABLE}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
+ // The disposable TLS proxy uses a self-signed certificate, including its PWA worker fetch.
+ browser=await chromium.launch({headless:true,...(process.env.UI_BROWSER_EXECUTABLE?{executablePath:process.env.UI_BROWSER_EXECUTABLE}:{}),args:['--no-sandbox','--disable-dev-shm-usage','--ignore-certificate-errors']});
  const page=await browser.newPage();page.setDefaultTimeout(12000);const errors=[],consoleErrors=[],matrix=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&!m.text().startsWith('Failed to load resource:'))consoleErrors.push(m.text());});
  let getMode='ok',postMode='wrong',getDelay=0,postDelay=0,gets=0,posts=0,lastInput,lastCsrf;
  const ok=(r,data)=>r.fulfill({contentType:'application/json',body:JSON.stringify({ok:true,data})});

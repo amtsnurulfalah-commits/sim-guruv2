@@ -74,7 +74,8 @@
     "test:ui:pro8": "node scripts/pro8-ui-validation.mjs",
     "test:ui:history": "node tests/ui/history.mjs",
     "test:ui:pwa": "node tests/ui/pwa.mjs",
-    "test:ui:release-notes": "node tests/ui/release-notes.mjs"
+    "test:ui:release-notes": "node tests/ui/release-notes.mjs",
+    "test:ui:floating-labels": "node tests/ui/floating-labels.mjs"
   },
   "dependencies": {
     "@next/env": "16.4.2",

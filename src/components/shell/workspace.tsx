@@ -278,17 +278,13 @@ function WorkspaceContent({ children, session, onLogout }: WorkspaceProps) {
     return (
       <nav aria-label="Navigasi utama" className="space-y-2">
         {!compact && (
-          <label className="relative mb-4 block">
-            <span className="sr-only">Cari menu</span>
-            <Search
-              className="pointer-events-none absolute left-3 top-3.5 size-4 text-muted-foreground"
-              aria-hidden="true"
-            />
+          <label className="relative mb-4 block ui-floating-field">
+            <span className="ui-floating-label">Cari menu</span>
             <input
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              className="ui-control pl-9"
+              className="ui-control"
               placeholder="Cari menu…"
               maxLength={100}
               autoComplete="off"

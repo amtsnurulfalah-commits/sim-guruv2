@@ -369,7 +369,7 @@ export function AttendanceEditor({
                   </select>
                 </Field>
                 <Field label="Tanggal kehadiran">
-                  <input
+                  <input placeholder=" "
                     aria-label="Tanggal kehadiran"
                     name="date"
                     className={control}
@@ -404,7 +404,7 @@ export function AttendanceEditor({
                 ["actualOut", "Aktual pulang (boleh kosong)"],
               ].map(([key, label]) => (
                 <Field key={key} label={label!}>
-                  <input
+                  <input placeholder=" "
                     aria-label={label}
                     className={control}
                     name={key}
@@ -465,7 +465,7 @@ export function AttendanceEditor({
               </select>
             </Field>
             <Field label="Jam masuk">
-              <input
+              <input placeholder=" "
                 aria-label="Jam masuk"
                 className={control}
                 name="timeIn"
@@ -477,7 +477,7 @@ export function AttendanceEditor({
               />
             </Field>
             <Field label="Jam pulang">
-              <input
+              <input placeholder=" "
                 aria-label="Jam pulang"
                 className={control}
                 name="timeOut"
@@ -521,7 +521,7 @@ export function AttendanceEditor({
             className="grid min-w-0 gap-4 sm:grid-cols-2"
           >
             <Field label="Jam keluar">
-              <input
+              <input placeholder=" "
                 aria-label="Jam keluar"
                 className={control}
                 name="leaveTime"
@@ -532,7 +532,7 @@ export function AttendanceEditor({
               />
             </Field>
             <Field label="Jam kembali">
-              <input
+              <input placeholder=" "
                 aria-label="Jam kembali"
                 className={control}
                 name="returnTime"
@@ -577,7 +577,7 @@ export function AttendanceEditor({
           </>
         )}
         <Field label="Alasan">
-          <textarea
+          <textarea placeholder=" "
             aria-label="Alasan"
             className={control}
             name="reason"
@@ -619,8 +619,8 @@ export function Field({
   children: React.ReactNode;
 }) {
   return (
-    <label className="grid min-w-0 gap-1 text-sm font-medium">
-      <span>{label}</span>
+    <label className="grid min-w-0 gap-1 text-sm font-medium ui-floating-field">
+      <span className="ui-floating-label">{label}</span>
       {children}
     </label>
   );

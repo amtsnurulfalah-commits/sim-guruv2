@@ -44,7 +44,7 @@ export function RecipientPicker({ label, value, onChange, names, disabled = fals
     }, [q, page, revision]);
     return <fieldset disabled={disabled} className="min-w-0 space-y-3 rounded-xl border p-3 [overflow-wrap:anywhere]">
   <legend className="max-w-full px-1 text-sm font-semibold">{label} · {value.length} dipilih</legend>
-  <label className="block text-sm">Cari nama atau username<input className="ui-control mt-2" value={q} maxLength={100} onChange={e => { setLoading(true); setQ(e.target.value); setPage(1); }}/></label>
+  <label className="block text-sm ui-floating-field"><span className="ui-floating-label">Cari nama atau username</span><input placeholder=" " className="ui-control mt-2" value={q} maxLength={100} onChange={e => { setLoading(true); setQ(e.target.value); setPage(1); }}/></label>
   <div className="flex min-w-0 flex-wrap gap-2">{value.map((id, i) => <Button type="button" variant="outline" key={id} onClick={() => onChange(value.filter(v => v !== id))}>{names[id] ?? known[id] ?? `Pengguna terpilih ${i + 1}`} · Hapus</Button>)}</div>
   <select name={name} className="ui-control" value="" aria-label={"Tambah " + label} disabled={disabled || loading || Boolean(error) || value.length >= 1000} onChange={e => { const id = e.target.value; if (id && !value.includes(id))
         onChange([...value, id]); }}>

@@ -58,8 +58,8 @@ function Input({
 }: InputHTMLAttributes<HTMLInputElement> & { label: string }) {
   const id=useId();
   const {type,...inputProps}=props;
-  return <div className="min-w-0 space-y-2 text-sm"><label htmlFor={id} className="block font-medium">{label}</label>
-    {type==="password"?<PasswordInput {...inputProps} id={id}/>:<input {...inputProps} id={id} type={type} className="min-h-11 w-full min-w-0 rounded-lg border bg-background px-3 read-only:bg-muted"/>}
+  return <div className="min-w-0 space-y-2 text-sm"><div className="ui-floating-field"><label htmlFor={id} className="block font-medium ui-floating-label">{label}</label>
+    {type==="password"?<PasswordInput placeholder=" " {...inputProps} id={id}/>:<input placeholder=" " {...inputProps} id={id} type={type} className="min-h-11 w-full min-w-0 rounded-lg border bg-background px-3 read-only:bg-muted"/>}</div>
   </div>;
 }
 

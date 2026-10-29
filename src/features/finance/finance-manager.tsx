@@ -504,9 +504,9 @@ export function FinanceManager({
         </nav>
       </header>
       <div className="flex flex-wrap items-end gap-3">
-        <label className="text-sm">
-          Periode
-          <input
+        <label className="text-sm ui-floating-field">
+          <span className="ui-floating-label">Periode
+          </span><input placeholder=" "
             type="month"
             min="2000-01"
             max="2199-12"
@@ -540,9 +540,9 @@ export function FinanceManager({
           </label>
         )}
         {view === "history" && (
-          <label className="text-sm">
-            Cari penerima / transaksi
-            <input
+          <label className="text-sm ui-floating-field">
+            <span className="ui-floating-label">Cari penerima / transaksi
+            </span><input placeholder=" "
               className={input}
               value={q}
               maxLength={100}
@@ -639,9 +639,9 @@ export function FinanceManager({
                 <p>Tidak ada penerima pada periode ini.</p>
               )}
               {admin && bundle.statements.length > 0 && (
-                <label className="block text-sm">
-                  Cari penerima rekap
-                  <input
+                <label className="block text-sm ui-floating-field">
+                  <span className="ui-floating-label">Cari penerima rekap
+                  </span><input placeholder=" "
                     className={input}
                     type="search"
                     value={recapQuery}
