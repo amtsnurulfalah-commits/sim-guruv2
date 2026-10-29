@@ -419,9 +419,9 @@ export function StudentWorkspace({
                   disabled={busy || selection !== null}
                   className="min-w-0"
                 >
-                  <label className="block min-w-0 max-w-sm text-sm font-medium">
-                    Tanggal kegiatan / input
-                    <input
+                  <label className="block min-w-0 max-w-sm text-sm font-medium ui-floating-field">
+                    <span className="ui-floating-label">Tanggal kegiatan / input
+                    </span><input placeholder=" "
                       className="ui-control mt-2"
                       type="date"
                       value={date}
@@ -587,9 +587,9 @@ export function StudentWorkspace({
                   disabled={busy || selection !== null}
                   className="grid min-w-0 gap-4 sm:grid-cols-2"
                 >
-                  <label className="min-w-0 text-sm font-medium">
-                    Riwayat mulai
-                    <input
+                  <label className="min-w-0 text-sm font-medium ui-floating-field">
+                    <span className="ui-floating-label">Riwayat mulai
+                    </span><input placeholder=" "
                       className="ui-control mt-2"
                       type="date"
                       value={from}
@@ -598,9 +598,9 @@ export function StudentWorkspace({
                       }
                     />
                   </label>
-                  <label className="min-w-0 text-sm font-medium">
-                    Riwayat sampai
-                    <input
+                  <label className="min-w-0 text-sm font-medium ui-floating-field">
+                    <span className="ui-floating-label">Riwayat sampai
+                    </span><input placeholder=" "
                       className="ui-control mt-2"
                       type="date"
                       value={to}

@@ -83,8 +83,8 @@ export function TaskCenter({ compact = false, date, embedded = false }: { compac
               </div>)}
           </dl>
           <div role="search" aria-label="Filter pusat tugas" className="grid min-w-0 gap-4 rounded-xl bg-muted/40 p-4 sm:grid-cols-2 xl:grid-cols-3">
-            <label className="min-w-0 space-y-2 text-sm sm:col-span-2 xl:col-span-1">
-              <span className="flex items-center gap-2 font-medium"><Search aria-hidden="true" className="size-4"/>Cari tugas</span>
+            <label className="min-w-0 space-y-2 text-sm sm:col-span-2 xl:col-span-1 ui-floating-field">
+              <span className="ui-floating-label"><span className="flex items-center gap-2 font-medium"><Search aria-hidden="true" className="size-4"/>Cari tugas</span></span>
               <input type="search" className="ui-control" maxLength={200} placeholder="Judul/keterangan/tanggal" value={query}
                 onChange={event => { setQuery(event.target.value); setPage(1); }}/>
             </label>

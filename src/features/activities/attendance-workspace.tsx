@@ -553,7 +553,7 @@ export function AttendanceWorkspace({
                 <section className={surface}>
                   <h2 className="font-semibold">Tanggal kegiatan dan input</h2>
                   <Field label="Tanggal kegiatan / input">
-                    <input
+                    <input placeholder=" "
                       aria-label="Tanggal kegiatan / input"
                       className={control}
                       type="date"
@@ -711,7 +711,7 @@ export function AttendanceWorkspace({
                     className="grid min-w-0 gap-4 sm:grid-cols-3"
                   >
                     <Field label="Riwayat mulai">
-                      <input
+                      <input placeholder=" "
                         aria-label="Riwayat mulai"
                         className={control}
                         type="date"
@@ -725,7 +725,7 @@ export function AttendanceWorkspace({
                       />
                     </Field>
                     <Field label="Riwayat sampai">
-                      <input
+                      <input placeholder=" "
                         aria-label="Riwayat sampai"
                         className={control}
                         type="date"

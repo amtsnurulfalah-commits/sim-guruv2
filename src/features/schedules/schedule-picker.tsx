@@ -35,8 +35,8 @@ export function SchedulePicker({target,label,value,onChange,parentId="",optional
   },[target,q,page,parentId,unavailable,revision]);
   const currentLabel=items.find(item=>item.id===value)?.label??((selection?.id===value?selection.label:selectedLabel)||"Pilihan tersimpan");
   return <div className="min-w-0 space-y-2 rounded-xl border p-3" aria-busy={loading && !unavailable}>
-    <label htmlFor={inputId} className="block text-sm">Cari {label.toLowerCase()}</label>
-    <input id={inputId} disabled={disabled||unavailable} value={q} maxLength={100} onChange={e=>{setQ(e.target.value);setPage(1);setLoading(true);}} className="min-h-11 w-full min-w-0 rounded-lg border bg-background px-3" />
+    <div className="ui-floating-field"><label htmlFor={inputId} className="block text-sm ui-floating-label">Cari {label.toLowerCase()}</label>
+    <input placeholder=" " id={inputId} disabled={disabled||unavailable} value={q} maxLength={100} onChange={e=>{setQ(e.target.value);setPage(1);setLoading(true);}} className="min-h-11 w-full min-w-0 rounded-lg border bg-background px-3" /></div>
     <label id={selectId+"-label"} htmlFor={selectId} className="block text-sm font-medium">{label}</label>
     <select id={selectId} name={fieldNames[target]} aria-labelledby={selectId+"-label"} disabled={disabled||unavailable||loading||Boolean(error)} value={value} required={!optional} onChange={e=>{
       const item=items.find(v=>v.id===e.target.value);setSelection(item?{id:item.id,label:item.label}:null);onChange(e.target.value,item);

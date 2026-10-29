@@ -235,10 +235,10 @@ export function StudentEditor({
               <div className="grid min-w-0 gap-4 sm:grid-cols-2">
                 {fields.map(([name, label]) => (
                   <div key={name} className="min-w-0 space-y-2 text-sm">
-                    <label htmlFor={prefix + name} className="font-medium">
+                    <div className="ui-floating-field"><label htmlFor={prefix + name} className="font-medium ui-floating-label">
                       {label}
                     </label>
-                    <input
+                    <input placeholder=" "
                       id={prefix + name}
                       name={name}
                       className="ui-control"
@@ -251,7 +251,7 @@ export function StudentEditor({
                       onChange={(e) =>
                         setNumbers((v) => ({ ...v, [name]: e.target.value }))
                       }
-                    />
+                    /></div>
                   </div>
                 ))}
               </div>

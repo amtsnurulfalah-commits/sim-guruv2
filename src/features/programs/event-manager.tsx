@@ -280,9 +280,9 @@ export function EventManager({
         Kehadiran tanpa jurnal bernilai 0 JTM. Jurnal H-1 mengikuti pengaturan
         madrasah dengan bobot 80%.
       </p></HelpDisclosure>
-      <label className="block max-w-xs">
-        Tanggal
-        <input
+      <label className="block max-w-xs ui-floating-field">
+        <span className="ui-floating-label">Tanggal
+        </span><input placeholder=" "
           className={input}
           type="date"
           aria-label="Tanggal acara"
@@ -511,9 +511,9 @@ export function EventManager({
         {board.attendance.length === 0 && (
           <EmptyState title="Belum ada riwayat." />
         )}
-        <label className="block text-sm">
-          Cari riwayat
-          <input
+        <label className="block text-sm ui-floating-field">
+          <span className="ui-floating-label">Cari riwayat
+          </span><input placeholder=" "
             className={input}
             type="search"
             value={search}

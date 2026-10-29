@@ -197,9 +197,9 @@ function Editor({
           </select>
         </label>
         <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block space-y-2 text-sm">
-            <span>Jam mulai (WIB)</span>
-            <input
+          <label className="block space-y-2 text-sm ui-floating-field">
+            <span className="ui-floating-label"><span>Jam mulai (WIB)</span></span>
+            <input placeholder=" "
               type="time"
               required
               name="timeStart"
@@ -211,9 +211,9 @@ function Editor({
               className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
             />
           </label>
-          <label className="block space-y-2 text-sm">
-            <span>JTM (titik desimal, maksimal 4 tempat)</span>
-            <input
+          <label className="block space-y-2 text-sm ui-floating-field">
+            <span className="ui-floating-label"><span>JTM (titik desimal, maksimal 4 tempat)</span></span>
+            <input placeholder=" "
               required
               inputMode="decimal"
               name="scheduledJtm"
@@ -226,9 +226,9 @@ function Editor({
               className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
             />
           </label>
-          <label className="block space-y-2 text-sm">
-            <span>Istirahat (menit)</span>
-            <input
+          <label className="block space-y-2 text-sm ui-floating-field">
+            <span className="ui-floating-label"><span>Istirahat (menit)</span></span>
+            <input placeholder=" "
               type="number"
               min={0}
               max={600}
@@ -243,9 +243,9 @@ function Editor({
               className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
             />
           </label>
-          <label className="block space-y-2 text-sm">
-            <span>Mulai berlaku</span>
-            <input
+          <label className="block space-y-2 text-sm ui-floating-field">
+            <span className="ui-floating-label"><span>Mulai berlaku</span></span>
+            <input placeholder=" "
               type="date"
               min={wibDate()}
               required
@@ -258,9 +258,9 @@ function Editor({
               className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
             />
           </label>
-          <label className="block space-y-2 text-sm">
-            <span>Akhir berlaku (inklusif)</span>
-            <input
+          <label className="block space-y-2 text-sm ui-floating-field">
+            <span className="ui-floating-label"><span>Akhir berlaku (inklusif)</span></span>
+            <input placeholder=" "
               type="date"
               required
               name="validTo"
@@ -289,9 +289,9 @@ function Editor({
             tanpa menulis ulang riwayat.
           </p>
         )}
-        <label className="block space-y-2 text-sm">
-          <span>Alasan perubahan</span>
-          <input
+        <label className="block space-y-2 text-sm ui-floating-field">
+          <span className="ui-floating-label"><span>Alasan perubahan</span></span>
+          <input placeholder=" "
             name="reason"
             required
             minLength={5}
@@ -697,9 +697,9 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
           </h2>
         </summary>
         <div className="space-y-4 border-t p-5">
-          <label className="block max-w-xs space-y-2 text-sm">
-            <span>Tanggal (WIB)</span>
-            <input
+          <label className="block max-w-xs space-y-2 text-sm ui-floating-field">
+            <span className="ui-floating-label"><span>Tanggal (WIB)</span></span>
+            <input placeholder=" "
               type="date"
               value={date}
               onChange={(e) => {
@@ -792,9 +792,9 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
             <p className="text-sm leading-6 text-muted-foreground">Tautan halaman menyimpan hari, status, rentang tanggal, dan nomor halaman. Pencarian nama serta pilihan relasi tetap hanya di halaman ini.</p>
             <Button type="button" variant="outline" onClick={()=>{setLocalFilters(initial);updateUrl(urlDefaults);setSelected({});setPrintRows(null);}}>Reset filter</Button>
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="block space-y-2 text-sm">
-                <span>Cari guru / kelas / mata pelajaran / periode</span>
-                <input
+              <label className="block space-y-2 text-sm ui-floating-field">
+                <span className="ui-floating-label"><span>Cari guru / kelas / mata pelajaran / periode</span></span>
+                <input placeholder=" "
                   value={filters.q}
                   maxLength={100}
                   onChange={(e) => filter("q", e.target.value)}
@@ -829,18 +829,18 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   <option value="">Semua termasuk riwayat</option>
                 </select>
               </label>
-              <label className="block space-y-2 text-sm">
-                <span>Rentang mulai filter</span>
-                <input
+              <label className="block space-y-2 text-sm ui-floating-field">
+                <span className="ui-floating-label"><span>Rentang mulai filter</span></span>
+                <input placeholder=" "
                   type="date"
                   value={filters.validFrom}
                   onChange={(e) => filter("validFrom", e.target.value)}
                   className="min-h-11 w-full min-w-0 rounded border bg-background px-3"
                 />
               </label>
-              <label className="block space-y-2 text-sm">
-                <span>Rentang akhir filter</span>
-                <input
+              <label className="block space-y-2 text-sm ui-floating-field">
+                <span className="ui-floating-label"><span>Rentang akhir filter</span></span>
+                <input placeholder=" "
                   type="date"
                   value={filters.validTo}
                   onChange={(e) => filter("validTo", e.target.value)}
@@ -1177,9 +1177,9 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
               ditolak, hubungi administrator untuk meninjau data terkait.
             </p>
             <fieldset disabled={busy} className="min-w-0 space-y-4">
-              <label className="block text-sm">
-                Hentikan mulai tanggal
-                <input
+              <label className="block text-sm ui-floating-field">
+                <span className="ui-floating-label">Hentikan mulai tanggal
+                </span><input placeholder=" "
                   type="date"
                   name="stopFrom"
                   required
@@ -1188,9 +1188,9 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   className="mt-2 min-h-11 w-full min-w-0 rounded border bg-background px-3"
                 />
               </label>
-              <label className="block text-sm">
-                Alasan
-                <input
+              <label className="block text-sm ui-floating-field">
+                <span className="ui-floating-label">Alasan
+                </span><input placeholder=" "
                   name="reason"
                   required
                   minLength={5}

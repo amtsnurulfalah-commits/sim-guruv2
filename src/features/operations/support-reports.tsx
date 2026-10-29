@@ -59,8 +59,8 @@ export function SupportReports() {
   return <section className="min-w-0 space-y-6 [overflow-wrap:anywhere]">
     <header><h1 className="text-2xl font-bold">Laporan Kendala</h1><HelpDisclosure><p className="mt-2 text-muted-foreground">Telusuri permintaan yang ditolak menggunakan kode referensi bantuan dari pengguna.</p></HelpDisclosure></header>
     <form onSubmit={search} className="rounded-xl border bg-card p-4 sm:p-6 space-y-4">
-      <label htmlFor="support-reference" className="block font-semibold">Kode referensi bantuan</label>
-      <input id="support-reference" required maxLength={80} autoComplete="off" autoCapitalize="none" spellCheck={false} value={reference} onChange={e=>changeReference(e.target.value)} className="min-h-11 min-w-0 w-full rounded-lg border bg-background px-3 text-base focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring" placeholder="Tempel kode referensi lengkap" aria-describedby="support-help" />
+      <div className="ui-floating-field"><label htmlFor="support-reference" className="block font-semibold ui-floating-label">Kode referensi bantuan</label>
+      <input id="support-reference" required maxLength={80} autoComplete="off" autoCapitalize="none" spellCheck={false} value={reference} onChange={e=>changeReference(e.target.value)} className="min-h-11 min-w-0 w-full rounded-lg border bg-background px-3 text-base focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring" placeholder="Tempel kode referensi lengkap" aria-describedby="support-help" /></div>
       <p id="support-help" className="text-sm text-muted-foreground">Minta juga waktu kejadian, halaman, tindakan, dan pesan lengkap. Jangan meminta kata sandi, OTP, atau tautan aktivasi.</p>
       <Button className="w-full sm:w-auto" disabled={busy} type="submit">{busy ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : <Search aria-hidden="true" />}{busy ? "Mencari laporan…" : "Cari laporan"}</Button>
     </form>

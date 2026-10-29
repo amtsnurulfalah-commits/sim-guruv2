@@ -174,9 +174,9 @@ export function HonorReadiness({
             </ul>
           )}
           <p className="text-sm">{data.note}</p>
-          <label className="block text-sm">
-            Cari penerima
-            <input
+          <label className="block text-sm ui-floating-field">
+            <span className="ui-floating-label">Cari penerima
+            </span><input placeholder=" "
               className={input}
               value={query}
               onChange={(e) => {

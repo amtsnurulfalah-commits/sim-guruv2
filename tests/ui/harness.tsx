@@ -1,3 +1,4 @@
+import { Field as ActivityField } from "../../src/features/activities/attendance-editor";
 import { AuthenticatedWorkspace } from "../../src/components/shell/authenticated-workspace";
 import {ReleaseNotice} from '../../src/features/release/experience';
 import {PersonalWorkspace} from "../../src/features/personal/workspace";
@@ -242,7 +243,19 @@ const components: Record<string, React.ReactNode> = {
 };
 createRoot(document.getElementById("root")!).render(
   <>
-    {view === "pwa-session" ? <AuthenticatedWorkspace><h1>Modul kerja sintetis</h1></AuthenticatedWorkspace> : view === "draft-session" ? <SessionBoundary>{(_session, logout) => <Button onClick={logout}>Uji keluar sesi</Button>}</SessionBoundary> : view === "recovery" || view === "activation" ? <AuthLayout title={view === "recovery" ? "Pemulihan akun" : "Aktivasi akun"} description="Pulihkan akses akun madrasah Anda.">{view === "recovery" ? <RecoveryForm /> : <ActivationForm />}</AuthLayout> : (view === "login" || view === "login-captcha") ? (
+    {view === "floating-fields" ? <main className="mx-auto max-w-xl p-4"><h1>Floating label fixtures</h1><form className="grid gap-4" onSubmit={event=>event.preventDefault()}>
+      <Field name="empty" label="Nama pengguna" required={false}/>
+      <Field name="filled" label="Nama tersimpan" value="Guru sintetis" required={false}/>
+      <Field name="password" label="Kata sandi" type="password" required={false}/>
+      <Field name="notes" label="Catatan pembelajaran dengan label panjang yang harus tetap terbaca pada perangkat kecil" multiline required={false}/>
+      <Field name="date" label="Tanggal kegiatan" type="date" value="2026-10-30" required={false}/>
+      <ActivityField label="Isian nonaktif"><input placeholder=" " disabled defaultValue="Tidak dapat diubah" className="ui-control"/></ActivityField>
+      <ActivityField label="Isian hanya baca"><input placeholder=" " readOnly defaultValue="Nilai tersimpan" className="ui-control"/></ActivityField>
+      <ActivityField label="Isian dengan kesalahan"><input placeholder=" " aria-invalid="true" aria-describedby="fixture-error" className="ui-control"/></ActivityField><p id="fixture-error">Periksa isian ini.</p>
+      <ActivityField label="Pilih status"><select className="ui-control"><option>Aktif</option></select></ActivityField>
+      <ActivityField label="Persetujuan"><input type="checkbox"/></ActivityField>
+      <button type="reset" className="ui-action">Reset formulir</button>
+    </form></main> : view === "pwa-session" ? <AuthenticatedWorkspace><h1>Modul kerja sintetis</h1></AuthenticatedWorkspace> : view === "draft-session" ? <SessionBoundary>{(_session, logout) => <Button onClick={logout}>Uji keluar sesi</Button>}</SessionBoundary> : view === "recovery" || view === "activation" ? <AuthLayout title={view === "recovery" ? "Pemulihan akun" : "Aktivasi akun"} description="Pulihkan akses akun madrasah Anda.">{view === "recovery" ? <RecoveryForm /> : <ActivationForm />}</AuthLayout> : (view === "login" || view === "login-captcha") ? (
       <AuthLayout
         title="Masuk ke SiM-Guru"
         description="Gunakan username dan kata sandi akun madrasah Anda."

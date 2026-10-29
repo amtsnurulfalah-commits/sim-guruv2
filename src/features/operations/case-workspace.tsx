@@ -295,9 +295,9 @@ export function CaseWorkspace({
         aria-label="Daftar laporan penanganan"
       >
         <div className="grid gap-3 sm:grid-cols-2">
-          <label className="text-sm">
-            Cari judul/modul/kode/referensi
-            <input
+          <label className="text-sm ui-floating-field">
+            <span className="ui-floating-label">Cari judul/modul/kode/referensi
+            </span><input placeholder=" "
               className={input}
               disabled={busy || open}
               value={q}

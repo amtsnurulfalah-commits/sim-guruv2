@@ -407,7 +407,7 @@ export function DutyManager({
       </div>
       <section className={panel}>
         <Field label="Tanggal kegiatan (WIB)">
-          <input
+          <input placeholder=" "
             className={input}
             disabled={busy || !!selected || scheduleOpen}
             type="date"
@@ -621,7 +621,7 @@ export function DutyManager({
               )}
               {operation === "adjust" && (
                 <Field label="JTM basis pemilik (bilangan bulat)">
-                  <input
+                  <input placeholder=" "
                     className={input}
                     type="number"
                     min={0}
@@ -638,7 +638,7 @@ export function DutyManager({
               )}
               {operation === "allocate" && (
                 <Field label="JTM alokasi (maksimal 4 desimal)">
-                  <input
+                  <input placeholder=" "
                     className={input}
                     type="number"
                     min="0.0001"
@@ -667,7 +667,7 @@ export function DutyManager({
                 />
               )}
               <Field label="Alasan tindakan">
-                <textarea
+                <textarea placeholder=" "
                   className={input}
                   minLength={1}
                   maxLength={500}
@@ -877,7 +877,7 @@ export function DutyManager({
                         kind === "UPACARA" ? "Tanggal Senin" : "Berlaku mulai"
                       }
                     >
-                      <input
+                      <input placeholder=" "
                         className={input}
                         type="date"
                         required
@@ -887,7 +887,7 @@ export function DutyManager({
                     </Field>
                     {kind === "PIKET" && (
                       <Field label="Berlaku sampai">
-                        <input
+                        <input placeholder=" "
                           className={input}
                           type="date"
                           required
@@ -897,7 +897,7 @@ export function DutyManager({
                       </Field>
                     )}
                     <Field label="Jam mulai">
-                      <input
+                      <input placeholder=" "
                         className={input}
                         type="time"
                         required
@@ -906,7 +906,7 @@ export function DutyManager({
                       />
                     </Field>
                     <Field label="Jam selesai">
-                      <input
+                      <input placeholder=" "
                         className={input}
                         type="time"
                         required
@@ -936,7 +936,7 @@ export function DutyManager({
                     Jadwal aktif
                   </label>
                   <Field label="Alasan perubahan jadwal">
-                    <textarea
+                    <textarea placeholder=" "
                       className={input}
                       minLength={5}
                       maxLength={500}

@@ -170,10 +170,10 @@ export function LoginForm({ captcha = { enabled: false, siteKey: null } }: { cap
         </p>
       </noscript>
       <div className="space-y-2">
-        <label htmlFor="username" className="text-sm font-semibold">
+        <div className="ui-floating-field"><label htmlFor="username" className="text-sm font-semibold ui-floating-label">
           Username
         </label>
-        <input
+        <input placeholder=" "
           id="username"
           name="username"
           autoComplete="username"
@@ -185,22 +185,22 @@ export function LoginForm({ captcha = { enabled: false, siteKey: null } }: { cap
           className="ui-control"
           disabled={busy}
           aria-describedby="login-username-help"
-        />
+        /></div>
         <p id="login-username-help" className="text-xs leading-6 text-muted-foreground">
           Gunakan username akun madrasah, bukan alamat email.
         </p>
       </div>
       <div className="space-y-2">
-        <label htmlFor="password" className="text-sm font-semibold">
+        <div className="ui-floating-field"><label htmlFor="password" className="text-sm font-semibold ui-floating-label">
           Kata sandi
         </label>
-        <PasswordInput
+        <PasswordInput placeholder=" "
           id="password"
           name="password"
           autoComplete="current-password"
           required
           disabled={busy}
-        />
+        /></div>
       </div>
       {captcha.enabled && <RecaptchaField key={captcha.siteKey} siteKey={captcha.siteKey} attempt={captchaAttempt} onToken={setCaptchaToken} busy={busy} />}
       <Button className="w-full" type="submit" disabled={busy || preparing || !csrf || (captcha.enabled && !captchaToken)}>

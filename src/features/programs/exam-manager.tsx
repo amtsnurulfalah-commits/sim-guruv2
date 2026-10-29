@@ -404,9 +404,9 @@ export function ExamManager({
         disabled={busy || activeForm || !!preview}
         className="flex min-w-0 flex-wrap gap-3"
       >
-        <label>
-          Tanggal
-          <input
+        <label className="ui-floating-field">
+          <span className="ui-floating-label">Tanggal
+          </span><input placeholder=" "
             aria-label="Tanggal"
             type="date"
             required
@@ -459,9 +459,9 @@ export function ExamManager({
           Muat ulang ujian
         </button>
       </fieldset>
-      <label className="grid gap-1 text-sm">
-        Cari penugasan dan BAP
-        <input
+      <label className="grid gap-1 text-sm ui-floating-field">
+        <span className="ui-floating-label">Cari penugasan dan BAP
+        </span><input
           aria-label="Cari penugasan dan BAP"
           type="search"
           className={input}

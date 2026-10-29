@@ -62,9 +62,9 @@ function Field({
   required?: boolean;
 }) {
   return (
-    <label className="block min-w-0 space-y-2 text-sm">
-      <span>{label}</span>
-      <input
+    <label className="block min-w-0 space-y-2 text-sm ui-floating-field">
+      <span className="ui-floating-label"><span>{label}</span></span>
+      <input placeholder=" "
         name={name}
         type={type}
         required={required}
@@ -227,9 +227,9 @@ export function CalendarManager() {
       <section className="min-w-0 space-y-4 rounded-2xl border bg-card p-4 sm:p-6">
         <h2 className="text-xl font-bold">Daftar kalender</h2>
         <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-4 [&>label]:min-w-0">
-          <label className="text-sm">
-            Bulan
-            <input
+          <label className="text-sm ui-floating-field">
+            <span className="ui-floating-label">Bulan
+            </span><input placeholder=" "
               type="month"
               value={month}
               disabled={busy}
@@ -242,9 +242,9 @@ export function CalendarManager() {
               className="mt-2 block min-h-11 w-full min-w-0 max-w-full rounded-lg border bg-background px-3 py-2"
             />
           </label>
-          <label className="text-sm">
-            Cari keterangan
-            <input
+          <label className="text-sm ui-floating-field">
+            <span className="ui-floating-label">Cari keterangan
+            </span><input placeholder=" "
               disabled={busy}
               value={q}
               maxLength={100}
@@ -347,9 +347,9 @@ export function CalendarManager() {
       </section>
       <section ref={editor} className="min-w-0 space-y-5 rounded-2xl border bg-card p-4 sm:p-6">
         <h2 className="text-xl font-bold">Periksa satu tanggal</h2>
-        <label className="block max-w-xs space-y-2 text-sm">
-          <span>Tanggal kegiatan (WIB)</span>
-          <input
+        <label className="block max-w-xs space-y-2 text-sm ui-floating-field">
+          <span className="ui-floating-label"><span>Tanggal kegiatan (WIB)</span></span>
+          <input placeholder=" "
             type="date"
             value={selected}
             disabled={busy}
@@ -437,9 +437,9 @@ export function CalendarManager() {
               ) : (
                 <>
                   <input type="hidden" name="action" value="override" />
-                  <label className="block min-w-0 space-y-2 text-sm">
-                    <span>Cari semester untuk konteks khusus</span>
-                    <input
+                  <label className="block min-w-0 space-y-2 text-sm ui-floating-field">
+                    <span className="ui-floating-label"><span>Cari semester untuk konteks khusus</span></span>
+                    <input placeholder=" "
                       value={periodQuery}
                       maxLength={100}
                       onChange={(e) => {

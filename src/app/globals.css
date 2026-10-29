@@ -597,3 +597,73 @@ dialog:not(#mobile-navigation) { overflow-y: auto; overscroll-behavior: contain;
   .ui-help > div { display: block !important; border: 0; padding: 0; }
   .ui-help > summary { display: none; }
 }
+
+/* Floating labels use native focus/value state, including autofill and form reset.
+   The label retains a layout row so long translations wrap without covering input. */
+.ui-floating-field:where(:has(> :is(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]), textarea, .ui-password))) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--background);
+  padding: 0.5rem 0 0;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.ui-floating-field:has(> :is(input, textarea, .ui-password)) > .ui-floating-label {
+  display: block;
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 0 0.75rem;
+  min-width: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--muted-foreground);
+  overflow-wrap: anywhere;
+  transform-origin: left center;
+  transition: transform 150ms, color 150ms;
+  cursor: text;
+}
+.ui-floating-field:has(> :is(input, textarea, .ui-password)) > :is(input, textarea),
+.ui-floating-field:has(> .ui-password) > .ui-password > input {
+  margin: 0;
+  border: 0;
+  border-radius: 0.625rem;
+  box-shadow: none;
+  background: transparent;
+  min-width: 0;
+  width: 100%;
+  min-height: 2.75rem;
+  padding-block: 0.5rem;
+  padding-inline-start: 0.75rem;
+  font-size: 1rem;
+  outline: none;
+}
+.ui-floating-field:has(> textarea) > textarea { min-height: 6rem; }
+.ui-floating-field:has(> input[placeholder=" "]:placeholder-shown, > textarea[placeholder=" "]:placeholder-shown, > .ui-password > input[placeholder=" "]:placeholder-shown):not(:focus-within) > .ui-floating-label {
+  transform: translateY(0.8rem);
+  color: var(--foreground);
+}
+/* Date/time controls have native segments, so their labels always stay raised. */
+.ui-floating-field:has(> input:is([type="date"], [type="time"], [type="datetime-local"], [type="month"], [type="week"])) > .ui-floating-label,
+.ui-floating-field:has(input:autofill) > .ui-floating-label {
+  transform: none;
+}
+.ui-floating-field:focus-within { border-color: var(--ring); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 22%, transparent); }
+.ui-floating-field:focus-within > .ui-floating-label { color: var(--primary); }
+.ui-floating-field:has([aria-invalid="true"]) { border-color: var(--destructive); }
+.ui-floating-field:has(> :disabled, > .ui-password > :disabled) { background: var(--muted); }
+@media (prefers-reduced-motion: reduce) {
+  .ui-floating-field, .ui-floating-field > .ui-floating-label { transition: none; }
+}
+@media print {
+  .ui-floating-field > .ui-floating-label { transform: none !important; }
+}
+
+@media (forced-colors: active) {
+  .ui-floating-field:focus-within { outline: 2px solid Highlight; }
+}

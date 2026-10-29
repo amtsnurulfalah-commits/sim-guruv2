@@ -245,9 +245,9 @@ export function ConfirmationWorkspace({
           disabled={busy || selection !== null}
           className="grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
-          <label className="min-w-0 text-sm font-medium">
-            Tanggal kegiatan / input
-            <input
+          <label className="min-w-0 text-sm font-medium ui-floating-field">
+            <span className="ui-floating-label">Tanggal kegiatan / input
+            </span><input placeholder=" "
               className="ui-control mt-2"
               type="date"
               value={date}
@@ -262,9 +262,9 @@ export function ConfirmationWorkspace({
               }}
             />
           </label>
-          <label className="min-w-0 text-sm font-medium">
-            Cari guru, mata pelajaran, atau kelas
-            <input
+          <label className="min-w-0 text-sm font-medium ui-floating-field">
+            <span className="ui-floating-label">Cari guru, mata pelajaran, atau kelas
+            </span><input placeholder=" "
               className="ui-control mt-2"
               maxLength={200}
               value={q}

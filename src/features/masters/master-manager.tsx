@@ -258,8 +258,8 @@ function ReferencePicker({
   }, [query, page, field.reference, field.key, retry]);
   return (
     <div className="min-w-0 space-y-2 rounded-lg border p-3">
-      <label className="block text-sm">
-        {field.label}
+      <label className="block text-sm ui-floating-field">
+        <span className="ui-floating-label">{field.label}</span>
         <input
           maxLength={100}
           aria-label={"Cari " + field.label}
@@ -356,8 +356,8 @@ function Editor({
               {f.label}
             </label>
           ) : (
-            <label key={f.key} className="block space-y-2 text-sm">
-              <span>{f.label}</span>
+            <label key={f.key} className="block space-y-2 text-sm ui-floating-field">
+              <span className="ui-floating-label"><span>{f.label}</span></span>
               {f.type === "select" ? (
                 <select
                   name={f.key}
@@ -392,7 +392,7 @@ function Editor({
                   ))}
                 </select>
               ) : (
-                <input
+                <input placeholder=" "
                   name={f.key}
                   type={f.type ?? "text"}
                   required={!f.optional}
@@ -409,9 +409,9 @@ function Editor({
             </label>
           ),
         )}
-        <label className="block space-y-2 text-sm">
-          <span>Alasan perubahan (minimal 5 karakter)</span>
-          <input
+        <label className="block space-y-2 text-sm ui-floating-field">
+          <span className="ui-floating-label"><span>Alasan perubahan (minimal 5 karakter)</span></span>
+          <input placeholder=" "
             name="reason"
             required
             minLength={5}
@@ -697,9 +697,9 @@ export function MasterManager() {
         </div>
         {kind === "school" && schoolExists === null && !loading && <p role="status" className="text-sm text-muted-foreground">Identitas sekolah belum dapat diverifikasi. Gunakan Muat ulang sebelum menambah data.</p>}
         <div className="flex flex-wrap items-end gap-3">
-          <label className="min-w-0 flex-1 text-sm">
-            Cari nama / label
-            <input
+          <label className="min-w-0 flex-1 text-sm ui-floating-field">
+            <span className="ui-floating-label">Cari nama / label
+            </span><input placeholder=" "
               maxLength={100}
               value={query}
               onChange={(e) => {
@@ -973,9 +973,9 @@ export function MasterManager() {
               Tarif/tunjangan hanya bisa dibatalkan sebelum tanggal berlakunya.
             </p>
             <fieldset disabled={busy} className="space-y-4">
-              <label className="block text-sm">
-                Alasan pengarsipan
-                <input
+              <label className="block text-sm ui-floating-field">
+                <span className="ui-floating-label">Alasan pengarsipan
+                </span><input placeholder=" "
                   name="reason"
                   required
                   minLength={5}
