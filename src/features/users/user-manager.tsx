@@ -3,6 +3,7 @@ import { HelpDisclosure } from "@/components/ui/help-disclosure";
 import { formatNumber } from "@/lib/format/number";
 import { ApiRequestError, serverFieldErrors } from "@/lib/feedback/api-error";
 import { applyFieldErrors } from "@/lib/feedback/form-fields";
+import { LoadingMessage } from "@/components/feedback/loading-message";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { ActionIcon } from "@/components/ui/action-icon";
 
@@ -324,6 +325,11 @@ export function UserManager() {
     [confirmation, setConfirmation] = useState<Confirmation | null>(null),
     [busy, setBusy] = useState(false),
     [secret, setSecret] = useState<{value:string;target:string}|null>(null);
+  function resetFilters() {
+    setQuery({ q: "", role: "", status: "", page: 1, pageSize: 20 });
+    setFilterRevision(value => value + 1);
+  }
+
   const [listError,setListError]=useState(""),[filterRevision,setFilterRevision]=useState(0);
   const pending=useRef(false),mounted=useRef(false),committed=useRef(false);
   useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;};},[]);
@@ -532,12 +538,10 @@ export function UserManager() {
           <ActionIcon action="filter" />
           Terapkan filter
         </Button>
-        <Button type="button" variant="outline" onClick={()=>{setQuery({q:"",role:"",status:"",page:1,pageSize:20});setFilterRevision(v=>v+1);}}>Reset filter</Button>
+        <Button type="button" variant="outline" onClick={resetFilters}>Reset filter</Button>
       </fieldset></form>
       {loading ? (
-        <p role="status" aria-busy="true">
-          Memuat pengguna…
-        </p>
+        <LoadingMessage label="Memuat pengguna…" />
       ) : listError ? (
         <div className="space-y-3 rounded-xl border p-5">
           <ErrorFeedback message={listError} />
@@ -563,7 +567,11 @@ export function UserManager() {
               </Button>
             </div>
             {data.items.length === 0 ? (
-              <EmptyState title="Tidak ada pengguna yang sesuai filter" description="Sesuaikan atau reset filter. Gunakan Tambah pengguna untuk membuat akun baru."/>
+              query.q || query.role || query.status ? (
+                <EmptyState title="Tidak ada pengguna yang sesuai filter" description="Ubah kata kunci atau reset filter untuk melihat seluruh pengguna." resetSearch={resetFilters} />
+              ) : (
+                <EmptyState title="Belum ada pengguna" description="Gunakan Tambah pengguna untuk membuat akun baru." />
+              )
             ) : (
               <TableRegion label="Daftar pengguna">
                 <table className="w-full min-w-[900px] table-fixed text-left text-sm"><colgroup><col className="w-52"/><col className="w-36"/><col className="w-60"/><col className="w-24"/><col className="w-56"/></colgroup>

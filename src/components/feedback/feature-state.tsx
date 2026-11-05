@@ -1,23 +1,28 @@
 "use client";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
-import { Inbox, RotateCcw } from "lucide-react";
+import { Inbox, RotateCcw, SearchX } from "lucide-react";
+import { LoadingMessage } from "./loading-message";
 import { Button } from "@/components/ui/button";
 export function EmptyState({
   title,
-  description = "Sesuaikan pencarian, tanggal, atau filter untuk memeriksa data lainnya.",
+  description = "Data akan muncul di sini setelah tersedia.",
+  resetSearch,
 }: {
   title: string;
   description?: string;
+  resetSearch?: (() => void) | undefined;
 }) {
+  const Icon = resetSearch ? SearchX : Inbox;
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 px-5 py-9 text-center">
+    <div className="flex min-w-0 flex-col items-center rounded-2xl border border-dashed bg-muted/30 px-4 py-7 text-center sm:px-6">
       <span className="mb-3 rounded-full bg-muted p-3">
-        <Inbox className="size-5 text-muted-foreground" aria-hidden="true" />
+        <Icon className="size-5 text-muted-foreground" aria-hidden="true" />
       </span>
       <p className="font-semibold">{title}</p>
       <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
         {description}
       </p>
+      {resetSearch && <Button type="button" variant="outline" className="mt-4" onClick={resetSearch}>Hapus pencarian dan filter</Button>}
     </div>
   );
 }
@@ -37,7 +42,7 @@ export function FeatureState({
     return (
       <section className="ui-panel space-y-4">
         <Heading className="text-xl">Data belum dapat dimuat</Heading>
-        <ErrorFeedback message={error} />
+        <ErrorFeedback message={error} title="Periksa detail gangguan" />
         <Button variant="outline" onClick={retry}>
           <RotateCcw className="size-4" aria-hidden="true" />
           Coba kembali
@@ -45,22 +50,18 @@ export function FeatureState({
       </section>
     );
   return (
-    <section aria-busy="true" aria-label={label} className="space-y-5">
-      <p
-        role="status"
-        aria-busy="true"
-        className="text-sm text-muted-foreground"
-      >
-        {label}
-      </p>
-      <div className="h-9 w-2/3 rounded-lg bg-muted motion-safe:animate-pulse" />
-      <div className="grid gap-4 sm:grid-cols-2">
-        {[0, 1].map((n) => (
-          <div
-            key={n}
-            className="h-40 rounded-2xl border bg-card motion-safe:animate-pulse"
-          />
-        ))}
+    <section aria-label={label} className="space-y-5">
+      <LoadingMessage key={label} label={label} />
+      <div aria-hidden="true" className="space-y-4">
+        <div className="h-9 w-2/3 rounded-lg bg-muted motion-safe:animate-pulse" />
+        <div className="grid gap-4 sm:grid-cols-2">
+          {[0, 1].map((n) => (
+            <div
+              key={n}
+              className="h-40 rounded-2xl border bg-card motion-safe:animate-pulse"
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

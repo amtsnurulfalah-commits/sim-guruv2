@@ -28,7 +28,7 @@ export default async function ModulePage({
           : {})}
       />
     );
-  if (!canViewModule(result.session.role, entry)) redirect("/dashboard");
+  if (!canViewModule(result.session.role, entry)) redirect("/akses-ditolak");
   if (entry.href) redirect(entry.href);
   return (
     <>

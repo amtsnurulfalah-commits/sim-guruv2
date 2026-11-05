@@ -4,10 +4,12 @@ import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 export function ErrorFeedback({
   message,
+  title = "Permintaan belum dapat diselesaikan",
   autoFocus = false,
   className,
 }: {
   message: string;
+  title?: string;
   autoFocus?: boolean;
   className?: string;
 }) {
@@ -22,13 +24,13 @@ export function ErrorFeedback({
       tabIndex={-1}
       role="alert"
       className={cn(
-        "form-feedback-error min-w-0 space-y-2 break-words",
+        "form-feedback-error min-w-0 space-y-2 [overflow-wrap:anywhere]",
         className,
       )}
     >
       <p className="flex items-start gap-2 font-semibold">
         <CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
-        Permintaan belum dapat diselesaikan
+        {title}
       </p>
       <p className="whitespace-pre-line text-sm leading-6">{message}</p>
     </div>

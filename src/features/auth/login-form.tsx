@@ -13,6 +13,7 @@ import {
   serverFieldErrors,
 } from "@/lib/feedback/api-error";
 import { applyFieldErrors } from "@/lib/feedback/form-fields";
+import { TimerOff, CircleCheck } from "lucide-react";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { validateAccount as validateInput } from "@/lib/accounts/client-validation";
 import {
@@ -28,6 +29,8 @@ export function LoginForm({ captcha = { enabled: false, siteKey: null } }: { cap
   const [csrf, setCsrf] = useState("");
   const [message, setMessage] = useState("");
   const [notice, setNotice] = useState("");
+  const expired = notice === loginNotice("expired");
+  const NoticeIcon = expired ? TimerOff : CircleCheck;
   const [busy, setBusy] = useState(false);
   const [preparing, setPreparing] = useState(true);
   const [focusSummary, setFocusSummary] = useState(true);
@@ -159,9 +162,13 @@ export function LoginForm({ captcha = { enabled: false, siteKey: null } }: { cap
       aria-busy={busy || preparing}
     >
       {notice && (
-        <p role="status" className="rounded-lg border bg-muted p-3 text-sm leading-6">
-          {notice}
-        </p>
+        <div role="status" className="flex items-start gap-3 rounded-xl border bg-muted p-3 text-sm leading-6">
+          <NoticeIcon aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
+          <div>
+            {expired && <p className="font-semibold">Sesi Anda telah berakhir</p>}
+            <p>{expired ? "Masuk kembali untuk melanjutkan pekerjaan di SiM-Guru." : notice}</p>
+          </div>
+        </div>
       )}
       {message && <ErrorFeedback message={message} autoFocus={focusSummary} />}
       <noscript>

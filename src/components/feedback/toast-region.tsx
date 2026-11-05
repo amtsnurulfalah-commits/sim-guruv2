@@ -25,23 +25,25 @@ export function ToastRegion() {
   }, []);
   return (
     <div
-      className="pointer-events-none fixed right-4 bottom-4 left-4 z-[100] sm:left-auto sm:w-96"
+      className="pointer-events-none fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 z-[100] sm:left-auto sm:w-96"
       aria-live="polite"
       aria-atomic="true"
     >
       {message && (
         <div
-          role="status"
           className="pointer-events-auto flex items-start gap-3 rounded-2xl border border-emerald-200 bg-card p-4 text-sm shadow-xl"
         >
           <CheckCircle2
             className="size-5 shrink-0 text-primary"
             aria-hidden="true"
           />
-          <p className="flex-1 leading-6">{message}</p>
+          <div className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+            <p className="font-semibold">Berhasil</p>
+            <p className="leading-6">{message}</p>
+          </div>
           <button
             type="button"
-            className="min-h-11 min-w-11 rounded-lg hover:bg-muted"
+            className="min-h-11 min-w-11 rounded-lg hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
             aria-label="Tutup notifikasi"
             onClick={() => setMessage("")}
           >
