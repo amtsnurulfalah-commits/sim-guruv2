@@ -150,7 +150,7 @@ const messages: Record<string, string> = {
   INVALID_CREDENTIALS: "Username atau kata sandi tidak sesuai.",
   UNAUTHENTICATED: "Sesi berakhir. Silakan masuk kembali.",
   ONBOARDING_REQUIRED: "Selesaikan pengamanan akun sebelum mengakses kegiatan.",
-  FORBIDDEN: "Permintaan tidak diizinkan.",
+  FORBIDDEN: "Akses ditolak untuk tindakan ini.",
   CSRF_INVALID: "Formulir kedaluwarsa. Muat ulang formulir lalu coba lagi.",
   RATE_LIMITED:
     "Terlalu banyak percobaan. Silakan tunggu sebelum mencoba kembali.",

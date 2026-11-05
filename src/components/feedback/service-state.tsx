@@ -4,6 +4,7 @@ import { ActionIcon } from "@/components/ui/action-icon";
 import Link from "next/link";
 import { Brand } from "@/components/brand";
 import { WifiOff } from "lucide-react";
+import { LoadingMessage } from "./loading-message";
 import { Button } from "@/components/ui/button";
 export function ServiceState({
   title = "Layanan belum dapat dihubungi",
@@ -51,15 +52,12 @@ export function PageSkeleton({ embedded = false }: { embedded?: boolean }) {
   return (
     <Container
       id={embedded ? undefined : "konten-utama"}
-      aria-busy="true"
       aria-label="Memuat halaman"
       className="mx-auto max-w-6xl space-y-6 p-6 sm:p-10"
     >
-      <p role="status" className="text-sm text-muted-foreground">
-        Menyiapkan ruang kerja…
-      </p>
-      <div className="h-10 w-2/3 rounded-xl bg-muted motion-safe:animate-pulse" />
-      <div className="grid gap-4 sm:grid-cols-2">
+      <LoadingMessage label="Menyiapkan ruang kerja…" />
+      <div aria-hidden="true" className="h-10 w-2/3 rounded-xl bg-muted motion-safe:animate-pulse" />
+      <div aria-hidden="true" className="grid gap-4 sm:grid-cols-2">
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}

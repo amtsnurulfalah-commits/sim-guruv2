@@ -16,22 +16,26 @@ export function FormFeedback({
       ref={ref}
       tabIndex={-1}
       role="alert"
-      className="form-feedback-error sm:col-span-2"
+      className="form-feedback-error min-w-0 [overflow-wrap:anywhere] sm:col-span-2"
     >
       <p className="flex items-start gap-2 whitespace-pre-line break-words font-semibold">
         <CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
-        {message}
+        {fields.length ? "Periksa isian formulir" : message}
       </p>
+      {fields.length > 0 && <p className="mt-2 whitespace-pre-line">{message}</p>}
       {fields.length > 0 && (
         <ul className="mt-2 list-inside list-disc space-y-1">
           {fields.map((field) => (
             <li key={field.id}>
               <a
-                className="inline-flex min-h-11 items-center underline underline-offset-4"
+                className="inline-block rounded py-2.5 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-ring"
                 href={"#" + field.id}
                 onClick={(event) => {
-                  event.preventDefault();
-                  document.getElementById(field.id)?.focus();
+                  const control = document.getElementById(field.id);
+                  if (control) {
+                    event.preventDefault();
+                    control.focus();
+                  }
                 }}
               >
                 {field.label}: {field.message}

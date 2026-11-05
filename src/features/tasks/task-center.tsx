@@ -106,8 +106,8 @@ export function TaskCenter({ compact = false, date, embedded = false }: { compac
           <p role="status" className="ui-feedback-neutral text-sm text-muted-foreground">{tasks.length ? `Menampilkan ${(activePage - 1) * size + 1}–${Math.min(activePage * size, tasks.length)} dari ${tasks.length} tugas` : "0 tugas ditampilkan"}</p>
         </div>
         {!tasks.length && <div className="space-y-3">
-          <EmptyState title={hasFilters ? "Tidak ada tugas yang cocok" : "Belum ada tugas aktif"} description={hasFilters
-            ? "Tidak ada tugas yang cocok dengan pencarian atau filter. Hapus filter untuk memeriksa semua tugas aktif."
+          <EmptyState resetSearch={hasFilters ? resetFilters : undefined} title={hasFilters ? "Tidak ada tugas yang cocok" : "Belum ada tugas aktif"} description={hasFilters
+            ? "Coba kata kunci lain atau reset filter untuk melihat semua tugas aktif."
             : "Tugas yang selesai atau tidak lagi berlaku hilang setelah data dimuat ulang. Jadwal yang akan datang dapat diperiksa di menu Jadwal."}/>
           {!hasFilters && <Button asChild variant="outline"><Link prefetch={false} href="/jadwal">Periksa jadwal</Link></Button>}
         </div>}

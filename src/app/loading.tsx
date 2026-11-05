@@ -1,13 +1,13 @@
 import Link from "next/link";
+import { LoadingMessage } from "@/components/feedback/loading-message";
 
 export default function Loading() {
   return (
     <main
       id="konten-utama"
-      role="status"
       className="mx-auto max-w-3xl px-5 py-24"
     >
-      <p className="text-sm text-muted-foreground">Memuat halaman…</p>
+      <LoadingMessage label="Memuat halaman…" />
       <noscript>
         <p className="mt-4 text-sm leading-7">
           Halaman ini memerlukan JavaScript. Aktifkan JavaScript di browser,

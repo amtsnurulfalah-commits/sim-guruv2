@@ -31,7 +31,7 @@ export async function pageSession(
   }
   if (!session) redirect("/login?status=expired");
   if (business && session.scope !== "business") redirect("/akun");
-  if (admin && session.role !== "admin") redirect("/dashboard");
+  if (admin && session.role !== "admin") redirect("/akses-ditolak");
   if (business && session.maintenance && session.role !== "admin")
     return { state: "maintenance" as const };
   return { state: "ready" as const, session };
