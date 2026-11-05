@@ -13,6 +13,24 @@ Baseline: main `c1bcfd2` (Tahap8). Inventaris aktual: 46 page routes, 26 kompone
 | P2 | Teks rilis lama tampil sebagai status produk | Landing/dashboard memakai deskripsi tugas; tahap tetap di halaman status |
 | P2 | State error/empty kurang membantu | EmptyState/FeatureState, feedback seragam, retry dan toast |
 
+## Pembaruan penyederhanaan halaman
+
+Inventaris rute saat pembaruan mencakup 55 entri halaman dan 58 handler API. Halaman sesi memakai shell bersama. Data bisnis tetap melewati route handler dan layanan yang sudah ada, dengan otorisasi dan validasi di server. Pemilihan tab atau halaman daftar hanya mengubah tampilan.
+
+| Cakupan | Keputusan |
+|---|---|
+| Semua rute ruang kerja dan panduan yang memakai shell | Hapus label peran ganda dan teks footer berulang. Tempatkan preferensi di bawah konten utama, dengan pintasan pilihan tetap dekat navigasi. |
+| Beranda, masuk, aktivasi, lupa kata sandi | Ringkas pengantar dan utamakan aksi atau formulir. Alur masuk dan pemulihan tetap dalam satu alur. |
+| Dashboard | Jadwal tampil sebagai tindakan utama. Kehadiran dan jurnal tersedia di Aksi harian lain. |
+| Persiapan Semester | Pisahkan penyiapan dari riwayat. Pemilihan sumber, pratinjau dan penerapan tetap satu alur. |
+| Kalender Pribadi dan Pemulihan Akun admin | Tambahkan paginasi lokal pada hasil yang sudah dimuat. Ekspor kalender tetap mencakup seluruh rentang yang dipilih. |
+| Jadwal, aktivitas, data master, pengguna, notifikasi, tugas, laporan, honorarium dan daftar kasus | Pertahankan mekanisme halaman yang sudah terhubung ke filter atau API. Kontrol paginasi bersama disembunyikan saat hanya ada satu halaman. |
+| Jurnal, absensi, kehadiran, akun, master dan honorarium | Pertahankan pemisahan bagian atau rute yang sudah ada. Tab bersama diringkas dan tetap bisa digunakan lewat keyboard. |
+| Laporan Kendala | Hapus panel pembuka yang mengulang petunjuk formulir. Hasil pencarian dan daftar penanganan tetap saling terhubung. |
+| Verifikasi dokumen, akses ditolak, catatan pembaruan | Pertahankan alur singkat atau daftar versi dengan disclosure. |
+
+Sembilan entri di luar inventaris baseline di bawah adalah `/akses-ditolak`, `/admin/laporan-kendala`, `/admin/persiapan-semester`, `/agenda`, `/laporan-pimpinan`, `/notifikasi`, `/pembaruan`, `/riwayat-perubahan`, dan `/tugas`. Riwayat perubahan memiliki filter dan paginasi sendiri. Catatan versi lama tetap dapat dibuka per versi.
+
 ## Seluruh halaman
 
 Penanganan melalui komponen bersama berlaku pada semua pemakai, termasuk alias route. Tabel ini membuktikan audit/pemetaan source; bukan klaim seluruh route telah diuji dengan akun produksi.

@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { ActionIcon } from "@/components/ui/action-icon";
+import { Pagination } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
 import { EmptyState, FeatureState } from "@/components/feedback/feature-state";
 import { AccountActionScope, ActionForm, Field } from "./account-lifecycle";
@@ -10,6 +11,8 @@ import { validateAccount } from "@/lib/accounts/client-validation";
 import { ApiRequestError } from "@/lib/feedback/api-error";
 
 export function AdminRecovery() {
+  const [page, setPage] = useState(1);
+  const pageSize = 5;
   const [items, setItems] = useState<RecoveryRequest[]>([]);
   const [loading, setLoading] = useState(true), [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -35,6 +38,7 @@ export function AdminRecovery() {
     }
   }, []);
   useEffect(() => { mounted.current = true; let active = true; void Promise.resolve().then(() => { if (active) void load(); }); return () => { active = false; mounted.current = false; controller.current?.abort(); }; }, [load]);
+  const shownPage = Math.min(page, Math.max(1, Math.ceil(items.length / pageSize)));
   return <div className="min-w-0 space-y-5 [overflow-wrap:anywhere]">
     <section className="rounded-xl border bg-muted/40 p-4 text-sm leading-7">
       <p className="font-semibold">Periksa identitas sebelum memulihkan akses</p>
@@ -54,7 +58,7 @@ export function AdminRecovery() {
     {(loading || error) && <FeatureState error={error} label="Memuat permintaan pemulihan…" retry={() => void load()} headingLevel={2} />}
     {!loading && !error && !items.length && <EmptyState title="Belum ada permintaan pemulihan" description="Permintaan yang masih menunggu pemeriksaan akan muncul di sini. Gunakan muat ulang untuk memeriksa permintaan terbaru." />}
     <AccountActionScope blocked={loading || Boolean(error) || Boolean(secret)}>
-      {items.map(item => <RecoveryDecision key={item.id + ':' + item.version} item={item} onSubmit={async payload => {
+      {items.slice((shownPage - 1) * pageSize, shownPage * pageSize).map(item => <RecoveryDecision key={item.id + ':' + item.version} item={item} onSubmit={async payload => {
         setSaving(true);
         try {
           const result = await usersRequest<{temporaryPassword?:unknown; rejected?:boolean}>("/reset-requests", "POST", payload);
@@ -72,6 +76,7 @@ export function AdminRecovery() {
         } finally { if (mounted.current) setSaving(false); }
       }} />)}
     </AccountActionScope>
+    {!loading && !error && <Pagination page={shownPage} pageSize={pageSize} total={items.length} onPageChange={setPage} disabled={saving || Boolean(secret)} label="Halaman permintaan pemulihan" />}
   </div>;
 }
 function RecoveryDecision({item,onSubmit}:{item:RecoveryRequest;onSubmit:(payload:Record<string,string>)=>Promise<void>}) {

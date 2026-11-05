@@ -1,5 +1,5 @@
 "use client";
-import { HelpDisclosure } from "@/components/ui/help-disclosure";
+import { Tabs } from "@/components/ui/tabs";
 import { formatNumber } from "@/lib/format/number";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
@@ -152,25 +152,21 @@ export function SemesterPreparationWorkspace() {
   return (
     <div className="min-w-0 space-y-6 [overflow-wrap:anywhere]">
       <header className="space-y-2 rounded-2xl border bg-accent/40 p-4 sm:p-6">
-        <p className="text-sm text-muted-foreground">
-          Konfigurasi semester berikutnya
-        </p>
         <h1 className="text-2xl font-bold">Persiapan semester baru</h1>
-        <HelpDisclosure><p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Tinjau salinan konfigurasi sebelum diterapkan. Semester tujuan tidak
-          diaktifkan otomatis.
-        </p></HelpDisclosure>
       </header>
       <ErrorFeedback message={error} />
       {notice&&<p role="status" className="rounded-xl border p-4 text-sm leading-6">{notice}</p>}
       {uncertain&&<p className="rounded-xl border p-4 text-sm leading-6">Status penerapan belum dapat dipastikan. Periksa hasil pratinjau yang sama sebelum membuat atau menerapkan rencana lain.</p>}
+      <Tabs label="Persiapan semester" defaultValue="configuration" items={[
+        { value: "configuration", label: "Siapkan semester", content: <>
       <section className={panel}>
         <h2 className="text-lg font-semibold">Batas penyalinan</h2>
         <p className="text-sm leading-6">Hanya kelas dan jadwal KBM yang dipilih. Jumlah siswa baru menjadi 0; semester tujuan tetap belum aktif.</p>
         <details className="rounded-xl border p-3 text-sm leading-6">
           <summary className="min-h-11 cursor-pointer font-semibold focus-visible:outline-2 focus-visible:outline-ring">Baca aturan dan data yang tidak disalin</summary>
-          <div className="mt-3 space-y-3">        <p className="text-sm leading-6">
-          Hanya kelas dan jadwal KBM yang dipilih. Jadwal memakai konfigurasi
+          <div className="mt-3 space-y-3">
+        <p className="text-sm leading-6">
+          Jadwal memakai konfigurasi
           aktif pada hari terakhir semester sumber dan rentang penuh semester
           tujuan. Jumlah siswa kelas baru direset ke 0; lengkapi di Data Master
           sebelum digunakan. Guru, mata pelajaran, menit per JP dan kebijakan
@@ -361,6 +357,8 @@ export function SemesterPreparationWorkspace() {
           </p>
         </section>
       )}
+        </> },
+        { value: "history", label: "Riwayat penerapan", content:
       <section className={panel}>
         <h2 className="text-lg font-semibold">Riwayat penerapan terbaru</h2>
         {!choicesReady ? (
@@ -389,6 +387,8 @@ export function SemesterPreparationWorkspace() {
           </ul>
         )}
       </section>
+        },
+      ]} />
       <FormDialog
         title="Terapkan persiapan semester?"
         trigger=""

@@ -32,9 +32,16 @@ export function DashboardView({
             : "Ruang kerja guru. Pantau jadwal, catat kehadiran, lengkapi jurnal, dan lihat honorarium Anda."}
         </p></HelpDisclosure>
         <nav aria-label="Aksi cepat Dashboard" className="flex flex-wrap gap-2">
-          <Button asChild variant="outline"><Link prefetch={false} href="/jadwal">Lihat jadwal</Link></Button>
-          <Button asChild variant="outline"><Link prefetch={false} href={"/kehadiran?date=" + date}>Catat kehadiran</Link></Button>
-          <Button asChild><Link prefetch={false} href={"/jurnal?date=" + date}>Isi jurnal</Link></Button>
+          <Button asChild><Link prefetch={false} href="/jadwal">Lihat jadwal</Link></Button>
+          <details className="min-w-0">
+            <summary className="min-h-11 cursor-pointer rounded-lg px-3 py-2.5 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring">
+              Aksi harian lain
+            </summary>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Button asChild variant="outline"><Link prefetch={false} href={"/kehadiran?date=" + date}>Catat kehadiran</Link></Button>
+              <Button asChild variant="outline"><Link prefetch={false} href={"/jurnal?date=" + date}>Isi jurnal</Link></Button>
+            </div>
+          </details>
         </nav>
       </header>
       <DashboardSection title="Tugas hari ini dan tertunda">

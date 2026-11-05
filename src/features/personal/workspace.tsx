@@ -1,6 +1,8 @@
 'use client';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
+import {Pagination} from '@/components/ui/pagination';
+import {HelpDisclosure} from '@/components/ui/help-disclosure';
 import {Button} from '@/components/ui/button';
 import {PageHeader} from '@/components/ui/page-header';
 import {ErrorFeedback} from '@/components/feedback/error-feedback';
@@ -20,6 +22,8 @@ export function PersonalWorkspace({date,history=false,admin=false}:{date:string;
  </div>;
 }
 function PersonalResults({from,to,history,admin}:{from:string;to:string;history:boolean;admin:boolean}){
+ const [page,setPage]=useState(1);
+ const pageSize=10;
  const query=new URLSearchParams({from,to}).toString(),path='/api/personal/'+(history?'history':'calendar')+'?'+query;
  const parse=useCallback((raw:unknown)=>{if(history){const parsed=historyForRangeSchema({from,to}).safeParse(raw);if(!parsed.success)throw Error('Riwayat belum sesuai. Muat ulang sumber atau hubungi administrator jika kendala berulang.');return parsed.data;}const parsed=calendarSchema.safeParse(raw);if(!parsed.success||parsed.data.from!==from||parsed.data.to!==to)throw Error('Kalender belum sesuai rentang yang diminta. Muat ulang sumber sebelum mengunduh.');return parsed.data;},[from,to,history]);
  const data=useReadResource(path,parse),[busy,setBusy]=useState(false),[error,setError]=useState('');
@@ -27,12 +31,15 @@ function PersonalResults({from,to,history,admin}:{from:string;to:string;history:
  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;request.current?.abort();};},[]);
  async function exportCalendar(){if(pending.current||data.loading||!data.value||data.error)return;pending.current=true;setBusy(true);setError('');const c=new AbortController();request.current=c;try{await downloadFile('/api/personal/export?'+query,'kalender-pribadi.ics',{signal:AbortSignal.any([c.signal,AbortSignal.timeout(30000)])});}catch(e){if(mounted.current&&!c.signal.aborted)setError(e instanceof Error?e.message:'Unduhan belum berhasil.');}finally{pending.current=false;if(mounted.current)setBusy(false);}}
  if(!data.value)return <FeatureState headingLevel={2} error={data.error} label="Memuat sumber…" retry={data.refresh}/>;
+ const shownPage=Math.min(page,Math.max(1,Math.ceil(data.value.items.length/pageSize)));
  return <section className="min-w-0 space-y-4" aria-busy={data.loading||busy}><div className="flex flex-wrap gap-3"><Button variant="outline" disabled={data.loading} onClick={data.refresh}>Muat ulang sumber</Button>{!history&&<Button variant="outline" disabled={busy||data.loading||!!data.error} onClick={()=>void exportCalendar()}>Unduh kalender (.ics)</Button>}</div>
- <p className="text-sm leading-6 text-muted-foreground">Rentang {from}–{to} · WIB. {history?'Tanggal mengacu pada waktu perubahan dicatat, bukan tanggal kegiatan. Urutan terbaru lebih dahulu. Rincian sebelum/sesudah yang tidak tersimpan tidak direkonstruksi.':'Berkas memuat jadwal pribadi. Unduhan adalah salinan saat diunduh, tidak tersinkron otomatis. Setelah perubahan atau pembatalan, hapus impor lama lalu impor ulang untuk mencegah duplikasi di aplikasi kalender. Acara tersedia bukan konfirmasi kehadiran.'}</p>
+ <p className="text-sm leading-6 text-muted-foreground">Rentang {from}–{to} · WIB.</p>
+ <HelpDisclosure><p>{history?'Tanggal mengacu pada waktu perubahan dicatat, bukan tanggal kegiatan. Urutan terbaru lebih dahulu. Rincian sebelum/sesudah yang tidak tersimpan tidak direkonstruksi.':'Berkas memuat jadwal pribadi. Unduhan adalah salinan saat diunduh, tidak tersinkron otomatis. Setelah perubahan atau pembatalan, hapus impor lama lalu impor ulang untuk mencegah duplikasi di aplikasi kalender. Acara tersedia bukan konfirmasi kehadiran.'}</p></HelpDisclosure>
  <ErrorFeedback message={error||data.error}/>
  {'truncated' in data.value ? <HistoryList value={data.value} admin={admin} updatedAt={data.updatedAt} loading={data.loading}/> : <>
  {!data.value.items.length&&<EmptyState title="Belum ada catatan pada rentang ini"/>}
- <ul className="grid min-w-0 gap-3 sm:grid-cols-2">{data.value.items.map(item=><li key={item.uid} className="min-w-0 space-y-2 rounded-xl border p-4"><p className="text-sm text-muted-foreground">{item.date} · {item.all_day?'Sepanjang hari / jam khusus belum ditentukan':`${item.start}–${item.finish} WIB`}</p><h2 className="font-semibold">{kindLabel[item.kind]} · {item.title}</h2><p className="text-sm">{calendarStateLabel[item.state]}{item.location?' · '+item.location:''}</p>{honorSourceLink({component:item.kind,date:item.date})&&<Link className="inline-flex min-h-11 items-center text-sm text-primary underline" prefetch={false} href={honorSourceLink({component:item.kind,date:item.date})!}>Buka sumber kegiatan</Link>}</li>)}</ul>
+ <ul className="grid min-w-0 gap-3 sm:grid-cols-2">{data.value.items.slice((shownPage-1)*pageSize,shownPage*pageSize).map(item=><li key={item.uid} className="min-w-0 space-y-2 rounded-xl border p-4"><p className="text-sm text-muted-foreground">{item.date} · {item.all_day?'Sepanjang hari / jam khusus belum ditentukan':`${item.start}–${item.finish} WIB`}</p><h2 className="font-semibold">{kindLabel[item.kind]} · {item.title}</h2><p className="text-sm">{calendarStateLabel[item.state]}{item.location?' · '+item.location:''}</p>{honorSourceLink({component:item.kind,date:item.date})&&<Link className="inline-flex min-h-11 items-center text-sm text-primary underline" prefetch={false} href={honorSourceLink({component:item.kind,date:item.date})!}>Buka sumber kegiatan</Link>}</li>)}</ul>
+ <Pagination page={shownPage} pageSize={pageSize} total={data.value.items.length} onPageChange={setPage} label="Halaman kalender pribadi"/>
  </>}
  </section>;
 }
