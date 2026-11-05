@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { BookOpen, CalendarCheck2, ShieldCheck } from "lucide-react";
 import { Brand } from "@/components/brand";
 import type { ReactNode } from "react";
 export function AuthLayout({
@@ -32,32 +31,12 @@ export function AuthLayout({
           </span>
         </Link>
         <div className="relative z-10 max-w-lg space-y-6">
-          <span className="inline-flex rounded-full border border-white/30 px-3 py-1 text-xs">
-            Ruang kerja madrasah
-          </span>
           <h2 className="text-4xl leading-tight font-semibold xl:text-5xl">
-            Administrasi tertata.
-            <br />
-            Lebih fokus mengajar.
+            Ruang kerja guru
           </h2>
           <p className="text-base leading-8 text-white/85">
-            Jadwal, kehadiran, jurnal, dan honorarium dalam alur kerja yang
-            terhubung.
+            Akses jadwal, kehadiran, jurnal, dan honorarium madrasah.
           </p>
-          <div className="grid gap-4 pt-4 text-sm">
-            <p className="flex items-center gap-3">
-              <CalendarCheck2 className="size-5 shrink-0" aria-hidden="true" />
-              Kegiatan harian lebih terarah
-            </p>
-            <p className="flex items-center gap-3">
-              <BookOpen className="size-5 shrink-0" aria-hidden="true" />
-              Catatan pembelajaran tersusun rapi
-            </p>
-            <p className="flex items-center gap-3">
-              <ShieldCheck className="size-5 shrink-0" aria-hidden="true" />
-              Akses sesuai kewenangan akun
-            </p>
-          </div>
         </div>
         <p className="text-xs text-white/75">
           SiM-Guru · Sistem Informasi Guru
@@ -80,18 +59,12 @@ export function AuthLayout({
             </Link>
           </div>
           <div className="mb-7">
-            <p className="mb-3 text-xs font-semibold tracking-widest text-primary uppercase">
-              Selamat datang
-            </p>
             <h1 className="text-3xl">{title}</h1>
             <p className="mt-3 text-sm leading-7 text-muted-foreground">
               {description}
             </p>
           </div>
           <div className="ui-panel space-y-5 sm:p-7">{children}</div>
-          <p className="mt-6 text-center text-xs leading-6 text-muted-foreground">
-            Gunakan akun yang diberikan administrator madrasah.
-          </p>
         </div>
       </section>
     </main>

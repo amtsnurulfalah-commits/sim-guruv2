@@ -75,7 +75,7 @@ try {
   const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 320, height: 700 } });
   const staticPage = await noJs.newPage();
   assert.equal((await staticPage.goto("http://127.0.0.1:4327/")).status(), 200);
-  await staticPage.getByRole("heading", { name: /Administrasi tertata/ }).waitFor();
+  await staticPage.getByRole("heading", { name: /SiM-Guru untuk kegiatan harian/ }).waitFor();
   assert.equal(await staticPage.getByRole("link", { name: "Masuk ke SiM-Guru", exact: true }).getAttribute("href"), "/login");
   assert.equal(await staticPage.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false);
   await noJs.close();

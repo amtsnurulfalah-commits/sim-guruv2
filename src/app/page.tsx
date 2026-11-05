@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, Check, LockKeyhole, Sprout } from "lucide-react";
+import { ArrowRight, LockKeyhole } from "lucide-react";
 import { Brand } from "@/components/brand";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -36,9 +35,6 @@ export default function HomePage() {
           >
             <Brand />
           </Link>
-          <Badge className="max-w-full border-primary/15 bg-primary/5 text-primary">
-            Ruang kerja madrasah
-          </Badge>
         </div>
       </header>
       <main
@@ -48,23 +44,11 @@ export default function HomePage() {
       >
         <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:gap-12">
           <div className="min-w-0 py-4">
-            <p className="mb-5 flex items-start gap-2 text-xs font-bold tracking-widest text-primary uppercase">
-              <Sprout aria-hidden="true" className="mt-0.5 size-4 shrink-0" /> Ruang kerja guru
-              yang terhubung
-            </p>
             <h1 className="max-w-2xl text-3xl leading-tight font-bold tracking-tight min-[375px]:text-4xl sm:text-5xl">
-              Administrasi tertata.
-              <br />
-              <span className="text-primary">Fokus untuk mengajar.</span>
+              SiM-Guru untuk kegiatan harian
             </h1>
             <p className="mt-6 max-w-lg text-base leading-8 text-muted-foreground">
-              SiM-Guru menghubungkan kegiatan, kehadiran, jurnal, dan honorarium
-              dalam satu alur yang jelas.
-            </p>
-            <p className="mt-4 max-w-lg text-sm leading-7 text-muted-foreground">
-              Akses modul mengikuti peran dan kewenangan akun. Mulai dari
-              jadwal, lengkapi catatan kegiatan, lalu pantau rekap administrasi
-              Anda.
+              Lihat jadwal, catat kehadiran dan jurnal, lalu periksa honorarium Anda.
             </p>
             <Button
               asChild
@@ -124,17 +108,12 @@ export default function HomePage() {
                   </li>
                 ))}
               </ol>
-              <div className="mt-6 flex items-start gap-2 border-t pt-5 text-xs text-muted-foreground">
-                <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />{" "}
-                Akses dikelola oleh administrator madrasah.
-              </div>
             </CardContent>
           </Card>
         </div>
       </main>
       <footer className="mx-auto flex w-full max-w-6xl flex-wrap justify-between gap-2 border-t px-5 py-6 text-xs text-muted-foreground sm:px-8">
         <p>SiM-Guru · Sistem Informasi Guru</p>
-        <p>Ruang kerja madrasah</p>
       </footer>
     </div>
   );

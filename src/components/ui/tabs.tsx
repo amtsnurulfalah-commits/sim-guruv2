@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 type TabItem = {
   value: string;
   label: string;
-  icon: ReactNode;
+  icon?: ReactNode;
   content: ReactNode;
 };
 
@@ -38,12 +38,7 @@ export function Tabs({
         role="tablist"
         aria-label={label}
         aria-orientation="horizontal"
-        className={cn(
-          "grid gap-2 rounded-2xl border bg-muted/60 p-2",
-          items.length === 3
-            ? "grid-cols-1 md:grid-cols-3"
-            : "grid-cols-2 lg:grid-cols-4",
-        )}
+        className="flex min-w-0 flex-wrap gap-1 rounded-xl border bg-muted/60 p-1"
       >
         {items.map((item, index) => (
           <button
@@ -58,7 +53,7 @@ export function Tabs({
             aria-selected={selected === item.value}
             tabIndex={selected === item.value ? 0 : -1}
             className={cn(
-              "inline-flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-xl border px-3 py-3 text-center text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:size-4 [&_svg]:shrink-0",
+              "inline-flex min-h-11 min-w-0 max-w-full flex-1 basis-28 items-center justify-center gap-2 rounded-lg border px-2 py-2 text-center text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:size-4 [&_svg]:shrink-0",
               selected === item.value
                 ? "border-primary/25 bg-card text-primary shadow-xs"
                 : "border-transparent text-muted-foreground hover:bg-card/70 hover:text-foreground",

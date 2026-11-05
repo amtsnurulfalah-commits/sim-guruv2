@@ -20,9 +20,9 @@ export function Pagination({
   return (
     <nav
       aria-label={label}
-      className="flex min-w-0 flex-wrap items-center justify-between gap-3"
+      className="flex min-w-0 flex-wrap items-center justify-between gap-2"
     >
-      <Button
+      {last > 1 && <Button
         type="button"
         variant="outline"
         disabled={disabled || page <= 1}
@@ -30,15 +30,15 @@ export function Pagination({
       >
         <ActionIcon action="previous" />
         Sebelumnya
-      </Button>
+      </Button>}
       <div
         role="status"
         aria-live="polite"
         className="min-w-0 text-sm text-muted-foreground [overflow-wrap:anywhere]"
       >
-        Halaman {page} dari {last} · {total} data
+        Halaman {page} dari {last} · {total === 0 ? "0 data" : `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, total)} dari ${total} data`}
       </div>
-      <Button
+      {last > 1 && <Button
         type="button"
         variant="outline"
         disabled={disabled || page >= last}
@@ -46,7 +46,7 @@ export function Pagination({
       >
         <ActionIcon action="next" />
         Berikutnya
-      </Button>
+      </Button>}
     </nav>
   );
 }

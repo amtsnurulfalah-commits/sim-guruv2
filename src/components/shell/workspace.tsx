@@ -477,13 +477,6 @@ function WorkspaceContent({ children, session, onLogout }: WorkspaceProps) {
             </div>
           </div>
           <div className="flex min-w-0 max-w-full flex-wrap items-center gap-3">
-            <span className="hidden rounded-full border bg-muted px-3 py-1 text-xs sm:inline">
-              {role === "admin"
-                ? "Administrator"
-                : role === "guru"
-                  ? "Guru"
-                  : "SiM-Guru"}
-            </span>
             {onLogout ? (
               <Button variant="outline" onClick={onLogout}>
                 <LogOut aria-hidden="true" />
@@ -512,7 +505,6 @@ function WorkspaceContent({ children, session, onLogout }: WorkspaceProps) {
             reportAccess={reportAllowed}
           />
           {ready && session && <>
-            <PreferenceControls links={links}/>
             {links.some(link => preferences.values.pins.includes(link.slug)) && <nav aria-label="Pintasan pilihan" className="mb-5 flex min-w-0 flex-wrap gap-2">{links.filter(link => preferences.values.pins.includes(link.slug)).map(link => <Button key={link.slug} asChild variant="outline"><Link prefetch={false} href={link.href ?? "/modul/" + link.slug} onNavigate={event => navigate(event, link.href ?? "/modul/" + link.slug, link.title)}>{link.title}</Link></Button>)}</nav>}
           </>}
           {navigating && destination && (
@@ -521,6 +513,7 @@ function WorkspaceContent({ children, session, onLogout }: WorkspaceProps) {
             </div>
           )}
           <div hidden={navigating}>{children}</div>
+          {ready && session && !navigating && <div className="mt-8"><PreferenceControls links={links} /></div>}
         </main>
         <footer className="mt-auto flex min-w-0 flex-wrap justify-between gap-x-6 gap-y-1 border-t px-5 py-5 text-xs leading-6 text-muted-foreground sm:px-8 [overflow-wrap:anywhere]">
           <ReleaseNotice scope={session ? session.user.id + ":" + session.user.role : null}/>
@@ -528,7 +521,6 @@ function WorkspaceContent({ children, session, onLogout }: WorkspaceProps) {
             <span className="font-semibold text-foreground">SiM-Guru</span> ·
             Sistem Informasi Guru
           </p>
-          <p>Ruang kerja madrasah.</p>
         </footer>
       </div>
       <dialog

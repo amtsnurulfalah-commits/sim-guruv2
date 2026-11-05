@@ -45,7 +45,8 @@ try {
  await input.fill('ffffffff-ffff-4fff-8fff-ffffffffffff');
  release();
  await page.unroute('**/api/operations/support?*');
- await page.getByRole('heading',{name:'Mulai penelusuran kendala'}).waitFor();
+ await page.getByRole('button',{name:'Cari laporan',exact:true}).waitFor();
+ assert.equal(await page.getByRole('heading',{name:'Rincian kendala'}).count(),0);
  await page.getByRole('button',{name:'Cari laporan'}).click();
  await page.getByRole('heading',{name:'Referensi belum ditemukan'}).waitFor();
  assert.equal(await page.getByRole('heading',{name:'Rincian kendala'}).count(),0);

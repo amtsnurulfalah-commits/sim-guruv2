@@ -54,17 +54,9 @@ export default function ReadinessPage() {
     <GuideWorkspace>
       <div className="application-guide @container min-w-0 space-y-8 [overflow-wrap:anywhere]">
         <header className="space-y-3">
-          <p className="text-xs font-semibold tracking-widest uppercase text-primary">
-            Bantuan pengguna
-          </p>
           <h1>Panduan aplikasi</h1>
           <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
-            Mulai dari akun, lanjutkan tugas harian, dan temukan langkah bantuan
-            saat penggunaan SiM-Guru mengalami kendala.
-          </p>
-          <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
-            Panduan ini dapat dibaca tanpa masuk. Menu dan data yang dapat
-            digunakan setelah masuk tetap mengikuti kewenangan akun Anda.
+            Pelajari cara masuk, menyelesaikan tugas harian, dan mendapatkan bantuan.
           </p>
         </header>
         <nav
