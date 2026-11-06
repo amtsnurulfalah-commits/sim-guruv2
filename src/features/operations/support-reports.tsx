@@ -2,7 +2,7 @@
 import { HelpDisclosure } from "@/components/ui/help-disclosure";
 import { CaseWorkspace } from "./case-workspace";
 import { useEffect, useRef, useState } from "react";
-import { Search, LoaderCircle } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
 import { masterRequest } from "@/features/masters/api";
@@ -62,7 +62,7 @@ export function SupportReports() {
       <div className="ui-floating-field"><label htmlFor="support-reference" className="block font-semibold ui-floating-label">Kode referensi bantuan</label>
       <input id="support-reference" required maxLength={80} autoComplete="off" autoCapitalize="none" spellCheck={false} value={reference} onChange={e=>changeReference(e.target.value)} className="min-h-11 min-w-0 w-full rounded-lg border bg-background px-3 text-base focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring" placeholder="Tempel kode referensi lengkap" aria-describedby="support-help" /></div>
       <p id="support-help" className="text-sm text-muted-foreground">Salin kode dari pesan bantuan. Jangan minta kata sandi, OTP, atau tautan aktivasi.</p>
-      <Button className="w-full sm:w-auto" disabled={busy} type="submit">{busy ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : <Search aria-hidden="true" />}{busy ? "Mencari laporan…" : "Cari laporan"}</Button>
+      <Button aria-busy={busy} className="w-full sm:w-auto" disabled={busy} type="submit">{!busy && <Search aria-hidden="true" />}{busy ? "Mencari laporan…" : "Cari laporan"}</Button>
     </form>
     <ErrorFeedback message={error} autoFocus />
     <div aria-live="polite" aria-atomic="true" aria-busy={busy} className="min-w-0">

@@ -250,6 +250,7 @@ export function ReportsWorkspace() {
                   Muat ulang
                 </Button>
                 <Button
+                  aria-busy={downloading}
                   disabled={
                     !report || loadedQuery !== query || loading || downloading
                   }

@@ -59,7 +59,7 @@ export function MigrationEditor({ action, blocked, onSave, onClose, onRecover }:
         }
     }
     return <FormDialog open trigger="" title={action.kind === "gate" ? "Tinjau bukti migrasi" : "Tinjau data migrasi"} description="Catat hasil pemeriksaan dan rujukan bukti privat. Jangan masukkan kata sandi, OTP, token, atau kredensial ke dalam bukti." busy={saving} onOpenChange={open => { if (!open && !pending.current)
-        onClose(); }} footer={<Button type="submit" form={formId} disabled={saving || blocked}>{saving ? "Menyimpan…" : action.kind === "gate" ? "Simpan keputusan bukti" : "Simpan hasil peninjauan"}</Button>}>
+        onClose(); }} footer={<Button aria-busy={saving} type="submit" form={formId} disabled={saving || blocked}>{saving ? "Menyimpan…" : action.kind === "gate" ? "Simpan keputusan bukti" : "Simpan hasil peninjauan"}</Button>}>
     <form method="post" id={formId} onSubmit={event => void submit(event)} className="min-w-0 space-y-5 [overflow-wrap:anywhere]" aria-busy={saving}>
       <fieldset disabled={saving || blocked} className="min-w-0 space-y-5">
         <p className="rounded-xl border bg-muted/30 p-3 text-sm">Batch: {action.batch.source} · versi {action.batch.version}</p>

@@ -163,6 +163,7 @@ export function StudentEditor({
       }}
       footer={
         <Button
+          aria-busy={busy}
           type="submit"
           form={formId}
           disabled={busy || blocked || privateComplete || !klass}

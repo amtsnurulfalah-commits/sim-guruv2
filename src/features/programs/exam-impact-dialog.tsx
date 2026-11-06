@@ -48,6 +48,7 @@ export function ExamImpactDialog({
         <button
           className={primaryAction}
           disabled={busy || blocked || expired}
+          aria-busy={busy}
           onClick={onConfirm}
         >
           Konfirmasi perubahan

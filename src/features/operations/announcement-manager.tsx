@@ -81,7 +81,7 @@ function AnnouncementEditor({ edit, disabled, onSave }: {
     <RecipientPicker name="denyDismiss" label="Pengecualian: tidak boleh menutup" value={deny} onChange={setDeny} names={edit?.recipientNames ?? {}} disabled={disabled || saving}/>
    </div></details>
    <Field name="reason" label="Alasan perubahan (min. 5 karakter)" minLength={5} maxLength={500} multiline/>
-   <Button type="submit" className="w-full sm:w-auto">{saving ? "Menyimpan…" : "Simpan pengumuman"}</Button>
+   <Button aria-busy={saving} type="submit" className="w-full sm:w-auto">{saving ? "Menyimpan…" : "Simpan pengumuman"}</Button>
   </fieldset>
   {error && <ErrorFeedback message={error} autoFocus/>}
  </form>;

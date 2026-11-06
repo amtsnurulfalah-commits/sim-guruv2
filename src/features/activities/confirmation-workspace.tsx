@@ -301,7 +301,7 @@ export function ConfirmationWorkspace({
             Muat ulang
           </Button>
           <Button
-            variant="ghost"
+            variant="solid"
             disabled={busy || selection !== null || (!q && status === "all")}
             onClick={() => {
               setQ("");
@@ -559,6 +559,7 @@ function ConfirmationEditor({
       }}
       footer={
         <Button
+          aria-busy={busy}
           type="submit"
           form={formId}
           variant={action === "revoke" ? "destructive" : "default"}

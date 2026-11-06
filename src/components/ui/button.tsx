@@ -9,8 +9,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "ui-action-primary",
-        destructive: "bg-destructive text-white hover:bg-destructive/90",
-        ghost: "hover:bg-accent text-foreground",
+        destructive: "ui-action-destructive",
+        solid: "ui-action-solid",
         outline: "ui-action-secondary",
       },
       size: {
@@ -27,6 +27,8 @@ function Button({
   variant,
   size,
   asChild = false,
+  disabled,
+  "aria-busy": busy,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & { asChild?: boolean }) {
@@ -34,6 +36,8 @@ function Button({
   return (
     <Comp
       data-slot="button"
+      aria-busy={busy}
+      disabled={asChild ? disabled : disabled || busy === true || busy === "true"}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />

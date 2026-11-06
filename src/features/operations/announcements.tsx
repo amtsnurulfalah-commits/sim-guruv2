@@ -71,7 +71,7 @@ export function Announcements({refreshKey}: {refreshKey?: string}) {
       <p className="whitespace-pre-wrap">{a.body}</p>
       <div className="flex flex-wrap items-center gap-3">
         {a.cta_url && <Link prefetch={false} href={a.cta_url} rel="noopener noreferrer" className="ui-text-link inline-flex min-h-11 max-w-full items-center rounded-md py-2 [overflow-wrap:anywhere]">{a.cta_text || "Lihat pengumuman"}</Link>}
-        {a.canDismiss && <Button type="button" variant="outline" disabled={busyId !== null || loading || Boolean(error)} onClick={() => void dismiss(a)}><X aria-hidden="true" />{busyId === a.id ? "Menutup pengumuman…" : "Tutup pengumuman"}</Button>}
+        {a.canDismiss && <Button aria-busy={busyId === a.id} type="button" variant="outline" disabled={busyId !== null || loading || Boolean(error)} onClick={() => void dismiss(a)}><X aria-hidden="true" />{busyId === a.id ? "Menutup pengumuman…" : "Tutup pengumuman"}</Button>}
       </div>
     </article>)}
   </section>;

@@ -34,7 +34,7 @@ export function DashboardView({
         <nav aria-label="Aksi cepat Dashboard" className="flex flex-wrap gap-2">
           <Button asChild><Link prefetch={false} href="/jadwal">Lihat jadwal</Link></Button>
           <details className="min-w-0">
-            <summary className="min-h-11 cursor-pointer rounded-lg px-3 py-2.5 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring">
+            <summary className="ui-action ui-action-solid cursor-pointer list-none [&::-webkit-details-marker]:hidden">
               Aksi harian lain
             </summary>
             <div className="mt-2 flex flex-wrap gap-2">

@@ -115,7 +115,7 @@ export function JournalEditor({ action, userId, blocked, onSave, onClose, onReco
         }
     }
     return <FormDialog onCloseAutoFocus={onCloseAutoFocus} title={title} trigger="" open busy={saving} onDiscard={draft.remove} description="Periksa kegiatan dan isian sebelum menyimpan. Alasan dicatat untuk riwayat audit." onOpenChange={open => { if (!open && !pending.current)
-        onClose(); }} footer={<Button type="submit" form={formId} variant={action.kind === "delete" ? "destructive" : "default"} disabled={saving || blocked || (action.kind === "create" && !action.eligible.length) || !!draft.candidate}>{saving ? "Menyimpan…" : submitLabel}</Button>}>
+        onClose(); }} footer={<Button aria-busy={saving} type="submit" form={formId} variant={action.kind === "delete" ? "destructive" : "default"} disabled={saving || blocked || (action.kind === "create" && !action.eligible.length) || !!draft.candidate}>{saving ? "Menyimpan…" : submitLabel}</Button>}>
     <form ref={attachDraftForm} method="post" id={formId} onSubmit={event => void submit(event)} className="min-w-0 space-y-5 [overflow-wrap:anywhere]" aria-busy={saving}>
       <fieldset disabled={saving || blocked} className="min-w-0 space-y-5">
         {isJournal && <>

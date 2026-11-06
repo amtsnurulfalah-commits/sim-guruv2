@@ -292,6 +292,7 @@ export function AttendanceEditor({
       }}
       footer={
         <button
+          aria-busy={busy}
           className={primaryAction}
           type="submit"
           form={formId}

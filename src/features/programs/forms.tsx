@@ -358,7 +358,7 @@ export function DataForm({
         ))}
         <div className="flex flex-wrap items-center gap-3 border-t pt-4 sm:col-span-2">
           {inline && (
-            <button className={button} disabled={busy || saving || locked || !!draft.candidate}>
+            <button aria-busy={busy || saving} className={button} disabled={busy || saving || locked || !!draft.candidate}>
               <ActionIcon action="submit" />
               {busy || saving ? "Memproses…" : submitLabel}
             </button>
@@ -376,6 +376,7 @@ export function DataForm({
       trigger={label}
       footer={
         <button
+          aria-busy={busy || saving}
           className={button}
           type="submit"
           form={prefix + "-form"}
