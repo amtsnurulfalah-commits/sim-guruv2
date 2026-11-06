@@ -224,7 +224,7 @@ export function ActionForm({
       <h3 className="text-lg font-semibold">{title}</h3>
       <fieldset disabled={disabled || busy || group?.busy} className="min-w-0 space-y-4">
         {children}
-        <Button className="w-full sm:w-auto" type="submit" disabled={disabled || busy || group?.busy}>
+        <Button aria-busy={busy} className="w-full sm:w-auto" type="submit" disabled={disabled || busy || group?.busy}>
           <ActionIcon action="submit" />
           {busy ? "Memproses…" : submitLabel}
         </Button>

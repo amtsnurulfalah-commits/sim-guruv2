@@ -100,7 +100,7 @@ function OperationsEditor({ action, data, blocked, onSave, onClose, onRecover }:
         ["maintenance", "Pemeliharaan segera", config.maintenance],
     ] as const;
     return <FormDialog title={titles[action.kind]} trigger="" open onOpenChange={open => { if (!open && !pending.current)
-        onClose(); }} busy={saving} description="Periksa dampak perubahan dan isi alasan untuk riwayat audit. Semua waktu pada formulir memakai WIB." footer={<Button type="submit" form={formId} disabled={saving || blocked}>{saving ? "Menyimpan…" : submits[action.kind]}</Button>}>
+        onClose(); }} busy={saving} description="Periksa dampak perubahan dan isi alasan untuk riwayat audit. Semua waktu pada formulir memakai WIB." footer={<Button aria-busy={saving} type="submit" form={formId} disabled={saving || blocked}>{saving ? "Menyimpan…" : submits[action.kind]}</Button>}>
     <form id={formId} method="post" onSubmit={event => void submit(event)} className="min-w-0 space-y-5 [overflow-wrap:anywhere]" aria-busy={saving}>
       <fieldset disabled={saving || blocked} className="min-w-0 space-y-5">
         {action.kind === "settings" ? <>

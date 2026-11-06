@@ -267,7 +267,7 @@ function UserEditor({
           Perubahan profil/peran mencabut sesi dan challenge lama pengguna. Akun
           yang diarsipkan tidak dapat diubah; riwayat tetap disimpan.
         </p>
-        <Button type="submit" disabled={busy}>
+        <Button aria-busy={busy} type="submit" disabled={busy}>
           <ActionIcon action="save" />
           {busy ? "Menyimpan…" : user ? "Simpan perubahan" : "Buat akun"}
         </Button>
@@ -826,7 +826,7 @@ export function UserManager() {
                   <ActionIcon action="close" />
                   Batal
                 </Button>
-                <Button type="submit">
+                <Button aria-busy={busy} type="submit">
                   <ActionIcon
                     action={
                       (confirmation.action === "activation" || confirmation.action === "reset-email")

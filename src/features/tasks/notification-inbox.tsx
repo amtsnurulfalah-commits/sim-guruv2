@@ -189,7 +189,7 @@ export function NotificationInbox() {
                 />
                 Email ringkasan pengingat tugas
               </label>
-              <Button type="submit">
+              <Button aria-busy={busy} type="submit">
                 {busy ? "Menyimpan…" : "Simpan preferensi"}
               </Button>
             </fieldset>

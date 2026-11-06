@@ -421,6 +421,7 @@ export function SemesterPreparationWorkspace() {
         </label>
         <div className="flex flex-wrap gap-3">
           <Button
+            aria-busy={busy}
             disabled={busy || !applicable || !accepted}
             onClick={() => void commit()}
           >

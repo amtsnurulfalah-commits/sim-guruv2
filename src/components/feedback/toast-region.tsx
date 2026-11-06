@@ -43,7 +43,7 @@ export function ToastRegion() {
           </div>
           <button
             type="button"
-            className="min-h-11 min-w-11 rounded-lg hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+            className="ui-action ui-action-solid min-h-11 min-w-11 p-0"
             aria-label="Tutup notifikasi"
             onClick={() => setMessage("")}
           >

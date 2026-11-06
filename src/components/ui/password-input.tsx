@@ -30,7 +30,7 @@ export function PasswordInput({
       />
       <button
         type="button"
-        className="absolute inset-y-0 right-0 flex min-h-11 w-12 items-center justify-center rounded-r-lg text-muted-foreground hover:bg-accent hover:text-primary disabled:pointer-events-none"
+        className="ui-action ui-action-solid absolute inset-y-0 right-0 min-h-11 w-12 rounded-l-none p-0"
         disabled={props.disabled}
         aria-label={
           visible ? "Sembunyikan isian rahasia" : "Tampilkan isian rahasia"

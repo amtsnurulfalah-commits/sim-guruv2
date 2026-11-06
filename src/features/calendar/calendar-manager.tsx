@@ -527,7 +527,7 @@ export function CalendarManager() {
                 name="reason"
                 label="Alasan perubahan (minimal 5 karakter)"
               />
-              <Button type="submit">
+              <Button aria-busy={busy} type="submit">
                 <ActionIcon action="preview" />
                 {busy ? "Memeriksa…" : "Lihat pratinjau perubahan"}
               </Button>
@@ -648,7 +648,7 @@ export function CalendarManager() {
                 <ActionIcon action="close" />
                 {commitBlocked ? "Kembali dan muat ulang" : "Kembali ke formulir"}
               </Button>
-              <Button disabled={busy || commitBlocked} onClick={() => void commit()}>
+              <Button aria-busy={busy} disabled={busy || commitBlocked} onClick={() => void commit()}>
                 <ActionIcon action="save" />
                 {busy ? "Menyimpan…" : "Simpan perubahan kalender"}
               </Button>

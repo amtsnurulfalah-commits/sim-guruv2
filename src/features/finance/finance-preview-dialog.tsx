@@ -63,6 +63,7 @@ export function FinancePreviewDialog({
         <button
           className={primaryAction}
           disabled={busy || locked || expired || issues.length > 0}
+          aria-busy={busy}
           onClick={onConfirm}
         >
           Konfirmasi perubahan honorarium

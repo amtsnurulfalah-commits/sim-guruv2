@@ -132,6 +132,7 @@ export function DayContextCard({ date = wibDate(), embedded = false }: { date?: 
         className="ui-action ui-action-secondary"
         type="button"
         disabled={loading}
+        aria-busy={loading}
         onClick={refresh}
       >
         <ActionIcon action="refresh" />

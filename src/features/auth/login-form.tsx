@@ -210,7 +210,7 @@ export function LoginForm({ captcha = { enabled: false, siteKey: null } }: { cap
         /></div>
       </div>
       {captcha.enabled && <RecaptchaField key={captcha.siteKey} siteKey={captcha.siteKey} attempt={captchaAttempt} onToken={setCaptchaToken} busy={busy} />}
-      <Button className="w-full" type="submit" disabled={busy || preparing || !csrf || (captcha.enabled && !captchaToken)}>
+      <Button aria-busy={busy || preparing} className="w-full" type="submit" disabled={busy || preparing || !csrf || (captcha.enabled && !captchaToken)}>
         <ActionIcon action="access" />
         {busy
           ? "Memeriksa akun…"

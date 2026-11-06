@@ -53,10 +53,10 @@ export function Tabs({
             aria-selected={selected === item.value}
             tabIndex={selected === item.value ? 0 : -1}
             className={cn(
-              "inline-flex min-h-11 min-w-0 max-w-full flex-1 basis-28 items-center justify-center gap-2 rounded-lg border px-2 py-2 text-center text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:size-4 [&_svg]:shrink-0",
+              "ui-action inline-flex min-h-11 min-w-0 max-w-full flex-1 basis-28 items-center justify-center gap-2 rounded-lg border px-2 py-2 text-center text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:size-4 [&_svg]:shrink-0",
               selected === item.value
                 ? "border-primary/25 bg-card text-primary shadow-xs"
-                : "border-transparent text-muted-foreground hover:bg-card/70 hover:text-foreground",
+                : "ui-action-solid border-transparent",
             )}
             onClick={() => setSelected(item.value)}
             onKeyDown={(event) => {

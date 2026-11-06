@@ -310,7 +310,7 @@ function Editor({
             <ActionIcon action="preview" />
             Periksa bentrok jadwal
           </Button>
-          <Button type="submit" name="intent" value="save">
+          <Button aria-busy={busy} type="submit" name="intent" value="save">
             <ActionIcon action="save" />
             {busy ? "Memproses…" : "Simpan jadwal"}
           </Button>
@@ -1163,7 +1163,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
               </article>
             ))}
             <div className="flex flex-wrap gap-3"><Button variant="outline" disabled={busy} onClick={()=>{setPreview(null);setError("");}}>Ubah tanggal atau alasan</Button>
-            <Button disabled={busy} onClick={() => void commit()}>
+            <Button aria-busy={busy} disabled={busy} onClick={() => void commit()}>
               <ActionIcon action="confirm" />
               {busy ? "Memproses…" : "Konfirmasi penghentian jadwal"}
             </Button></div>
@@ -1198,7 +1198,7 @@ export function ScheduleManager({ admin }: { admin: boolean }) {
                   className="mt-2 min-h-11 w-full min-w-0 rounded border bg-background px-3"
                 />
               </label>
-              <Button type="submit">
+              <Button aria-busy={busy} type="submit">
                 <ActionIcon action="preview" />
                 {busy ? "Memeriksa…" : "Lihat pratinjau dampak"}
               </Button>

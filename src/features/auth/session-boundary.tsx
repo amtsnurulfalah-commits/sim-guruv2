@@ -272,7 +272,7 @@ export function SessionBoundary({
             <ActionIcon action="close" />
             Batal
           </Button>
-          <Button disabled={busy} onClick={() => void logout()}>
+          <Button aria-busy={busy} disabled={busy} onClick={() => void logout()}>
             <ActionIcon action="logout" />
             {busy ? "Mengakhiri sesi…" : "Keluar dari akun"}
           </Button>

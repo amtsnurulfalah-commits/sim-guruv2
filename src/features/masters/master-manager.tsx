@@ -424,7 +424,7 @@ function Editor({
           mengganti semester aktif sebelumnya. Tarif dan tunjangan menjadi versi
           tetap; buat rentang baru untuk perubahan nominal.
         </p>
-        <Button type="submit">
+        <Button aria-busy={busy} type="submit">
           <ActionIcon action="save" />
           {busy ? "Menyimpan…" : "Simpan data"}
         </Button>
@@ -992,7 +992,7 @@ export function MasterManager() {
                   <ActionIcon action="close" />
                   Batal
                 </Button>
-                <Button type="submit">
+                <Button aria-busy={busy} type="submit">
                   <ActionIcon action="archive" />
                   {busy ? "Memproses…" : "Arsipkan data"}
                 </Button>
