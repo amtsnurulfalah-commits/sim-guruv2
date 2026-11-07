@@ -1,0 +1,65 @@
+.home-landing .home-container {
+  width: 100%;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+.home-landing .home-brand > span { flex-wrap: wrap; }
+.home-landing .home-brand > span > span:first-child { flex-shrink: 0; }
+.home-landing .home-nav-link {
+  align-items: center;
+  min-height: 2.75rem;
+  padding-inline: 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.home-landing .home-nav-link:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+.home-landing .home-hero {
+  background: radial-gradient(ellipse at 90% 10%, var(--accent), transparent 60%), var(--background);
+}
+.home-landing .home-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.home-landing .home-visual { position: relative; padding: clamp(0rem, 2vw, 1.5rem); }
+.home-landing .home-visual-card {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  background: var(--card);
+  box-shadow: 0 24px 60px -35px #12665655;
+}
+.home-landing .home-flow-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1rem;
+}
+.home-landing .home-icon,
+.home-landing .home-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.875rem;
+  background: var(--accent);
+  color: var(--primary);
+}
+.home-landing .home-step-number { font-size: 0.875rem; font-weight: 600; }
+.home-landing .home-section { padding-block: clamp(2.5rem, 6vw, 4.5rem); scroll-margin-top: 1rem; }
+.home-landing .home-feature { min-width: 0; border: 1px solid var(--border); border-radius: 1.25rem; padding: 1.5rem; }
+.home-landing .home-help { border: 1px solid var(--border); border-radius: 1.5rem; background: var(--accent); padding: clamp(1rem, 4vw, 2rem); }
+@media (hover: hover) and (pointer: fine) {
+  .home-landing .home-nav-link:hover { background: var(--accent); color: var(--primary); }
+}
