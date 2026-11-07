@@ -1,0 +1,445 @@
+{
+  "baseline": "e914f6a80d55866306ab52922f903aed0fdf0615",
+  "observed": {
+    "cron": [
+      {
+        "name": "sim-guru-worker",
+        "active": true,
+        "command": "select ops.scheduler_tick()",
+        "schedule": "* * * * *"
+      }
+    ],
+    "users": [
+      {
+        "role": "admin",
+        "active": 1
+      },
+      {
+        "role": "guru",
+        "active": 2
+      }
+    ],
+    "outbox": [
+      {
+        "state": "sent",
+        "total": 21
+      }
+    ],
+    "heartbeat": "2026-11-07T14:21:00.300835+00:00",
+    "volume_7d": [
+      {
+        "total": 1,
+        "date_bucket": "2026-11-01"
+      },
+      {
+        "total": 4,
+        "date_bucket": "2026-11-02"
+      },
+      {
+        "total": 2,
+        "date_bucket": "2026-11-03"
+      },
+      {
+        "total": 1,
+        "date_bucket": "2026-11-04"
+      },
+      {
+        "total": 1,
+        "date_bucket": "2026-11-05"
+      },
+      {
+        "total": 1,
+        "date_bucket": "2026-11-06"
+      }
+    ],
+    "migrations": [
+      "20261018181427",
+      "20261018181529",
+      "20261019052218",
+      "20261019061243",
+      "20261019103945",
+      "20261019112220",
+      "20261019114717",
+      "20261019122629",
+      "20261019161215",
+      "20261019161302",
+      "20261019172539",
+      "20261020010958",
+      "20261020022441",
+      "20261020022500",
+      "20261020061737",
+      "20261020063417",
+      "20261020092950",
+      "20261020093222",
+      "20261020100209",
+      "20261020105733",
+      "20261020183606",
+      "20261021143459",
+      "20261021160406",
+      "20261024004436",
+      "20261024061949",
+      "20261024071939",
+      "20261024111223",
+      "20261024121234",
+      "20261025082311",
+      "20261025145059",
+      "20261026065818",
+      "20261026074449",
+      "20261026130926",
+      "20261028122833"
+    ],
+    "observed_at": "2026-11-07T14:21:34.847265+00:00",
+    "scheduler_definition": "CREATE OR REPLACE FUNCTION ops.scheduler_tick()\n RETURNS bigint\n LANGUAGE sql\n SECURITY DEFINER\n SET search_path TO 'pg_catalog'\nAS $function$\n   SELECT net.http_get(url:='https://sim-guruv2.vercel.app/api/internal/worker',headers:=jsonb_build_object('Authorization','Bearer '||ops.issue_worker_ticket()),timeout_milliseconds:=55000)\n  $function$\n"
+  },
+  "security": {
+    "rls": [
+      {
+        "table": "app.app_users",
+        "forced": true,
+        "enabled": true
+      },
+      {
+        "table": "ops.domain_outbox",
+        "forced": true,
+        "enabled": true
+      },
+      {
+        "table": "app.notification_preferences",
+        "forced": true,
+        "enabled": true
+      },
+      {
+        "table": "app.notification_receipts",
+        "forced": true,
+        "enabled": true
+      },
+      {
+        "table": "ops.worker_tickets",
+        "forced": true,
+        "enabled": true
+      }
+    ],
+    "roles": [
+      {
+        "name": "sim_guru_owner",
+        "bypassrls": false,
+        "superuser": false
+      },
+      {
+        "name": "sim_guru_business",
+        "bypassrls": false,
+        "superuser": false
+      },
+      {
+        "name": "sim_guru_auth",
+        "bypassrls": false,
+        "superuser": false
+      },
+      {
+        "name": "sim_guru_bootstrap",
+        "bypassrls": false,
+        "superuser": false
+      },
+      {
+        "name": "sim_guru_worker",
+        "bypassrls": false,
+        "superuser": false
+      },
+      {
+        "name": "sim_guru_business_login",
+        "bypassrls": false,
+        "superuser": false
+      },
+      {
+        "name": "sim_guru_auth_login",
+        "bypassrls": false,
+        "superuser": false
+      },
+      {
+        "name": "sim_guru_worker_login",
+        "bypassrls": false,
+        "superuser": false
+      }
+    ],
+    "routines": [
+      {
+        "acl": "{sim_guru_owner=X/sim_guru_owner,sim_guru_worker=X/sim_guru_owner}",
+        "hash": "aec2c3ec943988a8d5ec5a91470f9517",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "definer": true,
+        "signature": "ops.domain_finish(uuid,uuid,text)"
+      },
+      {
+        "acl": "{sim_guru_owner=X/sim_guru_owner}",
+        "hash": "e153c9b8a5e843fd34a6f48e07890f8d",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "definer": false,
+        "signature": "app.announcement_visible(app.announcements,uuid)"
+      },
+      {
+        "acl": "{sim_guru_owner=X/sim_guru_owner,sim_guru_worker=X/sim_guru_owner}",
+        "hash": "e5e116dbf86b45adb5b76480f91b10e2",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "definer": true,
+        "signature": "ops.run_jobs()"
+      },
+      {
+        "acl": "{sim_guru_owner=X/sim_guru_owner}",
+        "hash": "32e31773b6bf4fa4b9afda2fe250cfbb",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "definer": true,
+        "signature": "ops.issue_worker_ticket()"
+      },
+      {
+        "acl": "{sim_guru_owner=X/sim_guru_owner,sim_guru_worker=X/sim_guru_owner}",
+        "hash": "d14b46018290583e6bd777f4400e0924",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "definer": true,
+        "signature": "ops.consume_worker_ticket(text)"
+      },
+      {
+        "acl": "{sim_guru_owner=X/sim_guru_owner,postgres=X/sim_guru_owner}",
+        "hash": "bd0fa31ef44ae21019a6fa8fc0d3d656",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "definer": true,
+        "signature": "ops.scheduler_tick()"
+      },
+      {
+        "acl": "{sim_guru_owner=X/sim_guru_owner,sim_guru_worker=X/sim_guru_owner}",
+        "hash": "fda4639fa767353eeaad9737994c0dd0",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "definer": true,
+        "signature": "ops.worker_policy()"
+      },
+      {
+        "acl": "{sim_guru_owner=X/sim_guru_owner}",
+        "hash": "fdcb4772aa2de80770a3d706161f71ce",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "definer": false,
+        "signature": "ops.reminders()"
+      },
+      {
+        "acl": "{sim_guru_owner=X/sim_guru_owner}",
+        "hash": "23a3eb88a45b77408c5fabe616cf90a4",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "definer": false,
+        "signature": "app.task_items(uuid)"
+      },
+      {
+        "acl": "{sim_guru_owner=X/sim_guru_owner,sim_guru_business=X/sim_guru_owner}",
+        "hash": "0014dc43e33219bfd2306b3c5be35bc6",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "definer": true,
+        "signature": "app.notifications_read(text,integer,boolean)"
+      },
+      {
+        "acl": "{sim_guru_owner=X/sim_guru_owner,sim_guru_business=X/sim_guru_owner}",
+        "hash": "31e4e5cf7f68c65dfc340c9b9ba32ebe",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "definer": true,
+        "signature": "app.notification_command(text,text,jsonb)"
+      },
+      {
+        "acl": "{sim_guru_owner=X/sim_guru_owner,sim_guru_worker=X/sim_guru_owner}",
+        "hash": "fc3436b4a5f42950e9b6acdd96567b74",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "definer": true,
+        "signature": "ops.domain_claim()"
+      },
+      {
+        "acl": "{sim_guru_owner=X/sim_guru_owner}",
+        "hash": "6024294ae92c4773b7f5a09860b73b2e",
+        "config": [
+          "search_path=pg_catalog"
+        ],
+        "definer": false,
+        "signature": "app.activity_guard(text,boolean)"
+      }
+    ]
+  },
+  "ledger": [
+    {
+      "name": "202610190001_roles_and_schemas.sql",
+      "checksum": "5a02689b6c7ba930cb9bb9dd6589e662a4475968dbe0885c6812db9961485351"
+    },
+    {
+      "name": "202610190002_identity_tables.sql",
+      "checksum": "2285393b5bedbf355acd5120c61e2e53f856d0e9e307887b6aaf345edea28739"
+    },
+    {
+      "name": "202610190003_auth_routines_and_policies.sql",
+      "checksum": "513de24ee5b78f7f87fbcee7517321aa9bcd2ee39c1621794953250cc3178ca0"
+    },
+    {
+      "name": "202610190004_account_activation.sql",
+      "checksum": "45ea676a9417289fc89a2381b778ee26eb2c1dbdc0a0ae242ee61b56c6a32d70"
+    },
+    {
+      "name": "202610190005_auth_http.sql",
+      "checksum": "8322174234adf449b623cd0efd83dcaf8d3efafa1a53327b34c309b96f4d84b2"
+    },
+    {
+      "name": "20261019055727_account_lifecycle.sql",
+      "checksum": "7f8a8147db173ec6111c0c0daf0bec3a43b272451d74fc18dd681d05dfa5f4eb"
+    },
+    {
+      "name": "20261019102819_user_management.sql",
+      "checksum": "70fb7ff6d46d2d757fc8b2d12f283c7d8ced08bbd28d7e26d4f3b8730bf014c9"
+    },
+    {
+      "name": "20261019111051_academic_masters.sql",
+      "checksum": "03d2a4ee505d4a8f5cb2e34f68f9b55718bdc9274e37919dd65893c47c8be45f"
+    },
+    {
+      "name": "20261019113611_calendar_day_context.sql",
+      "checksum": "0aca461ee9fb1ddca1a2e303417a2f6501b4c840a37ed421b6c047dc747c9e6f"
+    },
+    {
+      "name": "20261019115903_teaching_schedules.sql",
+      "checksum": "5d723716ecd404b3bef48c04533e6106c9fbc0289a98649225b5a1b272cc993a"
+    },
+    {
+      "name": "20261019160412_security_otp_dispatch.sql",
+      "checksum": "d2fe41ec2a79f68d82d9d6c074506a874c37e2ec9c17d52d5270c0168d2e5c9f"
+    },
+    {
+      "name": "20261019170744_attendance_journals_stage3.sql",
+      "checksum": "0cbb0d170e69cf58b8e7da26690e2ec04c7d4c935a2c7486ac8439433f034f80"
+    },
+    {
+      "name": "20261019174518_duties_substitution_jtm.sql",
+      "checksum": "fa072cf82e68b1ff3b520b0babd386589f0baeef8245e5040ca07718c3478dda"
+    },
+    {
+      "name": "20261020014753_exams_bap_stage5.sql",
+      "checksum": "3cbea9d2e6cfd20ecb84a66ce45894de303022fc3237bdbd83127bfccc38481c"
+    },
+    {
+      "name": "20261020015111_events_journals_stage5.sql",
+      "checksum": "76e7fb6f741d861a6bb114157be65864b6010f607b9033c586463c20f6c1cbc3"
+    },
+    {
+      "name": "20261020022247_exam_api_attendance_stage5.sql",
+      "checksum": "bdfd4d3cdd4145e675c0eaf1bac6809b5c8ad9e3a658957c2f3620f7af7eb538"
+    },
+    {
+      "name": "20261020045419_exam_attendance_guards_stage5.sql",
+      "checksum": "8f52e9ae8b9b2e8e1d8ce290262f3d3fc7d8ddfb829dfbffc88aaf59c3290dd9"
+    },
+    {
+      "name": "20261020055614_finance_holiday_transport_stage6.sql",
+      "checksum": "aea2d5528c77d9feaf732cfb0b8baa5b7070d223c8c5ec8e4368c1db8d60e4cb"
+    },
+    {
+      "name": "20261020063050_exact_transport_settlement_stage6.sql",
+      "checksum": "abedbd9149fbfe00e1bc0e33d6e1323da247597d4907b4822b9eee665b7942c8"
+    },
+    {
+      "name": "20261020065725_operations_stage7.sql",
+      "checksum": "ba07522f2a54bd36100f0e744307d26566ed8e9f04e1d5e3c1d985b43f0881e7"
+    },
+    {
+      "name": "20261020092915_operations_finance_workers_stage7.sql",
+      "checksum": "699325a268988064ad1cf3f1ddd10b4d69c1d25a8b524c127e9bd8b18443dc7e"
+    },
+    {
+      "name": "20261020100138_reminder_context_stage7.sql",
+      "checksum": "5f9ba4a2f925181a2d77cea042e78b3ff922e9f7c4a3642c839fbf1279590696"
+    },
+    {
+      "name": "20261020103452_migration_readiness_stage8.sql",
+      "checksum": "72641265ad4916245085c0744f5087f7a6ca92e524d8add1698212cb627d82c6"
+    },
+    {
+      "name": "20261020182241_pg_net_private_registration.sql",
+      "checksum": "cddbbf85b5c798c5ab421757be3a79463a6e78c97b069cf6f1930ce43786c1df"
+    },
+    {
+      "name": "20261021135112_support_reports.sql",
+      "checksum": "4309bc2b6a4cf740a7cbd3ba42c7114c04d790a2b4840dabe8a382c957587530"
+    },
+    {
+      "name": "20261021161000_duty_final_guard_record_shape.sql",
+      "checksum": "277ffde113bbe668df562bc5cdc7bdb50bec8d48dbff14d7aad217b0d1fb24db"
+    },
+    {
+      "name": "20261023094531_kbm_confirmation_operator_guard.sql",
+      "checksum": "1bef1ac096c78e373caa4d4435c220fabed099f18aa3c456521e8a03a4d1caaa"
+    },
+    {
+      "name": "20261024000945_task_center_and_notification_preferences.sql",
+      "checksum": "67538e3fadd12d81620ce59e8ed853f7d19b4926bd23fb6713e8b049cd864608"
+    },
+    {
+      "name": "20261024054743_honor_readiness_and_correction_review.sql",
+      "checksum": "56ca7c9fe9e4ebd7e5afd134bbd90ceb1e1c8c314fecca280d1201ba1545f51a"
+    },
+    {
+      "name": "20261024062231_support_case_lifecycle_and_monitoring.sql",
+      "checksum": "e139ca081aa4a81b9a6e1dfa573402a9e7fed6c3281af13f96dc6088ec1eaadd"
+    },
+    {
+      "name": "20261024104102_leadership_reports.sql",
+      "checksum": "e5386a3082dfb3281d9449fc44e5954e12494b7d7844b833d8274258e884a6ef"
+    },
+    {
+      "name": "20261024112506_semester_preparation.sql",
+      "checksum": "eec3a6a030f4c6a3018dc1ab0a280d08e039c0ce319b76d182a06376310e6674"
+    },
+    {
+      "name": "20261025075334_admin_password_reset_email.sql",
+      "checksum": "9bf46b2f3e54c936acc63ac7eac968b9d9fbdfe62dc7afa564518c30725d5d07"
+    },
+    {
+      "name": "20261025142235_substitution_consistency_guards.sql",
+      "checksum": "f7a6df5236b38d7e757455628e7787319dd22c86119f0d66439c7cfb878a6abe"
+    },
+    {
+      "name": "20261026062908_pro2_activity_read_performance.sql",
+      "checksum": "00c13defcdadd94244a13791f7c34ae8bb759a5220c4bc4ffafa7fb451a583b8"
+    },
+    {
+      "name": "20261026071329_pro3_operational_reliability.sql",
+      "checksum": "eb59fa404138cd4b6a42362c3451ae04371544a7d787aed274705fee653cf6cf"
+    },
+    {
+      "name": "20261026120030_pro7_personal_calendar_history.sql",
+      "checksum": "a768404e75a79f4b238dce58b7082dbd2e2bd0f3fc039611704b13182acb018e"
+    },
+    {
+      "name": "20261028121442_journal_learning_reflection.sql",
+      "checksum": "a0279f73e00d3f4f26d1ab867285be73eb42e5d037d8681aaa11dc6641db0eb3"
+    }
+  ],
+  "production": {
+    "project": "sim-guruv2",
+    "deployment": "dpl_A7Jt4Encca5NfH7sCM55jj5YKEvG",
+    "state": "READY",
+    "sha": "e914f6a80d55866306ab52922f903aed0fdf0615"
+  },
+  "scope": "read-only metadata and aggregates; no notification sent; no production writes"
+}

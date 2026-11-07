@@ -47,3 +47,7 @@ Diperbarui 24 Oktober 2026 WIB. Persetujuan roadmap dan instruksi Tahap 0 berasa
 4. Catat ID selesai, hasil/batas tes, PR/commit dan pekerjaan berikutnya setelah setiap PR.
 
 Persetujuan roadmap tidak berarti seluruh Tahap 1–8 otomatis dijalankan oleh PR Tahap 0. Eksekusi berikutnya mengikuti instruksi pengguna; persetujuan yang sudah ada tidak perlu diminta ulang untuk scope yang sama.
+
+## Program Push Notifikasi — 7 November 2026
+
+Kelanjutan fitur mengikuti [checkpoint Push Notifikasi](push-notifications/CHECKPOINT.md) dan roadmap 0–10 di paket tersebut. Tahap 0 memverifikasi baseline dan layanan secara read-only; inventaris perangkat nyata masih belum terverifikasi. Tahap berikutnya 1.1–1.5. Jangan menganggap roadmap profesional lama dan roadmap Push Notifikasi sebagai program yang sama.
