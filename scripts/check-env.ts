@@ -4,7 +4,7 @@ import { environmentScopes, parseEnvironment, type EnvironmentScope } from "../s
 loadEnvConfig(process.cwd(), process.env.NODE_ENV !== "production");
 const requested = process.argv[2] ?? "core";
 if (requested !== "all" && !environmentScopes.includes(requested as EnvironmentScope)) {
-  console.error("Lingkup tidak valid. Pilih core, database, auth, storage, mail, jobs, atau all.");
+  console.error("Lingkup tidak valid. Pilih core, database, auth, storage, mail, jobs, worker, push, atau all.");
   process.exitCode = 2;
 } else {
   const scopes = requested === "all" ? environmentScopes : [requested as EnvironmentScope];

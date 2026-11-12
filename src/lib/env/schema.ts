@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { pushConfigSchema } from "../notifications/config";
 
 // Modul murni agar validasi dapat diuji tanpa memuat server-only atau rahasia.
 export type EnvironmentSource = Readonly<Record<string, string | undefined>>;
@@ -9,7 +10,8 @@ export type EnvironmentScope =
   | "storage"
   | "mail"
   | "jobs"
-  | "worker";
+  | "worker"
+  | "push";
 const nonempty = z.string().min(1);
 const secret = z.string().min(32);
 const databaseUrl = z.url().refine((value) => {
@@ -24,6 +26,7 @@ const httpUrl = z
   .url()
   .refine((value) => ["http:", "https:"].includes(new URL(value).protocol));
 const schemas = {
+  push: pushConfigSchema,
   core: z.object({ APP_URL: httpUrl, APP_TIMEZONE: z.literal("Asia/Jakarta") }),
   database: z.object({
     DATABASE_URL: databaseUrl,
@@ -94,6 +97,7 @@ export const environmentScopes = [
   "mail",
   "jobs",
   "worker",
+  "push",
 ] as const;
 export type ScopeEnvironment<S extends EnvironmentScope> = z.output<
   (typeof schemas)[S]
@@ -129,6 +133,12 @@ export function parseEnvironment<S extends EnvironmentScope>(
     };
   }
   const issues: EnvironmentIssue[] = [];
+  if (scope === "push" && ["REGISTRATION", "EVENTS", "FANOUT", "DELIVERY"].some(flag => values["PUSH_" + flag + "_ENABLED"] === "true")) {
+    const expected = source.VERCEL_ENV === "preview" ? "staging" : source.VERCEL_ENV === "production" ? "production" : undefined;
+    if ((expected && values.PUSH_ENVIRONMENT !== expected) ||
+        (production && !["production", "staging"].includes(values.PUSH_ENVIRONMENT ?? "")))
+      issues.push({ field: "PUSH_ENVIRONMENT", code: "INVALID" });
+  }
   if (
     production &&
     scope === "core" &&
