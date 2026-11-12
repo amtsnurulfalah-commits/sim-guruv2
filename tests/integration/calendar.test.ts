@@ -93,7 +93,7 @@ test("Tahap 2.3 — calendar and one operational DayContext", async (t) => {
             "select count(*)::int as n from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in('app','auth_private','ops') and c.relkind='r' and c.relrowsecurity and c.relforcerowsecurity",
           )
         ).rows[0]!.n,
-        73,
+        78,
       );
     },
   );

@@ -102,7 +102,7 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
             "select count(*)::int as n from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in('app','auth_private','ops') and c.relkind='r' and c.relrowsecurity and c.relforcerowsecurity",
           )
         ).rows[0]!.n,
-        73,
+        78,
       );
     },
   );
