@@ -10,7 +10,7 @@ test("push migration preserves inbox and isolates notification recipients", asyn
   const db = await openPgliteDatabase();
   t.after(() => db.close());
   const migrations = await readMigrations("supabase/migrations");
-  await applyMigrations(db, migrations.filter(m => !m.name.endsWith("_push_notification_foundation.sql")));
+  await applyMigrations(db, migrations.filter(m => !/_push_notification_foundation\.sql$|_notification_inbox_cutover\.sql$/.test(m.name)));
   async function asRole(name: string, sql: string, args: readonly SqlParameter[] = []) {
     return db.transaction(async tx => {
       await tx.exec("SET LOCAL ROLE " + name);
@@ -28,11 +28,19 @@ test("push migration preserves inbox and isolates notification recipients", asyn
   }
   const a = await fixture("guru.push.a",true), b = await fixture("guru.push.b",true), onboarding = await fixture("guru.push.c",false);
   const legacy = (await db.query<{id:string}>("insert into ops.domain_outbox(dedupe_key,recipient_id,subject,body) values('push-legacy',$1,'Lama','Riwayat') returning id",[a.id])).rows[0]!.id;
-  await db.query("insert into app.notification_receipts(user_id,outbox_id) values($1,$2)",[a.id,legacy]);
-  assert.equal((await applyMigrations(db,migrations)).length,1);
+  await db.query("insert into app.notification_receipts(user_id,outbox_id,read_at) values($1,$2,'2026-01-01T01:00:00Z')",[a.id,legacy]);
+  assert.equal((await applyMigrations(db,migrations)).length,2);
   assert.deepEqual(await applyMigrations(db,migrations),[]);
   const legacyInbox = await asRole("sim_guru_business","select app.notifications_read($1,1,false) value",[a.digest]);
   assert.equal((legacyInbox.rows[0]!.value as {items:{read:boolean}[]}).items[0]?.read,true);
+
+  const imported = (await db.query(
+    "select n.id, n.created_at = o.created_at as same_created, r.read_at = '2026-01-01T01:00:00Z'::timestamptz as same_read, e.fanout_state from app.notifications n join ops.domain_outbox o on o.id=n.id join ops.notification_events e on e.id=n.event_id join app.notification_receipts r on r.notification_id=n.id where n.id=$1",
+    [legacy],
+  )).rows[0]!;
+  assert.deepEqual(imported,{id:legacy,same_created:true,same_read:true,fanout_state:"completed"});
+  assert.equal((await db.query("select count(*)::int as n from ops.notification_deliveries")).rows[0]!.n,0);
+  assert.equal((await db.query("select ops.backfill_notification_inbox(1) as n")).rows[0]!.n,0);
 
   const event = randomUUID(), notice = randomUUID(), device = randomUUID(), subscription = randomUUID();
   const insertEvent = "insert into ops.notification_events(id,event_key,recipient_id,category,source_type,source_version,route_key,expires_at) values($1,$2,$3,'task','task',1,'tasks',now()+interval '1 day')";
@@ -62,7 +70,7 @@ test("push migration preserves inbox and isolates notification recipients", asyn
   const markRead = "select app.notification_mark_read($1,$2)";
   assert.equal(((await asRole("sim_guru_business",devices,[a.digest])).rows[0]!.value as unknown[]).length,1);
   assert.deepEqual((await asRole("sim_guru_business",devices,[b.digest])).rows[0]!.value,[]);
-  assert.deepEqual((await asRole("sim_guru_business",inbox,[b.digest])).rows[0]!.value,{items:[]});
+  assert.deepEqual(((await asRole("sim_guru_business",inbox,[b.digest])).rows[0]!.value as {items:unknown[]}).items,[]);
   await assert.rejects(asRole("sim_guru_business",markRead,[b.digest,notice]),/NOT_FOUND/);
   await asRole("sim_guru_business",markRead,[a.digest,notice]);
   await asRole("sim_guru_business",markRead,[a.digest,notice]);
@@ -78,6 +86,56 @@ test("push migration preserves inbox and isolates notification recipients", asyn
   await db.query("update app.notification_preferences set push_enabled=true where user_id=$1",[a.id]);
   await asRole("sim_guru_business","select app.notification_command($1,'notification-preferences',$2::jsonb)",[a.digest,sqlJson({version:"1",emailEnabled:true,reminderEmail:true})]);
   assert.equal((await db.query("select push_enabled from app.notification_preferences where user_id=$1",[a.id])).rows[0]!.push_enabled,true);
+
+  const publish = "select ops.publish_notification($1,$2,'system','fixture',null,1,'dashboard','SiM-Guru','Pembaruan uji') as created";
+  await db.query("update app.notification_preferences set email_enabled=false where user_id=$1",[a.id]);
+  assert.equal((await db.query(publish,["push-only",a.id])).rows[0]!.created,true);
+  assert.equal((await db.query(publish,["push-only",a.id])).rows[0]!.created,false);
+  const c = await fixture("guru.push.d",true);
+  await db.query("insert into app.notification_preferences(user_id,email_enabled) values($1,false)",[c.id]);
+  assert.equal((await db.query(publish,["inbox-only",c.id])).rows[0]!.created,true);
+  const fanout = "select ops.fanout_notification_push('staging',array[$1,$2]::uuid[],100) as n";
+  await db.query(fanout,[a.id,c.id]);
+  assert.equal((await db.query(fanout,[a.id,c.id])).rows[0]!.n,0);
+  const channels = (await db.query(
+    "select e.event_key, count(o.id)::int as emails,count(d.id)::int as pushes from ops.notification_events e join app.notifications n on n.event_id=e.id left join ops.domain_outbox o on o.dedupe_key=e.event_key left join ops.notification_deliveries d on d.notification_id=n.id where e.event_key in ('push-only','inbox-only','push-legacy') group by e.event_key order by e.event_key",
+  )).rows;
+  assert.deepEqual(channels,[
+    {event_key:"inbox-only",emails:0,pushes:0},
+    {event_key:"push-legacy",emails:1,pushes:0},
+    {event_key:"push-only",emails:0,pushes:1},
+  ]);
+  await db.query("update app.notification_preferences set email_enabled=true where user_id=$1",[a.id]);
+  assert.equal((await db.query(publish,["email-on",a.id])).rows[0]!.created,true);
+  assert.equal((await db.query(publish,["email-on",a.id])).rows[0]!.created,false);
+  assert.equal((await db.query("select count(*)::int as n from ops.domain_outbox where dedupe_key='email-on'")).rows[0]!.n,1);
+  await assert.rejects(db.transaction(async tx => {
+    await tx.query(publish,["atomic-inbox",a.id]);
+    throw Error("source rollback");
+  }), /source rollback/);
+  assert.equal((await db.query("select count(*)::int as n from ops.notification_events where event_key='atomic-inbox'")).rows[0]!.n,0);
+  assert.equal((await db.query("select count(*)::int as n from ops.domain_outbox where dedupe_key='atomic-inbox'")).rows[0]!.n,0);
+
+  const late = (await db.query<{id:string}>(
+    "insert into ops.domain_outbox(dedupe_key,recipient_id,subject,body) values('late-legacy',$1,'Pesan lama','Saat cutover') returning id",
+    [c.id],
+  )).rows[0]!.id;
+  await db.query("insert into app.notification_receipts(user_id,outbox_id) values($1,$2)",[c.id,late]);
+  assert.deepEqual((await db.query(
+    "select r.notification_id,r.outbox_id,e.fanout_state from app.notification_receipts r join ops.notification_events e on e.id=r.notification_id where r.notification_id=$1",
+    [late],
+  )).rows[0],{notification_id:late,outbox_id:null,fanout_state:"completed"});
+
+  const announcement = randomUUID();
+  await db.query("insert into app.announcements(id,title,body,severity,target_role,target_users) values($1,'Pengumuman uji','Konten terbatas','info','all',array[$2]::uuid[])",[announcement,c.id]);
+  assert.equal((await db.query("select ops.enqueue_announcements() as n")).rows[0]!.n,1);
+  assert.equal((await db.query("select ops.enqueue_announcements() as n")).rows[0]!.n,0);
+  const getInbox = async (session: string) =>
+    (await asRole("sim_guru_business",inbox,[session])).rows[0]!.value as {items:{subject:string;body:string}[]};
+  assert.ok((await getInbox(c.digest)).items.some(item => item.body === "Konten terbatas"));
+  assert.ok(!(await getInbox(a.digest)).items.some(item => item.body === "Konten terbatas"));
+  await db.query("update app.announcements set active=false,version=version+1 where id=$1",[announcement]);
+  assert.ok(!(await getInbox(c.digest)).items.some(item => item.body === "Konten terbatas"));
 
   for (const name of ["sim_guru_business","sim_guru_auth","sim_guru_worker","sim_guru_bootstrap"]) {
     for (const table of ["ops.notification_events","app.notifications","app.push_installations","ops.push_subscriptions","ops.notification_deliveries"])

@@ -233,7 +233,7 @@ test("Professional stage 2 tasks and personal notification boundaries", async (t
         (m) => m.subject === "Pengingat tugas hari ini",
       )!;
       assert.ok(msg);
-      assert.equal(msg.state, "pending");
+      assert.equal("state" in msg, false);
       assert.ok(!(await inbox(other)).items.some((m) => m.id === msg.id));
       await assert.rejects(
         service.command(other, "notification-read", { id: msg.id }),
@@ -331,7 +331,7 @@ test("Professional stage 2 tasks and personal notification boundaries", async (t
     async () => {
       for (let n = 0; n < 23; n++)
         await db.query(
-          "insert into ops.domain_outbox(dedupe_key,recipient_id,subject,body) values($1,$2,'Information','Synthetic')",
+          "select ops.publish_notification($1,$2,'system','fixture',NULL,1,'dashboard','Information','Synthetic',false)",
           ["pagination:" + n, otherId],
         );
       const one = await inbox(other, 1),

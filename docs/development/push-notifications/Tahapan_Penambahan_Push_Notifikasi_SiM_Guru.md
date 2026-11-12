@@ -85,11 +85,11 @@ Nomor sub-tahap dapat dipakai sebagai unit penugasan, misalnya “Jalankan Tahap
 
 ### Tahap 3 — Pisahkan inbox dan email dengan transisi aman
 
-- [ ] **3.1 — Buat producer netral kanal.** Hasilkan event untuk penerima yang sah tanpa memfilter berdasarkan preferensi email. Event dan transaksi sumber harus atomik; event duplikat tidak menghasilkan pesan ganda.
-- [ ] **3.2 — Buat fan-out idempotent.** Event menghasilkan inbox sekali dan delivery per kanal/per perangkat. Baca preferensi tiap kanal secara mandiri; tidak ada subscription aktif bukan alasan menghapus inbox.
-- [ ] **3.3 — Migrasikan histori dan receipts.** Tentukan cutover marker, mapping ID outbox lama→notification baru, serta backfill bertahap yang dapat dilanjutkan. Tandai histori agar tidak menghasilkan delivery baru. Rekonsiliasi total, unread dan timestamp baca.
-- [ ] **3.4 — Alihkan pembacaan API inbox.** Pertahankan pagination, filter unread, aksi read dan DTO yang dipakai UI. Pisahkan label status pesan dari status transport; sumber yang tidak lagi dapat diakses tidak boleh membuka detail sensitif.
-- [ ] **3.5 — Rekonsiliasi pengiriman email.** Pada rilis pertama pertahankan worker email existing melalui bridge dengan dedupe key yang stabil. Pastikan tepat satu producer delivery email per event. Hentikan jalur lama hanya sesudah hasil rekonsiliasi benar.
+- [x] **3.1 — Buat producer netral kanal.** Hasilkan event untuk penerima yang sah tanpa memfilter berdasarkan preferensi email. Event dan transaksi sumber harus atomik; event duplikat tidak menghasilkan pesan ganda.
+- [x] **3.2 — Buat fan-out idempotent.** Event menghasilkan inbox sekali dan delivery per kanal/per perangkat. Baca preferensi tiap kanal secara mandiri; tidak ada subscription aktif bukan alasan menghapus inbox.
+- [x] **3.3 — Migrasikan histori dan receipts.** Tentukan cutover marker, mapping ID outbox lama→notification baru, serta backfill bertahap yang dapat dilanjutkan. Tandai histori agar tidak menghasilkan delivery baru. Rekonsiliasi total, unread dan timestamp baca.
+- [x] **3.4 — Alihkan pembacaan API inbox.** Pertahankan pagination, filter unread, aksi read dan DTO yang dipakai UI. Pisahkan label status pesan dari status transport; sumber yang tidak lagi dapat diakses tidak boleh membuka detail sensitif.
+- [x] **3.5 — Rekonsiliasi pengiriman email.** Pada rilis pertama pertahankan worker email existing melalui bridge dengan dedupe key yang stabil. Pastikan tepat satu producer delivery email per event. Hentikan jalur lama hanya sesudah hasil rekonsiliasi benar.
 
 **Keluaran:** inbox independen, bridge email, skrip backfill/reconcile dan catatan cutover.
 

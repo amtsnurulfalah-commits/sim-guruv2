@@ -12,7 +12,8 @@ Diperbarui 12 November 2026 WIB.
 - 0.1, 0.2, 0.3, 0.5 selesai, baseline e914f6a80d55866306ab52922f903aed0fdf0615.
 - 0.4: cohort dan kapasitas awal direncanakan; inventaris perangkat fisik/versi browser dan penerimaan pilot belum terverifikasi. Bukan bukti UAT.
 - Tahap 1.1–2.5 tersedia pada batch fondasi. [Kontrak, migrasi, akses, dan bukti pengujian](stage-1-2/README.md).
-- Tahap 3–10 belum dijalankan.
+- Implementasi Tahap 3.1–3.5 tersedia. [Pemisahan inbox dan email, cutover, dan rekonsiliasi](stage-3/README.md).
+- Tahap 4–10 belum dijalankan.
 - Tidak ada migrasi, perubahan aplikasi runtime atau aktivasi push pada batch Tahap 0.
 - PR/merge akhir: lihat PR yang menambahkan paket ini dan riwayat Git. Jangan mengasumsikan merge/deployment hanya dari status dokumen.
 
@@ -20,4 +21,4 @@ Diperbarui 12 November 2026 WIB.
 PWA + Web Push, perluas inbox existing, pisahkan transport dan siapkan adapter untuk FCM/APNs. Pertahankan auth lokal, guard SQL dan CSRF/Origin. Izin opsional, key terpisah per lingkungan, payload generik, revoke binding backend dan source recheck. Worker email tetap berfungsi.
 
 ## Langkah berikutnya
-Tahap 3.1–3.5 memisahkan inbox dari email dan menyiapkan transisi histori. Baca hasil Tahap 0 terlebih dahulu. Lengkapi inventaris perangkat sebelum pilot/aktivasi, bukan dengan asumsi hasil tes. Setiap batch memperbarui checkpoint, bukti, commit/PR dan batas pengujian.
+Setelah verifikasi Tahap 3, lanjutkan Tahap 4 untuk API subscription dan lifecycle perangkat. Lengkapi inventaris perangkat sebelum pilot. Catat bukti pengujian dan status rilis pada setiap batch.
