@@ -87,7 +87,7 @@ test("Tahap 2.4 — weekly teaching schedules and atomic resource conflicts", as
   ]);
   await fixture("schedule.onboard", "admin", false);
   await t.test(
-    "SC01 incremental upgrade preserves identity and all73 RLS tables",
+    "SC01 incremental upgrade preserves identity and all78 RLS tables",
     async () => {
       assert.equal((await applyMigrations(db, migrations)).length, 1);
       assert.equal((await applyMigrations(db, migrations)).length, 0);

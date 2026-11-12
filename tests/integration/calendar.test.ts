@@ -78,7 +78,7 @@ test("Tahap 2.3 — calendar and one operational DayContext", async (t) => {
   await fixture("calendar.guru", "guru");
   await fixture("calendar.onboard", "admin", false);
   await t.test(
-    "CA01 incremental upgrade leaves identities intact, repeat no-op, all73 tables FORCE RLS",
+    "CA01 incremental upgrade leaves identities intact, repeat no-op, all78 tables FORCE RLS",
     async () => {
       assert.equal((await applyMigrations(db, migrations)).length, 1);
       assert.equal((await applyMigrations(db, migrations)).length, 0);
