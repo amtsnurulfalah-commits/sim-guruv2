@@ -8,15 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
 import { FeatureState, EmptyState } from "@/components/feedback/feature-state";
 import { ErrorFeedback } from "@/components/feedback/error-feedback";
-const states = {
-  pending: "Email dalam antrean",
-  sending: "Email sedang dikirim",
-  sent: "Email diterima layanan pengiriman",
-  retry_wait: "Email menunggu percobaan ulang",
-  failed: "Email gagal dikirim",
-  unknown: "Status penerimaan email belum pasti",
-  cancelled: "Pengiriman email dibatalkan",
-};
 export function NotificationInbox() {
   const [data, setData] = useState<ReturnType<typeof inboxSchema.parse> | null>(
       null,
@@ -136,8 +127,7 @@ export function NotificationInbox() {
       <header>
         <h1>Notifikasi</h1>
         <HelpDisclosure><p className="mt-3 text-sm leading-6 text-muted-foreground">
-          Tandai dibaca hanya mengubah inbox. Penyelesaian tugas tetap mengikuti
-          sumber. Antrean email bukan bukti pesan telah diterima pengguna.
+          Menandai notifikasi sebagai sudah dibaca tidak menyelesaikan tugas.
         </p></HelpDisclosure>
       </header>
       <Button type="button" variant="outline" disabled={busy} onClick={reload}>
@@ -179,7 +169,7 @@ export function NotificationInbox() {
                   checked={email}
                   onChange={(event) => setEmail(event.target.checked)}
                 />
-                Email informasi kegiatan dan honorarium
+                Email notifikasi aplikasi
               </label>
               <label className="flex min-h-11 items-center gap-3 text-sm">
                 <input
@@ -231,7 +221,7 @@ export function NotificationInbox() {
                     {new Date(item.created_at).toLocaleString("id-ID", {
                       timeZone: "Asia/Jakarta",
                     })}{" "}
-                    WIB · {states[item.state]} ·{" "}
+                    WIB ·{" "}
                     {item.read ? "Sudah dibaca" : "Belum dibaca"}
                   </p>
                   <div className="flex flex-wrap gap-3">
